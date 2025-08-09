@@ -1,0 +1,46 @@
+.accordion {
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    list-style: none;
+}
+
+.accordionListItem {
+    margin-bottom: 2rem;
+    list-style: none;
+}
+
+.header button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-italiana);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    background: none;
+    border: none;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--white);
+    width: 100%;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    text-align: left;
+
+    span {
+        margin-left: 1rem;
+    }
+
+    @mixin sm {
+    }
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    margin-left: 1rem;
+}
+
+.content {
+    width: 100%;
+}
