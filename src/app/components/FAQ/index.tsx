@@ -18,11 +18,11 @@ const FAQ = () => {
                     rejuvenation, exercise, sport, and adventure.
                 </p>
                 <p>
-                    After four wonderful years at The Sanctuary in Kiawah, we're
-                    moving our retreat to The Boca Raton for our fifth year.
-                    This change offers enhanced guest experiences and more
-                    opportunities to enjoy Florida, aiming to attract even more
-                    attendees.
+                    After four wonderful years at The Sanctuary in Kiawah,
+                    we&apos;re moving our retreat to The Boca Raton for our
+                    fifth year. This change offers enhanced guest experiences
+                    and more opportunities to enjoy Florida, aiming to attract
+                    even more attendees.
                 </p>
             </AccordionItem>
             <AccordionItem
