@@ -24,11 +24,19 @@ body {
 }
 
 body {
-    color: var(--white);
-    background: var(--boca-navy);
     font-family: Arial, Helvetica, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+    color: var(--white);
+    background: var(--boca-navy);
+}
+
+.bodyWhite {
+    background: var(--white);
+    color: var(--boca-navy);
 }
 
 * {

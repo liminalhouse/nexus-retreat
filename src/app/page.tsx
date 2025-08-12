@@ -1,8 +1,16 @@
+import { getSession } from '@/utils/auth'
+import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import styles from './page.module.scss'
 import FAQ from './components/FAQ'
 
-export default function Home() {
+export default async function Home() {
+    const session = await getSession()
+
+    if (!session.isAuthenticated) {
+        redirect('/sign-in')
+    }
+
     return (
         <div className={styles.page}>
             <header className={styles.header}>

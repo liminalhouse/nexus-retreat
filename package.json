@@ -10,6 +10,7 @@
     },
     "dependencies": {
         "@szhsin/react-accordion": "^1.4.1",
+        "iron-session": "^8.0.4",
         "next": "15.4.6",
         "next-pwa": "^5.6.0",
         "react": "19.1.0",

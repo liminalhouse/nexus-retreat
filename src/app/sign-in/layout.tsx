@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import './globals.css'
+import '@/globals.css'
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
     title: 'Nexus Retreat',
-    description: 'Bruin Capital and Sportico',
+    description: '',
     generator: 'Next.js',
     manifest: '/manifest.json',
     keywords: ['nextjs', 'next14', 'pwa', 'next-pwa'],
@@ -34,7 +34,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable}`}>
-                <main>{children}</main>
+                <main className="bodyWhite">{children}</main>
             </body>
         </html>
     )

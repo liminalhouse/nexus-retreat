@@ -1,0 +1,42 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 3rem;
+    width: 100%;
+}
+
+.wrapper {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.text {
+    margin-top: 2rem;
+}
+
+.container {
+    background: var(--boca-pink);
+    color: var(--foreground);
+}
+
+.logo {
+    max-width: 100%;
+    width: 50%;
+    height: auto;
+}
+
+.error {
+    color: var(--bruin-red);
+    font-size: 14px;
+    margin-top: 0.5rem;
+    font-weight: 600;
+    text-align: center;
+}
