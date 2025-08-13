@@ -238,7 +238,7 @@ Is this now called Nexus?
                     <p>
                         Yes, we encourage you to bring a spouse / partner for
                         the 3 days. There will be a spouse / partner lunch and
-                        all guests are invited to content, activities, and
+                        all guests are invited to programming, activities, and
                         meals.
                     </p>
                 </AccordionItem>
