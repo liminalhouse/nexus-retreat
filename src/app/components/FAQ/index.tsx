@@ -13,6 +13,32 @@ const FAQ = () => {
                 </h1>
                 <br />
                 <AccordionItem
+                    header="This is my first time being invited, what can I expect?"
+                    id="first-time-attendee"
+                    itemKey={0}
+                >
+                    <p>
+                        For four years, this exclusive, invitation-only retreat
+                        has gathered a distinguished group of global leaders,
+                        including sports executives, world leaders, CEOs, and
+                        influential figures across various sectors. Attendees
+                        have consistently included owners of numerous
+                        professional teams, whose collective business ventures
+                        exceed $10 trillion in economic value and whose
+                        philanthropic endeavors impact millions globally.
+                    </p>
+                    <p>
+                        Think of this as a retreat, not a sports conference.
+                        Spouses and partners are welcome. The off-the-record
+                        program covers geopolitics, economics, leadership,
+                        health, longevity, emerging trends, IP, media, and
+                        entertainment. Guests will experience a curated content
+                        program, diverse activities, and exclusive breakout
+                        sessions with speakers. Evenings will feature dinners
+                        designed to foster meaningful dialogue and a good time.
+                    </p>
+                </AccordionItem>
+                <AccordionItem
                     header="Why is the retreat moving this year?"
                     id="why-move-retreat"
                     itemKey={0}
@@ -26,10 +52,32 @@ const FAQ = () => {
                     </p>
                     <p>
                         After four wonderful years at The Sanctuary in Kiawah,
-                        we&apos;re moving our retreat to The Boca Raton for our
-                        fifth year. This change offers enhanced guest
-                        experiences and more opportunities to enjoy Florida,
-                        aiming to attract even more attendees.
+                        we&apos;re moving our retreat to The Boca Raton
+                        Harborside for our fifth year. This change offers
+                        enhanced guest experiences and more opportunities to
+                        enjoy Florida. From interactive experiences and curated
+                        activities to exceptional dinners, dynamic programming,
+                        and more, this next chapter promises something
+                        extraordinary.
+                    </p>
+                </AccordionItem>
+                <AccordionItem
+                    header="
+Is this now called Nexus?
+"
+                    id="nexus-name"
+                    itemKey={1}
+                >
+                    <p>
+                        After four years, the event has evolved beyond its
+                        location, leading to the new name &quot;Nexus&quot; to
+                        reflect its growth and future aspirations. This
+                        invitation-only gathering, co-curated by Bruin Capital
+                        and Sportico (hence Nexus), serves as a retreat for
+                        leaders in sports, finance, media, and technology. It
+                        fosters connections, facilitates the sharing of
+                        insights, and provides a unique convergence of diverse
+                        perspectives and innovative ideas.
                     </p>
                 </AccordionItem>
                 <AccordionItem
@@ -79,22 +127,26 @@ const FAQ = () => {
                         The Boca Raton, conveniently situated between Palm Beach
                         and Miami, offers excellent accessibility through three
                         international airports (FLL, PBI, and MIA), as well as
-                        Boca Raton Airport.
+                        Boca Raton Airport (BCT). All four airports have customs
+                        for international flights*, and all airports can also
+                        accommodate private jets (BCT).
                     </p>
                     <p>
                         Upon arrival, you will have ground transportation
-                        arranged on your behalf (at guest’s expense).
+                        arranged on your behalf (at guest&apos;s expense).
                     </p>
                     <br />
                     <strong>Airport transport times:</strong>
                     <ul>
                         <li>FLL (24 miles / 30-35 min)</li>
-                        <li>
-                            PBI (28 miles / 35-40 min, also a private jet hub)
-                        </li>
-                        <li> MIA (45 miles / 60 min) </li>
-                        <li>Boca Raton Executive (5 miles/12 min)</li>
+                        <li>PBI (28 miles / 35-40 min)</li>
+                        <li>MIA (45 miles / 60 min)</li>
+                        <li>BCT - Boca Raton Executive (5 miles/12 min)</li>
                     </ul>
+                    <p>
+                        *BCT currently has customs service Thursday to Monday
+                        only, see here for the most up to date information.{' '}
+                    </p>
                 </AccordionItem>
 
                 <AccordionItem
@@ -123,10 +175,10 @@ const FAQ = () => {
                         own cost. Access to the amenities and activity
                         programming of The Boca Raton Club are also included.{' '}
                         <a
-                            href="https://www.thebocaraton.com/experiences/programming/#!/?categoryIds=3730c564-444d-47ff-9ab2-2037b8cbc1df,debe2ada-6e40-4d83-876f-52ac24f20670,334e5c90-4d6c-45b0-95f8-a5166102f128,b96993fd-16d5-4f6d-9940-c13c7d8c6273"
+                            href="https://www.thebocaraton.com/experiences/#!/"
                             target="_blank"
                         >
-                            Boca Raton Programming & Events
+                            Boca Raton Experiences
                         </a>
                         can be found here.
                     </p>
