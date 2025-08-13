@@ -8,9 +8,7 @@ const FAQ = () => {
     return (
         <div className={styles.wrapper}>
             <Accordion>
-                <h1 style={{ marginBottom: '1rem' }}>
-                    Learn more about the retreat
-                </h1>
+                <h1 style={{ marginBottom: '1rem' }}>Q&A</h1>
                 <br />
                 <AccordionItem
                     header="This is my first time being invited, what can I expect?"
