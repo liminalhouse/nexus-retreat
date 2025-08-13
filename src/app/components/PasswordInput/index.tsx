@@ -27,7 +27,7 @@ const PasswordInput: React.FC<PasswordInputProps> = (props) => {
                 ...props.style,
                 borderColor: focused ? '#0070f3' : 'transparent',
             }}
-            className={styles.input}
+            // className={styles.input}
         />
     )
 }

@@ -9,6 +9,21 @@ const nextConfig = {
     compiler: {
         removeConsole: process.env.NODE_ENV !== 'development', // Remove console.log in production
     },
+    turbopack: {
+        rules: {
+            '*.svg': {
+                as: '*.js',
+                loaders: ['@svgr/webpack'],
+            },
+        },
+    },
+    webpack(config) {
+        config.module.rules.push({
+            test: /\.svg$/i,
+            use: ['@svgr/webpack'],
+        })
+        return config
+    },
 }
 
 export default withPWA({

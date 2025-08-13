@@ -1,14 +1,11 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
-import './globals.css'
+import { Geist } from 'next/font/google'
+import './globals.scss'
+import theme from '../theme'
+import { ThemeProvider } from '@mui/material'
 
-const geistSans = Geist({
-    variable: '--font-geist-sans',
-    subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-    variable: '--font-geist-mono',
+const body = Geist({
+    variable: '--font-body',
     subsets: ['latin'],
 })
 
@@ -33,8 +30,10 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={`${geistSans.variable} ${geistMono.variable}`}>
-                <main>{children}</main>
+            <body className={`${body.variable}`}>
+                <ThemeProvider theme={theme}>
+                    <main>{children}</main>
+                </ThemeProvider>
             </body>
         </html>
     )

@@ -12,9 +12,9 @@ export default async function SignIn(props: SignInProps) {
     const searchParams = await props.searchParams
     const session = await getSession()
 
-    // if (session.isAuthenticated) {
-    //     redirect('/')
-    // }
+    if (session.isAuthenticated) {
+        redirect('/')
+    }
 
     return <UI searchParams={searchParams} />
 }

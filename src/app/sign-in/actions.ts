@@ -1,9 +1,9 @@
+'use server'
+
 import { getSession } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 
 export async function auth(formData: FormData) {
-    'use server'
-
     const session = await getSession()
     const shouldAuthenticate =
         formData.get('password') == process.env.IRON_SESSION_PASSWORD

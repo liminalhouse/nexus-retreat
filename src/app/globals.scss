@@ -1,17 +1,20 @@
+@use 'bp' as *;
+
 :root {
     --white: #ffffff;
-    --background: #ffffff;
-    --foreground: #1c191b;
     --boca-pink-bright: #f59297;
     --boca-pink: #e8a09d;
     --boca-green: #bed1bf;
     --boca-navy: #192947;
+    --boca-blue: #435d84;
     --boca-navy-rgb: 25, 41, 71;
     --boca-cream: #f8f5f0;
     --boca-tan: #ddbe72;
     --bruin-red: #e40325;
     --link: var(--boca-green);
     --link-hover: var(--white);
+    --foreground: var(--white);
+    --background: var(--boca-navy);
 
     font-size: 16px;
 }
@@ -24,19 +27,23 @@ body {
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--font-body), sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
 main {
-    color: var(--white);
-    background: var(--boca-navy);
+    color: var(--foreground);
+    background: var(--background);
 }
 
 .bodyWhite {
     background: var(--white);
     color: var(--boca-navy);
+}
+
+p {
+    line-height: 1.25;
 }
 
 * {
@@ -58,5 +65,23 @@ a {
 
     &:hover {
         color: var(--link-hover);
+    }
+}
+
+.mobileOnly {
+    display: block;
+    text-align: center;
+
+    @include md {
+        display: none;
+    }
+}
+
+.desktopOnly {
+    display: none;
+    text-align: center;
+
+    @include md {
+        display: block;
     }
 }

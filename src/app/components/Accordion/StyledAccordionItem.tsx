@@ -2,34 +2,14 @@
 
 import React from 'react'
 import styles from './accordion.module.scss'
-import {
-    AccordionItem,
-    AccordionItemProps,
-    useAccordionItem,
-    useAccordionItemEffect,
-    useAccordionState,
-} from '@szhsin/react-accordion'
-import { useSearchParams } from 'next/navigation'
+import { AccordionItem, AccordionItemProps } from '@szhsin/react-accordion'
 
 const StyledAccordionItem: React.FC<AccordionItemProps> = ({
     header,
     children,
     id,
-    itemKey,
     ...rest
 }) => {
-    // const { getItemState } = useAccordionState()
-    // const { itemRef, state, toggle } = useAccordionItemEffect<HTMLDivElement>({
-    //     itemKey,
-    // })
-    // const { buttonProps, panelProps } = useAccordionItem({
-    //     state,
-    //     toggle,
-    // })
-    // const { status, isMounted, isEnter } = state
-    const isActive =
-        typeof window !== 'undefined' && window?.location?.hash === `#${id}`
-    console.log('item state ', id)
     return (
         <AccordionItem
             className={styles.accordionListItem}
@@ -43,9 +23,6 @@ const StyledAccordionItem: React.FC<AccordionItemProps> = ({
             headingProps={{ className: styles.header }}
             contentProps={{ className: styles.content }}
             initialEntered={true}
-            // onClick={() => {
-            //     window.location.hash = `#${id}`
-            // }}
             {...rest}
         >
             {children}
