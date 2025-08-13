@@ -16,24 +16,25 @@ const FAQ = () => {
                     itemKey={0}
                 >
                     <p>
-                        For four years, this exclusive, invitation-only retreat
-                        has gathered a distinguished group of global leaders,
-                        including sports executives, world leaders, CEOs, and
-                        influential figures across various sectors. Attendees
-                        have consistently included owners of numerous
-                        professional teams, whose collective business ventures
-                        exceed $10 trillion in economic value and whose
-                        philanthropic endeavors impact millions globally.
+                        This invitation-only retreat has gathered a
+                        distinguished group of global leaders, including sports
+                        executives, world leaders, CEOs, and influential figures
+                        across various sectors. Attendees have consistently
+                        included owners of roughly 100 professional teams, whose
+                        collective business ventures exceed $10 trillion in
+                        economic value and whose philanthropic endeavors impact
+                        millions globally.
                     </p>
                     <p>
-                        Think of this as a retreat, not a sports conference.
-                        Spouses and partners are welcome. The off-the-record
-                        program covers geopolitics, economics, leadership,
-                        health, longevity, emerging trends, IP, media, and
-                        entertainment. Guests will experience a curated content
-                        program, diverse activities, and exclusive breakout
-                        sessions with speakers. Evenings will feature dinners
-                        designed to foster meaningful dialogue and a good time.
+                        Think of this as a retreat rather than a sports
+                        conference. Spouses and partners are welcome. The
+                        off-the-record program covers topics ranging from
+                        geopolitics, economics, leadership, health, longevity,
+                        emerging trends, IP, media, and entertainment. Guests
+                        will experience a curated content program, diverse
+                        activities, and exclusive breakout sessions with
+                        speakers. The evenings will be a moment to enjoy good
+                        food and great conversation.
                     </p>
                 </AccordionItem>
                 <AccordionItem
@@ -139,12 +140,17 @@ Is this now called Nexus?
                         <li>FLL (24 miles / 30-35 min)</li>
                         <li>PBI (28 miles / 35-40 min)</li>
                         <li>MIA (45 miles / 60 min)</li>
-                        <li>BCT - Boca Raton Executive (5 miles/12 min)</li>
+                        <li>BCT - Boca Raton Executive (5 miles/12 min)*</li>
                     </ul>
-                    <p>
+                    <br />
+                    <small>
                         *BCT currently has customs service Thursday to Monday
-                        only, see here for the most up to date information.{' '}
-                    </p>
+                        only,{' '}
+                        <a href="https://bocaairport.com/customs-2/">
+                            see here
+                        </a>{' '}
+                        for the most up to date information.{' '}
+                    </small>
                 </AccordionItem>
 
                 <AccordionItem

@@ -63,6 +63,7 @@ li {
 
 a {
     color: var(--link);
+    transition: color 0.15s linear;
 
     &:hover {
         color: var(--link-hover);

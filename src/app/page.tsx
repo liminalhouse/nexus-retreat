@@ -33,8 +33,9 @@ export default async function Home() {
                 </div>
                 <div className={styles.intro}>
                     <p className={styles.text}>
-                        George and Jay will be hosting this year&apos;s
-                        executive retreat at{' '}
+                        George Pyne and Jay Penske will host an invitation-only
+                        gathering of international sports leaders, March 18 -
+                        20, 2026 at{' '}
                         <a
                             href="https://www.thebocaraton.com/"
                             target="_blank"
@@ -42,17 +43,9 @@ export default async function Home() {
                         >
                             The Boca Raton
                         </a>
-                        , from March 18-20, 2026. The Harborside resort is known
-                        for its modern design, half-mile private beach, multiple
-                        pools, state of the art sport facilities, and spa. We
-                        are certain this oasis will perfectly fit all
-                        guest&apos;s needs. You can expect the same high-touch
-                        event you experienced at The Sanctuary in Kiawah.
-                        <br /> <br />
-                        The event begins Wednesday March 18, 2026 in the evening
-                        and will conclude mid-morning March 20, 2026. There will
-                        be a reception and dinner on March 18th with programming
-                        and activities until closing remarks on March 20th.
+                        , resort in Boca Raton, Florida. Now in its fifth year,
+                        this retreat remains the only event of its kind
+                        dedicated exclusively to the global sports industry.
                     </p>
                 </div>
             </header>
