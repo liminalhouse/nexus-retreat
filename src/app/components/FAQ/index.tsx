@@ -177,7 +177,7 @@ Is this now called Nexus?
                             target="_blank"
                         >
                             Boca Raton Experiences
-                        </a>
+                        </a>{' '}
                         can be found here.
                     </p>
                     <br />
