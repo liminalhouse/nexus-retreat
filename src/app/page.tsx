@@ -42,10 +42,10 @@ export default async function Home() {
                             style={{ whiteSpace: 'nowrap' }}
                         >
                             The Boca Raton
-                        </a>
-                        , resort in Boca Raton, Florida. Now in its fifth year,
+                        </a>{' '}
+                        resort in Boca Raton, Florida. Now in its fifth year,
                         this retreat remains the only event of its kind
-                        dedicated exclusively to the global sports industry.
+                        dedicated exclusively to the global sports leadership.
                     </p>
                 </div>
             </header>

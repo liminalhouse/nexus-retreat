@@ -26,15 +26,26 @@ const FAQ = () => {
                         millions globally.
                     </p>
                     <p>
-                        Think of this as a retreat rather than a sports
-                        conference. Spouses and partners are welcome. The
-                        off-the-record program covers topics ranging from
-                        geopolitics, economics, leadership, health, longevity,
-                        emerging trends, IP, media, and entertainment. Guests
-                        will experience a curated content program, diverse
-                        activities, and exclusive breakout sessions with
-                        speakers. The evenings will be a moment to enjoy good
-                        food and great conversation.
+                        Think of this as a retreat, rather than a conference.
+                        Spouses and partners are welcome. The off-the-record
+                        program is set in a relaxed living-room setting and
+                        covers topics ranging from geopolitics, economics,
+                        leadership, health, longevity, emerging trends, IP,
+                        media, and entertainment. Guests will have the option to
+                        participate in diverse activities, and exclusive
+                        breakout sessions with speakers. The evenings will be a
+                        moment to enjoy good food and great conversation at
+                        curated dinners and late night receptions.
+                    </p>
+                    <p>
+                        The event kicks off the afternoon of March 18th with a
+                        reception, followed by dinner with a headline speaker.
+                        Programming and activities continue on the 19th with
+                        early morning breakfasts and activities, programming,
+                        dinner, and a late-night reception. Early morning
+                        activities, and speakers will continue on the 20th and
+                        conclude mid-morning. The full schedule will be
+                        available on the website closer to the event.
                     </p>
                 </AccordionItem>
                 <AccordionItem
@@ -43,21 +54,17 @@ const FAQ = () => {
                     itemKey={0}
                 >
                     <p>
-                        Our goal is to keep the executive retreat fresh and fun
-                        each year. The Boca Raton Beach Club resort is a
-                        beachside paradise with myriad opportunities for
-                        relaxation, rejuvenation, exercise, sport, and
-                        adventure.
+                        Our objective remains to create an intimate,
+                        off-the-record, and highly exclusive gathering. From new
+                        interactive experiences and fun activities to
+                        exceptional dinners, dynamic programming, and more, this
+                        next chapter promises something extraordinary.
                     </p>
                     <p>
-                        After four wonderful years at The Sanctuary in Kiawah,
-                        we&apos;re moving our retreat to The Boca Raton
-                        Harborside for our fifth year. This change offers
-                        enhanced guest experiences and more opportunities to
-                        enjoy Florida. From interactive experiences and curated
-                        activities to exceptional dinners, dynamic programming,
-                        and more, this next chapter promises something
-                        extraordinary.
+                        The Boca Raton Beach Club is a world-renowned resort,
+                        helping to create unparalleled opportunities to
+                        cultivate enduring personal connections and valuable
+                        business relationships.
                     </p>
                 </AccordionItem>
                 <AccordionItem
@@ -68,15 +75,12 @@ Is this now called Nexus?
                     itemKey={1}
                 >
                     <p>
-                        After four years, the event has evolved beyond its
-                        location, leading to the new name &quot;Nexus&quot; to
-                        reflect its growth and future aspirations. This
-                        invitation-only gathering, co-curated by Bruin Capital
-                        and Sportico (hence Nexus), serves as a retreat for
-                        leaders in sports, finance, media, and technology. It
-                        fosters connections, facilitates the sharing of
-                        insights, and provides a unique convergence of diverse
-                        perspectives and innovative ideas.
+                        The one-of-a-kind event has evolved into more than a
+                        location, inspiring the new name &quot;Nexus&quot;
+                        reflective of its evolution and broader ambitions. This
+                        gathering, co-hosted by Bruin Capital and Sportico, is
+                        truly a unique space where diverse perspectives converge
+                        and innovative ideas take shape.
                     </p>
                 </AccordionItem>
                 <AccordionItem
@@ -85,13 +89,15 @@ Is this now called Nexus?
                     itemKey={1}
                 >
                     <p>
-                        You can expect the same type of executive retreat as in
-                        previous years including VIP guests, engaging
-                        conversations, high-touch networking, group activities,
-                        fabulous dinners, and, as always, plenty of fun.
+                        We always strive to make each year better and more
+                        exciting, and attendees should expect the same type of
+                        exclusive retreat as in previous years. Your time onsite
+                        will be filled with engaging conversations, high-touch
+                        networking, VIP guests, bespoke activities, fabulous
+                        dinners, and, as always, plenty of fun.
                     </p>
                 </AccordionItem>
-                <AccordionItem
+                {/* <AccordionItem
                     header="Will there be changes to the structure?"
                     id="changes-to-structure"
                     itemKey={2}
@@ -104,17 +110,19 @@ Is this now called Nexus?
                         activities, valuable networking opportunities, and some
                         unexpected elements.
                     </p>
-                </AccordionItem>
+                </AccordionItem> */}
                 <AccordionItem
                     header="Will there still be activities like we had in years past?"
                     id="activities"
                 >
                     <p>
-                        Guests will have the opportunity to enjoy multiple
-                        pools, golf, tennis, pickleball, workouts, water sports,
-                        and luxurious spa facilities. Our team is happy to help
-                        facilitate activities, which we will share in more
-                        detail closer to the event.
+                        Guests will have the opportunity to take advantage of
+                        all the resort has to offer - multiple pools, golf,
+                        tennis, pickleball, workouts, water sports, luxurious
+                        spa facilities - as well as small-group experiences
+                        exclusive to event guests. Our team is happy to help
+                        facilitate activities, and we will share in more detail
+                        closer to the event.
                     </p>
                 </AccordionItem>
                 <AccordionItem
@@ -123,7 +131,7 @@ Is this now called Nexus?
                     itemKey={3}
                 >
                     <p>
-                        The Boca Raton, conveniently situated between Palm Beach
+                        Boca Raton is conveniently situated between Palm Beach
                         and Miami, offers excellent accessibility through three
                         international airports (FLL, PBI, and MIA), as well as
                         Boca Raton Airport (BCT). All four airports have customs
@@ -134,7 +142,6 @@ Is this now called Nexus?
                         Upon arrival, you will have ground transportation
                         arranged on your behalf (at guest&apos;s expense).
                     </p>
-                    <br />
                     <strong>Airport transport times:</strong>
                     <ul>
                         <li>FLL (24 miles / 30-35 min)</li>
@@ -154,30 +161,18 @@ Is this now called Nexus?
                 </AccordionItem>
 
                 <AccordionItem
-                    header="In previous years, ground transportation was covered, why the change this year?"
-                    id="ground-transportation-change"
+                    header="As a guest, what expenses am I responsible for?"
+                    id="guest-expenses"
                     itemKey={4}
                 >
                     <p>
-                        As always, it&apos;s our goal to enhance the experience
-                        for guests. We have secured a discounted rate with the
-                        pre-eminent local car service, and our team will work
-                        closely with yours to ensure transportation is seamless.
-                    </p>
-                </AccordionItem>
-
-                <AccordionItem
-                    header="Will event lodging and meals will be covered by the event?"
-                    id="event-lodging-meals"
-                    itemKey={4}
-                >
-                    <p>
-                        Yes, all hotel costs (excluding incidentals), meals, and
+                        All hotel costs (excluding incidentals), meals, and
                         activities will be covered by the event. Ground
                         transportation and non-event activities (e.g. spa
                         services, room service) will be arranged for you at your
                         own cost. Access to the amenities and activity
-                        programming of The Boca Raton Club are also included.{' '}
+                        programming of The Boca Raton Club are also
+                        included.&nbsp;&nbsp;
                         <a
                             href="https://www.thebocaraton.com/experiences/#!/"
                             target="_blank"
@@ -186,7 +181,6 @@ Is this now called Nexus?
                         </a>{' '}
                         can be found here.
                     </p>
-                    <br />
                     <p style={{ marginBottom: '0.75rem' }}>
                         The following expenses are also covered by the event:
                     </p>
@@ -220,6 +214,22 @@ Is this now called Nexus?
                 </AccordionItem>
 
                 <AccordionItem
+                    header="In previous years, ground transportation was covered, why the change this year?"
+                    id="ground-transportation-change"
+                    itemKey={4}
+                >
+                    <p>
+                        After reviewing guest feedback and analyzing the
+                        operation, we decided to make this slight change.
+                        Nothing will change operationally. We will continue to
+                        organize transportation and ensure that once you land at
+                        any of the nearby airports in Florida, you&apos;ll have
+                        VIP transportation ready to whisk you to The Boca Raton
+                        and back to the airport for your return trip.
+                    </p>
+                </AccordionItem>
+
+                <AccordionItem
                     header="Can I come early / stay longer?"
                     id="can-i-come-early-stay-longer"
                     itemKey={5}
@@ -229,8 +239,8 @@ Is this now called Nexus?
                         and have secured a special rate for all of our guests
                         the three nights prior to and post event. (March 15, 16,
                         17, 20, 21, 22). Your room cost (excluding incidental
-                        expenses) for the nights of the event - March 18 and
-                        March 19, 2026 will be fully covered by the event.
+                        expenses) for the nights of the event (March 18 and
+                        March 19, 2026) will be fully covered by the event.
                     </p>
                 </AccordionItem>
 
