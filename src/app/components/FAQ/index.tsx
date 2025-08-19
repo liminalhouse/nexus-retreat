@@ -230,8 +230,8 @@ Is this now called Nexus?
                 </AccordionItem>
 
                 <AccordionItem
-                    header="Can I come early / stay longer?"
-                    id="can-i-come-early-stay-longer"
+                    header="Can I extend my stay?"
+                    id="can-i-extend-my-stay"
                     itemKey={5}
                 >
                     <p>
