@@ -33,18 +33,33 @@ const UI = ({
             </p>
             <form action={auth} className={styles.form}>
                 <div className={styles.inputGroup}>
-                    <div className={styles.inputWrapper}>
+                    {/* TODO: Uncomment for next phase */}
+                    {/* <div className={styles.inputWrapper}>
                         <input
                             name="redirect"
                             type="hidden"
                             defaultValue={searchParams.redirect}
                         />
                         <Input
+                            id="email-input"
+                            name="email"
+                            type="email"
+                            required={true}
+                            autoFocus={true}
+                            placeholder="Registered email"
+                            style={{ width: '100%' }}
+                        />
+                        <span className={styles.bar} />
+                    </div> */}
+                    <div
+                        className={styles.inputWrapper}
+                        style={{ marginTop: '1rem' }}
+                    >
+                        <Input
                             id="pw-input"
                             name="password"
                             type={showPassword ? 'text' : 'password'}
                             required={true}
-                            autoFocus={true}
                             placeholder="Enter password..."
                             style={{ width: '100%' }}
                             endAdornment={
