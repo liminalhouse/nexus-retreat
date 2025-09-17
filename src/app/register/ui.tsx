@@ -1,6 +1,5 @@
 'use client'
 
-import useSWR from 'swr'
 import styles from './register.module.scss'
 import Image from 'next/image'
 import {
@@ -19,12 +18,14 @@ interface SwoogoQuestion {
     attribute: string
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-
-const RegistrationForm = () => {
-    const { data, error, isLoading } = useSWR('/api/swoogo-questions', fetcher)
-
-    if (isLoading) {
+const RegistrationForm = ({
+    questions,
+    error,
+}: {
+    questions: SwoogoQuestion[]
+    error: any
+}) => {
+    if (!questions?.length && !error) {
         return (
             <div className={styles.loading}>
                 <CircularProgress />
@@ -40,8 +41,6 @@ const RegistrationForm = () => {
             </div>
         )
     }
-
-    const questions: SwoogoQuestion[] = data?.data || []
 
     const renderField = (question: SwoogoQuestion) => {
         const { id, name, attribute } = question
@@ -108,8 +107,12 @@ const RegistrationForm = () => {
 
 const UI = ({
     searchParams,
+    questions,
+    error,
 }: {
     searchParams: { [key: string]: string | string[] | undefined }
+    questions: SwoogoQuestion[]
+    error: any
 }) => {
     return (
         <div className={styles.wrapper}>
@@ -143,7 +146,7 @@ const UI = ({
                         </div>
                     )}
 
-                    <RegistrationForm />
+                    <RegistrationForm questions={questions} error={error} />
                 </div>
             </div>
         </div>
