@@ -4,23 +4,25 @@ import { useState } from 'react'
 import styles from '../register/register.module.scss'
 import {
     Button,
-    TextField,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
     Box,
     Typography,
     LinearProgress,
     Stepper,
     Step,
     StepLabel,
+    TextField,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
     FormGroup,
     FormControlLabel,
     Checkbox,
 } from '@mui/material'
-import CountrySelect from './CountrySelect'
 import Logo from '@/components/Logo'
+import { formConfig } from './formConfig'
+import FieldRenderer from './FieldRenderer'
+import CountrySelect from './CountrySelect'
 
 interface FormData {
     email: string
@@ -118,43 +120,88 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
     })
 
     const handleInputChange = (
-        field: keyof FormData,
-        value: string | File | null,
-        subfield?: keyof FormData['work_address_id'] | null
+        fieldName: string,
+        value: any,
+        subfield?: string
     ) => {
         if (subfield) {
             setFormData((prev) => ({
                 ...prev,
                 work_address_id: {
                     ...prev.work_address_id,
-                    [subfield]: value as string,
+                    [subfield]: value,
                 },
             }))
             return
         }
 
-        setFormData((prev) => ({
-            ...prev,
-            [field]: value,
-        }))
+        // Map field names to FormData keys
+        const fieldMapping: { [key: string]: keyof FormData } = {
+            'Registrant[email]': 'email',
+            'Registrant[prefix]': 'prefix',
+            'Registrant[first_name]': 'first_name',
+            'Registrant[middle_name]': 'middle_name',
+            'Registrant[last_name]': 'last_name',
+            'Registrant[c_6716230]': 'title',
+            'Registrant[c_6716228]': 'organization',
+            'Registrant[c_6716229]': 'c_6716229',
+            'Registrant[mobile_phone]': 'mobile_phone',
+            'Registrant[profile_picture]': 'profile_picture',
+            'Registrant[c_6716240]': 'c_6716240',
+            'Registrant[c_6716241]': 'c_6716241',
+            'Registrant[c_6716242]': 'c_6716242',
+            'Registrant[c_6716243]': 'c_6716243',
+            'Registrant[c_6716244]': 'c_6716244',
+            'Registrant[c_6716246]': 'c_6716246',
+            'Registrant[c_6716247]': 'c_6716247',
+            'Registrant[c_6716271]': 'c_6716271',
+            'Registrant[c_6716225]': 'c_6716225',
+            'Registrant[c_6716226]': 'c_6716226',
+            'Registrant[c_6716231]': 'c_6716231',
+            'Registrant[c_6716232]': 'c_6716232',
+            'Registrant[c_6716234]': 'c_6716234',
+            'Registrant[c_6716236]': 'c_6716236',
+            'Registrant[c_6832581]': 'c_6832581',
+            'Registrant[c_6716237]': 'c_6716237',
+            'Registrant[c_6716248]': 'c_6716248',
+            'Registrant[c_6716239]': 'c_6716239',
+        }
+
+        const mappedField = fieldMapping[fieldName]
+        if (mappedField) {
+            setFormData((prev) => ({
+                ...prev,
+                [mappedField]: value,
+            }))
+        }
     }
 
     const handleCheckboxChange = (
-        field: keyof FormData,
+        fieldName: string,
         value: string,
         checked: boolean
     ) => {
-        setFormData((prev) => {
-            const currentArray = prev[field] as string[]
-            const newArray = checked
-                ? [...currentArray, value]
-                : currentArray.filter((item) => item !== value)
+        // Map field names to FormData keys for checkbox groups
+        const checkboxFieldMapping: { [key: string]: keyof FormData } = {
+            'Registrant[c_6716267]': 'c_6716267',
+            'Registrant[c_6716269]': 'c_6716269',
+            'Registrant[c_6838231]': 'c_6838231',
+        }
 
-            return {
-                ...prev,
-                [field]: newArray,
-            }
-        })
+        const mappedField = checkboxFieldMapping[fieldName]
+        if (mappedField) {
+            setFormData((prev) => {
+                const currentArray = prev[mappedField] as string[]
+                const newArray = checked
+                    ? [...currentArray, value]
+                    : currentArray.filter((item) => item !== value)
+
+                return {
+                    ...prev,
+                    [mappedField]: newArray,
+                }
+            })
+        }
     }
 
     const handleNextStage = (e: React.FormEvent) => {
@@ -180,998 +227,72 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         // TODO: Submit to API
     }
 
-    const renderStage1 = () => (
-        <div className={styles.inputGroup}>
-            {/* Email Address */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="email"
-                    id="registrant-email"
-                    name="Registrant[email]"
-                    label="Email Address"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    aria-describedby="error-registrant-email"
-                    autoComplete="email"
-                />
-            </div>
+    // Helper function to get form field values
+    const getFieldValue = (fieldName: string): any => {
+        const fieldMapping: { [key: string]: any } = {
+            'Registrant[email]': formData.email,
+            'Registrant[prefix]': formData.prefix,
+            'Registrant[first_name]': formData.first_name,
+            'Registrant[middle_name]': formData.middle_name,
+            'Registrant[last_name]': formData.last_name,
+            'Registrant[c_6716230]': formData.title,
+            'Registrant[c_6716228]': formData.organization,
+            'Registrant[c_6716229]': formData.c_6716229,
+            'Registrant[mobile_phone]': formData.mobile_phone,
+            'Registrant[profile_picture]': formData.profile_picture,
+            'Registrant[c_6716240]': formData.c_6716240,
+            'Registrant[c_6716241]': formData.c_6716241,
+            'Registrant[c_6716242]': formData.c_6716242,
+            'Registrant[c_6716243]': formData.c_6716243,
+            'Registrant[c_6716244]': formData.c_6716244,
+            'Registrant[c_6716246]': formData.c_6716246,
+            'Registrant[c_6716247]': formData.c_6716247,
+            'Registrant[c_6716271]': formData.c_6716271,
+            'Registrant[c_6716225]': formData.c_6716225,
+            'Registrant[c_6716226]': formData.c_6716226,
+            'Registrant[c_6716231]': formData.c_6716231,
+            'Registrant[c_6716232]': formData.c_6716232,
+            'Registrant[c_6716234]': formData.c_6716234,
+            'Registrant[c_6716236]': formData.c_6716236,
+            'Registrant[c_6832581]': formData.c_6832581,
+            'Registrant[c_6716237]': formData.c_6716237,
+            'Registrant[c_6716248]': formData.c_6716248,
+            'Registrant[c_6716239]': formData.c_6716239,
+            'Registrant[c_6716267]': formData.c_6716267,
+            'Registrant[c_6716269]': formData.c_6716269,
+            'Registrant[c_6838231]': formData.c_6838231,
+        }
+        return fieldMapping[fieldName] || ''
+    }
 
-            {/* Registrant Type */}
-            {/* <FormControl
-                fullWidth
-                className={styles.formField}
-                data-hidden={true}
-            >
-                <InputLabel>Select a registrant type *</InputLabel>
-                <Select
-                    name="Registrant[reg_type_id]"
-                    label="Select a registrant type"
-                    required
-                    value={formData.reg_type_id}
-                    onChange={(e) =>
-                        handleInputChange('reg_type_id', e.target.value)
-                    }
-                >
-                    <MenuItem value="">Select...</MenuItem>
-                    <MenuItem value="958373">Attendee</MenuItem>
-                </Select>
-            </FormControl> */}
+    const renderStage = (stageIndex: number) => {
+        const stage = formConfig[stageIndex]
+        if (!stage) return null
 
-            {/* Prefix */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-prefix"
-                    name="Registrant[prefix]"
-                    label="Prefix (Mr., Mrs., etc.)"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={formData.prefix}
-                    onChange={(e) =>
-                        handleInputChange('prefix', e.target.value)
-                    }
-                    aria-describedby="error-registrant-prefix"
-                    autoComplete="honorific-prefix"
-                />
-            </div>
-
-            {/* First Name */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-first_name"
-                    name="Registrant[first_name]"
-                    label="First Name"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={formData.first_name}
-                    onChange={(e) =>
-                        handleInputChange('first_name', e.target.value)
-                    }
-                    aria-describedby="error-registrant-first_name"
-                    autoComplete="given-name"
-                />
-            </div>
-
-            {/* Middle Name */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-middle_name"
-                    name="Registrant[middle_name]"
-                    label="Middle Name"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.middle_name}
-                    onChange={(e) =>
-                        handleInputChange('middle_name', e.target.value)
-                    }
-                    aria-describedby="error-registrant-middle_name"
-                    autoComplete="additional-name"
-                />
-            </div>
-
-            {/* Last Name */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-last_name"
-                    name="Registrant[last_name]"
-                    label="Last Name"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={formData.last_name}
-                    onChange={(e) =>
-                        handleInputChange('last_name', e.target.value)
-                    }
-                    aria-describedby="error-registrant-last_name"
-                    autoComplete="family-name"
-                />
-            </div>
-
-            {/* Title */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-c_6716230"
-                    name="Registrant[c_6716230]"
-                    label="Title"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.title}
-                    onChange={(e) => handleInputChange('title', e.target.value)}
-                    aria-describedby="error-registrant-c_6716230"
-                />
-            </div>
-
-            {/* Organization */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-c_6716228"
-                    name="Registrant[c_6716228]"
-                    label="Organization"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.organization}
-                    onChange={(e) =>
-                        handleInputChange('organization', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716228"
-                />
-            </div>
-
-            {/* Office Phone */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="tel"
-                    id="registrant-c_6716229"
-                    name="Registrant[c_6716229]"
-                    label="Office Phone"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={formData.c_6716229}
-                    onChange={(e) =>
-                        handleInputChange('c_6716229', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716229"
-                />
-            </div>
-
-            {/* Mobile Phone */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="tel"
-                    id="registrant-mobile_phone"
-                    name="Registrant[mobile_phone]"
-                    label="Mobile Phone"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.mobile_phone}
-                    onChange={(e) =>
-                        handleInputChange('mobile_phone', e.target.value)
-                    }
-                    aria-describedby="error-registrant-mobile_phone"
-                />
-            </div>
-
-            <fieldset className={styles.fieldset}>
-                <InputLabel>Work Address</InputLabel>
-                {/* Address Line 1 */}
-                <div className={styles.inputWrapper}>
-                    <TextField
-                        type="text"
-                        id="address-registrant-work_address_id-line_1"
-                        name="Address[Registrant][work_address_id][line_1]"
-                        placeholder="Address Line 1"
-                        fullWidth
-                        label="Address Line 1"
-                        value={formData.work_address_id.line_1}
-                        onChange={(e) =>
-                            handleInputChange(
-                                'work_address_id',
-                                e.target.value,
-                                'line_1'
-                            )
-                        }
-                        aria-describedby="error-address-registrant-work_address_id-line_1"
-                        autoComplete="true"
+        return (
+            <div className={styles.inputGroup}>
+                {stage.fields.map((field) => (
+                    <FieldRenderer
+                        key={field.id}
+                        field={field}
+                        value={getFieldValue(field.name)}
+                        onChange={handleInputChange}
+                        onCheckboxChange={handleCheckboxChange}
+                        formData={formData}
                     />
-                </div>
-
-                {/* Address Line 2 */}
-                <div className={styles.inputWrapper}>
-                    <TextField
-                        type="text"
-                        id="address-registrant-work_address_id-line_2"
-                        name="Address[Registrant][work_address_id][line_2]"
-                        placeholder="Address Line 2"
-                        label="Address Line 2"
-                        fullWidth
-                        value={formData.work_address_id.line_2}
-                        onChange={(e) =>
-                            handleInputChange(
-                                'work_address_id',
-                                e.target.value,
-                                'line_2'
-                            )
-                        }
-                        aria-describedby="error-address-registrant-work_address_id-line_2"
-                        autoComplete="address-line2"
-                    />
-                </div>
-
-                {/* City */}
-                <div className={styles.inputWrapper}>
-                    <TextField
-                        type="text"
-                        id="address-registrant-work_address_id-city"
-                        name="Address[Registrant][work_address_id][city]"
-                        label="City"
-                        variant="outlined"
-                        fullWidth
-                        value={formData.work_address_id.city}
-                        onChange={(e) =>
-                            handleInputChange(
-                                'work_address_id',
-                                e.target.value,
-                                'city'
-                            )
-                        }
-                        aria-describedby="error-address-registrant-work_address_id-city"
-                        autoComplete="address-level2"
-                    />
-                </div>
-
-                {/* Country */}
-                <CountrySelect
-                    value={formData.work_address_id.country_code}
-                    onChange={(value) =>
-                        handleInputChange(
-                            'work_address_id',
-                            value,
-                            'country_code'
-                        )
-                    }
-                    className={styles.formField}
-                />
-
-                {/* State */}
-                <div className={styles.inputWrapper}>
-                    <TextField
-                        type="text"
-                        id="address-registrant-work_address_id-state"
-                        name="Address[Registrant][work_address_id][state]"
-                        label="State / Province / County"
-                        variant="outlined"
-                        fullWidth
-                        value={formData.work_address_id.state}
-                        onChange={(e) =>
-                            handleInputChange(
-                                'work_address_id',
-                                e.target.value,
-                                'state'
-                            )
-                        }
-                        aria-describedby="error-address-registrant-work_address_id-state"
-                    />
-                </div>
-
-                {/* Zip/Postal Code */}
-                <div className={styles.inputWrapper}>
-                    <TextField
-                        type="text"
-                        id="address-registrant-work_address_id-zip"
-                        name="Address[Registrant][work_address_id][zip]"
-                        label="Zip/Postal Code"
-                        variant="outlined"
-                        fullWidth
-                        value={formData.work_address_id.zip}
-                        onChange={(e) =>
-                            handleInputChange(
-                                'work_address_id',
-                                e.target.value,
-                                'zip'
-                            )
-                        }
-                        aria-describedby="error-address-registrant-work_address_id-zip"
-                        autoComplete="postal-code"
-                    />
-                </div>
-            </fieldset>
-
-            {/* Profile Picture */}
-            <div className={styles.inputWrapper}>
-                <InputLabel
-                    style={{
-                        display: 'block',
-                        marginBottom: '0.5rem',
-                        fontWeight: '500',
-                    }}
-                >
-                    Upload a Profile Picture
-                </InputLabel>
-                <input
-                    className={styles.fileInput}
-                    type="file"
-                    id="registrant-profile_picture"
-                    name="Registrant[profile_picture]"
-                    accept="image/*"
-                    onChange={(e) =>
-                        handleInputChange(
-                            'profile_picture',
-                            e.target.files?.[0] || null
-                        )
-                    }
-                    aria-describedby="error-registrant-profile_picture"
-                    // style={{
-                    //     width: '100%',
-                    //     padding: '1rem 1.25rem',
-                    //     fontSize: '1rem',
-                    //     border: '2px solid rgba(0, 0, 0, 0.08)',
-                    //     borderRadius: '12px',
-                    //     background: 'rgba(248, 249, 250, 0.8)',
-                    // }}
-                />
+                ))}
             </div>
-        </div>
-    )
+        )
+    }
 
-    const renderStage2 = () => (
-        <div className={styles.inputGroup}>
-            {/* Name for Credentials */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-c_6716240"
-                    name="Registrant[c_6716240]"
-                    label="Name for Credentials"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={formData.c_6716240}
-                    onChange={(e) =>
-                        handleInputChange('c_6716240', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716240"
-                />
-                <div className={styles.hintBlock}>
-                    Full name as you would like it to appear on credentials and
-                    onsite materials.
-                </div>
-            </div>
 
-            {/* Organization for Credentials */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-c_6716241"
-                    name="Registrant[c_6716241]"
-                    label="Organization for Credentials"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={formData.c_6716241}
-                    onChange={(e) =>
-                        handleInputChange('c_6716241', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716241"
-                />
-                <div className={styles.hintBlock}>
-                    Organization name as you would like it to appear on
-                    credentials and onsite materials.
-                </div>
-            </div>
-
-            {/* Emergency Contact Name */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-c_6716242"
-                    name="Registrant[c_6716242]"
-                    label="Emergency Contact Name"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={formData.c_6716242}
-                    onChange={(e) =>
-                        handleInputChange('c_6716242', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716242"
-                />
-                <div className={styles.hintBlock}>
-                    Please provide a contact in case of emergency while you are
-                    with us in Kiawah.
-                </div>
-            </div>
-
-            {/* Emergency Contact Relation */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-c_6716243"
-                    name="Registrant[c_6716243]"
-                    label="Emergency Contact Relation"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={formData.c_6716243}
-                    onChange={(e) =>
-                        handleInputChange('c_6716243', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716243"
-                />
-            </div>
-
-            {/* Emergency Contact Email */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="email"
-                    id="registrant-c_6716244"
-                    name="Registrant[c_6716244]"
-                    label="Emergency Contact Email"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={formData.c_6716244}
-                    onChange={(e) =>
-                        handleInputChange('c_6716244', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716244"
-                />
-            </div>
-
-            {/* Emergency Contact Phone */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="tel"
-                    id="registrant-c_6716246"
-                    name="Registrant[c_6716246]"
-                    label="Emergency Contact Phone"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={formData.c_6716246}
-                    onChange={(e) =>
-                        handleInputChange('c_6716246', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716246"
-                />
-            </div>
-
-            {/* Dietary Restrictions */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    multiline
-                    minRows={3}
-                    id="registrant-c_6716247"
-                    name="Registrant[c_6716247]"
-                    placeholder="Dietary Restrictions or Allergies"
-                    label="Dietary Restrictions or Allergies"
-                    className={styles.textareaInput}
-                    value={formData.c_6716247}
-                    onChange={(e) =>
-                        handleInputChange('c_6716247', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716247"
-                />
-            </div>
-
-            {/* Jacket Size */}
-            <FormControl fullWidth className={styles.formField}>
-                <InputLabel>What is your jacket size?</InputLabel>
-                <Select
-                    name="Registrant[c_6716271]"
-                    label="What is your jacket size?"
-                    value={formData.c_6716271}
-                    onChange={(e) =>
-                        handleInputChange('c_6716271', e.target.value)
-                    }
-                >
-                    <MenuItem value="">Select...</MenuItem>
-                    <MenuItem value="38978942">X Small</MenuItem>
-                    <MenuItem value="38978939">Small</MenuItem>
-                    <MenuItem value="38978940">Medium</MenuItem>
-                    <MenuItem value="38978941">Large</MenuItem>
-                    <MenuItem value="38978943">X Large</MenuItem>
-                    <MenuItem value="38978944">XX Large</MenuItem>
-                </Select>
-            </FormControl>
-        </div>
-    )
-
-    const renderStage3 = () => (
-        <div className={styles.inputGroup}>
-            {/* Point of Contact Name */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-c_6716225"
-                    name="Registrant[c_6716225]"
-                    label="Point of Contact Name"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={formData.c_6716225}
-                    onChange={(e) =>
-                        handleInputChange('c_6716225', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716225"
-                />
-            </div>
-
-            {/* Point of Contact Title */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-c_6716226"
-                    name="Registrant[c_6716226]"
-                    label="Point of Contact Title"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.c_6716226}
-                    onChange={(e) =>
-                        handleInputChange('c_6716226', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716226"
-                />
-            </div>
-
-            {/* Point of Contact Email */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="email"
-                    id="registrant-c_6716231"
-                    name="Registrant[c_6716231]"
-                    label="Point of Contact Email"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={formData.c_6716231}
-                    onChange={(e) =>
-                        handleInputChange('c_6716231', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716231"
-                />
-            </div>
-
-            {/* Point of Contact Phone */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="tel"
-                    id="registrant-c_6716232"
-                    name="Registrant[c_6716232]"
-                    label="Point of Contact Phone"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.c_6716232}
-                    onChange={(e) =>
-                        handleInputChange('c_6716232', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716232"
-                />
-            </div>
-
-            {/* Secondary Point of Contact Name */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-c_6716234"
-                    name="Registrant[c_6716234]"
-                    label="Secondary Point of Contact Name"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.c_6716234}
-                    onChange={(e) =>
-                        handleInputChange('c_6716234', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716234"
-                />
-            </div>
-
-            {/* Secondary Point of Contact Email */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="email"
-                    id="registrant-c_6716236"
-                    name="Registrant[c_6716236]"
-                    label="Secondary Point of Contact Email"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.c_6716236}
-                    onChange={(e) =>
-                        handleInputChange('c_6716236', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716236"
-                />
-            </div>
-
-            {/* Secondary Point of Contact Phone */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="tel"
-                    id="registrant-c_6716237"
-                    name="Registrant[c_6716237]"
-                    label="Secondary Point of Contact Phone"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.c_6716237}
-                    onChange={(e) =>
-                        handleInputChange('c_6716237', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716237"
-                />
-            </div>
-
-            {/* Guest Name */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-c_6832581"
-                    name="Registrant[c_6832581]"
-                    label="Guest Name"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.c_6832581}
-                    onChange={(e) =>
-                        handleInputChange('c_6832581', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6832581"
-                />
-            </div>
-
-            {/* Guest Relation */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="registrant-c_6716248"
-                    name="Registrant[c_6716248]"
-                    label="Guest Relation"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.c_6716248}
-                    onChange={(e) =>
-                        handleInputChange('c_6716248', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716248"
-                />
-            </div>
-
-            {/* Guest Email */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="email"
-                    id="registrant-c_6716239"
-                    name="Registrant[c_6716239]"
-                    label="Guest Email"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.c_6716239}
-                    onChange={(e) =>
-                        handleInputChange('c_6716239', e.target.value)
-                    }
-                    aria-describedby="error-registrant-c_6716239"
-                />
-            </div>
-
-            {/* Complimentary Accommodations */}
-            <div className={styles.inputWrapper}>
-                <input type="hidden" name="Registrant[c_6716267]" value="" />
-                <FormControl fullWidth>
-                    <Typography variant="h6" gutterBottom>
-                        Complimentary accommodations are provided at The Boca
-                        Raton the nights of March 18 and March 19.
-                    </Typography>
-                    <FormGroup
-                        id="registrant-c_6716267"
-                        aria-labelledby="field-registrant-c_6716267-label"
-                    >
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    name="Registrant[c_6716267][]"
-                                    value="38978933"
-                                    checked={formData.c_6716267.includes(
-                                        '38978933'
-                                    )}
-                                    onChange={(e) =>
-                                        handleCheckboxChange(
-                                            'c_6716267',
-                                            '38978933',
-                                            e.target.checked
-                                        )
-                                    }
-                                    aria-label="I will use my complimentary room the night of March 18."
-                                />
-                            }
-                            label="I will use my complimentary room the night of March 18."
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    name="Registrant[c_6716267][]"
-                                    value="38978934"
-                                    checked={formData.c_6716267.includes(
-                                        '38978934'
-                                    )}
-                                    onChange={(e) =>
-                                        handleCheckboxChange(
-                                            'c_6716267',
-                                            '38978934',
-                                            e.target.checked
-                                        )
-                                    }
-                                    aria-label="I will use my complimentary room the night of March 19."
-                                />
-                            }
-                            label="I will use my complimentary room the night of March 19."
-                        />
-                    </FormGroup>
-                </FormControl>
-                <div
-                    id="error-registrant-c_6716267"
-                    className="help-block help-block-error"
-                ></div>
-            </div>
-
-            {/* Dinner Attendance */}
-            <div className={styles.inputWrapper}>
-                <input type="hidden" name="Registrant[c_6716269]" value="" />
-                <FormControl fullWidth>
-                    <Typography variant="h6" gutterBottom>
-                        Which nights will you attend dinner?
-                    </Typography>
-                    <FormGroup
-                        id="registrant-c_6716269"
-                        aria-labelledby="field-registrant-c_6716269-label"
-                    >
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    name="Registrant[c_6716269][]"
-                                    value="38978935"
-                                    checked={formData.c_6716269.includes(
-                                        '38978935'
-                                    )}
-                                    onChange={(e) =>
-                                        handleCheckboxChange(
-                                            'c_6716269',
-                                            '38978935',
-                                            e.target.checked
-                                        )
-                                    }
-                                    aria-label="I will attend the Dinner on March 18."
-                                />
-                            }
-                            label="I will attend the Dinner on March 18."
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    name="Registrant[c_6716269][]"
-                                    value="38978936"
-                                    checked={formData.c_6716269.includes(
-                                        '38978936'
-                                    )}
-                                    onChange={(e) =>
-                                        handleCheckboxChange(
-                                            'c_6716269',
-                                            '38978936',
-                                            e.target.checked
-                                        )
-                                    }
-                                    aria-label="I will attend the Dinner on March 19."
-                                />
-                            }
-                            label="I will attend the Dinner on March 19."
-                        />
-                    </FormGroup>
-                </FormControl>
-                <div
-                    id="error-registrant-c_6716269"
-                    className="help-block help-block-error"
-                ></div>
-            </div>
-
-            {/* Activities */}
-            <div className={styles.inputWrapper}>
-                <input type="hidden" name="Registrant[c_6838231]" value="" />
-                <FormControl fullWidth>
-                    <Typography variant="h6" gutterBottom>
-                        Activities
-                    </Typography>
-                    <FormGroup
-                        id="registrant-c_6838231"
-                        aria-labelledby="field-registrant-c_6838231-label"
-                    >
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    name="Registrant[c_6838231][]"
-                                    value="39626531"
-                                    checked={formData.c_6838231.includes(
-                                        '39626531'
-                                    )}
-                                    onChange={(e) =>
-                                        handleCheckboxChange(
-                                            'c_6838231',
-                                            '39626531',
-                                            e.target.checked
-                                        )
-                                    }
-                                    aria-label="Pickleball tournament (upriver / downriver style) on March 19"
-                                />
-                            }
-                            label="Pickleball tournament (upriver / downriver style) on March 19"
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    name="Registrant[c_6838231][]"
-                                    value="39626575"
-                                    checked={formData.c_6838231.includes(
-                                        '39626575'
-                                    )}
-                                    onChange={(e) =>
-                                        handleCheckboxChange(
-                                            'c_6838231',
-                                            '39626575',
-                                            e.target.checked
-                                        )
-                                    }
-                                    aria-label="Golf - Full round"
-                                />
-                            }
-                            label="Golf - Full round"
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    name="Registrant[c_6838231][]"
-                                    value="39626586"
-                                    checked={formData.c_6838231.includes(
-                                        '39626586'
-                                    )}
-                                    onChange={(e) =>
-                                        handleCheckboxChange(
-                                            'c_6838231',
-                                            '39626586',
-                                            e.target.checked
-                                        )
-                                    }
-                                    aria-label="Golf - 9 holes"
-                                />
-                            }
-                            label="Golf - 9 holes"
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    name="Registrant[c_6838231][]"
-                                    value="39626588"
-                                    checked={formData.c_6838231.includes(
-                                        '39626588'
-                                    )}
-                                    onChange={(e) =>
-                                        handleCheckboxChange(
-                                            'c_6838231',
-                                            '39626588',
-                                            e.target.checked
-                                        )
-                                    }
-                                    aria-label="Golf challenge with a pro"
-                                />
-                            }
-                            label="Golf challenge with a pro"
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    name="Registrant[c_6838231][]"
-                                    value="39626589"
-                                    checked={formData.c_6838231.includes(
-                                        '39626589'
-                                    )}
-                                    onChange={(e) =>
-                                        handleCheckboxChange(
-                                            'c_6838231',
-                                            '39626589',
-                                            e.target.checked
-                                        )
-                                    }
-                                    aria-label="Tennis"
-                                />
-                            }
-                            label="Tennis"
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    name="Registrant[c_6838231][]"
-                                    value="39626590"
-                                    checked={formData.c_6838231.includes(
-                                        '39626590'
-                                    )}
-                                    onChange={(e) =>
-                                        handleCheckboxChange(
-                                            'c_6838231',
-                                            '39626590',
-                                            e.target.checked
-                                        )
-                                    }
-                                    aria-label="Tennis challenge with a pro"
-                                />
-                            }
-                            label="Tennis challenge with a pro"
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    name="Registrant[c_6838231][]"
-                                    value="39626592"
-                                    checked={formData.c_6838231.includes(
-                                        '39626592'
-                                    )}
-                                    onChange={(e) =>
-                                        handleCheckboxChange(
-                                            'c_6838231',
-                                            '39626592',
-                                            e.target.checked
-                                        )
-                                    }
-                                    aria-label="Sailing excursion with a SailGP team member"
-                                />
-                            }
-                            label="Sailing excursion with a SailGP team member"
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    name="Registrant[c_6838231][]"
-                                    value="39626591"
-                                    checked={formData.c_6838231.includes(
-                                        '39626591'
-                                    )}
-                                    onChange={(e) =>
-                                        handleCheckboxChange(
-                                            'c_6838231',
-                                            '39626591',
-                                            e.target.checked
-                                        )
-                                    }
-                                    aria-label="Please don't bother me, I'll be at the spa :)"
-                                />
-                            }
-                            label="Please don't bother me, I'll be at the spa :)"
-                        />
-                    </FormGroup>
-                </FormControl>
-                <div
-                    id="error-registrant-c_6838231"
-                    className="help-block help-block-error"
-                ></div>
-            </div>
-        </div>
-    )
 
     return (
         <form
             className={styles.form}
             onSubmit={currentStage === 3 ? handleSubmit : handleNextStage}
         >
-            {currentStage === 1
-                ? renderStage1()
-                : currentStage === 2
-                ? renderStage2()
-                : renderStage3()}
+            {renderStage(currentStage - 1)}
 
             <div className={styles.buttonGroup}>
                 {(currentStage === 2 || currentStage === 3) && (
@@ -1260,17 +381,11 @@ const UI = () => {
                         alternativeLabel
                         style={{ marginBottom: '2rem' }}
                     >
-                        <Step>
-                            <StepLabel>
-                                Personal & Contact Information
-                            </StepLabel>
-                        </Step>
-                        <Step>
-                            <StepLabel>Additional Details</StepLabel>
-                        </Step>
-                        <Step>
-                            <StepLabel>Event Details & Contacts</StepLabel>
-                        </Step>
+                        {formConfig.map((stage, index) => (
+                            <Step key={index}>
+                                <StepLabel>{stage.title}</StepLabel>
+                            </Step>
+                        ))}
                     </Stepper>
 
                     <HardcodedRegistrationForm
