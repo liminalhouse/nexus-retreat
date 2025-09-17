@@ -60,6 +60,7 @@ interface FormData {
     c_6716236: string // secondary_point_of_contact_email
     c_6832581: string // guest_name
     c_6716237: string // secondary_point_of_contact_phone
+    c_6716248: string // guest_relation
     c_6716239: string // guest_email
     c_6838231: string[] // activities
 }
@@ -111,6 +112,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         c_6716236: '', // secondary_point_of_contact_email
         c_6832581: '', // guest_name
         c_6716237: '', // secondary_point_of_contact_phone
+        c_6716248: '', // guest_relation
         c_6716239: '', // guest_email
         c_6838231: [], // activities
     })
@@ -146,7 +148,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
             const currentArray = prev[field] as string[]
             const newArray = checked
                 ? [...currentArray, value]
-                : currentArray.filter(item => item !== value)
+                : currentArray.filter((item) => item !== value)
 
             return {
                 ...prev,
@@ -646,10 +648,14 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
 
             {/* Dietary Restrictions */}
             <div className={styles.inputWrapper}>
-                <textarea
+                <TextField
+                    type="text"
+                    multiline
+                    minRows={3}
                     id="registrant-c_6716247"
                     name="Registrant[c_6716247]"
                     placeholder="Dietary Restrictions or Allergies"
+                    label="Dietary Restrictions or Allergies"
                     className={styles.textareaInput}
                     value={formData.c_6716247}
                     onChange={(e) =>
@@ -690,7 +696,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                     type="text"
                     id="registrant-c_6716225"
                     name="Registrant[c_6716225]"
-                    label="Point of Contact Name *"
+                    label="Point of Contact Name"
                     variant="outlined"
                     fullWidth
                     required
@@ -725,7 +731,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                     type="email"
                     id="registrant-c_6716231"
                     name="Registrant[c_6716231]"
-                    label="Point of Contact Email *"
+                    label="Point of Contact Email"
                     variant="outlined"
                     fullWidth
                     required
@@ -822,6 +828,23 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                 />
             </div>
 
+            {/* Guest Relation */}
+            <div className={styles.inputWrapper}>
+                <TextField
+                    type="text"
+                    id="registrant-c_6716248"
+                    name="Registrant[c_6716248]"
+                    label="Guest Relation"
+                    variant="outlined"
+                    fullWidth
+                    value={formData.c_6716248}
+                    onChange={(e) =>
+                        handleInputChange('c_6716248', e.target.value)
+                    }
+                    aria-describedby="error-registrant-c_6716248"
+                />
+            </div>
+
             {/* Guest Email */}
             <div className={styles.inputWrapper}>
                 <TextField
@@ -844,7 +867,8 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                 <input type="hidden" name="Registrant[c_6716267]" value="" />
                 <FormControl fullWidth>
                     <Typography variant="h6" gutterBottom>
-                        Complimentary accommodations are provided at The Boca Raton the nights of March 18 and March 19.
+                        Complimentary accommodations are provided at The Boca
+                        Raton the nights of March 18 and March 19.
                     </Typography>
                     <FormGroup
                         id="registrant-c_6716267"
@@ -855,7 +879,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                                 <Checkbox
                                     name="Registrant[c_6716267][]"
                                     value="38978933"
-                                    checked={formData.c_6716267.includes('38978933')}
+                                    checked={formData.c_6716267.includes(
+                                        '38978933'
+                                    )}
                                     onChange={(e) =>
                                         handleCheckboxChange(
                                             'c_6716267',
@@ -873,7 +899,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                                 <Checkbox
                                     name="Registrant[c_6716267][]"
                                     value="38978934"
-                                    checked={formData.c_6716267.includes('38978934')}
+                                    checked={formData.c_6716267.includes(
+                                        '38978934'
+                                    )}
                                     onChange={(e) =>
                                         handleCheckboxChange(
                                             'c_6716267',
@@ -910,7 +938,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                                 <Checkbox
                                     name="Registrant[c_6716269][]"
                                     value="38978935"
-                                    checked={formData.c_6716269.includes('38978935')}
+                                    checked={formData.c_6716269.includes(
+                                        '38978935'
+                                    )}
                                     onChange={(e) =>
                                         handleCheckboxChange(
                                             'c_6716269',
@@ -928,7 +958,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                                 <Checkbox
                                     name="Registrant[c_6716269][]"
                                     value="38978936"
-                                    checked={formData.c_6716269.includes('38978936')}
+                                    checked={formData.c_6716269.includes(
+                                        '38978936'
+                                    )}
                                     onChange={(e) =>
                                         handleCheckboxChange(
                                             'c_6716269',
@@ -965,7 +997,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                                 <Checkbox
                                     name="Registrant[c_6838231][]"
                                     value="39626531"
-                                    checked={formData.c_6838231.includes('39626531')}
+                                    checked={formData.c_6838231.includes(
+                                        '39626531'
+                                    )}
                                     onChange={(e) =>
                                         handleCheckboxChange(
                                             'c_6838231',
@@ -983,7 +1017,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                                 <Checkbox
                                     name="Registrant[c_6838231][]"
                                     value="39626575"
-                                    checked={formData.c_6838231.includes('39626575')}
+                                    checked={formData.c_6838231.includes(
+                                        '39626575'
+                                    )}
                                     onChange={(e) =>
                                         handleCheckboxChange(
                                             'c_6838231',
@@ -1001,7 +1037,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                                 <Checkbox
                                     name="Registrant[c_6838231][]"
                                     value="39626586"
-                                    checked={formData.c_6838231.includes('39626586')}
+                                    checked={formData.c_6838231.includes(
+                                        '39626586'
+                                    )}
                                     onChange={(e) =>
                                         handleCheckboxChange(
                                             'c_6838231',
@@ -1019,7 +1057,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                                 <Checkbox
                                     name="Registrant[c_6838231][]"
                                     value="39626588"
-                                    checked={formData.c_6838231.includes('39626588')}
+                                    checked={formData.c_6838231.includes(
+                                        '39626588'
+                                    )}
                                     onChange={(e) =>
                                         handleCheckboxChange(
                                             'c_6838231',
@@ -1037,7 +1077,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                                 <Checkbox
                                     name="Registrant[c_6838231][]"
                                     value="39626589"
-                                    checked={formData.c_6838231.includes('39626589')}
+                                    checked={formData.c_6838231.includes(
+                                        '39626589'
+                                    )}
                                     onChange={(e) =>
                                         handleCheckboxChange(
                                             'c_6838231',
@@ -1055,7 +1097,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                                 <Checkbox
                                     name="Registrant[c_6838231][]"
                                     value="39626590"
-                                    checked={formData.c_6838231.includes('39626590')}
+                                    checked={formData.c_6838231.includes(
+                                        '39626590'
+                                    )}
                                     onChange={(e) =>
                                         handleCheckboxChange(
                                             'c_6838231',
@@ -1073,7 +1117,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                                 <Checkbox
                                     name="Registrant[c_6838231][]"
                                     value="39626592"
-                                    checked={formData.c_6838231.includes('39626592')}
+                                    checked={formData.c_6838231.includes(
+                                        '39626592'
+                                    )}
                                     onChange={(e) =>
                                         handleCheckboxChange(
                                             'c_6838231',
@@ -1091,7 +1137,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                                 <Checkbox
                                     name="Registrant[c_6838231][]"
                                     value="39626591"
-                                    checked={formData.c_6838231.includes('39626591')}
+                                    checked={formData.c_6838231.includes(
+                                        '39626591'
+                                    )}
                                     onChange={(e) =>
                                         handleCheckboxChange(
                                             'c_6838231',
