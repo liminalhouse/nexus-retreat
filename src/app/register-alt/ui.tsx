@@ -97,7 +97,316 @@ const HardcodedRegistrationForm = () => {
         // TODO: Submit to API
     }
 
-    const renderStage1 = () => <></>
+    const renderStage1 = () => (
+        <div className={styles.inputGroup}>
+            {/* Email Address */}
+            <div className={styles.inputWrapper}>
+                <Input
+                    type="email"
+                    id="registrant-email"
+                    name="Registrant[email]"
+                    placeholder="Email Address *"
+                    fullWidth
+                    required
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    aria-describedby="error-registrant-email"
+                    autoComplete="email"
+                />
+                <span className={styles.bar} />
+            </div>
+
+            {/* Registrant Type */}
+            <FormControl fullWidth className={styles.formField}>
+                <InputLabel>Select a registrant type *</InputLabel>
+                <Select
+                    name="Registrant[reg_type_id]"
+                    label="Select a registrant type *"
+                    required
+                    value={formData.reg_type_id}
+                    onChange={(e) =>
+                        handleInputChange('reg_type_id', e.target.value)
+                    }
+                >
+                    <MenuItem value="">Select...</MenuItem>
+                    <MenuItem value="958373">Attendee</MenuItem>
+                </Select>
+            </FormControl>
+
+            {/* Prefix */}
+            <div className={styles.inputWrapper}>
+                <Input
+                    type="text"
+                    id="registrant-prefix"
+                    name="Registrant[prefix]"
+                    placeholder="Prefix (Mr., Mrs., etc.) *"
+                    fullWidth
+                    required
+                    value={formData.prefix}
+                    onChange={(e) =>
+                        handleInputChange('prefix', e.target.value)
+                    }
+                    aria-describedby="error-registrant-prefix"
+                    autoComplete="honorific-prefix"
+                />
+                <span className={styles.bar} />
+            </div>
+
+            {/* First Name */}
+            <div className={styles.inputWrapper}>
+                <Input
+                    type="text"
+                    id="registrant-first_name"
+                    name="Registrant[first_name]"
+                    placeholder="First Name *"
+                    fullWidth
+                    required
+                    value={formData.first_name}
+                    onChange={(e) =>
+                        handleInputChange('first_name', e.target.value)
+                    }
+                    aria-describedby="error-registrant-first_name"
+                    autoComplete="given-name"
+                />
+                <span className={styles.bar} />
+            </div>
+
+            {/* Middle Name */}
+            <div className={styles.inputWrapper}>
+                <Input
+                    type="text"
+                    id="registrant-middle_name"
+                    name="Registrant[middle_name]"
+                    placeholder="Middle Name"
+                    fullWidth
+                    value={formData.middle_name}
+                    onChange={(e) =>
+                        handleInputChange('middle_name', e.target.value)
+                    }
+                    aria-describedby="error-registrant-middle_name"
+                    autoComplete="additional-name"
+                />
+                <span className={styles.bar} />
+            </div>
+
+            {/* Last Name */}
+            <div className={styles.inputWrapper}>
+                <Input
+                    type="text"
+                    id="registrant-last_name"
+                    name="Registrant[last_name]"
+                    placeholder="Last Name *"
+                    fullWidth
+                    required
+                    value={formData.last_name}
+                    onChange={(e) =>
+                        handleInputChange('last_name', e.target.value)
+                    }
+                    aria-describedby="error-registrant-last_name"
+                    autoComplete="family-name"
+                />
+                <span className={styles.bar} />
+            </div>
+
+            {/* Title */}
+            <div className={styles.inputWrapper}>
+                <Input
+                    type="text"
+                    id="registrant-c_6716230"
+                    name="Registrant[c_6716230]"
+                    placeholder="Title"
+                    fullWidth
+                    value={formData.title}
+                    onChange={(e) => handleInputChange('title', e.target.value)}
+                    aria-describedby="error-registrant-c_6716230"
+                />
+                <span className={styles.bar} />
+            </div>
+
+            {/* Organization */}
+            <div className={styles.inputWrapper}>
+                <Input
+                    type="text"
+                    id="registrant-c_6716228"
+                    name="Registrant[c_6716228]"
+                    placeholder="Organization"
+                    fullWidth
+                    value={formData.organization}
+                    onChange={(e) =>
+                        handleInputChange('organization', e.target.value)
+                    }
+                    aria-describedby="error-registrant-c_6716228"
+                />
+                <span className={styles.bar} />
+            </div>
+
+            {/* Office Phone */}
+            <div className={styles.inputWrapper}>
+                <Input
+                    type="tel"
+                    id="registrant-c_6716229"
+                    name="Registrant[c_6716229]"
+                    placeholder="Office Phone *"
+                    fullWidth
+                    required
+                    value={formData.office_phone}
+                    onChange={(e) =>
+                        handleInputChange('office_phone', e.target.value)
+                    }
+                    aria-describedby="error-registrant-c_6716229"
+                />
+                <span className={styles.bar} />
+            </div>
+
+            {/* Mobile Phone */}
+            <div className={styles.inputWrapper}>
+                <Input
+                    type="tel"
+                    id="registrant-mobile_phone"
+                    name="Registrant[mobile_phone]"
+                    placeholder="Mobile Phone"
+                    fullWidth
+                    value={formData.mobile_phone}
+                    onChange={(e) =>
+                        handleInputChange('mobile_phone', e.target.value)
+                    }
+                    aria-describedby="error-registrant-mobile_phone"
+                />
+                <span className={styles.bar} />
+            </div>
+
+            {/* Country */}
+            <FormControl fullWidth className={styles.formField}>
+                <InputLabel>Country</InputLabel>
+                <Select
+                    name="Address[Registrant][work_address_id][country_code]"
+                    label="Country"
+                    value={formData.country_code}
+                    onChange={(e) =>
+                        handleInputChange('country_code', e.target.value)
+                    }
+                    autoComplete="country"
+                ></Select>
+            </FormControl>
+
+            {/* Address Line 1 */}
+            <div className={styles.inputWrapper}>
+                <Input
+                    type="text"
+                    id="address-registrant-work_address_id-line_1"
+                    name="Address[Registrant][work_address_id][line_1]"
+                    placeholder="Address Line 1"
+                    fullWidth
+                    value={formData.address_line_1}
+                    onChange={(e) =>
+                        handleInputChange('address_line_1', e.target.value)
+                    }
+                    aria-describedby="error-address-registrant-work_address_id-line_1"
+                    autoComplete="address-line1"
+                />
+                <span className={styles.bar} />
+            </div>
+
+            {/* Address Line 2 */}
+            <div className={styles.inputWrapper}>
+                <Input
+                    type="text"
+                    id="address-registrant-work_address_id-line_2"
+                    name="Address[Registrant][work_address_id][line_2]"
+                    placeholder="Address Line 2"
+                    fullWidth
+                    value={formData.address_line_2}
+                    onChange={(e) =>
+                        handleInputChange('address_line_2', e.target.value)
+                    }
+                    aria-describedby="error-address-registrant-work_address_id-line_2"
+                    autoComplete="address-line2"
+                />
+                <span className={styles.bar} />
+            </div>
+
+            {/* City */}
+            <div className={styles.inputWrapper}>
+                <Input
+                    type="text"
+                    id="address-registrant-work_address_id-city"
+                    name="Address[Registrant][work_address_id][city]"
+                    placeholder="City"
+                    fullWidth
+                    value={formData.city}
+                    onChange={(e) => handleInputChange('city', e.target.value)}
+                    aria-describedby="error-address-registrant-work_address_id-city"
+                    autoComplete="address-level2"
+                />
+                <span className={styles.bar} />
+            </div>
+
+            {/* State */}
+            <div className={styles.inputWrapper}>
+                <Input
+                    type="text"
+                    id="address-registrant-work_address_id-state"
+                    name="Address[Registrant][work_address_id][state]"
+                    placeholder="State / Province / County"
+                    fullWidth
+                    value={formData.state}
+                    onChange={(e) => handleInputChange('state', e.target.value)}
+                    aria-describedby="error-address-registrant-work_address_id-state"
+                />
+                <span className={styles.bar} />
+            </div>
+
+            {/* Zip/Postal Code */}
+            <div className={styles.inputWrapper}>
+                <Input
+                    type="text"
+                    id="address-registrant-work_address_id-zip"
+                    name="Address[Registrant][work_address_id][zip]"
+                    placeholder="Zip/Postal Code"
+                    fullWidth
+                    value={formData.zip}
+                    onChange={(e) => handleInputChange('zip', e.target.value)}
+                    aria-describedby="error-address-registrant-work_address_id-zip"
+                    autoComplete="postal-code"
+                />
+                <span className={styles.bar} />
+            </div>
+
+            {/* Profile Picture */}
+            <div className={styles.inputWrapper}>
+                <label
+                    style={{
+                        display: 'block',
+                        marginBottom: '0.5rem',
+                        fontWeight: '500',
+                    }}
+                >
+                    Profile Picture
+                </label>
+                <input
+                    type="file"
+                    id="registrant-profile_picture"
+                    name="Registrant[profile_picture]"
+                    accept="image/*"
+                    onChange={(e) =>
+                        handleInputChange(
+                            'profile_picture',
+                            e.target.files?.[0] || null
+                        )
+                    }
+                    aria-describedby="error-registrant-profile_picture"
+                    style={{
+                        width: '100%',
+                        padding: '1rem 1.25rem',
+                        fontSize: '1rem',
+                        border: '2px solid rgba(0, 0, 0, 0.08)',
+                        borderRadius: '12px',
+                        background: 'rgba(248, 249, 250, 0.8)',
+                    }}
+                />
+            </div>
+        </div>
+    )
 
     const renderStage2 = () => (
         <div className={styles.inputGroup}>
