@@ -1,0 +1,43 @@
+.wrapper {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.logo {
+    max-width: 100%;
+    width: 50%;
+    height: auto;
+}
+
+.title {
+    margin: 2rem 0 1rem 0;
+    text-align: center;
+    color: var(--foreground);
+}
+
+.text {
+    margin-bottom: 2rem;
+    text-align: center;
+    color: var(--foreground);
+}
+
+.formContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loading {
+    padding: 2rem;
+    text-align: center;
+    color: var(--foreground);
+    font-style: italic;
+}
