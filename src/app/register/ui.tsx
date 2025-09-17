@@ -47,12 +47,7 @@ const RegistrationForm = () => {
         const { id, name, attribute } = question
 
         // Skip certain fields that shouldn't be shown in the form
-        if (
-            attribute === 'password' ||
-            attribute === 'vat_number' ||
-            attribute.startsWith('h_') ||
-            attribute.startsWith('sq_')
-        ) {
+        if (attribute === 'password' || attribute === 'vat_number') {
             return null
         }
 
@@ -87,6 +82,7 @@ const RegistrationForm = () => {
                     required={['first_name', 'last_name', 'email'].includes(
                         attribute
                     )}
+                    autoComplete="true"
                 />
                 <span className={styles.bar} />
             </div>
@@ -117,30 +113,38 @@ const UI = ({
 }) => {
     return (
         <div className={styles.wrapper}>
-            <Image
-                src="/icons/nexus-logo.svg"
-                alt="Bruin Nexus logo"
-                width={1180 / 4}
-                height={258 / 4}
-                priority={true}
-                className={styles.logo}
-            />
-            <h1 className={styles.title}>Event Registration</h1>
-            <p className={styles.text}>
-                Please fill out the form below to register for the retreat.
-            </p>
-            <div className={styles.formContainer}>
-                <RegistrationForm />
-                {searchParams.success && (
-                    <small className={styles.success}>
-                        Registration successful! Thank you for registering.
-                    </small>
-                )}
-                {searchParams.error && (
-                    <small className={styles.error}>
-                        Registration failed. Please try again.
-                    </small>
-                )}
+            <div className={styles.container}>
+                <div className={styles.formWrapper}>
+                    <div className={styles.header}>
+                        <div className={styles.logo}>
+                            <Image
+                                src="/icons/nexus-logo.svg"
+                                alt="Bruin Nexus logo"
+                                width={1180 / 4}
+                                height={258 / 4}
+                                priority={true}
+                            />
+                        </div>
+                        <h1 className={styles.title}>Event Registration</h1>
+                        <p className={styles.subtitle}>
+                            Please fill out the form below to register for the
+                            retreat.
+                        </p>
+                    </div>
+
+                    {searchParams.success && (
+                        <div className={styles.successMessage}>
+                            Registration successful! Thank you for registering.
+                        </div>
+                    )}
+                    {searchParams.error && (
+                        <div className={styles.errorMessage}>
+                            Registration failed. Please try again.
+                        </div>
+                    )}
+
+                    <RegistrationForm />
+                </div>
             </div>
         </div>
     )
