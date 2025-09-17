@@ -140,3 +140,83 @@ export async function fetchSwoogoQuestion(
     const data = await response.json()
     return data.data || data
 }
+
+interface SwoogoRegistrant {
+    first_name: string
+    last_name: string
+    email: string
+    prefix?: string
+    middle_name?: string
+    mobile_phone?: string
+    title?: string
+    organization?: string
+    // Work address fields
+    work_address_line_1?: string
+    work_address_line_2?: string
+    work_address_city?: string
+    work_address_state?: string
+    work_address_zip?: string
+    work_address_country_code?: string
+    // Custom fields with c_ prefix
+    c_6716229?: string // office_phone
+    c_6716230?: string // title (legacy)
+    c_6716228?: string // organization (legacy)
+    c_6716240?: string // name_for_credentials
+    c_6716241?: string // organization_for_credentials
+    c_6716242?: string // emergency_contact_name
+    c_6716243?: string // emergency_contact_relation
+    c_6716244?: string // emergency_contact_email
+    c_6716246?: string // emergency_contact_phone
+    c_6716247?: string // dietary_restrictions
+    c_6716271?: string // jacket_size
+    c_6716225?: string // point_of_contact_name
+    c_6716226?: string // point_of_contact_title
+    c_6716231?: string // point_of_contact_email
+    c_6716232?: string // point_of_contact_phone
+    c_6716234?: string // secondary_point_of_contact_name
+    c_6716236?: string // secondary_point_of_contact_email
+    c_6716237?: string // secondary_point_of_contact_phone
+    c_6832581?: string // guest_name
+    c_6716248?: string // guest_relation
+    c_6716239?: string // guest_email
+    c_6716267?: string[] // complimentary_accommodations
+    c_6716269?: string[] // dinner_attendance
+    c_6838231?: string[] // activities
+}
+
+interface SwoogoRegistrantResponse {
+    id: string
+    first_name: string
+    last_name: string
+    email: string
+    [key: string]: any
+}
+
+export async function createSwoogoRegistrant(
+    eventId: string,
+    registrantData: SwoogoRegistrant
+): Promise<SwoogoRegistrantResponse> {
+    const baseUrl = process.env.SWOOGO_BASE_URL || 'https://api.swoogo.com'
+    const accessToken = await getSwoogoAccessToken()
+
+    const response = await fetch(`${baseUrl}/api/v1/registrants`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            event_id: eventId,
+            ...registrantData
+        })
+    })
+
+    if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`Failed to create registrant: ${response.statusText} - ${errorText}`)
+    }
+
+    return await response.json()
+}
+
+export type { SwoogoRegistrant, SwoogoRegistrantResponse }

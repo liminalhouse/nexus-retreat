@@ -186,10 +186,54 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         }
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [submitError, setSubmitError] = useState<string | null>(null)
+    const [submitSuccess, setSubmitSuccess] = useState(false)
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        console.log('Form submitted:', formData)
-        // TODO: Submit to API
+        setIsSubmitting(true)
+        setSubmitError(null)
+
+        try {
+            console.log('Submitting form data:', formData)
+
+            // Get event ID from environment or use a default
+            const eventId = process.env.NEXT_PUBLIC_SWOOGO_EVENT_ID || ''
+
+            if (!eventId) {
+                throw new Error('Event ID not configured')
+            }
+
+            const response = await fetch('/api/register-alt', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    event_id: eventId,
+                    ...formData
+                })
+            })
+
+            const result = await response.json()
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Registration failed')
+            }
+
+            console.log('Registration successful:', result)
+            setSubmitSuccess(true)
+
+            // Optionally redirect or show success message
+            // router.push('/registration-success')
+
+        } catch (error) {
+            console.error('Registration error:', error)
+            setSubmitError(error instanceof Error ? error.message : 'Registration failed')
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     // Helper function to get form field values
@@ -232,6 +276,23 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         >
             {renderStage(currentStage - 1)}
 
+            {/* Error and Success Messages */}
+            {submitError && (
+                <Box mb={2} p={2} sx={{ backgroundColor: '#ffebee', borderRadius: 1 }}>
+                    <Typography color="error" variant="body2">
+                        {submitError}
+                    </Typography>
+                </Box>
+            )}
+
+            {submitSuccess && (
+                <Box mb={2} p={2} sx={{ backgroundColor: '#e8f5e8', borderRadius: 1 }}>
+                    <Typography color="success.main" variant="body2">
+                        Registration successful! You will receive a confirmation email shortly.
+                    </Typography>
+                </Box>
+            )}
+
             <div className={styles.buttonGroup}>
                 {(currentStage === 2 || currentStage === 3) && (
                     <Button
@@ -239,6 +300,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                         variant="outlined"
                         onClick={handlePreviousStage}
                         className={styles.backButton}
+                        disabled={isSubmitting}
                     >
                         Back
                     </Button>
@@ -249,6 +311,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                         variant="outlined"
                         onClick={handleNextStage}
                         className={styles.nextButton}
+                        disabled={isSubmitting}
                     >
                         Next
                     </Button>
@@ -259,8 +322,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                         variant="contained"
                         color="primary"
                         className={styles.submitButton}
+                        disabled={isSubmitting || submitSuccess}
                     >
-                        Register
+                        {isSubmitting ? 'Registering...' : submitSuccess ? 'Registered!' : 'Register'}
                     </Button>
                 )}
             </div>
