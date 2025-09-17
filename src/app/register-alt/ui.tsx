@@ -5,12 +5,13 @@ import styles from '../register/register.module.scss'
 import Image from 'next/image'
 import {
     Button,
-    Input,
+    TextField,
     FormControl,
     InputLabel,
     Select,
     MenuItem,
 } from '@mui/material'
+import CountrySelect from './CountrySelect'
 
 interface FormData {
     email: string
@@ -101,11 +102,12 @@ const HardcodedRegistrationForm = () => {
         <div className={styles.inputGroup}>
             {/* Email Address */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="email"
                     id="registrant-email"
                     name="Registrant[email]"
-                    placeholder="Email Address *"
+                    label="Email Address *"
+                    variant="outlined"
                     fullWidth
                     required
                     value={formData.email}
@@ -113,7 +115,6 @@ const HardcodedRegistrationForm = () => {
                     aria-describedby="error-registrant-email"
                     autoComplete="email"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* Registrant Type */}
@@ -135,11 +136,12 @@ const HardcodedRegistrationForm = () => {
 
             {/* Prefix */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="registrant-prefix"
                     name="Registrant[prefix]"
-                    placeholder="Prefix (Mr., Mrs., etc.) *"
+                    label="Prefix (Mr., Mrs., etc.) *"
+                    variant="outlined"
                     fullWidth
                     required
                     value={formData.prefix}
@@ -149,16 +151,16 @@ const HardcodedRegistrationForm = () => {
                     aria-describedby="error-registrant-prefix"
                     autoComplete="honorific-prefix"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* First Name */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="registrant-first_name"
                     name="Registrant[first_name]"
-                    placeholder="First Name *"
+                    label="First Name *"
+                    variant="outlined"
                     fullWidth
                     required
                     value={formData.first_name}
@@ -168,16 +170,16 @@ const HardcodedRegistrationForm = () => {
                     aria-describedby="error-registrant-first_name"
                     autoComplete="given-name"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* Middle Name */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="registrant-middle_name"
                     name="Registrant[middle_name]"
-                    placeholder="Middle Name"
+                    label="Middle Name"
+                    variant="outlined"
                     fullWidth
                     value={formData.middle_name}
                     onChange={(e) =>
@@ -186,16 +188,16 @@ const HardcodedRegistrationForm = () => {
                     aria-describedby="error-registrant-middle_name"
                     autoComplete="additional-name"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* Last Name */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="registrant-last_name"
                     name="Registrant[last_name]"
-                    placeholder="Last Name *"
+                    label="Last Name *"
+                    variant="outlined"
                     fullWidth
                     required
                     value={formData.last_name}
@@ -205,31 +207,31 @@ const HardcodedRegistrationForm = () => {
                     aria-describedby="error-registrant-last_name"
                     autoComplete="family-name"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* Title */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="registrant-c_6716230"
                     name="Registrant[c_6716230]"
-                    placeholder="Title"
+                    label="Title"
+                    variant="outlined"
                     fullWidth
                     value={formData.title}
                     onChange={(e) => handleInputChange('title', e.target.value)}
                     aria-describedby="error-registrant-c_6716230"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* Organization */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="registrant-c_6716228"
                     name="Registrant[c_6716228]"
-                    placeholder="Organization"
+                    label="Organization"
+                    variant="outlined"
                     fullWidth
                     value={formData.organization}
                     onChange={(e) =>
@@ -237,16 +239,16 @@ const HardcodedRegistrationForm = () => {
                     }
                     aria-describedby="error-registrant-c_6716228"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* Office Phone */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="tel"
                     id="registrant-c_6716229"
                     name="Registrant[c_6716229]"
-                    placeholder="Office Phone *"
+                    label="Office Phone *"
+                    variant="outlined"
                     fullWidth
                     required
                     value={formData.office_phone}
@@ -255,16 +257,16 @@ const HardcodedRegistrationForm = () => {
                     }
                     aria-describedby="error-registrant-c_6716229"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* Mobile Phone */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="tel"
                     id="registrant-mobile_phone"
                     name="Registrant[mobile_phone]"
-                    placeholder="Mobile Phone"
+                    label="Mobile Phone"
+                    variant="outlined"
                     fullWidth
                     value={formData.mobile_phone}
                     onChange={(e) =>
@@ -272,26 +274,11 @@ const HardcodedRegistrationForm = () => {
                     }
                     aria-describedby="error-registrant-mobile_phone"
                 />
-                <span className={styles.bar} />
             </div>
-
-            {/* Country */}
-            <FormControl fullWidth className={styles.formField}>
-                <InputLabel>Country</InputLabel>
-                <Select
-                    name="Address[Registrant][work_address_id][country_code]"
-                    label="Country"
-                    value={formData.country_code}
-                    onChange={(e) =>
-                        handleInputChange('country_code', e.target.value)
-                    }
-                    autoComplete="country"
-                ></Select>
-            </FormControl>
 
             {/* Address Line 1 */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="address-registrant-work_address_id-line_1"
                     name="Address[Registrant][work_address_id][line_1]"
@@ -304,12 +291,11 @@ const HardcodedRegistrationForm = () => {
                     aria-describedby="error-address-registrant-work_address_id-line_1"
                     autoComplete="address-line1"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* Address Line 2 */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="address-registrant-work_address_id-line_2"
                     name="Address[Registrant][work_address_id][line_2]"
@@ -322,54 +308,60 @@ const HardcodedRegistrationForm = () => {
                     aria-describedby="error-address-registrant-work_address_id-line_2"
                     autoComplete="address-line2"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* City */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="address-registrant-work_address_id-city"
                     name="Address[Registrant][work_address_id][city]"
-                    placeholder="City"
+                    label="City"
+                    variant="outlined"
                     fullWidth
                     value={formData.city}
                     onChange={(e) => handleInputChange('city', e.target.value)}
                     aria-describedby="error-address-registrant-work_address_id-city"
                     autoComplete="address-level2"
                 />
-                <span className={styles.bar} />
             </div>
+
+            {/* Country */}
+            <CountrySelect
+                value={formData.country_code}
+                onChange={(value) => handleInputChange('country_code', value)}
+                className={styles.formField}
+            />
 
             {/* State */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="address-registrant-work_address_id-state"
                     name="Address[Registrant][work_address_id][state]"
-                    placeholder="State / Province / County"
+                    label="State / Province / County"
+                    variant="outlined"
                     fullWidth
                     value={formData.state}
                     onChange={(e) => handleInputChange('state', e.target.value)}
                     aria-describedby="error-address-registrant-work_address_id-state"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* Zip/Postal Code */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="address-registrant-work_address_id-zip"
                     name="Address[Registrant][work_address_id][zip]"
-                    placeholder="Zip/Postal Code"
+                    label="Zip/Postal Code"
+                    variant="outlined"
                     fullWidth
                     value={formData.zip}
                     onChange={(e) => handleInputChange('zip', e.target.value)}
                     aria-describedby="error-address-registrant-work_address_id-zip"
                     autoComplete="postal-code"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* Profile Picture */}
@@ -412,11 +404,12 @@ const HardcodedRegistrationForm = () => {
         <div className={styles.inputGroup}>
             {/* Name for Credentials */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="registrant-c_6716240"
                     name="Registrant[c_6716240]"
-                    placeholder="Name for Credentials *"
+                    label="Name for Credentials *"
+                    variant="outlined"
                     fullWidth
                     required
                     value={formData.name_for_credentials}
@@ -428,7 +421,6 @@ const HardcodedRegistrationForm = () => {
                     }
                     aria-describedby="error-registrant-c_6716240"
                 />
-                <span className={styles.bar} />
                 <div className={styles.hintBlock}>
                     Full name as you would like it to appear on credentials and
                     onsite materials.
@@ -437,11 +429,12 @@ const HardcodedRegistrationForm = () => {
 
             {/* Organization for Credentials */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="registrant-c_6716241"
                     name="Registrant[c_6716241]"
-                    placeholder="Organization for Credentials *"
+                    label="Organization for Credentials *"
+                    variant="outlined"
                     fullWidth
                     required
                     value={formData.organization_for_credentials}
@@ -453,7 +446,6 @@ const HardcodedRegistrationForm = () => {
                     }
                     aria-describedby="error-registrant-c_6716241"
                 />
-                <span className={styles.bar} />
                 <div className={styles.hintBlock}>
                     Organization name as you would like it to appear on
                     credentials and onsite materials.
@@ -462,11 +454,12 @@ const HardcodedRegistrationForm = () => {
 
             {/* Emergency Contact Name */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="registrant-c_6716242"
                     name="Registrant[c_6716242]"
-                    placeholder="Emergency Contact Name *"
+                    label="Emergency Contact Name *"
+                    variant="outlined"
                     fullWidth
                     required
                     value={formData.emergency_contact_name}
@@ -478,7 +471,6 @@ const HardcodedRegistrationForm = () => {
                     }
                     aria-describedby="error-registrant-c_6716242"
                 />
-                <span className={styles.bar} />
                 <div className={styles.hintBlock}>
                     Please provide a contact in case of emergency while you are
                     with us in Kiawah.
@@ -487,11 +479,12 @@ const HardcodedRegistrationForm = () => {
 
             {/* Emergency Contact Relation */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="text"
                     id="registrant-c_6716243"
                     name="Registrant[c_6716243]"
-                    placeholder="Emergency Contact Relation *"
+                    label="Emergency Contact Relation *"
+                    variant="outlined"
                     fullWidth
                     required
                     value={formData.emergency_contact_relation}
@@ -503,16 +496,16 @@ const HardcodedRegistrationForm = () => {
                     }
                     aria-describedby="error-registrant-c_6716243"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* Emergency Contact Email */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="email"
                     id="registrant-c_6716244"
                     name="Registrant[c_6716244]"
-                    placeholder="Emergency Contact Email *"
+                    label="Emergency Contact Email *"
+                    variant="outlined"
                     fullWidth
                     required
                     value={formData.emergency_contact_email}
@@ -524,16 +517,16 @@ const HardcodedRegistrationForm = () => {
                     }
                     aria-describedby="error-registrant-c_6716244"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* Emergency Contact Phone */}
             <div className={styles.inputWrapper}>
-                <Input
+                <TextField
                     type="tel"
                     id="registrant-c_6716246"
                     name="Registrant[c_6716246]"
-                    placeholder="Emergency Contact Phone *"
+                    label="Emergency Contact Phone *"
+                    variant="outlined"
                     fullWidth
                     required
                     value={formData.emergency_contact_phone}
@@ -545,7 +538,6 @@ const HardcodedRegistrationForm = () => {
                     }
                     aria-describedby="error-registrant-c_6716246"
                 />
-                <span className={styles.bar} />
             </div>
 
             {/* Dietary Restrictions */}
