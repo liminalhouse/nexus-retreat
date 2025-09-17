@@ -3,6 +3,10 @@
     display: flex;
     flex-direction: column;
     background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+
+    p {
+        color: #1f2937;
+    }
 }
 
 .container {
@@ -35,16 +39,17 @@
 .logo {
     margin: 0 auto 1.5rem;
     max-width: 250px;
+    color: black;
 }
 
 .title {
-    font-size: 1.5rem;
+    font-size: 1rem;
     font-weight: 700;
     color: #1f2937;
     margin-bottom: 0.5rem;
 
     @media (min-width: 1024px) {
-        font-size: 1.875rem;
+        font-size: 1.2rem;
     }
 }
 
@@ -56,7 +61,7 @@
 .form {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .fieldGroup {
@@ -81,11 +86,6 @@
     position: relative;
 
     input {
-        // background: rgba(248, 249, 250, 0.8);
-        // border: 2px solid rgba(0, 0, 0, 0.08);
-        border-radius: 12px;
-        padding: 1rem 1.25rem;
-        font-size: 1rem;
         font-weight: 400;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         color: #1a1a1a;
@@ -104,8 +104,8 @@
             outline: none;
             border-color: #1976d2;
             background: white;
-            box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1),
-                0 4px 12px rgba(25, 118, 210, 0.15);
+            // box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1),
+            //     0 4px 12px rgba(25, 118, 210, 0.15);
         }
 
         &:focus + .bar {
@@ -127,7 +127,7 @@
 }
 
 .formField {
-    margin-bottom: 1.5rem !important;
+    margin-bottom: 1.5rem;
 
     .MuiInputLabel-root {
         font-weight: 500;
@@ -150,7 +150,7 @@
         &:focus {
             border-color: #1976d2;
             background: white;
-            box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1);
+            // box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1);
         }
     }
 }
@@ -257,4 +257,30 @@
     background: rgba(5, 150, 105, 0.1);
     border-radius: 12px;
     border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+.fileInput {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    border-radius: var(--mui-shape-borderRadius);
+    border: 1px solid rgba(var(--mui-palette-common-onBackgroundChannel) / 0.23);
+
+    &::file-selector-button {
+        border: none;
+        background: #1976d2;
+        color: white !important;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+        margin-right: 1rem;
+    }
+
+    &:active,
+    &:focus {
+        border-color: #1976d2;
+        border-width: 2px;
+    }
 }
