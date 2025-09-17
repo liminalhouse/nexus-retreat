@@ -71,7 +71,7 @@ export async function fetchSwoogoQuestions(
 
     do {
         const listResponse = await fetch(
-            `${baseUrl}/api/v1/event-questions?event_id=${eventId}&page=${currentPage}`,
+            `${baseUrl}/api/v1/event-questions?event_id=${eventId}&page=${currentPage}&sort=id`,
             {
                 method: 'GET',
                 headers: {
@@ -84,14 +84,20 @@ export async function fetchSwoogoQuestions(
 
         if (!listResponse.ok) {
             const errorText = await listResponse.text()
-            console.error(`Failed to fetch questions (page ${currentPage}):`, errorText)
+            console.error(
+                `Failed to fetch questions (page ${currentPage}):`,
+                errorText
+            )
             throw new Error(
                 `Failed to fetch questions: ${listResponse.statusText}`
             )
         }
 
         const listData = await listResponse.json()
-        console.log(`Page ${currentPage} response:`, JSON.stringify(listData, null, 2))
+        console.log(
+            `Page ${currentPage} response:`,
+            JSON.stringify(listData, null, 2)
+        )
 
         if (listData.items && Array.isArray(listData.items)) {
             allQuestions.push(...listData.items)
