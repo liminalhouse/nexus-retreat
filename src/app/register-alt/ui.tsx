@@ -189,6 +189,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitError, setSubmitError] = useState<string | null>(null)
     const [submitSuccess, setSubmitSuccess] = useState(false)
+    const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({})
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()

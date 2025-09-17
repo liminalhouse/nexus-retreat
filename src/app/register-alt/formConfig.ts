@@ -18,6 +18,9 @@ export interface FormField {
     minRows?: number
     accept?: string
     defaultValue?: string | string[]
+    // Validation metadata
+    validationType?: 'email' | 'phone' | 'text'
+    formDataKey?: string // The key used in FormData object
 }
 
 export interface FormStage {
@@ -26,7 +29,38 @@ export interface FormStage {
     fields: FormField[]
 }
 
-export const formConfig: FormStage[] = [
+// Helper function to extract form data key from field name
+function getFormDataKey(fieldName: string): string {
+    const match = fieldName.match(/\[([^\]]+)\]$/)
+    return match ? match[1] : fieldName
+}
+
+// Helper function to get validation type from field type and name
+function getValidationType(field: { type: string; name: string }): 'email' | 'phone' | 'text' | undefined {
+    if (field.type === 'email') return 'email'
+    if (field.type === 'tel') return 'phone'
+    if (field.name.includes('email')) return 'email'
+    if (field.name.includes('phone')) return 'phone'
+    return 'text'
+}
+
+// Helper function to add metadata to form fields
+function enhanceFormField(field: FormField): FormField {
+    const enhanced = {
+        ...field,
+        formDataKey: getFormDataKey(field.name),
+        validationType: getValidationType(field)
+    }
+
+    // Recursively enhance nested fields
+    if (field.fields) {
+        enhanced.fields = field.fields.map(enhanceFormField)
+    }
+
+    return enhanced
+}
+
+const rawFormConfig: FormStage[] = [
     // Stage 1: Personal & Contact Information
     {
         title: 'Personal & Contact Information',
@@ -38,8 +72,7 @@ export const formConfig: FormStage[] = [
                 type: 'email',
                 label: 'Email Address',
                 required: true,
-                autoComplete: 'email',
-                ariaDescribedBy: 'error-registrant-email'
+                autoComplete: 'email'
             },
             {
                 id: 'registrant-prefix',
@@ -48,7 +81,6 @@ export const formConfig: FormStage[] = [
                 label: 'Prefix (Mr., Mrs., etc.)',
                 required: true,
                 autoComplete: 'honorific-prefix',
-                ariaDescribedBy: 'error-registrant-prefix'
             },
             {
                 id: 'registrant-first_name',
@@ -57,7 +89,6 @@ export const formConfig: FormStage[] = [
                 label: 'First Name',
                 required: true,
                 autoComplete: 'given-name',
-                ariaDescribedBy: 'error-registrant-first_name'
             },
             {
                 id: 'registrant-middle_name',
@@ -65,7 +96,6 @@ export const formConfig: FormStage[] = [
                 type: 'text',
                 label: 'Middle Name',
                 autoComplete: 'additional-name',
-                ariaDescribedBy: 'error-registrant-middle_name'
             },
             {
                 id: 'registrant-last_name',
@@ -74,21 +104,18 @@ export const formConfig: FormStage[] = [
                 label: 'Last Name',
                 required: true,
                 autoComplete: 'family-name',
-                ariaDescribedBy: 'error-registrant-last_name'
             },
             {
                 id: 'registrant-c_6716230',
                 name: 'Registrant[c_6716230]',
                 type: 'text',
                 label: 'Title',
-                ariaDescribedBy: 'error-registrant-c_6716230'
             },
             {
                 id: 'registrant-c_6716228',
                 name: 'Registrant[c_6716228]',
                 type: 'text',
                 label: 'Organization',
-                ariaDescribedBy: 'error-registrant-c_6716228'
             },
             {
                 id: 'registrant-c_6716229',
@@ -96,14 +123,12 @@ export const formConfig: FormStage[] = [
                 type: 'tel',
                 label: 'Office Phone',
                 required: true,
-                ariaDescribedBy: 'error-registrant-c_6716229'
             },
             {
                 id: 'registrant-mobile_phone',
                 name: 'Registrant[mobile_phone]',
                 type: 'tel',
                 label: 'Mobile Phone',
-                ariaDescribedBy: 'error-registrant-mobile_phone'
             },
             {
                 id: 'work-address-fieldset',
@@ -118,7 +143,6 @@ export const formConfig: FormStage[] = [
                         label: 'Address Line 1',
                         placeholder: 'Address Line 1',
                         autoComplete: 'address-line1',
-                        ariaDescribedBy: 'error-address-registrant-work_address_id-line_1'
                     },
                     {
                         id: 'address-registrant-work_address_id-line_2',
@@ -127,7 +151,6 @@ export const formConfig: FormStage[] = [
                         label: 'Address Line 2',
                         placeholder: 'Address Line 2',
                         autoComplete: 'address-line2',
-                        ariaDescribedBy: 'error-address-registrant-work_address_id-line_2'
                     },
                     {
                         id: 'address-registrant-work_address_id-city',
@@ -135,7 +158,6 @@ export const formConfig: FormStage[] = [
                         type: 'text',
                         label: 'City',
                         autoComplete: 'address-level2',
-                        ariaDescribedBy: 'error-address-registrant-work_address_id-city'
                     },
                     {
                         id: 'country-select',
@@ -150,7 +172,6 @@ export const formConfig: FormStage[] = [
                         name: 'Address[Registrant][work_address_id][state]',
                         type: 'text',
                         label: 'State / Province / County',
-                        ariaDescribedBy: 'error-address-registrant-work_address_id-state'
                     },
                     {
                         id: 'address-registrant-work_address_id-zip',
@@ -158,7 +179,6 @@ export const formConfig: FormStage[] = [
                         type: 'text',
                         label: 'Zip/Postal Code',
                         autoComplete: 'postal-code',
-                        ariaDescribedBy: 'error-address-registrant-work_address_id-zip'
                     }
                 ]
             },
@@ -168,7 +188,6 @@ export const formConfig: FormStage[] = [
                 type: 'file',
                 label: 'Upload a Profile Picture',
                 accept: 'image/*',
-                ariaDescribedBy: 'error-registrant-profile_picture'
             }
         ]
     },
@@ -183,7 +202,6 @@ export const formConfig: FormStage[] = [
                 type: 'text',
                 label: 'Name for Credentials',
                 required: true,
-                ariaDescribedBy: 'error-registrant-c_6716240',
                 hintText: 'Full name as you would like it to appear on credentials and onsite materials.'
             },
             {
@@ -192,7 +210,6 @@ export const formConfig: FormStage[] = [
                 type: 'text',
                 label: 'Organization for Credentials',
                 required: true,
-                ariaDescribedBy: 'error-registrant-c_6716241',
                 hintText: 'Organization name as you would like it to appear on credentials and onsite materials.'
             },
             {
@@ -201,7 +218,6 @@ export const formConfig: FormStage[] = [
                 type: 'text',
                 label: 'Emergency Contact Name',
                 required: true,
-                ariaDescribedBy: 'error-registrant-c_6716242',
                 hintText: 'Please provide a contact in case of emergency while you are with us in Kiawah.'
             },
             {
@@ -210,7 +226,6 @@ export const formConfig: FormStage[] = [
                 type: 'text',
                 label: 'Emergency Contact Relation',
                 required: true,
-                ariaDescribedBy: 'error-registrant-c_6716243'
             },
             {
                 id: 'registrant-c_6716244',
@@ -218,7 +233,6 @@ export const formConfig: FormStage[] = [
                 type: 'email',
                 label: 'Emergency Contact Email',
                 required: true,
-                ariaDescribedBy: 'error-registrant-c_6716244'
             },
             {
                 id: 'registrant-c_6716246',
@@ -226,7 +240,6 @@ export const formConfig: FormStage[] = [
                 type: 'tel',
                 label: 'Emergency Contact Phone',
                 required: true,
-                ariaDescribedBy: 'error-registrant-c_6716246'
             },
             {
                 id: 'registrant-c_6716247',
@@ -236,7 +249,6 @@ export const formConfig: FormStage[] = [
                 placeholder: 'Dietary Restrictions or Allergies',
                 multiline: true,
                 minRows: 3,
-                ariaDescribedBy: 'error-registrant-c_6716247'
             },
             {
                 id: 'registrant-c_6716271',
@@ -266,14 +278,12 @@ export const formConfig: FormStage[] = [
                 type: 'text',
                 label: 'Point of Contact Name',
                 required: true,
-                ariaDescribedBy: 'error-registrant-c_6716225'
             },
             {
                 id: 'registrant-c_6716226',
                 name: 'Registrant[c_6716226]',
                 type: 'text',
                 label: 'Point of Contact Title',
-                ariaDescribedBy: 'error-registrant-c_6716226'
             },
             {
                 id: 'registrant-c_6716231',
@@ -281,63 +291,54 @@ export const formConfig: FormStage[] = [
                 type: 'email',
                 label: 'Point of Contact Email',
                 required: true,
-                ariaDescribedBy: 'error-registrant-c_6716231'
             },
             {
                 id: 'registrant-c_6716232',
                 name: 'Registrant[c_6716232]',
                 type: 'tel',
                 label: 'Point of Contact Phone',
-                ariaDescribedBy: 'error-registrant-c_6716232'
             },
             {
                 id: 'registrant-c_6716234',
                 name: 'Registrant[c_6716234]',
                 type: 'text',
                 label: 'Secondary Point of Contact Name',
-                ariaDescribedBy: 'error-registrant-c_6716234'
             },
             {
                 id: 'registrant-c_6716236',
                 name: 'Registrant[c_6716236]',
                 type: 'email',
                 label: 'Secondary Point of Contact Email',
-                ariaDescribedBy: 'error-registrant-c_6716236'
             },
             {
                 id: 'registrant-c_6716237',
                 name: 'Registrant[c_6716237]',
                 type: 'tel',
                 label: 'Secondary Point of Contact Phone',
-                ariaDescribedBy: 'error-registrant-c_6716237'
             },
             {
                 id: 'registrant-c_6832581',
                 name: 'Registrant[c_6832581]',
                 type: 'text',
                 label: 'Guest Name',
-                ariaDescribedBy: 'error-registrant-c_6832581'
             },
             {
                 id: 'registrant-c_6716248',
                 name: 'Registrant[c_6716248]',
                 type: 'text',
                 label: 'Guest Relation',
-                ariaDescribedBy: 'error-registrant-c_6716248'
             },
             {
                 id: 'registrant-c_6716239',
                 name: 'Registrant[c_6716239]',
                 type: 'email',
                 label: 'Guest Email',
-                ariaDescribedBy: 'error-registrant-c_6716239'
             },
             {
                 id: 'registrant-c_6716267',
                 name: 'Registrant[c_6716267]',
                 type: 'checkbox-group',
                 label: 'Complimentary accommodations are provided at The Boca Raton the nights of March 18 and March 19.',
-                ariaDescribedBy: 'error-registrant-c_6716267',
                 defaultValue: [],
                 options: [
                     {
@@ -357,7 +358,6 @@ export const formConfig: FormStage[] = [
                 name: 'Registrant[c_6716269]',
                 type: 'checkbox-group',
                 label: 'Which nights will you attend dinner?',
-                ariaDescribedBy: 'error-registrant-c_6716269',
                 defaultValue: [],
                 options: [
                     {
@@ -377,7 +377,6 @@ export const formConfig: FormStage[] = [
                 name: 'Registrant[c_6838231]',
                 type: 'checkbox-group',
                 label: 'Activities',
-                ariaDescribedBy: 'error-registrant-c_6838231',
                 defaultValue: [],
                 options: [
                     {
@@ -425,3 +424,46 @@ export const formConfig: FormStage[] = [
         ]
     }
 ]
+
+// Enhanced form config with metadata
+export const formConfig: FormStage[] = rawFormConfig.map(stage => ({
+    ...stage,
+    fields: stage.fields.map(enhanceFormField)
+}))
+
+// Utility functions to get field information from the enhanced config
+export function getAllFormFields(): FormField[] {
+    const allFields: FormField[] = []
+
+    function extractFields(fields: FormField[]) {
+        fields.forEach(field => {
+            allFields.push(field)
+            if (field.fields) {
+                extractFields(field.fields)
+            }
+        })
+    }
+
+    formConfig.forEach(stage => extractFields(stage.fields))
+    return allFields
+}
+
+export function getRequiredFields(): FormField[] {
+    return getAllFormFields().filter(field => field.required)
+}
+
+export function getFieldByFormDataKey(key: string): FormField | undefined {
+    return getAllFormFields().find(field => field.formDataKey === key)
+}
+
+export function getFieldByName(name: string): FormField | undefined {
+    return getAllFormFields().find(field => field.name === name)
+}
+
+export function getPhoneFields(): FormField[] {
+    return getAllFormFields().filter(field => field.validationType === 'phone')
+}
+
+export function getEmailFields(): FormField[] {
+    return getAllFormFields().filter(field => field.validationType === 'email')
+}

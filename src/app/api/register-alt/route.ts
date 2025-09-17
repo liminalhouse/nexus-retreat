@@ -1,57 +1,108 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSwoogoRegistrant, type SwoogoRegistrant } from '@/utils/swoogo'
 import { z } from 'zod'
+import {
+    getRequiredFields,
+    getPhoneFields,
+    getEmailFields,
+    getAllFormFields,
+    getFieldByFormDataKey
+} from '../register-alt/formConfig'
 
-const registrationSchema = z.object({
-    // Basic required fields
-    first_name: z.string().min(1, 'First name is required'),
-    last_name: z.string().min(1, 'Last name is required'),
-    email: z.string().email('Valid email is required'),
-    event_id: z.string().min(1, 'Event ID is required'),
+// Phone number validation and formatting
+function formatPhoneNumber(phone: string): string {
+    if (!phone) return ''
 
-    // Optional basic fields
-    prefix: z.string().optional(),
-    middle_name: z.string().optional(),
-    mobile_phone: z.string().optional(),
-    title: z.string().optional(),
-    organization: z.string().optional(),
+    // Remove all non-digit characters
+    const digits = phone.replace(/\D/g, '')
 
-    // Work address fields
-    work_address_id: z.object({
-        line_1: z.string().optional(),
-        line_2: z.string().optional(),
-        city: z.string().optional(),
-        state: z.string().optional(),
-        zip: z.string().optional(),
-        country_code: z.string().optional(),
-    }).optional(),
+    // Try different formats that Swoogo might accept
+    if (digits.length === 10) {
+        // Try format: XXX-XXX-XXXX
+        return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`
+    }
 
-    // Custom fields
-    c_6716229: z.string().optional(), // office_phone
-    c_6716230: z.string().optional(), // title (legacy)
-    c_6716228: z.string().optional(), // organization (legacy)
-    c_6716240: z.string().optional(), // name_for_credentials
-    c_6716241: z.string().optional(), // organization_for_credentials
-    c_6716242: z.string().optional(), // emergency_contact_name
-    c_6716243: z.string().optional(), // emergency_contact_relation
-    c_6716244: z.string().optional(), // emergency_contact_email
-    c_6716246: z.string().optional(), // emergency_contact_phone
-    c_6716247: z.string().optional(), // dietary_restrictions
-    c_6716271: z.string().optional(), // jacket_size
-    c_6716225: z.string().optional(), // point_of_contact_name
-    c_6716226: z.string().optional(), // point_of_contact_title
-    c_6716231: z.string().optional(), // point_of_contact_email
-    c_6716232: z.string().optional(), // point_of_contact_phone
-    c_6716234: z.string().optional(), // secondary_point_of_contact_name
-    c_6716236: z.string().optional(), // secondary_point_of_contact_email
-    c_6716237: z.string().optional(), // secondary_point_of_contact_phone
-    c_6832581: z.string().optional(), // guest_name
-    c_6716248: z.string().optional(), // guest_relation
-    c_6716239: z.string().optional(), // guest_email
-    c_6716267: z.array(z.string()).optional(), // complimentary_accommodations
-    c_6716269: z.array(z.string()).optional(), // dinner_attendance
-    c_6838231: z.array(z.string()).optional(), // activities
-})
+    // If it's 11 digits and starts with 1, format as +1-XXX-XXX-XXXX
+    if (digits.length === 11 && digits.startsWith('1')) {
+        return `+1-${digits.slice(1, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`
+    }
+
+    // For international numbers, return with + prefix
+    if (digits.length > 10) {
+        return `+${digits}`
+    }
+
+    // If less than 10 digits, return just the digits
+    return digits
+}
+
+function validatePhoneNumber(phone: string): boolean {
+    if (!phone) return true // Optional fields can be empty
+
+    const digits = phone.replace(/\D/g, '')
+    return digits.length >= 10 && digits.length <= 15
+}
+
+// Dynamic schema generation based on form config
+function createFieldSchema(field: any): z.ZodTypeAny {
+    const isRequired = field.required
+    const fieldLabel = field.label
+
+    if (field.validationType === 'email') {
+        return isRequired
+            ? z.string().email(`${fieldLabel} must be valid`).min(1, `${fieldLabel} is required`)
+            : z.string().email().optional().or(z.literal(''))
+    }
+
+    if (field.validationType === 'phone') {
+        return isRequired
+            ? z.string().min(1, `${fieldLabel} is required`).refine(
+                (phone) => validatePhoneNumber(phone),
+                { message: `${fieldLabel} must be a valid phone number` }
+            )
+            : z.string().optional().refine(
+                (phone) => !phone || validatePhoneNumber(phone),
+                { message: `${fieldLabel} must be a valid phone number` }
+            )
+    }
+
+    if (field.type === 'checkbox-group') {
+        return z.array(z.string()).optional()
+    }
+
+    // Default text validation
+    return isRequired
+        ? z.string().min(1, `${fieldLabel} is required`)
+        : z.string().optional()
+}
+
+// Generate schema dynamically from form config
+function generateRegistrationSchema() {
+    const schemaObject: any = {
+        // Always required
+        event_id: z.string().min(1, 'Event ID is required'),
+        // Address object
+        work_address_id: z.object({
+            line_1: z.string().optional(),
+            line_2: z.string().optional(),
+            city: z.string().optional(),
+            state: z.string().optional(),
+            zip: z.string().optional(),
+            country_code: z.string().optional(),
+        }).optional(),
+    }
+
+    // Add all form fields dynamically
+    getAllFormFields().forEach(field => {
+        if (field.formDataKey && field.formDataKey !== 'work_address_id') {
+            schemaObject[field.formDataKey] = createFieldSchema(field)
+        }
+    })
+
+    return z.object(schemaObject)
+}
+
+const registrationSchema = generateRegistrationSchema()
 
 function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
     const swoogoData: SwoogoRegistrant = {
@@ -63,7 +114,7 @@ function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
     // Add optional basic fields
     if (formData.prefix) swoogoData.prefix = formData.prefix
     if (formData.middle_name) swoogoData.middle_name = formData.middle_name
-    if (formData.mobile_phone) swoogoData.mobile_phone = formData.mobile_phone
+    if (formData.mobile_phone) swoogoData.mobile_phone = formatPhoneNumber(formData.mobile_phone)
     if (formData.title) swoogoData.title = formData.title
     if (formData.organization) swoogoData.organization = formData.organization
 
@@ -78,24 +129,36 @@ function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
         if (address.country_code) swoogoData.work_address_country_code = address.country_code
     }
 
-    // Add all custom fields (c_ prefixed)
-    const customFields = [
-        'c_6716229', 'c_6716230', 'c_6716228', 'c_6716240', 'c_6716241',
-        'c_6716242', 'c_6716243', 'c_6716244', 'c_6716246', 'c_6716247',
-        'c_6716271', 'c_6716225', 'c_6716226', 'c_6716231', 'c_6716232',
-        'c_6716234', 'c_6716236', 'c_6716237', 'c_6832581', 'c_6716248',
-        'c_6716239', 'c_6716267', 'c_6716269', 'c_6838231'
-    ]
+    // Process all form fields dynamically using form config
+    getAllFormFields().forEach(field => {
+        const key = field.formDataKey
+        if (!key || key === 'work_address_id' || !formData[key]) return
 
-    customFields.forEach(field => {
-        if (formData[field] !== undefined && formData[field] !== '' && formData[field] !== null) {
-            // Handle arrays (checkbox groups)
-            if (Array.isArray(formData[field])) {
-                if (formData[field].length > 0) {
-                    swoogoData[field as keyof SwoogoRegistrant] = formData[field]
-                }
-            } else {
-                swoogoData[field as keyof SwoogoRegistrant] = formData[field]
+        const value = formData[key]
+
+        // Skip empty values
+        if (value === '' || value === null || value === undefined) return
+        if (Array.isArray(value) && value.length === 0) return
+
+        // Handle different field types
+        if (field.validationType === 'phone') {
+            if (typeof value === 'string' && value.trim() !== '') {
+                swoogoData[key as keyof SwoogoRegistrant] = formatPhoneNumber(value)
+            }
+        } else if (field.validationType === 'email') {
+            if (typeof value === 'string' && value.trim() !== '') {
+                swoogoData[key as keyof SwoogoRegistrant] = value
+            }
+        } else if (field.type === 'checkbox-group') {
+            if (Array.isArray(value) && value.length > 0) {
+                swoogoData[key as keyof SwoogoRegistrant] = value
+            }
+        } else {
+            // Handle text and other field types
+            if (typeof value === 'string' && value.trim() !== '') {
+                swoogoData[key as keyof SwoogoRegistrant] = value
+            } else if (typeof value !== 'string') {
+                swoogoData[key as keyof SwoogoRegistrant] = value
             }
         }
     })
