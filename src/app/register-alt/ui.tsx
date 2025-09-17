@@ -15,6 +15,9 @@ import {
     Stepper,
     Step,
     StepLabel,
+    FormGroup,
+    FormControlLabel,
+    Checkbox,
 } from '@mui/material'
 import CountrySelect from './CountrySelect'
 import Logo from '@/components/Logo'
@@ -47,6 +50,18 @@ interface FormData {
     c_6716246: string // emergency_contact_phone
     c_6716271: string // jacket_size
     c_6716247: string // dietary_restrictions_details
+    c_6716225: string // point_of_contact_name
+    c_6716226: string // point_of_contact_title
+    c_6716267: string[] // complimentary_accommodations
+    c_6716231: string // point_of_contact_email
+    c_6716269: string[] // dinner_attendance
+    c_6716232: string // point_of_contact_phone
+    c_6716234: string // secondary_point_of_contact_name
+    c_6716236: string // secondary_point_of_contact_email
+    c_6832581: string // guest_name
+    c_6716237: string // secondary_point_of_contact_phone
+    c_6716239: string // guest_email
+    c_6838231: string[] // activities
 }
 
 interface HardcodedRegistrationFormProps {
@@ -86,6 +101,18 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         c_6716246: '', // emergency_contact_phone
         c_6716271: '', // jacket_size
         c_6716247: '', // dietary_restrictions_details
+        c_6716225: '', // point_of_contact_name
+        c_6716226: '', // point_of_contact_title
+        c_6716267: [], // complimentary_accommodations
+        c_6716231: '', // point_of_contact_email
+        c_6716269: [], // dinner_attendance
+        c_6716232: '', // point_of_contact_phone
+        c_6716234: '', // secondary_point_of_contact_name
+        c_6716236: '', // secondary_point_of_contact_email
+        c_6832581: '', // guest_name
+        c_6716237: '', // secondary_point_of_contact_phone
+        c_6716239: '', // guest_email
+        c_6838231: [], // activities
     })
 
     const handleInputChange = (
@@ -110,15 +137,39 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         }))
     }
 
+    const handleCheckboxChange = (
+        field: keyof FormData,
+        value: string,
+        checked: boolean
+    ) => {
+        setFormData((prev) => {
+            const currentArray = prev[field] as string[]
+            const newArray = checked
+                ? [...currentArray, value]
+                : currentArray.filter(item => item !== value)
+
+            return {
+                ...prev,
+                [field]: newArray,
+            }
+        })
+    }
+
     const handleNextStage = (e: React.FormEvent) => {
         e.preventDefault()
         if (currentStage === 1) {
             setCurrentStage(2)
+        } else if (currentStage === 2) {
+            setCurrentStage(3)
         }
     }
 
     const handlePreviousStage = () => {
-        setCurrentStage(1)
+        if (currentStage === 3) {
+            setCurrentStage(2)
+        } else if (currentStage === 2) {
+            setCurrentStage(1)
+        }
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -309,123 +360,130 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                 />
             </div>
 
-            {/* Address Line 1 */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="address-registrant-work_address_id-line_1"
-                    name="Address[Registrant][work_address_id][line_1]"
-                    placeholder="Address Line 1"
-                    fullWidth
-                    label="Address Line 1"
-                    value={formData.work_address_id.line_1}
-                    onChange={(e) =>
+            <fieldset className={styles.fieldset}>
+                <InputLabel>Work Address</InputLabel>
+                {/* Address Line 1 */}
+                <div className={styles.inputWrapper}>
+                    <TextField
+                        type="text"
+                        id="address-registrant-work_address_id-line_1"
+                        name="Address[Registrant][work_address_id][line_1]"
+                        placeholder="Address Line 1"
+                        fullWidth
+                        label="Address Line 1"
+                        value={formData.work_address_id.line_1}
+                        onChange={(e) =>
+                            handleInputChange(
+                                'work_address_id',
+                                e.target.value,
+                                'line_1'
+                            )
+                        }
+                        aria-describedby="error-address-registrant-work_address_id-line_1"
+                        autoComplete="true"
+                    />
+                </div>
+
+                {/* Address Line 2 */}
+                <div className={styles.inputWrapper}>
+                    <TextField
+                        type="text"
+                        id="address-registrant-work_address_id-line_2"
+                        name="Address[Registrant][work_address_id][line_2]"
+                        placeholder="Address Line 2"
+                        label="Address Line 2"
+                        fullWidth
+                        value={formData.work_address_id.line_2}
+                        onChange={(e) =>
+                            handleInputChange(
+                                'work_address_id',
+                                e.target.value,
+                                'line_2'
+                            )
+                        }
+                        aria-describedby="error-address-registrant-work_address_id-line_2"
+                        autoComplete="address-line2"
+                    />
+                </div>
+
+                {/* City */}
+                <div className={styles.inputWrapper}>
+                    <TextField
+                        type="text"
+                        id="address-registrant-work_address_id-city"
+                        name="Address[Registrant][work_address_id][city]"
+                        label="City"
+                        variant="outlined"
+                        fullWidth
+                        value={formData.work_address_id.city}
+                        onChange={(e) =>
+                            handleInputChange(
+                                'work_address_id',
+                                e.target.value,
+                                'city'
+                            )
+                        }
+                        aria-describedby="error-address-registrant-work_address_id-city"
+                        autoComplete="address-level2"
+                    />
+                </div>
+
+                {/* Country */}
+                <CountrySelect
+                    value={formData.work_address_id.country_code}
+                    onChange={(value) =>
                         handleInputChange(
                             'work_address_id',
-                            e.target.value,
-                            'line_1'
+                            value,
+                            'country_code'
                         )
                     }
-                    aria-describedby="error-address-registrant-work_address_id-line_1"
-                    autoComplete="true"
+                    className={styles.formField}
                 />
-            </div>
 
-            {/* Address Line 2 */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="address-registrant-work_address_id-line_2"
-                    name="Address[Registrant][work_address_id][line_2]"
-                    placeholder="Address Line 2"
-                    label="Address Line 2"
-                    fullWidth
-                    value={formData.work_address_id.line_2}
-                    onChange={(e) =>
-                        handleInputChange(
-                            'work_address_id',
-                            e.target.value,
-                            'line_2'
-                        )
-                    }
-                    aria-describedby="error-address-registrant-work_address_id-line_2"
-                    autoComplete="address-line2"
-                />
-            </div>
+                {/* State */}
+                <div className={styles.inputWrapper}>
+                    <TextField
+                        type="text"
+                        id="address-registrant-work_address_id-state"
+                        name="Address[Registrant][work_address_id][state]"
+                        label="State / Province / County"
+                        variant="outlined"
+                        fullWidth
+                        value={formData.work_address_id.state}
+                        onChange={(e) =>
+                            handleInputChange(
+                                'work_address_id',
+                                e.target.value,
+                                'state'
+                            )
+                        }
+                        aria-describedby="error-address-registrant-work_address_id-state"
+                    />
+                </div>
 
-            {/* City */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="address-registrant-work_address_id-city"
-                    name="Address[Registrant][work_address_id][city]"
-                    label="City"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.work_address_id.city}
-                    onChange={(e) =>
-                        handleInputChange(
-                            'work_address_id',
-                            e.target.value,
-                            'city'
-                        )
-                    }
-                    aria-describedby="error-address-registrant-work_address_id-city"
-                    autoComplete="address-level2"
-                />
-            </div>
-
-            {/* Country */}
-            <CountrySelect
-                value={formData.work_address_id.country_code}
-                onChange={(value) =>
-                    handleInputChange('work_address_id', value, 'country_code')
-                }
-                className={styles.formField}
-            />
-
-            {/* State */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="address-registrant-work_address_id-state"
-                    name="Address[Registrant][work_address_id][state]"
-                    label="State / Province / County"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.work_address_id.state}
-                    onChange={(e) =>
-                        handleInputChange(
-                            'work_address_id',
-                            e.target.value,
-                            'state'
-                        )
-                    }
-                    aria-describedby="error-address-registrant-work_address_id-state"
-                />
-            </div>
-
-            {/* Zip/Postal Code */}
-            <div className={styles.inputWrapper}>
-                <TextField
-                    type="text"
-                    id="address-registrant-work_address_id-zip"
-                    name="Address[Registrant][work_address_id][zip]"
-                    label="Zip/Postal Code"
-                    variant="outlined"
-                    fullWidth
-                    value={formData.work_address_id.zip}
-                    onChange={(e) =>
-                        handleInputChange(
-                            'work_address_id',
-                            e.target.value,
-                            'zip'
-                        )
-                    }
-                    aria-describedby="error-address-registrant-work_address_id-zip"
-                    autoComplete="postal-code"
-                />
-            </div>
+                {/* Zip/Postal Code */}
+                <div className={styles.inputWrapper}>
+                    <TextField
+                        type="text"
+                        id="address-registrant-work_address_id-zip"
+                        name="Address[Registrant][work_address_id][zip]"
+                        label="Zip/Postal Code"
+                        variant="outlined"
+                        fullWidth
+                        value={formData.work_address_id.zip}
+                        onChange={(e) =>
+                            handleInputChange(
+                                'work_address_id',
+                                e.target.value,
+                                'zip'
+                            )
+                        }
+                        aria-describedby="error-address-registrant-work_address_id-zip"
+                        autoComplete="postal-code"
+                    />
+                </div>
+            </fieldset>
 
             {/* Profile Picture */}
             <div className={styles.inputWrapper}>
@@ -624,15 +682,341 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         </div>
     )
 
+    const renderStage3 = () => (
+        <div className={styles.inputGroup}>
+            {/* Point of Contact Name */}
+            <div className={styles.inputWrapper}>
+                <TextField
+                    type="text"
+                    id="registrant-c_6716225"
+                    name="Registrant[c_6716225]"
+                    label="Point of Contact Name *"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    value={formData.c_6716225}
+                    onChange={(e) =>
+                        handleInputChange('c_6716225', e.target.value)
+                    }
+                    aria-describedby="error-registrant-c_6716225"
+                />
+            </div>
+
+            {/* Point of Contact Title */}
+            <div className={styles.inputWrapper}>
+                <TextField
+                    type="text"
+                    id="registrant-c_6716226"
+                    name="Registrant[c_6716226]"
+                    label="Point of Contact Title"
+                    variant="outlined"
+                    fullWidth
+                    value={formData.c_6716226}
+                    onChange={(e) =>
+                        handleInputChange('c_6716226', e.target.value)
+                    }
+                    aria-describedby="error-registrant-c_6716226"
+                />
+            </div>
+
+            {/* Point of Contact Email */}
+            <div className={styles.inputWrapper}>
+                <TextField
+                    type="email"
+                    id="registrant-c_6716231"
+                    name="Registrant[c_6716231]"
+                    label="Point of Contact Email *"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    value={formData.c_6716231}
+                    onChange={(e) =>
+                        handleInputChange('c_6716231', e.target.value)
+                    }
+                    aria-describedby="error-registrant-c_6716231"
+                />
+            </div>
+
+            {/* Point of Contact Phone */}
+            <div className={styles.inputWrapper}>
+                <TextField
+                    type="tel"
+                    id="registrant-c_6716232"
+                    name="Registrant[c_6716232]"
+                    label="Point of Contact Phone"
+                    variant="outlined"
+                    fullWidth
+                    value={formData.c_6716232}
+                    onChange={(e) =>
+                        handleInputChange('c_6716232', e.target.value)
+                    }
+                    aria-describedby="error-registrant-c_6716232"
+                />
+            </div>
+
+            {/* Secondary Point of Contact Name */}
+            <div className={styles.inputWrapper}>
+                <TextField
+                    type="text"
+                    id="registrant-c_6716234"
+                    name="Registrant[c_6716234]"
+                    label="Secondary Point of Contact Name"
+                    variant="outlined"
+                    fullWidth
+                    value={formData.c_6716234}
+                    onChange={(e) =>
+                        handleInputChange('c_6716234', e.target.value)
+                    }
+                    aria-describedby="error-registrant-c_6716234"
+                />
+            </div>
+
+            {/* Secondary Point of Contact Email */}
+            <div className={styles.inputWrapper}>
+                <TextField
+                    type="email"
+                    id="registrant-c_6716236"
+                    name="Registrant[c_6716236]"
+                    label="Secondary Point of Contact Email"
+                    variant="outlined"
+                    fullWidth
+                    value={formData.c_6716236}
+                    onChange={(e) =>
+                        handleInputChange('c_6716236', e.target.value)
+                    }
+                    aria-describedby="error-registrant-c_6716236"
+                />
+            </div>
+
+            {/* Secondary Point of Contact Phone */}
+            <div className={styles.inputWrapper}>
+                <TextField
+                    type="tel"
+                    id="registrant-c_6716237"
+                    name="Registrant[c_6716237]"
+                    label="Secondary Point of Contact Phone"
+                    variant="outlined"
+                    fullWidth
+                    value={formData.c_6716237}
+                    onChange={(e) =>
+                        handleInputChange('c_6716237', e.target.value)
+                    }
+                    aria-describedby="error-registrant-c_6716237"
+                />
+            </div>
+
+            {/* Guest Name */}
+            <div className={styles.inputWrapper}>
+                <TextField
+                    type="text"
+                    id="registrant-c_6832581"
+                    name="Registrant[c_6832581]"
+                    label="Guest Name"
+                    variant="outlined"
+                    fullWidth
+                    value={formData.c_6832581}
+                    onChange={(e) =>
+                        handleInputChange('c_6832581', e.target.value)
+                    }
+                    aria-describedby="error-registrant-c_6832581"
+                />
+            </div>
+
+            {/* Guest Email */}
+            <div className={styles.inputWrapper}>
+                <TextField
+                    type="email"
+                    id="registrant-c_6716239"
+                    name="Registrant[c_6716239]"
+                    label="Guest Email"
+                    variant="outlined"
+                    fullWidth
+                    value={formData.c_6716239}
+                    onChange={(e) =>
+                        handleInputChange('c_6716239', e.target.value)
+                    }
+                    aria-describedby="error-registrant-c_6716239"
+                />
+            </div>
+
+            {/* Activities */}
+            <div className={styles.inputWrapper}>
+                <input type="hidden" name="Registrant[c_6838231]" value="" />
+                <FormControl fullWidth>
+                    <Typography variant="h6" gutterBottom>
+                        Activities
+                    </Typography>
+                    <FormGroup
+                        id="registrant-c_6838231"
+                        aria-labelledby="field-registrant-c_6838231-label"
+                    >
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="Registrant[c_6838231][]"
+                                    value="39626531"
+                                    checked={formData.c_6838231.includes('39626531')}
+                                    onChange={(e) =>
+                                        handleCheckboxChange(
+                                            'c_6838231',
+                                            '39626531',
+                                            e.target.checked
+                                        )
+                                    }
+                                    aria-label="Pickleball tournament (upriver / downriver style) on March 19"
+                                />
+                            }
+                            label="Pickleball tournament (upriver / downriver style) on March 19"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="Registrant[c_6838231][]"
+                                    value="39626575"
+                                    checked={formData.c_6838231.includes('39626575')}
+                                    onChange={(e) =>
+                                        handleCheckboxChange(
+                                            'c_6838231',
+                                            '39626575',
+                                            e.target.checked
+                                        )
+                                    }
+                                    aria-label="Golf - Full round"
+                                />
+                            }
+                            label="Golf - Full round"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="Registrant[c_6838231][]"
+                                    value="39626586"
+                                    checked={formData.c_6838231.includes('39626586')}
+                                    onChange={(e) =>
+                                        handleCheckboxChange(
+                                            'c_6838231',
+                                            '39626586',
+                                            e.target.checked
+                                        )
+                                    }
+                                    aria-label="Golf - 9 holes"
+                                />
+                            }
+                            label="Golf - 9 holes"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="Registrant[c_6838231][]"
+                                    value="39626588"
+                                    checked={formData.c_6838231.includes('39626588')}
+                                    onChange={(e) =>
+                                        handleCheckboxChange(
+                                            'c_6838231',
+                                            '39626588',
+                                            e.target.checked
+                                        )
+                                    }
+                                    aria-label="Golf challenge with a pro"
+                                />
+                            }
+                            label="Golf challenge with a pro"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="Registrant[c_6838231][]"
+                                    value="39626589"
+                                    checked={formData.c_6838231.includes('39626589')}
+                                    onChange={(e) =>
+                                        handleCheckboxChange(
+                                            'c_6838231',
+                                            '39626589',
+                                            e.target.checked
+                                        )
+                                    }
+                                    aria-label="Tennis"
+                                />
+                            }
+                            label="Tennis"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="Registrant[c_6838231][]"
+                                    value="39626590"
+                                    checked={formData.c_6838231.includes('39626590')}
+                                    onChange={(e) =>
+                                        handleCheckboxChange(
+                                            'c_6838231',
+                                            '39626590',
+                                            e.target.checked
+                                        )
+                                    }
+                                    aria-label="Tennis challenge with a pro"
+                                />
+                            }
+                            label="Tennis challenge with a pro"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="Registrant[c_6838231][]"
+                                    value="39626592"
+                                    checked={formData.c_6838231.includes('39626592')}
+                                    onChange={(e) =>
+                                        handleCheckboxChange(
+                                            'c_6838231',
+                                            '39626592',
+                                            e.target.checked
+                                        )
+                                    }
+                                    aria-label="Sailing excursion with a SailGP team member"
+                                />
+                            }
+                            label="Sailing excursion with a SailGP team member"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="Registrant[c_6838231][]"
+                                    value="39626591"
+                                    checked={formData.c_6838231.includes('39626591')}
+                                    onChange={(e) =>
+                                        handleCheckboxChange(
+                                            'c_6838231',
+                                            '39626591',
+                                            e.target.checked
+                                        )
+                                    }
+                                    aria-label="Please don't bother me, I'll be at the spa :)"
+                                />
+                            }
+                            label="Please don't bother me, I'll be at the spa :)"
+                        />
+                    </FormGroup>
+                </FormControl>
+                <div
+                    id="error-registrant-c_6838231"
+                    className="help-block help-block-error"
+                ></div>
+            </div>
+        </div>
+    )
+
     return (
         <form
             className={styles.form}
-            onSubmit={currentStage === 1 ? handleNextStage : handleSubmit}
+            onSubmit={currentStage === 3 ? handleSubmit : handleNextStage}
         >
-            {currentStage === 1 ? renderStage1() : renderStage2()}
+            {currentStage === 1
+                ? renderStage1()
+                : currentStage === 2
+                ? renderStage2()
+                : renderStage3()}
 
             <div className={styles.buttonGroup}>
-                {currentStage === 2 && (
+                {(currentStage === 2 || currentStage === 3) && (
                     <Button
                         type="button"
                         variant="outlined"
@@ -642,14 +1026,26 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                         Back
                     </Button>
                 )}
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    className={styles.submitButton}
-                >
-                    {currentStage === 1 ? 'Next' : 'Register'}
-                </Button>
+                {currentStage < 3 && (
+                    <Button
+                        type="button"
+                        variant="outlined"
+                        onClick={handleNextStage}
+                        className={styles.nextButton}
+                    >
+                        Next
+                    </Button>
+                )}
+                {currentStage === 3 && (
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        className={styles.submitButton}
+                    >
+                        Register
+                    </Button>
+                )}
             </div>
         </form>
     )
@@ -662,24 +1058,23 @@ const UI = () => {
         <div className={styles.wrapper}>
             <div className={styles.container}>
                 <div className={styles.formWrapper}>
+                    <Button
+                        href="/"
+                        variant="outlined"
+                        className={styles.homeButton}
+                    >
+                        &larr; Back to home
+                    </Button>
                     <div className={styles.header}>
                         <div className={styles.logo}>
                             <Logo $logoType="default" />
                         </div>
                         <h1 className={styles.title}>
-                            You&apos;re invited to the retreat hosted by George
-                            Pyne and Jay Penske
+                            Register for the Retreat
                         </h1>
-                        <p>March 18-20, 2026</p>
-                        <p className={styles.subtitle}>
-                            Step {currentStage} of 2:{' '}
-                            {currentStage === 1
-                                ? 'Personal & Contact Information'
-                                : 'Additional Details'}
-                        </p>
+                        <p className={styles.subtitle}>March 18-20, 2026</p>
                     </div>
 
-                    {/* Progress Indicator */}
                     <Box mb={3}>
                         <Box
                             display="flex"
@@ -688,16 +1083,16 @@ const UI = () => {
                             mb={1}
                         >
                             <Typography variant="body2">
-                                Progress: {Math.round((currentStage / 2) * 100)}
+                                Progress: {Math.round((currentStage / 3) * 100)}
                                 %
                             </Typography>
                             <Typography variant="body2">
-                                {currentStage} / 2
+                                {currentStage} / 3
                             </Typography>
                         </Box>
                         <LinearProgress
                             variant="determinate"
-                            value={(currentStage / 2) * 100}
+                            value={(currentStage / 3) * 100}
                         />
                     </Box>
 
@@ -714,6 +1109,9 @@ const UI = () => {
                         </Step>
                         <Step>
                             <StepLabel>Additional Details</StepLabel>
+                        </Step>
+                        <Step>
+                            <StepLabel>Event Details & Contacts</StepLabel>
                         </Step>
                     </Stepper>
 
