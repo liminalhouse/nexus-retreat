@@ -839,6 +839,116 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                 />
             </div>
 
+            {/* Complimentary Accommodations */}
+            <div className={styles.inputWrapper}>
+                <input type="hidden" name="Registrant[c_6716267]" value="" />
+                <FormControl fullWidth>
+                    <Typography variant="h6" gutterBottom>
+                        Complimentary accommodations are provided at The Boca Raton the nights of March 18 and March 19.
+                    </Typography>
+                    <FormGroup
+                        id="registrant-c_6716267"
+                        aria-labelledby="field-registrant-c_6716267-label"
+                    >
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="Registrant[c_6716267][]"
+                                    value="38978933"
+                                    checked={formData.c_6716267.includes('38978933')}
+                                    onChange={(e) =>
+                                        handleCheckboxChange(
+                                            'c_6716267',
+                                            '38978933',
+                                            e.target.checked
+                                        )
+                                    }
+                                    aria-label="I will use my complimentary room the night of March 18."
+                                />
+                            }
+                            label="I will use my complimentary room the night of March 18."
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="Registrant[c_6716267][]"
+                                    value="38978934"
+                                    checked={formData.c_6716267.includes('38978934')}
+                                    onChange={(e) =>
+                                        handleCheckboxChange(
+                                            'c_6716267',
+                                            '38978934',
+                                            e.target.checked
+                                        )
+                                    }
+                                    aria-label="I will use my complimentary room the night of March 19."
+                                />
+                            }
+                            label="I will use my complimentary room the night of March 19."
+                        />
+                    </FormGroup>
+                </FormControl>
+                <div
+                    id="error-registrant-c_6716267"
+                    className="help-block help-block-error"
+                ></div>
+            </div>
+
+            {/* Dinner Attendance */}
+            <div className={styles.inputWrapper}>
+                <input type="hidden" name="Registrant[c_6716269]" value="" />
+                <FormControl fullWidth>
+                    <Typography variant="h6" gutterBottom>
+                        Which nights will you attend dinner?
+                    </Typography>
+                    <FormGroup
+                        id="registrant-c_6716269"
+                        aria-labelledby="field-registrant-c_6716269-label"
+                    >
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="Registrant[c_6716269][]"
+                                    value="38978935"
+                                    checked={formData.c_6716269.includes('38978935')}
+                                    onChange={(e) =>
+                                        handleCheckboxChange(
+                                            'c_6716269',
+                                            '38978935',
+                                            e.target.checked
+                                        )
+                                    }
+                                    aria-label="I will attend the Dinner on March 18."
+                                />
+                            }
+                            label="I will attend the Dinner on March 18."
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="Registrant[c_6716269][]"
+                                    value="38978936"
+                                    checked={formData.c_6716269.includes('38978936')}
+                                    onChange={(e) =>
+                                        handleCheckboxChange(
+                                            'c_6716269',
+                                            '38978936',
+                                            e.target.checked
+                                        )
+                                    }
+                                    aria-label="I will attend the Dinner on March 19."
+                                />
+                            }
+                            label="I will attend the Dinner on March 19."
+                        />
+                    </FormGroup>
+                </FormControl>
+                <div
+                    id="error-registrant-c_6716269"
+                    className="help-block help-block-error"
+                ></div>
+            </div>
+
             {/* Activities */}
             <div className={styles.inputWrapper}>
                 <input type="hidden" name="Registrant[c_6838231]" value="" />
