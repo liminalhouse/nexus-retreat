@@ -20,7 +20,7 @@
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
         0 10px 10px -5px rgba(0, 0, 0, 0.04);
     width: 100%;
-    max-width: 500px;
+    max-width: 800px;
 
     @media (min-width: 1024px) {
         padding: 4rem 3rem;
@@ -69,21 +69,20 @@
     }
 }
 
-
 .inputGroup {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    margin-bottom: 2rem;
+    margin: 0 auto 2rem;
+    width: 90%;
 }
 
 .inputWrapper {
     position: relative;
-    width: 100%;
 
     input {
-        background: rgba(248, 249, 250, 0.8);
-        border: 2px solid rgba(0, 0, 0, 0.08);
+        // background: rgba(248, 249, 250, 0.8);
+        // border: 2px solid rgba(0, 0, 0, 0.08);
         border-radius: 12px;
         padding: 1rem 1.25rem;
         font-size: 1rem;
@@ -105,8 +104,7 @@
             outline: none;
             border-color: #1976d2;
             background: white;
-            box-shadow:
-                0 0 0 4px rgba(25, 118, 210, 0.1),
+            box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1),
                 0 4px 12px rgba(25, 118, 210, 0.15);
         }
 
@@ -160,6 +158,9 @@
 .submitButton {
     margin-top: 1rem;
     background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    padding: 1rem 2rem !important;
 
     &:hover {
         background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
