@@ -9,6 +9,12 @@ import {
     InputLabel,
     Select,
     MenuItem,
+    Box,
+    Typography,
+    LinearProgress,
+    Stepper,
+    Step,
+    StepLabel,
 } from '@mui/material'
 import CountrySelect from './CountrySelect'
 import Logo from '@/components/Logo'
@@ -38,13 +44,20 @@ interface FormData {
     c_6716242: string // emergency_contact_name
     c_6716243: string // emergency_contact_relation
     c_6716244: string // emergency_contact_email
-    c_6716245: string // emergency_contact_phone
-    c_6716246: string // dietary_restrictions
+    c_6716246: string // emergency_contact_phone
     c_6716271: string // jacket_size
+    c_6716247: string // dietary_restrictions_details
 }
 
-const HardcodedRegistrationForm = () => {
-    const [currentStage, setCurrentStage] = useState(1)
+interface HardcodedRegistrationFormProps {
+    currentStage: number
+    setCurrentStage: (stage: number) => void
+}
+
+const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
+    currentStage,
+    setCurrentStage,
+}) => {
     const [formData, setFormData] = useState<FormData>({
         email: '',
         reg_type_id: '',
@@ -70,9 +83,9 @@ const HardcodedRegistrationForm = () => {
         c_6716242: '', // emergency_contact_name
         c_6716243: '', // emergency_contact_relation
         c_6716244: '', // emergency_contact_email
-        c_6716245: '', // emergency_contact_phone
-        c_6716246: '', // dietary_restrictions
+        c_6716246: '', // emergency_contact_phone
         c_6716271: '', // jacket_size
+        c_6716247: '', // dietary_restrictions_details
     })
 
     const handleInputChange = (
@@ -643,6 +656,8 @@ const HardcodedRegistrationForm = () => {
 }
 
 const UI = () => {
+    const [currentStage, setCurrentStage] = useState(1)
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.container}>
@@ -657,12 +672,55 @@ const UI = () => {
                         </h1>
                         <p>March 18-20, 2026</p>
                         <p className={styles.subtitle}>
-                            Please fill out the form below to register for the
-                            retreat.
+                            Step {currentStage} of 2:{' '}
+                            {currentStage === 1
+                                ? 'Personal & Contact Information'
+                                : 'Additional Details'}
                         </p>
                     </div>
 
-                    <HardcodedRegistrationForm />
+                    {/* Progress Indicator */}
+                    <Box mb={3}>
+                        <Box
+                            display="flex"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            mb={1}
+                        >
+                            <Typography variant="body2">
+                                Progress: {Math.round((currentStage / 2) * 100)}
+                                %
+                            </Typography>
+                            <Typography variant="body2">
+                                {currentStage} / 2
+                            </Typography>
+                        </Box>
+                        <LinearProgress
+                            variant="determinate"
+                            value={(currentStage / 2) * 100}
+                        />
+                    </Box>
+
+                    {/* Step Stepper */}
+                    <Stepper
+                        activeStep={currentStage - 1}
+                        alternativeLabel
+                        style={{ marginBottom: '2rem' }}
+                    >
+                        <Step>
+                            <StepLabel>
+                                Personal & Contact Information
+                            </StepLabel>
+                        </Step>
+                        <Step>
+                            <StepLabel>Additional Details</StepLabel>
+                        </Step>
+                    </Stepper>
+
+                    <HardcodedRegistrationForm
+                        currentStage={currentStage}
+                        setCurrentStage={setCurrentStage}
+                    />
                 </div>
             </div>
         </div>
