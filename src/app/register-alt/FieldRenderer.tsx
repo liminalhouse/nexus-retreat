@@ -18,7 +18,11 @@ interface FieldRendererProps {
     field: FormField
     value: any
     onChange: (fieldName: string, value: any, subfield?: string) => void
-    onCheckboxChange?: (fieldName: string, value: string, checked: boolean) => void
+    onCheckboxChange?: (
+        fieldName: string,
+        value: string,
+        checked: boolean
+    ) => void
     formData?: any
 }
 
@@ -27,7 +31,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
     value,
     onChange,
     onCheckboxChange,
-    formData
+    formData,
 }) => {
     const renderField = () => {
         switch (field.type) {
@@ -40,12 +44,14 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             type={field.type}
                             id={field.id}
                             name={field.name}
-                            label={field.label + (field.required ? ' *' : '')}
+                            label={field.label}
                             variant="outlined"
                             fullWidth
                             required={field.required}
                             value={value || ''}
-                            onChange={(e) => onChange(field.name, e.target.value)}
+                            onChange={(e) =>
+                                onChange(field.name, e.target.value)
+                            }
                             aria-describedby={field.ariaDescribedBy}
                             autoComplete={field.autoComplete}
                             placeholder={field.placeholder}
@@ -67,12 +73,14 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             minRows={field.minRows || 3}
                             id={field.id}
                             name={field.name}
-                            label={field.label + (field.required ? ' *' : '')}
+                            label={field.label}
                             variant="outlined"
                             fullWidth
                             required={field.required}
                             value={value || ''}
-                            onChange={(e) => onChange(field.name, e.target.value)}
+                            onChange={(e) =>
+                                onChange(field.name, e.target.value)
+                            }
                             aria-describedby={field.ariaDescribedBy}
                             placeholder={field.placeholder}
                             className={styles.textareaInput}
@@ -98,16 +106,21 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 
                 return (
                     <FormControl fullWidth className={styles.formField}>
-                        <InputLabel>{field.label + (field.required ? ' *' : '')}</InputLabel>
+                        <InputLabel>{field.label}</InputLabel>
                         <Select
                             name={field.name}
-                            label={field.label + (field.required ? ' *' : '')}
+                            label={field.label}
                             value={value || ''}
-                            onChange={(e) => onChange(field.name, e.target.value)}
+                            onChange={(e) =>
+                                onChange(field.name, e.target.value)
+                            }
                             required={field.required}
                         >
                             {field.options?.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
+                                <MenuItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
                                     {option.label}
                                 </MenuItem>
                             ))}
@@ -134,7 +147,11 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                             <Checkbox
                                                 name={`${field.name}[]`}
                                                 value={option.value}
-                                                checked={value?.includes(option.value) || false}
+                                                checked={
+                                                    value?.includes(
+                                                        option.value
+                                                    ) || false
+                                                }
                                                 onChange={(e) =>
                                                     onCheckboxChange?.(
                                                         field.name,
@@ -176,7 +193,10 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             name={field.name}
                             accept={field.accept}
                             onChange={(e) =>
-                                onChange(field.name, e.target.files?.[0] || null)
+                                onChange(
+                                    field.name,
+                                    e.target.files?.[0] || null
+                                )
                             }
                             aria-describedby={field.ariaDescribedBy}
                         />
@@ -194,9 +214,14 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                 value={getNestedValue(formData, subField.name)}
                                 onChange={(name, val) => {
                                     // Handle nested field updates for address
-                                    const fieldKey = subField.name.match(/\[(\w+)\]$/)?.[1]
+                                    const fieldKey =
+                                        subField.name.match(/\[(\w+)\]$/)?.[1]
                                     if (fieldKey) {
-                                        onChange('work_address_id', val, fieldKey)
+                                        onChange(
+                                            'work_address_id',
+                                            val,
+                                            fieldKey
+                                        )
                                     }
                                 }}
                                 onCheckboxChange={onCheckboxChange}
@@ -219,7 +244,9 @@ const getNestedValue = (obj: any, path: string): any => {
     if (!obj) return ''
 
     // Handle Address[Registrant][work_address_id][field] format
-    const addressMatch = path.match(/Address\[Registrant\]\[work_address_id\]\[(\w+)\]/)
+    const addressMatch = path.match(
+        /Address\[Registrant\]\[work_address_id\]\[(\w+)\]/
+    )
     if (addressMatch) {
         return obj.work_address_id?.[addressMatch[1]] || ''
     }

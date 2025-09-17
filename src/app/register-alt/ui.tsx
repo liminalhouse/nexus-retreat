@@ -135,43 +135,13 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
             return
         }
 
-        // Map field names to FormData keys
-        const fieldMapping: { [key: string]: keyof FormData } = {
-            'Registrant[email]': 'email',
-            'Registrant[prefix]': 'prefix',
-            'Registrant[first_name]': 'first_name',
-            'Registrant[middle_name]': 'middle_name',
-            'Registrant[last_name]': 'last_name',
-            'Registrant[c_6716230]': 'title',
-            'Registrant[c_6716228]': 'organization',
-            'Registrant[c_6716229]': 'c_6716229',
-            'Registrant[mobile_phone]': 'mobile_phone',
-            'Registrant[profile_picture]': 'profile_picture',
-            'Registrant[c_6716240]': 'c_6716240',
-            'Registrant[c_6716241]': 'c_6716241',
-            'Registrant[c_6716242]': 'c_6716242',
-            'Registrant[c_6716243]': 'c_6716243',
-            'Registrant[c_6716244]': 'c_6716244',
-            'Registrant[c_6716246]': 'c_6716246',
-            'Registrant[c_6716247]': 'c_6716247',
-            'Registrant[c_6716271]': 'c_6716271',
-            'Registrant[c_6716225]': 'c_6716225',
-            'Registrant[c_6716226]': 'c_6716226',
-            'Registrant[c_6716231]': 'c_6716231',
-            'Registrant[c_6716232]': 'c_6716232',
-            'Registrant[c_6716234]': 'c_6716234',
-            'Registrant[c_6716236]': 'c_6716236',
-            'Registrant[c_6832581]': 'c_6832581',
-            'Registrant[c_6716237]': 'c_6716237',
-            'Registrant[c_6716248]': 'c_6716248',
-            'Registrant[c_6716239]': 'c_6716239',
-        }
-
-        const mappedField = fieldMapping[fieldName]
-        if (mappedField) {
+        // Extract key from fieldName like "Registrant[email]" -> "email"
+        const keyMatch = fieldName.match(/\[([^\]]+)\]/)
+        if (keyMatch) {
+            const key = keyMatch[1]
             setFormData((prev) => ({
                 ...prev,
-                [mappedField]: value,
+                [key]: value,
             }))
         }
     }
@@ -181,24 +151,19 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         value: string,
         checked: boolean
     ) => {
-        // Map field names to FormData keys for checkbox groups
-        const checkboxFieldMapping: { [key: string]: keyof FormData } = {
-            'Registrant[c_6716267]': 'c_6716267',
-            'Registrant[c_6716269]': 'c_6716269',
-            'Registrant[c_6838231]': 'c_6838231',
-        }
-
-        const mappedField = checkboxFieldMapping[fieldName]
-        if (mappedField) {
+        // Extract key from fieldName like "Registrant[c_6716267]" -> "c_6716267"
+        const keyMatch = fieldName.match(/\[([^\]]+)\]/)
+        if (keyMatch) {
+            const key = keyMatch[1]
             setFormData((prev) => {
-                const currentArray = prev[mappedField] as string[]
+                const currentArray = prev[key as keyof FormData] as string[]
                 const newArray = checked
                     ? [...currentArray, value]
                     : currentArray.filter((item) => item !== value)
 
                 return {
                     ...prev,
-                    [mappedField]: newArray,
+                    [key]: newArray,
                 }
             })
         }
@@ -229,40 +194,13 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
 
     // Helper function to get form field values
     const getFieldValue = (fieldName: string): any => {
-        const fieldMapping: { [key: string]: any } = {
-            'Registrant[email]': formData.email,
-            'Registrant[prefix]': formData.prefix,
-            'Registrant[first_name]': formData.first_name,
-            'Registrant[middle_name]': formData.middle_name,
-            'Registrant[last_name]': formData.last_name,
-            'Registrant[c_6716230]': formData.title,
-            'Registrant[c_6716228]': formData.organization,
-            'Registrant[c_6716229]': formData.c_6716229,
-            'Registrant[mobile_phone]': formData.mobile_phone,
-            'Registrant[profile_picture]': formData.profile_picture,
-            'Registrant[c_6716240]': formData.c_6716240,
-            'Registrant[c_6716241]': formData.c_6716241,
-            'Registrant[c_6716242]': formData.c_6716242,
-            'Registrant[c_6716243]': formData.c_6716243,
-            'Registrant[c_6716244]': formData.c_6716244,
-            'Registrant[c_6716246]': formData.c_6716246,
-            'Registrant[c_6716247]': formData.c_6716247,
-            'Registrant[c_6716271]': formData.c_6716271,
-            'Registrant[c_6716225]': formData.c_6716225,
-            'Registrant[c_6716226]': formData.c_6716226,
-            'Registrant[c_6716231]': formData.c_6716231,
-            'Registrant[c_6716232]': formData.c_6716232,
-            'Registrant[c_6716234]': formData.c_6716234,
-            'Registrant[c_6716236]': formData.c_6716236,
-            'Registrant[c_6832581]': formData.c_6832581,
-            'Registrant[c_6716237]': formData.c_6716237,
-            'Registrant[c_6716248]': formData.c_6716248,
-            'Registrant[c_6716239]': formData.c_6716239,
-            'Registrant[c_6716267]': formData.c_6716267,
-            'Registrant[c_6716269]': formData.c_6716269,
-            'Registrant[c_6838231]': formData.c_6838231,
+        // Extract key from fieldName like "Registrant[email]" -> "email"
+        const keyMatch = fieldName.match(/\[([^\]]+)\]/)
+        if (keyMatch) {
+            const key = keyMatch[1]
+            return formData[key as keyof FormData] || ''
         }
-        return fieldMapping[fieldName] || ''
+        return ''
     }
 
     const renderStage = (stageIndex: number) => {
