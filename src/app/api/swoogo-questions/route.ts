@@ -19,8 +19,24 @@ export async function GET(request: NextRequest) {
             // Fetch a single question
             data = await fetchSwoogoQuestion(questionId)
         } else {
-            // Fetch all questions for the event
-            data = await fetchSwoogoQuestions(eventId)
+            // Fetch all questions for the event, then get detailed data for each
+            const questions = await fetchSwoogoQuestions(eventId)
+
+            // Fetch detailed information for each question
+            const detailedQuestions = await Promise.all(
+                questions.map(async (question) => {
+                    try {
+                        const detailedQuestion = await fetchSwoogoQuestion(question.id)
+                        return detailedQuestion
+                    } catch (error) {
+                        console.error(`Failed to fetch details for question ${question.id}:`, error)
+                        // Return the basic question data if detailed fetch fails
+                        return question
+                    }
+                })
+            )
+
+            data = detailedQuestions
         }
 
         return NextResponse.json({ data })
