@@ -26,6 +26,7 @@ interface FieldRendererProps {
     onBlur?: (fieldName: string, value: any) => void
     error?: string
     formData?: any
+    fieldErrors?: { [key: string]: string }
 }
 
 const FieldRenderer: React.FC<FieldRendererProps> = ({
@@ -36,6 +37,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
     onBlur,
     error,
     formData,
+    fieldErrors,
 }) => {
     const renderField = () => {
         switch (field.type) {
@@ -267,6 +269,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                 onBlur={onBlur}
                                 error={error} // Pass through error for nested fields if needed
                                 formData={formData}
+                                fieldErrors={fieldErrors}
                             />
                         ))}
                     </fieldset>
@@ -299,12 +302,13 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                     onBlur={onBlur}
                                     error={
                                         subField.formDataKey
-                                            ? formData?.fieldErrors?.[
+                                            ? fieldErrors?.[
                                                   subField.formDataKey
                                               ]
                                             : undefined
                                     }
                                     formData={formData}
+                                    fieldErrors={fieldErrors}
                                 />
                             ))}
                         </div>

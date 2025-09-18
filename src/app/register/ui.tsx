@@ -162,6 +162,24 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
 
     const handleNextStage = (e: React.FormEvent) => {
         e.preventDefault()
+
+        // Validate current stage before proceeding
+        const validation = validateStage(currentStage - 1) // Convert to 0-based index
+
+        if (!validation.isValid) {
+            // Set field errors to show validation messages
+            setFieldErrors(validation.errors)
+            setStageValidationError(
+                `Please fix the errors above before proceeding to the next step.`
+            )
+            return // Don't proceed to next stage
+        }
+
+        // Clear any existing errors if validation passed
+        setFieldErrors({})
+        setStageValidationError(null)
+
+        // Proceed to next stage
         if (currentStage === 1) {
             setCurrentStage(2)
         } else if (currentStage === 2) {
@@ -170,6 +188,10 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
     }
 
     const handlePreviousStage = () => {
+        // Clear any stage validation errors when going back
+        setStageValidationError(null)
+        setFieldErrors({})
+
         if (currentStage === 3) {
             setCurrentStage(2)
         } else if (currentStage === 2) {
@@ -183,6 +205,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
     const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>(
         {}
     )
+    const [stageValidationError, setStageValidationError] = useState<
+        string | null
+    >(null)
 
     // Validation functions using centralized form config
     const validateEmail = (email: string): string | null => {
@@ -240,6 +265,66 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         }
 
         return null
+    }
+
+    // Helper function to get all fields from a stage (including nested fields)
+    const getAllFieldsFromStage = (stageIndex: number): FormField[] => {
+        const stage = formConfig[stageIndex]
+        if (!stage) return []
+
+        const allFields: FormField[] = []
+
+        const extractFields = (fields: FormField[]) => {
+            fields.forEach((field) => {
+                if (field.type === 'fieldset' || field.type === 'group') {
+                    if (field.fields) {
+                        extractFields(field.fields)
+                    }
+                } else {
+                    allFields.push(field)
+                }
+            })
+        }
+
+        extractFields(stage.fields)
+        return allFields
+    }
+
+    // Validate all fields in a specific stage
+    const validateStage = (
+        stageIndex: number
+    ): { isValid: boolean; errors: { [key: string]: string } } => {
+        const stageFields = getAllFieldsFromStage(stageIndex)
+        const errors: { [key: string]: string } = {}
+        let isValid = true
+
+        stageFields.forEach((field) => {
+            if (!field.formDataKey) return
+
+            let value: any
+
+            // Handle work address fields
+            if (field.formDataKey.startsWith('work_address_id.')) {
+                const addressField = field.formDataKey.replace(
+                    'work_address_id.',
+                    ''
+                )
+                value =
+                    formData.work_address_id[
+                        addressField as keyof typeof formData.work_address_id
+                    ]
+            } else {
+                value = formData[field.formDataKey as keyof FormData]
+            }
+
+            const fieldError = validateField(field.name, value)
+            if (fieldError) {
+                errors[field.formDataKey] = fieldError
+                isValid = false
+            }
+        })
+
+        return { isValid, errors }
     }
 
     const handleFieldBlur = (fieldName: string, value: any) => {
@@ -332,6 +417,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                                 : undefined
                         }
                         formData={formData}
+                        fieldErrors={fieldErrors}
                     />
                 ))}
             </div>
@@ -346,6 +432,23 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
             {renderStage(currentStage - 1)}
 
             {/* Error and Success Messages */}
+            {stageValidationError && (
+                <Box
+                    mb={2}
+                    p={2}
+                    sx={{
+                        backgroundColor: `secondary.light`,
+                        borderRadius: 1,
+                        border: `1px solid`,
+                        borderColor: 'secondary.main',
+                    }}
+                >
+                    <Typography color="secondary.dark" variant="body2">
+                        {stageValidationError}
+                    </Typography>
+                </Box>
+            )}
+
             {submitError && (
                 <Box
                     mb={2}
