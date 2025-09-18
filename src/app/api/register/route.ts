@@ -74,9 +74,15 @@ function createFieldSchema(field: any): z.ZodTypeAny {
 
     if (field.type === 'file') {
         return isRequired
-            ? z.any().refine((file) => file instanceof File || typeof file === 'string', {
-                  message: `${fieldLabel} must be a valid file`,
-              })
+            ? z
+                  .any()
+                  .refine(
+                      (file) =>
+                          file instanceof File || typeof file === 'string',
+                      {
+                          message: `${fieldLabel} must be a valid file`,
+                      }
+                  )
             : z.any().optional()
     }
 
@@ -157,18 +163,15 @@ function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
         // Handle different field types
         if (field.validationType === 'phone') {
             if (typeof value === 'string' && value.trim() !== '') {
-                // @ts-expect-error: Not an issue.
                 swoogoData[key as keyof SwoogoRegistrant] =
                     formatPhoneNumber(value)
             }
         } else if (field.validationType === 'email') {
             if (typeof value === 'string' && value.trim() !== '') {
-                // @ts-expect-error: Not an issue.
                 swoogoData[key as keyof SwoogoRegistrant] = value
             }
         } else if (field.type === 'checkbox-group') {
             if (Array.isArray(value) && value.length > 0) {
-                // @ts-expect-error: Not an issue.
                 swoogoData[key as keyof SwoogoRegistrant] = value
             }
         } else if (field.type === 'file') {
@@ -178,13 +181,11 @@ function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
                 console.log(`Skipping file upload for ${key}:`, value.name)
             } else if (typeof value === 'string' && value.trim() !== '') {
                 // Handle file as base64 or URL
-                // @ts-expect-error: Not an issue.
                 swoogoData[key as keyof SwoogoRegistrant] = value
             }
         } else {
             // Handle text and other field types
             if (typeof value === 'string' && value.trim() !== '') {
-                // @ts-expect-error: Not an issue.
                 swoogoData[key as keyof SwoogoRegistrant] = value
             } else if (typeof value !== 'string') {
                 swoogoData[key as keyof SwoogoRegistrant] = value

@@ -10,19 +10,10 @@ import {
     Stepper,
     Step,
     StepLabel,
-    TextField,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    FormGroup,
-    FormControlLabel,
-    Checkbox,
 } from '@mui/material'
 import Logo from '@/components/Logo'
 import { formConfig, getFieldByFormDataKey } from './formConfig'
 import FieldRenderer from './FieldRenderer'
-import CountrySelect from './CountrySelect'
 
 interface FormData {
     email: string
