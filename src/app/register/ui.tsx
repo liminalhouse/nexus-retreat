@@ -253,6 +253,20 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
             if (requiredError) return requiredError
         }
 
+        // Handle file type validation differently
+        if (field.type === 'file') {
+            // File validation is mostly handled in the FieldRenderer
+            // Here we validate if it's required and has valid data
+            if (field.required && (!value || value === '')) {
+                return `${field.label} is required`
+            }
+            // If we have a value, it should be a base64 string
+            if (value && typeof value === 'string' && !value.startsWith('data:')) {
+                return `${field.label} must be a valid file`
+            }
+            return null
+        }
+
         // Skip further validation if field is empty and not required
         if (!value || value === '') return null
 

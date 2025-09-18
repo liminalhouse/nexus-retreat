@@ -185,12 +185,21 @@ function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
             }
         } else if (field.type === 'file') {
             if (value instanceof File) {
-                // For now, skip file uploads as they need special handling
-                // TODO: Implement file upload to Swoogo
-                console.log(`Skipping file upload for ${key}:`, value.name)
+                // This shouldn't happen anymore since we convert to base64 on the client
+                console.log(`Unexpected File object for ${key}:`, value.name)
             } else if (typeof value === 'string' && value.trim() !== '') {
-                // Handle file as base64 or URL
-                swoogoData[key as keyof SwoogoRegistrant] = value
+                // Handle base64 encoded file data
+                if (value.startsWith('data:')) {
+                    // Extract just the base64 data without the data URL prefix
+                    const base64Data = value.split(',')[1]
+                    if (base64Data) {
+                        swoogoData[key as keyof SwoogoRegistrant] = base64Data
+                        console.log(`Processed file upload for ${key}: ${base64Data.length} characters`)
+                    }
+                } else {
+                    // Handle other string formats (URL, etc.)
+                    swoogoData[key as keyof SwoogoRegistrant] = value
+                }
             }
         } else {
             // Handle text and other field types

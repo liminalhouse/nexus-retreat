@@ -14,6 +14,30 @@ import { FormField } from './formConfig'
 import CountrySelect from './CountrySelect'
 import styles from '../register/register.module.scss'
 
+// Helper function to convert File to base64 with validation
+const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        // Validate file size (max 5MB)
+        const maxSize = 5 * 1024 * 1024 // 5MB
+        if (file.size > maxSize) {
+            reject(new Error('File size must be less than 5MB'))
+            return
+        }
+
+        // Validate file type
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+        if (!allowedTypes.includes(file.type)) {
+            reject(new Error('File must be an image (JPEG, PNG, GIF, or WebP)'))
+            return
+        }
+
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = (error) => reject(error)
+    })
+}
+
 interface FieldRendererProps {
     field: FormField
     value: any
@@ -233,14 +257,39 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             id={field.id}
                             name={field.name}
                             accept={field.accept}
-                            onChange={(e) =>
-                                onChange(
-                                    field.name,
-                                    e.target.files?.[0] || null
-                                )
-                            }
+                            onChange={async (e) => {
+                                const file = e.target.files?.[0]
+                                if (file) {
+                                    try {
+                                        // Convert file to base64
+                                        const base64 = await fileToBase64(file)
+                                        onChange(field.name, base64)
+                                    } catch (error) {
+                                        console.error('Error converting file to base64:', error)
+                                        // Show error to user via onBlur if available
+                                        if (onBlur) {
+                                            onBlur(field.name, error instanceof Error ? error.message : 'File upload failed')
+                                        }
+                                        onChange(field.name, null)
+                                        // Clear the input
+                                        e.target.value = ''
+                                    }
+                                } else {
+                                    onChange(field.name, null)
+                                }
+                            }}
                             aria-describedby={field.ariaDescribedBy}
                         />
+                        {value && typeof value === 'string' && value.startsWith('data:') && (
+                            <div style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#4caf50' }}>
+                                ✓ File uploaded successfully ({Math.round(value.length / 1024)}KB)
+                            </div>
+                        )}
+                        {error && (
+                            <div style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#f44336' }}>
+                                {error}
+                            </div>
+                        )}
                     </div>
                 )
 
