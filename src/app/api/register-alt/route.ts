@@ -7,7 +7,7 @@ import {
     getEmailFields,
     getAllFormFields,
     getFieldByFormDataKey
-} from '../register-alt/formConfig'
+} from '../../register-alt/formConfig'
 
 // Phone number validation and formatting
 function formatPhoneNumber(phone: string): string {

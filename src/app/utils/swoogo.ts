@@ -178,7 +178,7 @@ interface SwoogoRegistrant {
     c_6716237?: string // secondary_point_of_contact_phone
     c_6832581?: string // guest_name
     c_6716248?: string // guest_relation
-    c_6716239?: string // guest_email
+    c_6716263?: string // guest_email
     c_6716267?: string[] // complimentary_accommodations
     c_6716269?: string[] // dinner_attendance
     c_6838231?: string[] // activities
@@ -202,18 +202,20 @@ export async function createSwoogoRegistrant(
     const response = await fetch(`${baseUrl}/api/v1/registrants`, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify({
             event_id: eventId,
-            ...registrantData
-        })
+            ...registrantData,
+        }),
     })
 
     if (!response.ok) {
         const errorText = await response.text()
-        throw new Error(`Failed to create registrant: ${response.statusText} - ${errorText}`)
+        throw new Error(
+            `Failed to create registrant: ${response.statusText} - ${errorText}`
+        )
     }
 
     return await response.json()

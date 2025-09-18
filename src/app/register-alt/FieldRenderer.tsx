@@ -23,6 +23,8 @@ interface FieldRendererProps {
         value: string,
         checked: boolean
     ) => void
+    onBlur?: (fieldName: string, value: any) => void
+    error?: string
     formData?: any
 }
 
@@ -31,6 +33,8 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
     value,
     onChange,
     onCheckboxChange,
+    onBlur,
+    error,
     formData,
 }) => {
     const renderField = () => {
@@ -49,12 +53,22 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             fullWidth
                             required={field.required}
                             value={value || ''}
-                            onChange={(e) =>
-                                onChange(field.name, e.target.value)
-                            }
-                            aria-describedby={field.ariaDescribedBy}
+                            onChange={(e) => {
+                                let inputValue = e.target.value
+                                // Filter phone number inputs to only allow valid characters
+                                if (field.validationType === 'phone') {
+                                    inputValue = inputValue.replace(
+                                        /[^0-9+\-\s()]/g,
+                                        ''
+                                    )
+                                }
+                                onChange(field.name, inputValue)
+                            }}
+                            onBlur={(e) => onBlur?.(field.name, e.target.value)}
                             autoComplete={field.autoComplete}
                             placeholder={field.placeholder}
+                            error={Boolean(error)} // Convert error string to boolean
+                            helperText={error} // Show validation error
                         />
                         {field.hintText && (
                             <div className={styles.hintBlock}>
@@ -81,9 +95,11 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             onChange={(e) =>
                                 onChange(field.name, e.target.value)
                             }
-                            aria-describedby={field.ariaDescribedBy}
+                            onBlur={(e) => onBlur?.(field.name, e.target.value)}
                             placeholder={field.placeholder}
                             className={styles.textareaInput}
+                            error={Boolean(error)}
+                            helperText={error}
                         />
                         {field.hintText && (
                             <div className={styles.hintBlock}>
@@ -105,7 +121,11 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                 }
 
                 return (
-                    <FormControl fullWidth className={styles.formField}>
+                    <FormControl
+                        fullWidth
+                        className={styles.formField}
+                        error={Boolean(error)}
+                    >
                         <InputLabel>{field.label}</InputLabel>
                         <Select
                             name={field.name}
@@ -114,6 +134,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             onChange={(e) =>
                                 onChange(field.name, e.target.value)
                             }
+                            onBlur={(e) => onBlur?.(field.name, e.target.value)}
                             required={field.required}
                         >
                             {field.options?.map((option) => (
@@ -125,6 +146,18 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                 </MenuItem>
                             ))}
                         </Select>
+                        {error && (
+                            <div
+                                style={{
+                                    color: '#d32f2f',
+                                    fontSize: '0.75rem',
+                                    marginTop: '3px',
+                                    marginLeft: '14px',
+                                }}
+                            >
+                                {error}
+                            </div>
+                        )}
                     </FormControl>
                 )
 
@@ -225,6 +258,8 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                     }
                                 }}
                                 onCheckboxChange={onCheckboxChange}
+                                onBlur={onBlur}
+                                error={error} // Pass through error for nested fields if needed
                                 formData={formData}
                             />
                         ))}

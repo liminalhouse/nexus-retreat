@@ -20,7 +20,7 @@ import {
     Checkbox,
 } from '@mui/material'
 import Logo from '@/components/Logo'
-import { formConfig } from './formConfig'
+import { formConfig, getFieldByFormDataKey } from './formConfig'
 import FieldRenderer from './FieldRenderer'
 import CountrySelect from './CountrySelect'
 
@@ -43,7 +43,7 @@ interface FormData {
         country_code: string
     }
     mobile_phone: string
-    profile_picture: File | null
+    profile_picture: File | ''
     c_6716240: string // name_for_credentials
     c_6716241: string // organization_for_credentials
     c_6716242: string // emergency_contact_name
@@ -63,7 +63,7 @@ interface FormData {
     c_6832581: string // guest_name
     c_6716237: string // secondary_point_of_contact_phone
     c_6716248: string // guest_relation
-    c_6716239: string // guest_email
+    c_6716263: string // guest_email
     c_6838231: string[] // activities
 }
 
@@ -95,7 +95,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
             country_code: '',
         },
         mobile_phone: '',
-        profile_picture: null,
+        profile_picture: '',
         c_6716240: '', // name_for_credentials
         c_6716241: '', // organization_for_credentials
         c_6716242: '', // emergency_contact_name
@@ -115,7 +115,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         c_6832581: '', // guest_name
         c_6716237: '', // secondary_point_of_contact_phone
         c_6716248: '', // guest_relation
-        c_6716239: '', // guest_email
+        c_6716263: '', // guest_email
         c_6838231: [], // activities
     })
 
@@ -189,7 +189,79 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitError, setSubmitError] = useState<string | null>(null)
     const [submitSuccess, setSubmitSuccess] = useState(false)
-    const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({})
+    const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>(
+        {}
+    )
+
+    // Validation functions using centralized form config
+    const validateEmail = (email: string): string | null => {
+        if (!email) return null
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        return emailRegex.test(email)
+            ? null
+            : 'Please enter a valid email address'
+    }
+
+    const validatePhone = (phone: string): string | null => {
+        if (!phone) return null
+        const digits = phone.replace(/\D/g, '')
+        if (digits.length < 10) return 'Phone number must be at least 10 digits'
+        if (digits.length > 15)
+            return 'Phone number must be less than 15 digits'
+        return null
+    }
+
+    const validateRequired = (
+        value: string,
+        fieldLabel: string
+    ): string | null => {
+        if (!value || value.trim() === '') {
+            return `${fieldLabel} is required`
+        }
+        return null
+    }
+
+    // Field validation using form config
+    const validateField = (fieldName: string, value: any): string | null => {
+        // Extract form data key from field name
+        const key = fieldName.match(/\[([^\]]+)\]$/)?.[1] || fieldName
+
+        // Get field config
+        const field = getFieldByFormDataKey(key)
+        if (!field) return null
+
+        // Check required validation first
+        if (field.required) {
+            const requiredError = validateRequired(value, field.label)
+            if (requiredError) return requiredError
+        }
+
+        // Skip further validation if field is empty and not required
+        if (!value || value === '') return null
+
+        // Apply specific validation based on field type
+        if (field.validationType === 'email') {
+            return validateEmail(value)
+        }
+
+        if (field.validationType === 'phone') {
+            return validatePhone(value)
+        }
+
+        return null
+    }
+
+    const handleFieldBlur = (fieldName: string, value: any) => {
+        const error = validateField(fieldName, value)
+
+        // Extract form data key from field name
+        const key = fieldName.match(/\[([^\]]+)\]$/)?.[1] || fieldName
+
+        setFieldErrors((prev) => ({
+            ...prev,
+            [key]: error || '',
+        }))
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -213,8 +285,8 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                 },
                 body: JSON.stringify({
                     event_id: eventId,
-                    ...formData
-                })
+                    ...formData,
+                }),
             })
 
             const result = await response.json()
@@ -228,10 +300,11 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
 
             // Optionally redirect or show success message
             // router.push('/registration-success')
-
         } catch (error) {
             console.error('Registration error:', error)
-            setSubmitError(error instanceof Error ? error.message : 'Registration failed')
+            setSubmitError(
+                error instanceof Error ? error.message : 'Registration failed'
+            )
         } finally {
             setIsSubmitting(false)
         }
@@ -261,14 +334,18 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                         value={getFieldValue(field.name)}
                         onChange={handleInputChange}
                         onCheckboxChange={handleCheckboxChange}
+                        onBlur={handleFieldBlur}
+                        error={
+                            field.formDataKey
+                                ? fieldErrors[field.formDataKey]
+                                : undefined
+                        }
                         formData={formData}
                     />
                 ))}
             </div>
         )
     }
-
-
 
     return (
         <form
@@ -279,7 +356,11 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
 
             {/* Error and Success Messages */}
             {submitError && (
-                <Box mb={2} p={2} sx={{ backgroundColor: '#ffebee', borderRadius: 1 }}>
+                <Box
+                    mb={2}
+                    p={2}
+                    sx={{ backgroundColor: '#ffebee', borderRadius: 1 }}
+                >
                     <Typography color="error" variant="body2">
                         {submitError}
                     </Typography>
@@ -287,9 +368,14 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
             )}
 
             {submitSuccess && (
-                <Box mb={2} p={2} sx={{ backgroundColor: '#e8f5e8', borderRadius: 1 }}>
+                <Box
+                    mb={2}
+                    p={2}
+                    sx={{ backgroundColor: '#e8f5e8', borderRadius: 1 }}
+                >
                     <Typography color="success.main" variant="body2">
-                        Registration successful! You will receive a confirmation email shortly.
+                        Registration successful! You will receive a confirmation
+                        email shortly.
                     </Typography>
                 </Box>
             )}
@@ -325,7 +411,11 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                         className={styles.submitButton}
                         disabled={isSubmitting || submitSuccess}
                     >
-                        {isSubmitting ? 'Registering...' : submitSuccess ? 'Registered!' : 'Register'}
+                        {isSubmitting
+                            ? 'Registering...'
+                            : submitSuccess
+                            ? 'Registered!'
+                            : 'Register'}
                     </Button>
                 )}
             </div>
