@@ -82,8 +82,6 @@ export async function fetchSwoogoQuestions(
             }
         )
 
-        console.log('ACCESSTOKEN', accessToken)
-
         if (!listResponse.ok) {
             const errorText = await listResponse.text()
             console.error(
@@ -96,11 +94,6 @@ export async function fetchSwoogoQuestions(
         }
 
         const listData = await listResponse.json()
-        console.log(
-            `Page ${currentPage} response:`,
-            JSON.stringify(listData, null, 2)
-        )
-
         if (listData.items && Array.isArray(listData.items)) {
             allQuestions.push(...listData.items)
         }

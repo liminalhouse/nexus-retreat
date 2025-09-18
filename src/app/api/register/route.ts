@@ -163,7 +163,8 @@ function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
         // Handle work address fields with dot notation
         if (key.startsWith('work_address_id.')) {
             const addressField = key.replace('work_address_id.', '')
-            const swoogoKey = `work_address_${addressField}` as keyof SwoogoRegistrant
+            const swoogoKey =
+                `work_address_${addressField}` as keyof SwoogoRegistrant
             if (typeof value === 'string' && value.trim() !== '') {
                 swoogoData[swoogoKey] = value
             }
@@ -206,15 +207,9 @@ function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
 
 export async function POST(request: NextRequest) {
     try {
-        console.log('Register-alt API called')
         const body = await request.json()
-        console.log('Request body:', JSON.stringify(body, null, 2))
-
         const validatedData = registrationSchema.parse(body)
-        console.log('Validated data:', JSON.stringify(validatedData, null, 2))
-
         const { event_id, ...formData } = validatedData
-        console.log('Event ID:', event_id)
 
         // Check if we have required environment variables
         if (
@@ -226,11 +221,6 @@ export async function POST(request: NextRequest) {
 
         // Transform form data to Swoogo format
         const swoogoData = transformFormDataToSwoogo(formData)
-        console.log(
-            'Transformed Swoogo data:',
-            JSON.stringify(swoogoData, null, 2)
-        )
-
         const result = await createSwoogoRegistrant(`${event_id}`, swoogoData)
         console.log('Swoogo API result:', JSON.stringify(result, null, 2))
 

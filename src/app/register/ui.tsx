@@ -294,21 +294,26 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
     // Render confirmation stage
     const renderConfirmationStage = () => {
         return (
-            <div className={styles.inputGroup}>
+            <div className={styles.confirmationStage}>
                 <Box textAlign="center" py={4}>
-                    <Typography variant="h4" color="success.main" gutterBottom>
-                        🎉 Registration Successful!
-                    </Typography>
-                    <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-                        Thank you for registering for the Retreat
+                    <Typography variant="h4" color="primary.main" gutterBottom>
+                        Thank you for registering for the retreat!
                     </Typography>
                     <Typography
                         variant="body1"
-                        color="text.secondary"
-                        sx={{ mt: 2, mb: 4 }}
+                        gutterBottom
+                        sx={{ mt: 2, mx: 'auto', maxWidth: '80%' }}
                     >
-                        You will receive a confirmation email shortly with all
-                        the details for your trip.
+                        We look forward to seeing you at The Boca Raton from
+                        March 18-20, 2026. Stay tuned for programming and
+                        logistical updates as we near the event.
+                        <br />
+                        <br />
+                        For any questions, please contact Virginia Slattery at{' '}
+                        <a href="mailto:vslattery@globalsportsleaders.com">
+                            vslattery@globalsportsleaders.com
+                        </a>{' '}
+                        and <a href="tel:+19178031481">+1 917-803-1481</a>.
                     </Typography>
 
                     {registrationResult && (
@@ -340,18 +345,6 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                             )}
                         </Box>
                     )}
-
-                    <Box sx={{ mt: 4 }}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            size="large"
-                            href="/"
-                            sx={{ mr: 2 }}
-                        >
-                            Return to Home
-                        </Button>
-                    </Box>
                 </Box>
             </div>
         )
@@ -438,7 +431,6 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                 throw new Error(result.message || 'Registration failed')
             }
 
-            console.log('Registration successful:', result)
             setSubmitSuccess(true)
             setRegistrationResult(result)
 
@@ -534,19 +526,6 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                 </Box>
             )}
 
-            {submitSuccess && (
-                <Box
-                    mb={2}
-                    p={2}
-                    sx={{ backgroundColor: '#e8f5e8', borderRadius: 1 }}
-                >
-                    <Typography color="success.main" variant="body2">
-                        Registration successful! You will receive a confirmation
-                        email shortly.
-                    </Typography>
-                </Box>
-            )}
-
             {currentStage <= 3 && (
                 <div className={styles.buttonGroup}>
                     {(currentStage === 2 || currentStage === 3) && (
@@ -606,15 +585,17 @@ const UI = () => {
                     >
                         &larr; Back to home
                     </Button>
-                    <div className={styles.header}>
-                        <div className={styles.logo}>
-                            <Logo $logoType="default" />
+                    {currentStage <= 3 && (
+                        <div className={styles.header}>
+                            <div className={styles.logo}>
+                                <Logo $logoType="default" />
+                            </div>
+                            <h1 className={styles.title}>
+                                Register for the Retreat
+                            </h1>
+                            <p className={styles.subtitle}>March 18-20, 2026</p>
                         </div>
-                        <h1 className={styles.title}>
-                            Register for the Retreat
-                        </h1>
-                        <p className={styles.subtitle}>March 18-20, 2026</p>
-                    </div>
+                    )}
 
                     {currentStage <= 3 && (
                         <Box mb={3}>

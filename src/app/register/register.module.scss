@@ -341,3 +341,14 @@
 .textareaInput {
     width: 100%;
 }
+
+.confirmationStage {
+    a {
+        color: var(--boca-blue);
+        transition: color 0.15s linear;
+
+        &:hover {
+            color: var(--boca-navy);
+        }
+    }
+}
