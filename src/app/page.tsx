@@ -4,6 +4,7 @@ import Image from 'next/image'
 import styles from './page.module.scss'
 import FAQ from './components/FAQ'
 import Logo from './components/Logo'
+import { Button } from '@mui/material'
 
 export default async function Home() {
     const session = await getSession()
@@ -47,6 +48,28 @@ export default async function Home() {
                         this retreat remains the only event of its kind
                         dedicated exclusively to the global sports leadership.
                     </p>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        sx={{
+                            fontWeight: 600,
+                            fontSize: '1.1rem',
+                            zIndex: 1,
+                            background: `var(--blue-gradient)`,
+                            letterSpacing: '0.1rem',
+                            transition: 'all 0.3s linear',
+                            color: 'white !important',
+                            marginTop: '2rem',
+                            // color: 'var(--boca-navy)',
+                            '&:hover': {
+                                background: 'var(--boca-navy)',
+                                color: 'var(--link-hover) !important',
+                            },
+                        }}
+                        href="/register"
+                    >
+                        Register &raquo;
+                    </Button>
                 </div>
             </header>
             <main className={styles.main}>

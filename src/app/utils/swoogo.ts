@@ -157,7 +157,7 @@ interface SwoogoRegistrant {
     work_address_state?: string
     work_address_zip?: string
     work_address_country_code?: string
-    profile_picture?: string | File
+    profile_picture?: any | undefined
     // Custom fields with c_ prefix
     c_6716229?: string // office_phone
     c_6716230?: string // title (legacy)

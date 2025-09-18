@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSwoogoRegistrant, type SwoogoRegistrant } from '@/utils/swoogo'
 import { z } from 'zod'
-import {
-    getRequiredFields,
-    getPhoneFields,
-    getEmailFields,
-    getAllFormFields,
-    getFieldByFormDataKey,
-} from '../../register/formConfig'
+import { getAllFormFields } from '../../register/formConfig'
 
 // Phone number validation and formatting
 function formatPhoneNumber(phone: string): string {
@@ -53,10 +47,9 @@ function createFieldSchema(field: any): z.ZodTypeAny {
     if (field.validationType === 'email') {
         return isRequired
             ? z
-                  .string()
                   .email(`${fieldLabel} must be valid`)
                   .min(1, `${fieldLabel} is required`)
-            : z.string().email().optional().or(z.literal(''))
+            : z.email().optional().or(z.literal(''))
     }
 
     if (field.validationType === 'phone') {
@@ -77,6 +70,14 @@ function createFieldSchema(field: any): z.ZodTypeAny {
 
     if (field.type === 'checkbox-group') {
         return z.array(z.string()).optional()
+    }
+
+    if (field.type === 'file') {
+        return isRequired
+            ? z.any().refine((file) => file instanceof File || typeof file === 'string', {
+                  message: `${fieldLabel} must be a valid file`,
+              })
+            : z.any().optional()
     }
 
     // Default text validation
@@ -167,6 +168,16 @@ function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
             }
         } else if (field.type === 'checkbox-group') {
             if (Array.isArray(value) && value.length > 0) {
+                // @ts-expect-error: Not an issue.
+                swoogoData[key as keyof SwoogoRegistrant] = value
+            }
+        } else if (field.type === 'file') {
+            if (value instanceof File) {
+                // For now, skip file uploads as they need special handling
+                // TODO: Implement file upload to Swoogo
+                console.log(`Skipping file upload for ${key}:`, value.name)
+            } else if (typeof value === 'string' && value.trim() !== '') {
+                // Handle file as base64 or URL
                 // @ts-expect-error: Not an issue.
                 swoogoData[key as keyof SwoogoRegistrant] = value
             }

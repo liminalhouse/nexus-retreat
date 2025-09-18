@@ -43,7 +43,7 @@ interface FormData {
         country_code: string
     }
     mobile_phone: string
-    profile_picture: File | ''
+    profile_picture?: any | undefined
     c_6716240: string // name_for_credentials
     c_6716241: string // organization_for_credentials
     c_6716242: string // emergency_contact_name
@@ -95,7 +95,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
             country_code: '',
         },
         mobile_phone: '',
-        profile_picture: '',
+        profile_picture: undefined,
         c_6716240: '', // name_for_credentials
         c_6716241: '', // organization_for_credentials
         c_6716242: '', // emergency_contact_name

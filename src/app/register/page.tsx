@@ -2,9 +2,9 @@ import UI from './ui'
 
 export const metadata = {
     title: 'Register - Nexus Retreat',
-    description: 'Register for the exclusive Nexus Retreat gathering of international sports leaders'
+    description: '',
 }
 
-export default function RegisterAltPage() {
+export default function RegisterPage() {
     return <UI />
 }
