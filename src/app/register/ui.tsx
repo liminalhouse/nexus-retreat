@@ -585,17 +585,21 @@ const UI = () => {
                     >
                         &larr; Back to home
                     </Button>
-                    {currentStage <= 3 && (
-                        <div className={styles.header}>
-                            <div className={styles.logo}>
-                                <Logo $logoType="default" />
-                            </div>
-                            <h1 className={styles.title}>
-                                Register for the Retreat
-                            </h1>
-                            <p className={styles.subtitle}>March 18-20, 2026</p>
+                    <div className={styles.header}>
+                        <div className={styles.logo}>
+                            <Logo $logoType="default" />
                         </div>
-                    )}
+                        {currentStage <= 3 && (
+                            <>
+                                <h1 className={styles.title}>
+                                    Register for the Retreat
+                                </h1>
+                                <p className={styles.subtitle}>
+                                    March 18-20, 2026
+                                </p>
+                            </>
+                        )}
+                    </div>
 
                     {currentStage <= 3 && (
                         <Box mb={3}>
