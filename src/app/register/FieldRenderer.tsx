@@ -163,7 +163,10 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 
             case 'checkbox-group':
                 return (
-                    <div className={styles.inputWrapper}>
+                    <div
+                        className={styles.inputWrapper}
+                        style={{ marginTop: '2rem' }}
+                    >
                         <input type="hidden" name={field.name} value="" />
                         <FormControl fullWidth>
                             <Typography
@@ -267,6 +270,45 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             />
                         ))}
                     </fieldset>
+                )
+
+            case 'group':
+                return (
+                    <div
+                        className={`${styles.fieldGroup} ${styles.groupContainer}`}
+                    >
+                        <Typography
+                            variant="h6"
+                            component="h3"
+                            className={styles.groupLabel}
+                            gutterBottom
+                        >
+                            {field.label}
+                        </Typography>
+                        <div className={styles.groupFields}>
+                            {field.fields?.map((subField) => (
+                                <FieldRenderer
+                                    key={subField.id}
+                                    field={subField}
+                                    value={getNestedValue(
+                                        formData,
+                                        subField.name
+                                    )}
+                                    onChange={onChange}
+                                    onCheckboxChange={onCheckboxChange}
+                                    onBlur={onBlur}
+                                    error={
+                                        subField.formDataKey
+                                            ? formData?.fieldErrors?.[
+                                                  subField.formDataKey
+                                              ]
+                                            : undefined
+                                    }
+                                    formData={formData}
+                                />
+                            ))}
+                        </div>
+                    </div>
                 )
 
             default:

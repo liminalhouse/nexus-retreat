@@ -98,6 +98,28 @@
         flex-direction: column;
         gap: 1.5rem;
     }
+
+    // Styles for visual grouping (group type)
+    &.groupContainer {
+        flex-direction: column;
+        padding: 0.5rem 0 1rem;
+        gap: 1rem;
+    }
+}
+
+.groupLabel {
+    color: #374151 !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    margin-bottom: 0.5rem !important;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.groupFields {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .inputGroup {
