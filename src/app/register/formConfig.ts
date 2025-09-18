@@ -202,14 +202,6 @@ const rawFormConfig: FormStage[] = [
                         autoComplete: 'address-level2',
                     },
                     {
-                        id: 'country-select',
-                        name: 'Address[Registrant][work_address_id][country_code]',
-                        type: 'select',
-                        label: 'Country',
-                        autoComplete: 'country',
-                        options: [], // Will be populated by CountrySelect component
-                    },
-                    {
                         id: 'address-registrant-work_address_id-state',
                         name: 'Address[Registrant][work_address_id][state]',
                         type: 'text',
@@ -219,8 +211,16 @@ const rawFormConfig: FormStage[] = [
                         id: 'address-registrant-work_address_id-zip',
                         name: 'Address[Registrant][work_address_id][zip]',
                         type: 'text',
-                        label: 'Zip/Postal Code',
+                        label: 'Zip / Postal Code',
                         autoComplete: 'postal-code',
+                    },
+                    {
+                        id: 'country-select',
+                        name: 'Address[Registrant][work_address_id][country_code]',
+                        type: 'select',
+                        label: 'Country',
+                        autoComplete: 'country',
+                        options: [], // Will be populated by CountrySelect component
                     },
                 ],
             },

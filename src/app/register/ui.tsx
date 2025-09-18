@@ -261,7 +261,11 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                 return `${field.label} is required`
             }
             // If we have a value, it should be a base64 string
-            if (value && typeof value === 'string' && !value.startsWith('data:')) {
+            if (
+                value &&
+                typeof value === 'string' &&
+                !value.startsWith('data:')
+            ) {
                 return `${field.label} must be a valid file`
             }
             return null
@@ -550,7 +554,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                             className={styles.backButton}
                             disabled={isSubmitting}
                         >
-                            Back
+                            &laquo; Back
                         </Button>
                     )}
                     {currentStage < 3 && (
@@ -561,7 +565,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                             className={styles.nextButton}
                             disabled={isSubmitting}
                         >
-                            Next
+                            Next &raquo;
                         </Button>
                     )}
                     {currentStage === 3 && (
