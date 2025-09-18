@@ -82,6 +82,8 @@ export async function fetchSwoogoQuestions(
             }
         )
 
+        console.log('ACCESSTOKEN', accessToken)
+
         if (!listResponse.ok) {
             const errorText = await listResponse.text()
             console.error(

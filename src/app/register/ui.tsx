@@ -463,7 +463,7 @@ const UI = () => {
                     <Stepper
                         activeStep={currentStage - 1}
                         alternativeLabel
-                        style={{ marginBottom: '2rem' }}
+                        style={{ marginBottom: '4rem', width: '100%' }}
                     >
                         {formConfig.map((stage, index) => (
                             <Step key={index}>

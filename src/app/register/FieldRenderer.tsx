@@ -166,7 +166,11 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                     <div className={styles.inputWrapper}>
                         <input type="hidden" name={field.name} value="" />
                         <FormControl fullWidth>
-                            <Typography variant="h6" gutterBottom>
+                            <Typography
+                                variant="body1"
+                                gutterBottom
+                                sx={{ fontWeight: 600 }}
+                            >
                                 {field.label}
                             </Typography>
                             <FormGroup
@@ -214,7 +218,6 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             style={{
                                 display: 'block',
                                 marginBottom: '0.5rem',
-                                fontWeight: '500',
                             }}
                         >
                             {field.label}

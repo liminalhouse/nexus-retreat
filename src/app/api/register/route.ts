@@ -160,8 +160,16 @@ function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
         if (value === '' || value === null || value === undefined) return
         if (Array.isArray(value) && value.length === 0) return
 
+        // Handle work address fields with dot notation
+        if (key.startsWith('work_address_id.')) {
+            const addressField = key.replace('work_address_id.', '')
+            const swoogoKey = `work_address_${addressField}` as keyof SwoogoRegistrant
+            if (typeof value === 'string' && value.trim() !== '') {
+                swoogoData[swoogoKey] = value
+            }
+        }
         // Handle different field types
-        if (field.validationType === 'phone') {
+        else if (field.validationType === 'phone') {
             if (typeof value === 'string' && value.trim() !== '') {
                 swoogoData[key as keyof SwoogoRegistrant] =
                     formatPhoneNumber(value)
