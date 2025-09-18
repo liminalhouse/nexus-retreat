@@ -12,7 +12,7 @@ import {
     StepLabel,
 } from '@mui/material'
 import Logo from '@/components/Logo'
-import { formConfig, getFieldByFormDataKey } from './formConfig'
+import { formConfig, FormField, getFieldByFormDataKey } from './formConfig'
 import FieldRenderer from './FieldRenderer'
 
 interface FormData {
