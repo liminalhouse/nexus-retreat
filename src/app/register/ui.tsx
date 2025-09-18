@@ -61,11 +61,13 @@ interface FormData {
 interface HardcodedRegistrationFormProps {
     currentStage: number
     setCurrentStage: (stage: number) => void
+    registrationData?: any
 }
 
 const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
     currentStage,
     setCurrentStage,
+    registrationData,
 }) => {
     const [formData, setFormData] = useState<FormData>({
         email: '',
@@ -208,6 +210,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
     const [stageValidationError, setStageValidationError] = useState<
         string | null
     >(null)
+    const [registrationResult, setRegistrationResult] = useState<any>(null)
 
     // Validation functions using centralized form config
     const validateEmail = (email: string): string | null => {
@@ -288,6 +291,72 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
 
         extractFields(stage.fields)
         return allFields
+    }
+
+    // Render confirmation stage
+    const renderConfirmationStage = () => {
+        return (
+            <div className={styles.inputGroup}>
+                <Box textAlign="center" py={4}>
+                    <Typography variant="h4" color="success.main" gutterBottom>
+                        🎉 Registration Successful!
+                    </Typography>
+                    <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+                        Thank you for registering for the Retreat
+                    </Typography>
+                    <Typography
+                        variant="body1"
+                        color="text.secondary"
+                        sx={{ mt: 2, mb: 4 }}
+                    >
+                        You will receive a confirmation email shortly with all
+                        the details for your trip.
+                    </Typography>
+
+                    {registrationResult && (
+                        <Box
+                            sx={{
+                                backgroundColor: '#f8f9fa',
+                                border: '1px solid #e9ecef',
+                                borderRadius: 2,
+                                p: 3,
+                                mt: 3,
+                                textAlign: 'left',
+                            }}
+                        >
+                            <Typography variant="h6" gutterBottom>
+                                Registration Details:
+                            </Typography>
+                            <Typography variant="body2" component="div">
+                                <strong>Name:</strong> {formData.first_name}{' '}
+                                {formData.last_name}
+                            </Typography>
+                            <Typography variant="body2" component="div">
+                                <strong>Email:</strong> {formData.email}
+                            </Typography>
+                            {registrationResult.registrant?.id && (
+                                <Typography variant="body2" component="div">
+                                    <strong>Registration ID:</strong>{' '}
+                                    {registrationResult.registrant.id}
+                                </Typography>
+                            )}
+                        </Box>
+                    )}
+
+                    <Box sx={{ mt: 4 }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            size="large"
+                            href="/"
+                            sx={{ mr: 2 }}
+                        >
+                            Return to Home
+                        </Button>
+                    </Box>
+                </Box>
+            </div>
+        )
     }
 
     // Validate all fields in a specific stage
@@ -373,9 +442,10 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
 
             console.log('Registration successful:', result)
             setSubmitSuccess(true)
+            setRegistrationResult(result)
 
-            // Optionally redirect or show success message
-            // router.push('/registration-success')
+            // Navigate to confirmation stage
+            setCurrentStage(4)
         } catch (error) {
             console.error('Registration error:', error)
             setSubmitError(
@@ -398,6 +468,11 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
     }
 
     const renderStage = (stageIndex: number) => {
+        // Handle confirmation stage (stage 4, index 3)
+        if (stageIndex === 3 || currentStage === 4) {
+            return renderConfirmationStage()
+        }
+
         const stage = formConfig[stageIndex]
         if (!stage) return null
 
@@ -474,45 +549,47 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                 </Box>
             )}
 
-            <div className={styles.buttonGroup}>
-                {(currentStage === 2 || currentStage === 3) && (
-                    <Button
-                        type="button"
-                        variant="outlined"
-                        onClick={handlePreviousStage}
-                        className={styles.backButton}
-                        disabled={isSubmitting}
-                    >
-                        Back
-                    </Button>
-                )}
-                {currentStage < 3 && (
-                    <Button
-                        type="button"
-                        variant="outlined"
-                        onClick={handleNextStage}
-                        className={styles.nextButton}
-                        disabled={isSubmitting}
-                    >
-                        Next
-                    </Button>
-                )}
-                {currentStage === 3 && (
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        className={styles.submitButton}
-                        disabled={isSubmitting || submitSuccess}
-                    >
-                        {isSubmitting
-                            ? 'Registering...'
-                            : submitSuccess
-                            ? 'Registered!'
-                            : 'Register'}
-                    </Button>
-                )}
-            </div>
+            {currentStage <= 3 && (
+                <div className={styles.buttonGroup}>
+                    {(currentStage === 2 || currentStage === 3) && (
+                        <Button
+                            type="button"
+                            variant="outlined"
+                            onClick={handlePreviousStage}
+                            className={styles.backButton}
+                            disabled={isSubmitting}
+                        >
+                            Back
+                        </Button>
+                    )}
+                    {currentStage < 3 && (
+                        <Button
+                            type="button"
+                            variant="outlined"
+                            onClick={handleNextStage}
+                            className={styles.nextButton}
+                            disabled={isSubmitting}
+                        >
+                            Next
+                        </Button>
+                    )}
+                    {currentStage === 3 && (
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            className={styles.submitButton}
+                            disabled={isSubmitting || submitSuccess}
+                        >
+                            {isSubmitting
+                                ? 'Registering...'
+                                : submitSuccess
+                                ? 'Registered!'
+                                : 'Register'}
+                        </Button>
+                    )}
+                </div>
+            )}
         </form>
     )
 }
@@ -541,39 +618,43 @@ const UI = () => {
                         <p className={styles.subtitle}>March 18-20, 2026</p>
                     </div>
 
-                    <Box mb={3}>
-                        <Box
-                            display="flex"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            mb={1}
-                        >
-                            <Typography variant="body2">
-                                Progress: {Math.round((currentStage / 3) * 100)}
-                                %
-                            </Typography>
-                            <Typography variant="body2">
-                                {currentStage} / 3
-                            </Typography>
+                    {currentStage <= 3 && (
+                        <Box mb={3}>
+                            <Box
+                                display="flex"
+                                justifyContent="space-between"
+                                alignItems="center"
+                                mb={1}
+                            >
+                                <Typography variant="body2">
+                                    Progress:{' '}
+                                    {Math.round((currentStage / 3) * 100)}%
+                                </Typography>
+                                <Typography variant="body2">
+                                    {currentStage} / 3
+                                </Typography>
+                            </Box>
+                            <LinearProgress
+                                variant="determinate"
+                                value={(currentStage / 3) * 100}
+                            />
                         </Box>
-                        <LinearProgress
-                            variant="determinate"
-                            value={(currentStage / 3) * 100}
-                        />
-                    </Box>
+                    )}
 
                     {/* Step Stepper */}
-                    <Stepper
-                        activeStep={currentStage - 1}
-                        alternativeLabel
-                        style={{ marginBottom: '2rem', width: '100%' }}
-                    >
-                        {formConfig.map((stage, index) => (
-                            <Step key={index}>
-                                <StepLabel>{stage.title}</StepLabel>
-                            </Step>
-                        ))}
-                    </Stepper>
+                    {currentStage <= 3 && (
+                        <Stepper
+                            activeStep={currentStage - 1}
+                            alternativeLabel
+                            style={{ marginBottom: '2rem', width: '100%' }}
+                        >
+                            {formConfig.map((stage, index) => (
+                                <Step key={index}>
+                                    <StepLabel>{stage.title}</StepLabel>
+                                </Step>
+                            ))}
+                        </Stepper>
+                    )}
 
                     <HardcodedRegistrationForm
                         currentStage={currentStage}
