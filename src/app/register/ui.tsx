@@ -1,423 +1,490 @@
 'use client'
 
-import styles from './register.module.scss'
-import Image from 'next/image'
+import { useState } from 'react'
+import styles from '../register/register.module.scss'
 import {
     Button,
-    Input,
+    Box,
+    Typography,
+    LinearProgress,
+    Stepper,
+    Step,
+    StepLabel,
+    TextField,
     FormControl,
     InputLabel,
     Select,
     MenuItem,
-    CircularProgress,
+    FormGroup,
+    FormControlLabel,
+    Checkbox,
 } from '@mui/material'
+import Logo from '@/components/Logo'
+import { formConfig, getFieldByFormDataKey } from './formConfig'
+import FieldRenderer from './FieldRenderer'
+import CountrySelect from './CountrySelect'
 
-interface SwoogoQuestion {
-    id: string
-    type: string
-    question: string
-    required: boolean
-    options?: Array<{
-        id: string
-        value: string
-        text: string
-        sort_order?: number
-    }>
-    field_name?: string
-    attribute?: string
-    name?: string
-    validation?: any
-    description?: string
-    [key: string]: any
+interface FormData {
+    email: string
+    reg_type_id: string
+    prefix: string
+    first_name: string
+    middle_name: string
+    last_name: string
+    title: string
+    organization: string
+    c_6716229: string // office_phone
+    work_address_id: {
+        line_1: string
+        line_2: string
+        city: string
+        state: string
+        zip: string
+        country_code: string
+    }
+    mobile_phone: string
+    profile_picture: File | ''
+    c_6716240: string // name_for_credentials
+    c_6716241: string // organization_for_credentials
+    c_6716242: string // emergency_contact_name
+    c_6716243: string // emergency_contact_relation
+    c_6716244: string // emergency_contact_email
+    c_6716246: string // emergency_contact_phone
+    c_6716271: string // jacket_size
+    c_6716247: string // dietary_restrictions_details
+    c_6716225: string // point_of_contact_name
+    c_6716226: string // point_of_contact_title
+    c_6716267: string[] // complimentary_accommodations
+    c_6716231: string // point_of_contact_email
+    c_6716269: string[] // dinner_attendance
+    c_6716232: string // point_of_contact_phone
+    c_6716234: string // secondary_point_of_contact_name
+    c_6716236: string // secondary_point_of_contact_email
+    c_6832581: string // guest_name
+    c_6716237: string // secondary_point_of_contact_phone
+    c_6716248: string // guest_relation
+    c_6716263: string // guest_email
+    c_6838231: string[] // activities
 }
 
-const RegistrationForm = ({
-    questions,
-    error,
-}: {
-    questions: SwoogoQuestion[]
-    error: any
+interface HardcodedRegistrationFormProps {
+    currentStage: number
+    setCurrentStage: (stage: number) => void
+}
+
+const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
+    currentStage,
+    setCurrentStage,
 }) => {
-    if (!questions?.length && !error) {
-        return (
-            <div className={styles.loading}>
-                <CircularProgress />
-                <p>Loading registration form...</p>
-            </div>
-        )
-    }
+    const [formData, setFormData] = useState<FormData>({
+        email: '',
+        reg_type_id: '',
+        prefix: '',
+        first_name: '',
+        middle_name: '',
+        last_name: '',
+        title: '',
+        organization: '',
+        c_6716229: '', // office_phone
+        work_address_id: {
+            line_1: '',
+            line_2: '',
+            city: '',
+            state: '',
+            zip: '',
+            country_code: '',
+        },
+        mobile_phone: '',
+        profile_picture: '',
+        c_6716240: '', // name_for_credentials
+        c_6716241: '', // organization_for_credentials
+        c_6716242: '', // emergency_contact_name
+        c_6716243: '', // emergency_contact_relation
+        c_6716244: '', // emergency_contact_email
+        c_6716246: '', // emergency_contact_phone
+        c_6716271: '', // jacket_size
+        c_6716247: '', // dietary_restrictions_details
+        c_6716225: '', // point_of_contact_name
+        c_6716226: '', // point_of_contact_title
+        c_6716267: [], // complimentary_accommodations
+        c_6716231: '', // point_of_contact_email
+        c_6716269: [], // dinner_attendance
+        c_6716232: '', // point_of_contact_phone
+        c_6716234: '', // secondary_point_of_contact_name
+        c_6716236: '', // secondary_point_of_contact_email
+        c_6832581: '', // guest_name
+        c_6716237: '', // secondary_point_of_contact_phone
+        c_6716248: '', // guest_relation
+        c_6716263: '', // guest_email
+        c_6838231: [], // activities
+    })
 
-    if (error) {
-        return (
-            <div className={styles.error}>
-                <p>Failed to load registration form. Please try again.</p>
-            </div>
-        )
-    }
-
-    const renderField = (question: SwoogoQuestion) => {
-        const {
-            id,
-            type,
-            question: label,
-            required,
-            options,
-            field_name,
-            attribute,
-            name,
-        } = question
-
-        // Use field_name or attribute as the field identifier
-        const fieldName = field_name || attribute || name || `field_${id}`
-        const fieldLabel = label || name || `Question ${id}`
-
-        // Skip certain fields that shouldn't be shown in the form
-        if (
-            fieldName === 'password' ||
-            fieldName === 'vat_number' ||
-            fieldName === 'reg_type_id' ||
-            fieldName?.startsWith('h_') ||
-            fieldName?.startsWith('sq_')
-        ) {
-            return null
+    const handleInputChange = (
+        fieldName: string,
+        value: any,
+        subfield?: string
+    ) => {
+        if (subfield) {
+            setFormData((prev) => ({
+                ...prev,
+                work_address_id: {
+                    ...prev.work_address_id,
+                    [subfield]: value,
+                },
+            }))
+            return
         }
 
-        // Handle different field types based on the detailed question data
-        switch (type?.toLowerCase()) {
-            case 'select':
-            case 'dropdown':
-                return (
-                    <FormControl
-                        key={id}
-                        fullWidth
-                        className={styles.formField}
-                    >
-                        <InputLabel>
-                            {fieldLabel} {required && '*'}
-                        </InputLabel>
-                        <Select
-                            name={fieldName}
-                            label={`${fieldLabel} ${required ? '*' : ''}`}
-                            required={required}
-                        >
-                            <MenuItem value="">Select {fieldLabel}</MenuItem>
-                            {options?.map((option) => (
-                                <MenuItem
-                                    key={option.id || option.value}
-                                    value={option.value}
-                                >
-                                    {option.text || option.value}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                )
-
-            case 'radioList':
-                return (
-                    <div key={id} className={styles.inputWrapper}>
-                        <label
-                            style={{
-                                display: 'block',
-                                marginBottom: '0.5rem',
-                                fontWeight: '500',
-                            }}
-                        >
-                            {fieldLabel} {required && '*'}
-                        </label>
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '0.5rem',
-                            }}
-                        >
-                            {options?.map((option) => (
-                                <label
-                                    key={option.id || option.value}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.5rem',
-                                    }}
-                                >
-                                    <input
-                                        type="radio"
-                                        name={fieldName}
-                                        value={option.value}
-                                        required={required}
-                                    />
-                                    {option.text || option.value}
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-                )
-
-            case 'checkboxList':
-                if (options && options.length > 1) {
-                    return (
-                        <div key={id} className={styles.inputWrapper}>
-                            <label
-                                style={{
-                                    display: 'block',
-                                    marginBottom: '0.5rem',
-                                    fontWeight: '500',
-                                }}
-                            >
-                                {fieldLabel} {required && '*'}
-                            </label>
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '0.5rem',
-                                }}
-                            >
-                                {options.map((option) => (
-                                    <label
-                                        key={option.id || option.value}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '0.5rem',
-                                        }}
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            name={`${fieldName}[]`}
-                                            value={option.value}
-                                        />
-                                        {option.text || option.value}
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-                    )
-                } else {
-                    return (
-                        <div key={id} className={styles.inputWrapper}>
-                            <label
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.5rem',
-                                }}
-                            >
-                                <input
-                                    type="checkbox"
-                                    name={fieldName}
-                                    required={required}
-                                />
-                                {fieldLabel} {required && '*'}
-                            </label>
-                        </div>
-                    )
-                }
-
-            case 'textarea':
-                return (
-                    <div key={id} className={styles.inputWrapper}>
-                        <textarea
-                            name={fieldName}
-                            placeholder={fieldLabel}
-                            required={required}
-                            rows={4}
-                            style={{
-                                width: '100%',
-                                padding: '1rem 1.25rem',
-                                fontSize: '1rem',
-                                border: '2px solid rgba(0, 0, 0, 0.08)',
-                                borderRadius: '12px',
-                                background: 'rgba(248, 249, 250, 0.8)',
-                                transition:
-                                    'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                resize: 'vertical',
-                                fontFamily: 'inherit',
-                            }}
-                        />
-                        <span className={styles.bar} />
-                    </div>
-                )
-
-            case 'file':
-                return (
-                    <div key={id} className={styles.inputWrapper}>
-                        <label
-                            style={{
-                                display: 'block',
-                                marginBottom: '0.5rem',
-                                fontWeight: '500',
-                            }}
-                        >
-                            {fieldLabel} {required && '*'}
-                        </label>
-                        <input
-                            type="file"
-                            name={fieldName}
-                            required={required}
-                            style={{
-                                width: '100%',
-                                padding: '1rem 1.25rem',
-                                fontSize: '1rem',
-                                border: '2px solid rgba(0, 0, 0, 0.08)',
-                                borderRadius: '12px',
-                                background: 'rgba(248, 249, 250, 0.8)',
-                            }}
-                        />
-                    </div>
-                )
-
-            case 'date':
-                return (
-                    <div key={id} className={styles.inputWrapper}>
-                        <Input
-                            name={fieldName}
-                            type="date"
-                            placeholder={fieldLabel}
-                            fullWidth
-                            required={required}
-                        />
-                        <span className={styles.bar} />
-                    </div>
-                )
-
-            case 'email':
-                return (
-                    <div key={id} className={styles.inputWrapper}>
-                        <Input
-                            name={fieldName}
-                            type="email"
-                            placeholder={fieldLabel}
-                            fullWidth
-                            required={required}
-                            autoComplete="email"
-                        />
-                        <span className={styles.bar} />
-                    </div>
-                )
-
-            case 'phone':
-            case 'tel':
-                return (
-                    <div key={id} className={styles.inputWrapper}>
-                        <Input
-                            name={fieldName}
-                            type="tel"
-                            placeholder={fieldLabel}
-                            fullWidth
-                            required={required}
-                            autoComplete="tel"
-                        />
-                        <span className={styles.bar} />
-                    </div>
-                )
-
-            case 'number':
-                return (
-                    <div key={id} className={styles.inputWrapper}>
-                        <Input
-                            name={fieldName}
-                            type="number"
-                            placeholder={fieldLabel}
-                            fullWidth
-                            required={required}
-                        />
-                        <span className={styles.bar} />
-                    </div>
-                )
-
-            case 'text':
-            default:
-                // Determine input type based on field name for fallback
-                let inputType = 'text'
-                if (fieldName?.includes('email')) {
-                    inputType = 'email'
-                } else if (fieldName?.includes('phone')) {
-                    inputType = 'tel'
-                }
-
-                return (
-                    <div key={id} className={styles.inputWrapper}>
-                        <Input
-                            name={fieldName}
-                            type={inputType}
-                            placeholder={fieldLabel}
-                            fullWidth
-                            required={required}
-                            autoComplete={
-                                inputType === 'email'
-                                    ? 'email'
-                                    : inputType === 'tel'
-                                    ? 'tel'
-                                    : 'on'
-                            }
-                        />
-                        <span className={styles.bar} />
-                    </div>
-                )
+        // Extract key from fieldName like "Registrant[email]" -> "email"
+        const keyMatch = fieldName.match(/\[([^\]]+)\]/)
+        if (keyMatch) {
+            const key = keyMatch[1]
+            setFormData((prev) => ({
+                ...prev,
+                [key]: value,
+            }))
         }
+    }
+
+    const handleCheckboxChange = (
+        fieldName: string,
+        value: string,
+        checked: boolean
+    ) => {
+        // Extract key from fieldName like "Registrant[c_6716267]" -> "c_6716267"
+        const keyMatch = fieldName.match(/\[([^\]]+)\]/)
+        if (keyMatch) {
+            const key = keyMatch[1]
+            setFormData((prev) => {
+                const currentArray = prev[key as keyof FormData] as string[]
+                const newArray = checked
+                    ? [...currentArray, value]
+                    : currentArray.filter((item) => item !== value)
+
+                return {
+                    ...prev,
+                    [key]: newArray,
+                }
+            })
+        }
+    }
+
+    const handleNextStage = (e: React.FormEvent) => {
+        e.preventDefault()
+        if (currentStage === 1) {
+            setCurrentStage(2)
+        } else if (currentStage === 2) {
+            setCurrentStage(3)
+        }
+    }
+
+    const handlePreviousStage = () => {
+        if (currentStage === 3) {
+            setCurrentStage(2)
+        } else if (currentStage === 2) {
+            setCurrentStage(1)
+        }
+    }
+
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [submitError, setSubmitError] = useState<string | null>(null)
+    const [submitSuccess, setSubmitSuccess] = useState(false)
+    const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>(
+        {}
+    )
+
+    // Validation functions using centralized form config
+    const validateEmail = (email: string): string | null => {
+        if (!email) return null
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        return emailRegex.test(email)
+            ? null
+            : 'Please enter a valid email address'
+    }
+
+    const validatePhone = (phone: string): string | null => {
+        if (!phone) return null
+        const digits = phone.replace(/\D/g, '')
+        if (digits.length < 10) return 'Phone number must be at least 10 digits'
+        if (digits.length > 15)
+            return 'Phone number must be less than 15 digits'
+        return null
+    }
+
+    const validateRequired = (
+        value: string,
+        fieldLabel: string
+    ): string | null => {
+        if (!value || value.trim() === '') {
+            return `${fieldLabel} is required`
+        }
+        return null
+    }
+
+    // Field validation using form config
+    const validateField = (fieldName: string, value: any): string | null => {
+        // Extract form data key from field name
+        const key = fieldName.match(/\[([^\]]+)\]$/)?.[1] || fieldName
+
+        // Get field config
+        const field = getFieldByFormDataKey(key)
+        if (!field) return null
+
+        // Check required validation first
+        if (field.required) {
+            const requiredError = validateRequired(value, field.label)
+            if (requiredError) return requiredError
+        }
+
+        // Skip further validation if field is empty and not required
+        if (!value || value === '') return null
+
+        // Apply specific validation based on field type
+        if (field.validationType === 'email') {
+            return validateEmail(value)
+        }
+
+        if (field.validationType === 'phone') {
+            return validatePhone(value)
+        }
+
+        return null
+    }
+
+    const handleFieldBlur = (fieldName: string, value: any) => {
+        const error = validateField(fieldName, value)
+
+        // Extract form data key from field name
+        const key = fieldName.match(/\[([^\]]+)\]$/)?.[1] || fieldName
+
+        setFieldErrors((prev) => ({
+            ...prev,
+            [key]: error || '',
+        }))
+    }
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setIsSubmitting(true)
+        setSubmitError(null)
+
+        try {
+            console.log('Submitting form data:', formData)
+
+            // Get event ID from environment or use a default
+            const eventId = process.env.NEXT_PUBLIC_SWOOGO_EVENT_ID || ''
+
+            if (!eventId) {
+                throw new Error('Event ID not configured')
+            }
+
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    event_id: eventId,
+                    ...formData,
+                }),
+            })
+
+            const result = await response.json()
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Registration failed')
+            }
+
+            console.log('Registration successful:', result)
+            setSubmitSuccess(true)
+
+            // Optionally redirect or show success message
+            // router.push('/registration-success')
+        } catch (error) {
+            console.error('Registration error:', error)
+            setSubmitError(
+                error instanceof Error ? error.message : 'Registration failed'
+            )
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    // Helper function to get form field values
+    const getFieldValue = (fieldName: string): any => {
+        // Extract key from fieldName like "Registrant[email]" -> "email"
+        const keyMatch = fieldName.match(/\[([^\]]+)\]/)
+        if (keyMatch) {
+            const key = keyMatch[1]
+            return formData[key as keyof FormData] || ''
+        }
+        return ''
+    }
+
+    const renderStage = (stageIndex: number) => {
+        const stage = formConfig[stageIndex]
+        if (!stage) return null
+
+        return (
+            <div className={styles.inputGroup}>
+                {stage.fields.map((field) => (
+                    <FieldRenderer
+                        key={field.id}
+                        field={field}
+                        value={getFieldValue(field.name)}
+                        onChange={handleInputChange}
+                        onCheckboxChange={handleCheckboxChange}
+                        onBlur={handleFieldBlur}
+                        error={
+                            field.formDataKey
+                                ? fieldErrors[field.formDataKey]
+                                : undefined
+                        }
+                        formData={formData}
+                    />
+                ))}
+            </div>
+        )
     }
 
     return (
-        <form className={styles.form}>
-            <div className={styles.inputGroup}>
-                {questions.map(renderField).filter(Boolean)}
+        <form
+            className={styles.form}
+            onSubmit={currentStage === 3 ? handleSubmit : handleNextStage}
+        >
+            {renderStage(currentStage - 1)}
+
+            {/* Error and Success Messages */}
+            {submitError && (
+                <Box
+                    mb={2}
+                    p={2}
+                    sx={{ backgroundColor: '#ffebee', borderRadius: 1 }}
+                >
+                    <Typography color="error" variant="body2">
+                        {submitError}
+                    </Typography>
+                </Box>
+            )}
+
+            {submitSuccess && (
+                <Box
+                    mb={2}
+                    p={2}
+                    sx={{ backgroundColor: '#e8f5e8', borderRadius: 1 }}
+                >
+                    <Typography color="success.main" variant="body2">
+                        Registration successful! You will receive a confirmation
+                        email shortly.
+                    </Typography>
+                </Box>
+            )}
+
+            <div className={styles.buttonGroup}>
+                {(currentStage === 2 || currentStage === 3) && (
+                    <Button
+                        type="button"
+                        variant="outlined"
+                        onClick={handlePreviousStage}
+                        className={styles.backButton}
+                        disabled={isSubmitting}
+                    >
+                        Back
+                    </Button>
+                )}
+                {currentStage < 3 && (
+                    <Button
+                        type="button"
+                        variant="outlined"
+                        onClick={handleNextStage}
+                        className={styles.nextButton}
+                        disabled={isSubmitting}
+                    >
+                        Next
+                    </Button>
+                )}
+                {currentStage === 3 && (
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        className={styles.submitButton}
+                        disabled={isSubmitting || submitSuccess}
+                    >
+                        {isSubmitting
+                            ? 'Registering...'
+                            : submitSuccess
+                            ? 'Registered!'
+                            : 'Register'}
+                    </Button>
+                )}
             </div>
-            <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                className={styles.submitButton}
-            >
-                Register
-            </Button>
         </form>
     )
 }
 
-const UI = ({
-    searchParams,
-    questions,
-    error,
-}: {
-    searchParams: { [key: string]: string | string[] | undefined }
-    questions: SwoogoQuestion[]
-    error: any
-}) => {
+const UI = () => {
+    const [currentStage, setCurrentStage] = useState(1)
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.container}>
                 <div className={styles.formWrapper}>
+                    <Button
+                        href="/"
+                        variant="outlined"
+                        className={styles.homeButton}
+                    >
+                        &larr; Back to home
+                    </Button>
                     <div className={styles.header}>
                         <div className={styles.logo}>
-                            <Image
-                                src="/icons/nexus-logo.svg"
-                                alt="Bruin Nexus logo"
-                                width={1180 / 4}
-                                height={258 / 4}
-                                priority={true}
-                            />
+                            <Logo $logoType="default" />
                         </div>
-                        <h1 className={styles.title}>Event Registration</h1>
-                        <p className={styles.subtitle}>
-                            Please fill out the form below to register for the
-                            retreat.
-                        </p>
+                        <h1 className={styles.title}>
+                            Register for the Retreat
+                        </h1>
+                        <p className={styles.subtitle}>March 18-20, 2026</p>
                     </div>
 
-                    {searchParams.success && (
-                        <div className={styles.successMessage}>
-                            Registration successful! Thank you for registering.
-                        </div>
-                    )}
-                    {searchParams.error && (
-                        <div className={styles.errorMessage}>
-                            Registration failed. Please try again.
-                        </div>
-                    )}
+                    <Box mb={3}>
+                        <Box
+                            display="flex"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            mb={1}
+                        >
+                            <Typography variant="body2">
+                                Progress: {Math.round((currentStage / 3) * 100)}
+                                %
+                            </Typography>
+                            <Typography variant="body2">
+                                {currentStage} / 3
+                            </Typography>
+                        </Box>
+                        <LinearProgress
+                            variant="determinate"
+                            value={(currentStage / 3) * 100}
+                        />
+                    </Box>
 
-                    <RegistrationForm questions={questions} error={error} />
+                    {/* Step Stepper */}
+                    <Stepper
+                        activeStep={currentStage - 1}
+                        alternativeLabel
+                        style={{ marginBottom: '2rem' }}
+                    >
+                        {formConfig.map((stage, index) => (
+                            <Step key={index}>
+                                <StepLabel>{stage.title}</StepLabel>
+                            </Step>
+                        ))}
+                    </Stepper>
+
+                    <HardcodedRegistrationForm
+                        currentStage={currentStage}
+                        setCurrentStage={setCurrentStage}
+                    />
                 </div>
             </div>
         </div>

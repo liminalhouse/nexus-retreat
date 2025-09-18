@@ -6,8 +6,8 @@ import {
     getPhoneFields,
     getEmailFields,
     getAllFormFields,
-    getFieldByFormDataKey
-} from '../../register-alt/formConfig'
+    getFieldByFormDataKey,
+} from '../../register/formConfig'
 
 // Phone number validation and formatting
 function formatPhoneNumber(phone: string): string {
@@ -24,7 +24,9 @@ function formatPhoneNumber(phone: string): string {
 
     // If it's 11 digits and starts with 1, format as +1-XXX-XXX-XXXX
     if (digits.length === 11 && digits.startsWith('1')) {
-        return `+1-${digits.slice(1, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`
+        return `+1-${digits.slice(1, 4)}-${digits.slice(4, 7)}-${digits.slice(
+            7
+        )}`
     }
 
     // For international numbers, return with + prefix
@@ -50,20 +52,27 @@ function createFieldSchema(field: any): z.ZodTypeAny {
 
     if (field.validationType === 'email') {
         return isRequired
-            ? z.string().email(`${fieldLabel} must be valid`).min(1, `${fieldLabel} is required`)
+            ? z
+                  .string()
+                  .email(`${fieldLabel} must be valid`)
+                  .min(1, `${fieldLabel} is required`)
             : z.string().email().optional().or(z.literal(''))
     }
 
     if (field.validationType === 'phone') {
         return isRequired
-            ? z.string().min(1, `${fieldLabel} is required`).refine(
-                (phone) => validatePhoneNumber(phone),
-                { message: `${fieldLabel} must be a valid phone number` }
-            )
-            : z.string().optional().refine(
-                (phone) => !phone || validatePhoneNumber(phone),
-                { message: `${fieldLabel} must be a valid phone number` }
-            )
+            ? z
+                  .string()
+                  .min(1, `${fieldLabel} is required`)
+                  .refine((phone) => validatePhoneNumber(phone), {
+                      message: `${fieldLabel} must be a valid phone number`,
+                  })
+            : z
+                  .string()
+                  .optional()
+                  .refine((phone) => !phone || validatePhoneNumber(phone), {
+                      message: `${fieldLabel} must be a valid phone number`,
+                  })
     }
 
     if (field.type === 'checkbox-group') {
@@ -82,18 +91,20 @@ function generateRegistrationSchema() {
         // Always required
         event_id: z.string().min(1, 'Event ID is required'),
         // Address object
-        work_address_id: z.object({
-            line_1: z.string().optional(),
-            line_2: z.string().optional(),
-            city: z.string().optional(),
-            state: z.string().optional(),
-            zip: z.string().optional(),
-            country_code: z.string().optional(),
-        }).optional(),
+        work_address_id: z
+            .object({
+                line_1: z.string().optional(),
+                line_2: z.string().optional(),
+                city: z.string().optional(),
+                state: z.string().optional(),
+                zip: z.string().optional(),
+                country_code: z.string().optional(),
+            })
+            .optional(),
     }
 
     // Add all form fields dynamically
-    getAllFormFields().forEach(field => {
+    getAllFormFields().forEach((field) => {
         if (field.formDataKey && field.formDataKey !== 'work_address_id') {
             schemaObject[field.formDataKey] = createFieldSchema(field)
         }
@@ -114,7 +125,8 @@ function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
     // Add optional basic fields
     if (formData.prefix) swoogoData.prefix = formData.prefix
     if (formData.middle_name) swoogoData.middle_name = formData.middle_name
-    if (formData.mobile_phone) swoogoData.mobile_phone = formatPhoneNumber(formData.mobile_phone)
+    if (formData.mobile_phone)
+        swoogoData.mobile_phone = formatPhoneNumber(formData.mobile_phone)
     if (formData.title) swoogoData.title = formData.title
     if (formData.organization) swoogoData.organization = formData.organization
 
@@ -126,11 +138,12 @@ function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
         if (address.city) swoogoData.work_address_city = address.city
         if (address.state) swoogoData.work_address_state = address.state
         if (address.zip) swoogoData.work_address_zip = address.zip
-        if (address.country_code) swoogoData.work_address_country_code = address.country_code
+        if (address.country_code)
+            swoogoData.work_address_country_code = address.country_code
     }
 
     // Process all form fields dynamically using form config
-    getAllFormFields().forEach(field => {
+    getAllFormFields().forEach((field) => {
         const key = field.formDataKey
         if (!key || key === 'work_address_id' || !formData[key]) return
 
@@ -143,19 +156,24 @@ function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
         // Handle different field types
         if (field.validationType === 'phone') {
             if (typeof value === 'string' && value.trim() !== '') {
-                swoogoData[key as keyof SwoogoRegistrant] = formatPhoneNumber(value)
+                // @ts-expect-error: Not an issue.
+                swoogoData[key as keyof SwoogoRegistrant] =
+                    formatPhoneNumber(value)
             }
         } else if (field.validationType === 'email') {
             if (typeof value === 'string' && value.trim() !== '') {
+                // @ts-expect-error: Not an issue.
                 swoogoData[key as keyof SwoogoRegistrant] = value
             }
         } else if (field.type === 'checkbox-group') {
             if (Array.isArray(value) && value.length > 0) {
+                // @ts-expect-error: Not an issue.
                 swoogoData[key as keyof SwoogoRegistrant] = value
             }
         } else {
             // Handle text and other field types
             if (typeof value === 'string' && value.trim() !== '') {
+                // @ts-expect-error: Not an issue.
                 swoogoData[key as keyof SwoogoRegistrant] = value
             } else if (typeof value !== 'string') {
                 swoogoData[key as keyof SwoogoRegistrant] = value
@@ -179,22 +197,28 @@ export async function POST(request: NextRequest) {
         console.log('Event ID:', event_id)
 
         // Check if we have required environment variables
-        if (!process.env.SWOOGO_CONSUMER_KEY || !process.env.SWOOGO_CONSUMER_SECRET) {
+        if (
+            !process.env.SWOOGO_CONSUMER_KEY ||
+            !process.env.SWOOGO_CONSUMER_SECRET
+        ) {
             throw new Error('Swoogo API credentials not configured')
         }
 
         // Transform form data to Swoogo format
         const swoogoData = transformFormDataToSwoogo(formData)
-        console.log('Transformed Swoogo data:', JSON.stringify(swoogoData, null, 2))
+        console.log(
+            'Transformed Swoogo data:',
+            JSON.stringify(swoogoData, null, 2)
+        )
 
-        const result = await createSwoogoRegistrant(event_id, swoogoData)
+        const result = await createSwoogoRegistrant(`${event_id}`, swoogoData)
         console.log('Swoogo API result:', JSON.stringify(result, null, 2))
 
         return NextResponse.json(
             {
                 success: true,
                 message: 'Registration successful',
-                registrant: result
+                registrant: result,
             },
             { status: 201 }
         )
@@ -202,12 +226,12 @@ export async function POST(request: NextRequest) {
         console.error('Registration error:', error)
 
         if (error instanceof z.ZodError) {
-            console.error('Validation errors:', error.errors)
+            console.error('Validation errors:', error)
             return NextResponse.json(
                 {
                     success: false,
                     message: 'Validation error',
-                    errors: error.errors
+                    errors: error,
                 },
                 { status: 400 }
             )
@@ -218,23 +242,32 @@ export async function POST(request: NextRequest) {
             console.error('Error stack:', error.stack)
 
             // Handle specific Swoogo validation errors
-            if (error.message.includes('This email address has not been recognized')) {
+            if (
+                error.message.includes(
+                    'This email address has not been recognized'
+                )
+            ) {
                 return NextResponse.json(
                     {
                         success: false,
-                        message: 'This email address is not on the invitation list. Please contact vslattery@globalsportsleaders.com or +1-917-803-1481 for registration assistance.',
-                        error: 'email_not_recognized'
+                        message:
+                            'This email address is not on the invitation list. Please contact vslattery@globalsportsleaders.com or +1-917-803-1481 for registration assistance.',
+                        error: 'email_not_recognized',
                     },
                     { status: 400 }
                 )
             }
 
-            if (error.message.includes('email') && error.message.includes('already')) {
+            if (
+                error.message.includes('email') &&
+                error.message.includes('already')
+            ) {
                 return NextResponse.json(
                     {
                         success: false,
-                        message: 'This email address is already registered for this event.',
-                        error: 'email_already_registered'
+                        message:
+                            'This email address is already registered for this event.',
+                        error: 'email_already_registered',
                     },
                     { status: 400 }
                 )
@@ -244,7 +277,7 @@ export async function POST(request: NextRequest) {
                 {
                     success: false,
                     message: 'Registration failed',
-                    error: error.message
+                    error: error.message,
                 },
                 { status: 500 }
             )
@@ -253,7 +286,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
             {
                 success: false,
-                message: 'Unknown error occurred'
+                message: 'Unknown error occurred',
             },
             { status: 500 }
         )
