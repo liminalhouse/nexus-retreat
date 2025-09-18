@@ -61,13 +61,11 @@ interface FormData {
 interface HardcodedRegistrationFormProps {
     currentStage: number
     setCurrentStage: (stage: number) => void
-    registrationData?: any
 }
 
 const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
     currentStage,
     setCurrentStage,
-    registrationData,
 }) => {
     const [formData, setFormData] = useState<FormData>({
         email: '',
