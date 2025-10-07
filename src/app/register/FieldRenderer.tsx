@@ -10,7 +10,7 @@ import {
     FormControlLabel,
     Checkbox,
 } from '@mui/material'
-import { FormField } from './formConfig'
+import { FormField } from './rawFormConfig'
 import CountrySelect from './CountrySelect'
 import styles from '../register/register.module.scss'
 
@@ -25,7 +25,13 @@ const fileToBase64 = (file: File): Promise<string> => {
         }
 
         // Validate file type
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+        const allowedTypes = [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/gif',
+            'image/webp',
+        ]
         if (!allowedTypes.includes(file.type)) {
             reject(new Error('File must be an image (JPEG, PNG, GIF, or WebP)'))
             return
@@ -53,6 +59,10 @@ interface FieldRendererProps {
     fieldErrors?: { [key: string]: string }
 }
 
+const generateName = (field: FormField): string => {
+    return `Registrant[${field.formDataKey}]`
+}
+
 const FieldRenderer: React.FC<FieldRendererProps> = ({
     field,
     value,
@@ -63,7 +73,9 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
     formData,
     fieldErrors,
 }) => {
+    const id = field.id || field.formDataKey
     const renderField = () => {
+        const name = generateName(field)
         switch (field.type) {
             case 'text':
             case 'email':
@@ -72,8 +84,8 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                     <div className={styles.inputWrapper}>
                         <TextField
                             type={field.type}
-                            id={field.id}
-                            name={field.name}
+                            id={id}
+                            name={name}
                             label={field.label}
                             variant="outlined"
                             fullWidth
@@ -88,9 +100,11 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                         ''
                                     )
                                 }
-                                onChange(field.name, inputValue)
+                                onChange(field.formDataKey, inputValue)
                             }}
-                            onBlur={(e) => onBlur?.(field.name, e.target.value)}
+                            onBlur={(e) =>
+                                onBlur?.(field.formDataKey, e.target.value)
+                            }
                             autoComplete={field.autoComplete}
                             placeholder={field.placeholder}
                             error={Boolean(error)} // Convert error string to boolean
@@ -111,17 +125,19 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             type="text"
                             multiline
                             minRows={field.minRows || 3}
-                            id={field.id}
-                            name={field.name}
+                            id={id}
+                            name={name}
                             label={field.label}
                             variant="outlined"
-                            fullWidth
+                            fullWidth={true}
                             required={field.required}
                             value={value || ''}
                             onChange={(e) =>
-                                onChange(field.name, e.target.value)
+                                onChange(field.formDataKey, e.target.value)
                             }
-                            onBlur={(e) => onBlur?.(field.name, e.target.value)}
+                            onBlur={(e) =>
+                                onBlur?.(field.formDataKey, e.target.value)
+                            }
                             placeholder={field.placeholder}
                             className={styles.textareaInput}
                             error={Boolean(error)}
@@ -140,7 +156,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                     return (
                         <CountrySelect
                             value={value || ''}
-                            onChange={(val) => onChange(field.name, val)}
+                            onChange={(val) => onChange(field.formDataKey, val)}
                             className={styles.formField}
                         />
                     )
@@ -154,13 +170,15 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                     >
                         <InputLabel>{field.label}</InputLabel>
                         <Select
-                            name={field.name}
+                            name={name}
                             label={field.label}
                             value={value || ''}
                             onChange={(e) =>
-                                onChange(field.name, e.target.value)
+                                onChange(field.formDataKey, e.target.value)
                             }
-                            onBlur={(e) => onBlur?.(field.name, e.target.value)}
+                            onBlur={(e) =>
+                                onBlur?.(field.formDataKey, e.target.value)
+                            }
                             required={field.required}
                         >
                             {field.options?.map((option) => (
@@ -193,7 +211,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                         className={styles.inputWrapper}
                         style={{ marginTop: '2rem' }}
                     >
-                        <input type="hidden" name={field.name} value="" />
+                        <input type="hidden" name={name} value="" />
                         <FormControl fullWidth>
                             <Typography
                                 variant="body1"
@@ -203,15 +221,15 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                 {field.label}
                             </Typography>
                             <FormGroup
-                                id={field.id}
-                                aria-labelledby={`field-${field.id}-label`}
+                                id={id}
+                                aria-labelledby={`field-${id}-label`}
                             >
                                 {field.options?.map((option) => (
                                     <FormControlLabel
                                         key={option.value}
                                         control={
                                             <Checkbox
-                                                name={`${field.name}[]`}
+                                                name={name}
                                                 value={option.value}
                                                 checked={
                                                     value?.includes(
@@ -220,7 +238,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                                 }
                                                 onChange={(e) =>
                                                     onCheckboxChange?.(
-                                                        field.name,
+                                                        field.formDataKey,
                                                         option.value,
                                                         e.target.checked
                                                     )
@@ -254,8 +272,8 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                         <input
                             className={styles.fileInput}
                             type="file"
-                            id={field.id}
-                            name={field.name}
+                            id={id}
+                            name={name}
                             accept={field.accept}
                             onChange={async (e) => {
                                 const file = e.target.files?.[0]
@@ -263,30 +281,53 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                     try {
                                         // Convert file to base64
                                         const base64 = await fileToBase64(file)
-                                        onChange(field.name, base64)
+                                        onChange(field.formDataKey!, base64)
                                     } catch (error) {
-                                        console.error('Error converting file to base64:', error)
+                                        console.error(
+                                            'Error converting file to base64:',
+                                            error
+                                        )
                                         // Show error to user via onBlur if available
                                         if (onBlur) {
-                                            onBlur(field.name, error instanceof Error ? error.message : 'File upload failed')
+                                            onBlur(
+                                                field.formDataKey!,
+                                                error instanceof Error
+                                                    ? error.message
+                                                    : 'File upload failed'
+                                            )
                                         }
-                                        onChange(field.name, null)
+                                        onChange(field.formDataKey!, null)
                                         // Clear the input
                                         e.target.value = ''
                                     }
                                 } else {
-                                    onChange(field.name, null)
+                                    onChange(field.formDataKey!, null)
                                 }
                             }}
                             aria-describedby={field.ariaDescribedBy}
                         />
-                        {value && typeof value === 'string' && value.startsWith('data:') && (
-                            <div style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#4caf50' }}>
-                                ✓ File uploaded successfully ({Math.round(value.length / 1024)}KB)
-                            </div>
-                        )}
+                        {value &&
+                            typeof value === 'string' &&
+                            value.startsWith('data:') && (
+                                <div
+                                    style={{
+                                        marginTop: '0.5rem',
+                                        fontSize: '0.875rem',
+                                        color: '#4caf50',
+                                    }}
+                                >
+                                    ✓ File uploaded successfully (
+                                    {Math.round(value.length / 1024)}KB)
+                                </div>
+                            )}
                         {error && (
-                            <div style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#f44336' }}>
+                            <div
+                                style={{
+                                    marginTop: '0.5rem',
+                                    fontSize: '0.875rem',
+                                    color: '#f44336',
+                                }}
+                            >
                                 {error}
                             </div>
                         )}
@@ -299,13 +340,15 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                         <InputLabel>{field.label}</InputLabel>
                         {field.fields?.map((subField) => (
                             <FieldRenderer
-                                key={subField.id}
+                                key={`${subField.id}-${subField.formDataKey}`}
                                 field={subField}
-                                value={getNestedValue(formData, subField.name)}
-                                onChange={(name, val) => {
+                                value={getNestedValue(
+                                    formData,
+                                    subField.formDataKey!
+                                )}
+                                onChange={(key, val) => {
                                     // Handle nested field updates for address
-                                    const fieldKey =
-                                        subField.name.match(/\[(\w+)\]$/)?.[1]
+                                    const fieldKey = key.split('.')?.[1]
                                     if (fieldKey) {
                                         onChange(
                                             'work_address_id',
@@ -340,11 +383,11 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                         <div className={styles.groupFields}>
                             {field.fields?.map((subField) => (
                                 <FieldRenderer
-                                    key={subField.id}
+                                    key={`${subField.id}-${subField.formDataKey}`}
                                     field={subField}
                                     value={getNestedValue(
                                         formData,
-                                        subField.name
+                                        subField.formDataKey!
                                     )}
                                     onChange={onChange}
                                     onCheckboxChange={onCheckboxChange}
@@ -376,12 +419,10 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 const getNestedValue = (obj: any, path: string): any => {
     if (!obj) return ''
 
-    // Handle Address[Registrant][work_address_id][field] format
-    const addressMatch = path.match(
-        /Address\[Registrant\]\[work_address_id\]\[(\w+)\]/
-    )
+    // Handle [work_address_id][field] format
+    const addressMatch = path.split('.')?.[1]
     if (addressMatch) {
-        return obj.work_address_id?.[addressMatch[1]] || ''
+        return obj.work_address_id?.[addressMatch] || ''
     }
 
     // Handle Registrant[field] format
@@ -390,7 +431,8 @@ const getNestedValue = (obj: any, path: string): any => {
         return obj[registrantMatch[1]] || ''
     }
 
-    return ''
+    // Handle direct keys (e.g., emergency_contact_name, point_of_contact_name)
+    return obj[path] || ''
 }
 
 export default FieldRenderer

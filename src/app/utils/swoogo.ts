@@ -136,6 +136,48 @@ export async function fetchSwoogoQuestion(
     return data.data || data
 }
 
+export const SWOOGO_CONSTANTS = {
+    first_name: 'first_name',
+    last_name: 'last_name',
+    email: 'email',
+    prefix: 'prefix',
+    middle_name: 'middle_name',
+    mobile_phone: 'mobile_phone',
+    // Work address fields
+    work_address_line_1: 'work_address_id.line_1',
+    work_address_line_2: 'work_address_id.line_2',
+    work_address_city: 'work_address_id.city',
+    work_address_state: 'work_address_id.state',
+    work_address_zip: 'work_address_id.zip',
+    work_address_country_code: 'work_address_id.country_code',
+    profile_picture: 'profile_picture',
+    // Custom fields with c_ prefix
+    office_phone: 'c_6716229',
+    title: 'c_6716230',
+    organization: 'c_6716228',
+    name_for_credentials: 'c_6716240',
+    organization_for_credentials: 'c_6716241',
+    emergency_contact_name: 'c_6716242',
+    emergency_contact_relation: 'c_6716243',
+    emergency_contact_email: 'c_6716244',
+    emergency_contact_phone: 'c_6716246',
+    dietary_restrictions: 'c_6716247',
+    jacket_size: 'c_6716271',
+    point_of_contact_name: 'c_6716225',
+    point_of_contact_title: 'c_6716226',
+    point_of_contact_email: 'c_6716231',
+    point_of_contact_phone: 'c_6716232',
+    secondary_point_of_contact_name: 'c_6716234',
+    secondary_point_of_contact_email: 'c_6716236',
+    secondary_point_of_contact_phone: 'c_6716237',
+    guest_name: 'c_6832581',
+    guest_relation: 'c_6716248',
+    guest_email: 'c_6716263',
+    complimentary_accommodations: 'c_6716267',
+    dinner_attendance: 'c_6716269',
+    activities: 'c_6838231',
+}
+
 interface SwoogoRegistrant {
     first_name: string
     last_name: string
@@ -154,30 +196,30 @@ interface SwoogoRegistrant {
     work_address_country_code?: string
     profile_picture?: any | undefined
     // Custom fields with c_ prefix
-    c_6716229?: string // office_phone
-    c_6716230?: string // title (legacy)
-    c_6716228?: string // organization (legacy)
-    c_6716240?: string // name_for_credentials
-    c_6716241?: string // organization_for_credentials
-    c_6716242?: string // emergency_contact_name
-    c_6716243?: string // emergency_contact_relation
-    c_6716244?: string // emergency_contact_email
-    c_6716246?: string // emergency_contact_phone
-    c_6716247?: string // dietary_restrictions
-    c_6716271?: string // jacket_size
-    c_6716225?: string // point_of_contact_name
-    c_6716226?: string // point_of_contact_title
-    c_6716231?: string // point_of_contact_email
-    c_6716232?: string // point_of_contact_phone
-    c_6716234?: string // secondary_point_of_contact_name
-    c_6716236?: string // secondary_point_of_contact_email
-    c_6716237?: string // secondary_point_of_contact_phone
-    c_6832581?: string // guest_name
-    c_6716248?: string // guest_relation
-    c_6716263?: string // guest_email
-    c_6716267?: string[] // complimentary_accommodations
-    c_6716269?: string[] // dinner_attendance
-    c_6838231?: string[] // activities
+    [SWOOGO_CONSTANTS.office_phone]?: string // office_phone
+    [SWOOGO_CONSTANTS.title]?: string // title (legacy)
+    [SWOOGO_CONSTANTS.organization]?: string // organization (legacy)
+    [SWOOGO_CONSTANTS.name_for_credentials]?: string // name_for_credentials
+    [SWOOGO_CONSTANTS.organization_for_credentials]?: string // organization_for_credentials
+    [SWOOGO_CONSTANTS.emergency_contact_name]?: string // emergency_contact_name
+    [SWOOGO_CONSTANTS.emergency_contact_relation]?: string // emergency_contact_relation
+    [SWOOGO_CONSTANTS.emergency_contact_email]?: string // emergency_contact_email
+    [SWOOGO_CONSTANTS.emergency_contact_phone]?: string // emergency_contact_phone
+    [SWOOGO_CONSTANTS.dietary_restrictions]?: string // dietary_restrictions
+    [SWOOGO_CONSTANTS.jacket_size]?: string // jacket_size
+    [SWOOGO_CONSTANTS.point_of_contact_name]?: string // point_of_contact_name
+    [SWOOGO_CONSTANTS.point_of_contact_title]?: string // point_of_contact_title
+    [SWOOGO_CONSTANTS.point_of_contact_email]?: string // point_of_contact_email
+    [SWOOGO_CONSTANTS.point_of_contact_phone]?: string // point_of_contact_phone
+    [SWOOGO_CONSTANTS.secondary_point_of_contact_name]?: string // secondary_point_of_contact_name
+    [SWOOGO_CONSTANTS.secondary_point_of_contact_email]?: string // secondary_point_of_contact_email
+    [SWOOGO_CONSTANTS.secondary_point_of_contact_phone]?: string // secondary_point_of_contact_phone
+    [SWOOGO_CONSTANTS.guest_name]?: string // guest_name
+    [SWOOGO_CONSTANTS.guest_relation]?: string // guest_relation
+    [SWOOGO_CONSTANTS.guest_email]?: string // guest_email
+    [SWOOGO_CONSTANTS.complimentary_accommodations]?: string[] // complimentary_accommodations
+    [SWOOGO_CONSTANTS.dinner_attendance]?: string[] // dinner_attendance
+    [SWOOGO_CONSTANTS.activities]?: string[] // activities
 }
 
 interface SwoogoRegistrantResponse {

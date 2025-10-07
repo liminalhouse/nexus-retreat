@@ -12,8 +12,10 @@ import {
     StepLabel,
 } from '@mui/material'
 import Logo from '@/components/Logo'
-import { formConfig, FormField, getFieldByFormDataKey } from './formConfig'
+import { formConfig, getFieldByFormDataKey } from './formConfig'
+import { FormField } from './rawFormConfig'
 import FieldRenderer from './FieldRenderer'
+import { SWOOGO_CONSTANTS } from '@/utils/swoogo'
 
 interface FormData {
     email: string
@@ -24,7 +26,7 @@ interface FormData {
     last_name: string
     title: string
     organization: string
-    c_6716229: string // office_phone
+    [SWOOGO_CONSTANTS.office_phone]: string // office_phone
     work_address_id: {
         line_1: string
         line_2: string
@@ -35,27 +37,27 @@ interface FormData {
     }
     mobile_phone: string
     profile_picture?: any | undefined
-    c_6716240: string // name_for_credentials
-    c_6716241: string // organization_for_credentials
-    c_6716242: string // emergency_contact_name
-    c_6716243: string // emergency_contact_relation
-    c_6716244: string // emergency_contact_email
-    c_6716246: string // emergency_contact_phone
-    c_6716271: string // jacket_size
-    c_6716247: string // dietary_restrictions_details
-    c_6716225: string // point_of_contact_name
-    c_6716226: string // point_of_contact_title
-    c_6716267: string[] // complimentary_accommodations
-    c_6716231: string // point_of_contact_email
-    c_6716269: string[] // dinner_attendance
-    c_6716232: string // point_of_contact_phone
-    c_6716234: string // secondary_point_of_contact_name
-    c_6716236: string // secondary_point_of_contact_email
-    c_6832581: string // guest_name
-    c_6716237: string // secondary_point_of_contact_phone
-    c_6716248: string // guest_relation
-    c_6716263: string // guest_email
-    c_6838231: string[] // activities
+    [SWOOGO_CONSTANTS.name_for_credentials]: string // name_for_credentials
+    [SWOOGO_CONSTANTS.organization_for_credentials]: string // organization_for_credentials
+    [SWOOGO_CONSTANTS.emergency_contact_name]: string // emergency_contact_name
+    [SWOOGO_CONSTANTS.emergency_contact_relation]: string // emergency_contact_relation
+    [SWOOGO_CONSTANTS.emergency_contact_email]: string // emergency_contact_email
+    [SWOOGO_CONSTANTS.emergency_contact_phone]: string // emergency_contact_phone
+    [SWOOGO_CONSTANTS.jacket_size]: string // jacket_size
+    [SWOOGO_CONSTANTS.dietary_restrictions]: string // dietary_restrictions_details
+    [SWOOGO_CONSTANTS.point_of_contact_name]: string // point_of_contact_name
+    [SWOOGO_CONSTANTS.point_of_contact_title]: string // point_of_contact_title
+    [SWOOGO_CONSTANTS.complimentary_accommodations]: string[] // complimentary_accommodations
+    [SWOOGO_CONSTANTS.point_of_contact_email]: string // point_of_contact_email
+    [SWOOGO_CONSTANTS.dinner_attendance]: string[] // dinner_attendance
+    [SWOOGO_CONSTANTS.point_of_contact_phone]: string // point_of_contact_phone
+    [SWOOGO_CONSTANTS.secondary_point_of_contact_name]: string // secondary_point_of_contact_name
+    [SWOOGO_CONSTANTS.secondary_point_of_contact_email]: string // secondary_point_of_contact_email
+    [SWOOGO_CONSTANTS.guest_name]: string // guest_name
+    [SWOOGO_CONSTANTS.secondary_point_of_contact_phone]: string // secondary_point_of_contact_phone
+    [SWOOGO_CONSTANTS.guest_relation]: string // guest_relation
+    [SWOOGO_CONSTANTS.guest_email]: string // guest_email
+    [SWOOGO_CONSTANTS.activities]: string[] // activities
 }
 
 interface HardcodedRegistrationFormProps {
@@ -76,7 +78,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         last_name: '',
         title: '',
         organization: '',
-        c_6716229: '', // office_phone
+        [SWOOGO_CONSTANTS.office_phone]: '', // office_phone
         work_address_id: {
             line_1: '',
             line_2: '',
@@ -87,31 +89,31 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         },
         mobile_phone: '',
         profile_picture: undefined,
-        c_6716240: '', // name_for_credentials
-        c_6716241: '', // organization_for_credentials
-        c_6716242: '', // emergency_contact_name
-        c_6716243: '', // emergency_contact_relation
-        c_6716244: '', // emergency_contact_email
-        c_6716246: '', // emergency_contact_phone
-        c_6716271: '', // jacket_size
-        c_6716247: '', // dietary_restrictions_details
-        c_6716225: '', // point_of_contact_name
-        c_6716226: '', // point_of_contact_title
-        c_6716267: [], // complimentary_accommodations
-        c_6716231: '', // point_of_contact_email
-        c_6716269: [], // dinner_attendance
-        c_6716232: '', // point_of_contact_phone
-        c_6716234: '', // secondary_point_of_contact_name
-        c_6716236: '', // secondary_point_of_contact_email
-        c_6832581: '', // guest_name
-        c_6716237: '', // secondary_point_of_contact_phone
-        c_6716248: '', // guest_relation
-        c_6716263: '', // guest_email
-        c_6838231: [], // activities
+        [SWOOGO_CONSTANTS.name_for_credentials]: '',
+        [SWOOGO_CONSTANTS.organization_for_credentials]: '',
+        [SWOOGO_CONSTANTS.emergency_contact_name]: '',
+        [SWOOGO_CONSTANTS.emergency_contact_relation]: '',
+        [SWOOGO_CONSTANTS.emergency_contact_email]: '',
+        [SWOOGO_CONSTANTS.emergency_contact_phone]: '',
+        [SWOOGO_CONSTANTS.jacket_size]: '',
+        [SWOOGO_CONSTANTS.dietary_restrictions]: '',
+        [SWOOGO_CONSTANTS.point_of_contact_name]: '',
+        [SWOOGO_CONSTANTS.point_of_contact_title]: '',
+        [SWOOGO_CONSTANTS.complimentary_accommodations]: [],
+        [SWOOGO_CONSTANTS.point_of_contact_email]: '',
+        [SWOOGO_CONSTANTS.dinner_attendance]: [],
+        [SWOOGO_CONSTANTS.point_of_contact_phone]: '',
+        [SWOOGO_CONSTANTS.secondary_point_of_contact_name]: '',
+        [SWOOGO_CONSTANTS.secondary_point_of_contact_email]: '',
+        [SWOOGO_CONSTANTS.guest_name]: '',
+        [SWOOGO_CONSTANTS.secondary_point_of_contact_phone]: '',
+        [SWOOGO_CONSTANTS.guest_relation]: '',
+        [SWOOGO_CONSTANTS.guest_email]: '',
+        [SWOOGO_CONSTANTS.activities]: [],
     })
 
     const handleInputChange = (
-        fieldName: string,
+        formDataKey: string,
         value: any,
         subfield?: string
     ) => {
@@ -126,38 +128,28 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
             return
         }
 
-        // Extract key from fieldName like "Registrant[email]" -> "email"
-        const keyMatch = fieldName.match(/\[([^\]]+)\]/)
-        if (keyMatch) {
-            const key = keyMatch[1]
-            setFormData((prev) => ({
-                ...prev,
-                [key]: value,
-            }))
-        }
+        setFormData((prev) => ({
+            ...prev,
+            [formDataKey]: value,
+        }))
     }
 
     const handleCheckboxChange = (
-        fieldName: string,
+        formDataKey: string,
         value: string,
         checked: boolean
     ) => {
-        // Extract key from fieldName like "Registrant[c_6716267]" -> "c_6716267"
-        const keyMatch = fieldName.match(/\[([^\]]+)\]/)
-        if (keyMatch) {
-            const key = keyMatch[1]
-            setFormData((prev) => {
-                const currentArray = prev[key as keyof FormData] as string[]
-                const newArray = checked
-                    ? [...currentArray, value]
-                    : currentArray.filter((item) => item !== value)
+        setFormData((prev) => {
+            const currentArray = prev[formDataKey as keyof FormData] as string[]
+            const newArray = checked
+                ? [...currentArray, value]
+                : currentArray.filter((item) => item !== value)
 
-                return {
-                    ...prev,
-                    [key]: newArray,
-                }
-            })
-        }
+            return {
+                ...prev,
+                [formDataKey]: newArray,
+            }
+        })
     }
 
     const handleNextStage = (e: React.FormEvent) => {
@@ -239,12 +231,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
     }
 
     // Field validation using form config
-    const validateField = (fieldName: string, value: any): string | null => {
-        // Extract form data key from field name
-        const key = fieldName.match(/\[([^\]]+)\]$/)?.[1] || fieldName
-
+    const validateField = (formDataKey: string, value: any): string | null => {
         // Get field config
-        const field = getFieldByFormDataKey(key)
+        const field = getFieldByFormDataKey(formDataKey)
         if (!field) return null
 
         // Check required validation first
@@ -395,7 +384,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                 value = formData[field.formDataKey as keyof FormData]
             }
 
-            const fieldError = validateField(field.name, value)
+            const fieldError = validateField(field.formDataKey, value)
             if (fieldError) {
                 errors[field.formDataKey] = fieldError
                 isValid = false
@@ -405,15 +394,12 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         return { isValid, errors }
     }
 
-    const handleFieldBlur = (fieldName: string, value: any) => {
-        const error = validateField(fieldName, value)
-
-        // Extract form data key from field name
-        const key = fieldName.match(/\[([^\]]+)\]$/)?.[1] || fieldName
+    const handleFieldBlur = (formDataKey: string, value: any) => {
+        const error = validateField(formDataKey, value)
 
         setFieldErrors((prev) => ({
             ...prev,
-            [key]: error || '',
+            [formDataKey]: error || '',
         }))
     }
 
@@ -465,15 +451,15 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
     }
 
     // Helper function to get form field values
-    const getFieldValue = (fieldName: string): any => {
-        // Extract key from fieldName like "Registrant[email]" -> "email"
-        const keyMatch = fieldName.match(/\[([^\]]+)\]/)
-        if (keyMatch) {
-            const key = keyMatch[1]
-            return formData[key as keyof FormData] || ''
-        }
-        return ''
-    }
+    // const getFieldValue = (fieldName: string): any => {
+    //     // Extract key from fieldName like "Registrant[email]" -> "email"
+    //     const keyMatch = fieldName.match(/\[([^\]]+)\]/)
+    //     if (keyMatch) {
+    //         const key = keyMatch[1]
+    //         return formData[key as keyof FormData] || ''
+    //     }
+    //     return ''
+    // }
 
     const renderStage = (stageIndex: number) => {
         // Handle confirmation stage (stage 4, index 3)
@@ -484,25 +470,39 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         const stage = formConfig[stageIndex]
         if (!stage) return null
 
+        console.log('stage', stage.fields)
+
         return (
             <div className={styles.inputGroup}>
-                {stage.fields.map((field) => (
-                    <FieldRenderer
-                        key={field.id}
-                        field={field}
-                        value={getFieldValue(field.name)}
-                        onChange={handleInputChange}
-                        onCheckboxChange={handleCheckboxChange}
-                        onBlur={handleFieldBlur}
-                        error={
-                            field.formDataKey
-                                ? fieldErrors[field.formDataKey]
-                                : undefined
-                        }
-                        formData={formData}
-                        fieldErrors={fieldErrors}
-                    />
-                ))}
+                {stage.fields.map((field) => {
+                    console.log(
+                        'stage index ',
+                        stageIndex,
+                        field?.formDataKey,
+                        formData[field?.formDataKey as keyof FormData]
+                    )
+
+                    return (
+                        <FieldRenderer
+                            key={`${field.id || field.formDataKey}`}
+                            field={field}
+                            value={
+                                formData[field.formDataKey as keyof FormData] ??
+                                undefined
+                            }
+                            onChange={handleInputChange}
+                            onCheckboxChange={handleCheckboxChange}
+                            onBlur={handleFieldBlur}
+                            error={
+                                field.formDataKey
+                                    ? fieldErrors[field.formDataKey]
+                                    : undefined
+                            }
+                            formData={formData}
+                            fieldErrors={fieldErrors}
+                        />
+                    )
+                })}
             </div>
         )
     }
