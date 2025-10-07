@@ -154,7 +154,7 @@ export const SWOOGO_CONSTANTS = {
     // Custom fields with c_ prefix
     office_phone: 'c_6716229',
     title: 'c_6716230',
-    organization: 'c_6716228',
+    organization: 'company',
     name_for_credentials: 'c_6716240',
     organization_for_credentials: 'c_6716241',
     emergency_contact_name: 'c_6716242',
@@ -271,7 +271,10 @@ export async function createSwoogoRegistrant(
             }
         } catch (parseError) {
             // If it's our validation error, re-throw it
-            if (parseError instanceof Error && (parseError as any).validationErrors) {
+            if (
+                parseError instanceof Error &&
+                (parseError as any).validationErrors
+            ) {
                 throw parseError
             }
             // Otherwise, it's a JSON parse error, continue to generic error

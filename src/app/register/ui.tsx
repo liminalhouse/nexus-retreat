@@ -188,12 +188,12 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         // Clear field errors only for fields in the current stage that just passed validation
         const currentStageFields = getAllFieldsFromStage(currentStage - 1)
         const currentStageFieldKeys = currentStageFields
-            .map(f => f.formDataKey)
+            .map((f) => f.formDataKey)
             .filter(Boolean) as string[]
 
         setFieldErrors((prev) => {
             const newErrors = { ...prev }
-            currentStageFieldKeys.forEach(key => {
+            currentStageFieldKeys.forEach((key) => {
                 delete newErrors[key]
             })
             return newErrors
@@ -437,8 +437,6 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         setSubmitError(null)
 
         try {
-            console.log('Submitting form data:', formData)
-
             // Get event ID from environment or use a default
             const eventId = process.env.NEXT_PUBLIC_SWOOGO_EVENT_ID || ''
 
@@ -459,15 +457,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
 
             const result = await response.json()
 
-            console.log('API response status:', response.ok)
-            console.log('API result:', result)
-            console.log('Has fieldErrors?', !!result.fieldErrors)
-            console.log('fieldErrors:', result.fieldErrors)
-
             if (!response.ok) {
                 // Handle field-level validation errors from server
                 if (result.fieldErrors) {
-                    console.log('Setting field errors:', result.fieldErrors)
                     setFieldErrors(result.fieldErrors)
 
                     // Find which stage has the first error and navigate to it
@@ -475,10 +467,16 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                     let errorStage = currentStage
 
                     // Check which stage contains the error fields
-                    for (let stageIndex = 0; stageIndex < formConfig.length; stageIndex++) {
+                    for (
+                        let stageIndex = 0;
+                        stageIndex < formConfig.length;
+                        stageIndex++
+                    ) {
                         const stageFields = getAllFieldsFromStage(stageIndex)
-                        const hasError = stageFields.some(field =>
-                            field.formDataKey && errorFields.includes(field.formDataKey)
+                        const hasError = stageFields.some(
+                            (field) =>
+                                field.formDataKey &&
+                                errorFields.includes(field.formDataKey)
                         )
                         if (hasError) {
                             errorStage = stageIndex + 1 // Convert to 1-based
@@ -493,11 +491,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
 
                     // Show a more specific error message when we have field errors
                     setSubmitError(
-                        result.message ||
-                            'Please fix the errors and try again.'
+                        result.message || 'Please fix the errors and try again.'
                     )
                 } else {
-                    console.log('No fieldErrors in response')
                     // Generic error without field-level details
                     setSubmitError(result.message || 'Registration failed')
                 }
@@ -540,18 +536,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         const stage = formConfig[stageIndex]
         if (!stage) return null
 
-        console.log('stage', stage.fields)
-
         return (
             <div className={styles.inputGroup}>
                 {stage.fields.map((field) => {
-                    console.log(
-                        'stage index ',
-                        stageIndex,
-                        field?.formDataKey,
-                        formData[field?.formDataKey as keyof FormData]
-                    )
-
                     return (
                         <FieldRenderer
                             key={`${field.id || field.formDataKey}`}

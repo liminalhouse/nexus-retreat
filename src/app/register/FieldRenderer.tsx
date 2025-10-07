@@ -387,10 +387,6 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                 const fieldError = subField.formDataKey
                                     ? fieldErrors?.[subField.formDataKey]
                                     : undefined
-                                console.log(
-                                    `Field ${subField.formDataKey} error:`,
-                                    fieldError
-                                )
                                 return (
                                     <FieldRenderer
                                         key={`${subField.id}-${subField.formDataKey}`}

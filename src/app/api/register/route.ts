@@ -190,7 +190,7 @@ function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
         } else if (field.type === 'file') {
             if (value instanceof File) {
                 // This shouldn't happen anymore since we convert to base64 on the client
-                console.log(`Unexpected File object for ${key}:`, value.name)
+                console.warn(`Unexpected File object for ${key}:`, value.name)
             } else if (typeof value === 'string' && value.trim() !== '') {
                 // Handle base64 encoded file data
                 if (value.startsWith('data:')) {
@@ -198,7 +198,9 @@ function transformFormDataToSwoogo(formData: any): SwoogoRegistrant {
                     const base64Data = value.split(',')[1]
                     if (base64Data) {
                         swoogoData[key as keyof SwoogoRegistrant] = base64Data
-                        console.log(`Processed file upload for ${key}: ${base64Data.length} characters`)
+                        console.info(
+                            `Processed file upload for ${key}: ${base64Data.length} characters`
+                        )
                     }
                 } else {
                     // Handle other string formats (URL, etc.)
@@ -235,7 +237,6 @@ export async function POST(request: NextRequest) {
         // Transform form data to Swoogo format
         const swoogoData = transformFormDataToSwoogo(formData)
         const result = await createSwoogoRegistrant(`${event_id}`, swoogoData)
-        console.log('Swoogo API result:', JSON.stringify(result, null, 2))
 
         return NextResponse.json(
             {
@@ -261,27 +262,19 @@ export async function POST(request: NextRequest) {
         }
 
         if (error instanceof Error) {
-            console.error('Error message:', error.message)
-            console.error('Error stack:', error.stack)
-            console.error('Has validationErrors?', !!(error as any).validationErrors)
-            console.error('validationErrors:', (error as any).validationErrors)
+            console.error('Registration error:', error.message)
 
             // Handle Swoogo validation errors
             if ((error as any).validationErrors) {
                 const validationErrors = (error as any).validationErrors
                 const fieldErrors: Record<string, string> = {}
 
-                console.log('Processing validation errors:', validationErrors)
-
                 // Use the Swoogo field IDs directly since our form uses them as formDataKey
                 validationErrors.forEach(
                     (err: { field: string; message: string }) => {
-                        console.log(`Adding error for field: ${err.field}`)
                         fieldErrors[err.field] = err.message
                     }
                 )
-
-                console.log('Returning fieldErrors:', fieldErrors)
 
                 return NextResponse.json(
                     {
