@@ -383,28 +383,31 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             {field.label}
                         </Typography>
                         <div className={styles.groupFields}>
-                            {field.fields?.map((subField) => (
-                                <FieldRenderer
-                                    key={`${subField.id}-${subField.formDataKey}`}
-                                    field={subField}
-                                    value={getNestedValue(
-                                        formData,
-                                        subField.formDataKey!
-                                    )}
-                                    onChange={onChange}
-                                    onCheckboxChange={onCheckboxChange}
-                                    onBlur={onBlur}
-                                    error={
-                                        subField.formDataKey
-                                            ? fieldErrors?.[
-                                                  subField.formDataKey
-                                              ]
-                                            : undefined
-                                    }
-                                    formData={formData}
-                                    fieldErrors={fieldErrors}
-                                />
-                            ))}
+                            {field.fields?.map((subField) => {
+                                const fieldError = subField.formDataKey
+                                    ? fieldErrors?.[subField.formDataKey]
+                                    : undefined
+                                console.log(
+                                    `Field ${subField.formDataKey} error:`,
+                                    fieldError
+                                )
+                                return (
+                                    <FieldRenderer
+                                        key={`${subField.id}-${subField.formDataKey}`}
+                                        field={subField}
+                                        value={getNestedValue(
+                                            formData,
+                                            subField.formDataKey!
+                                        )}
+                                        onChange={onChange}
+                                        onCheckboxChange={onCheckboxChange}
+                                        onBlur={onBlur}
+                                        error={fieldError}
+                                        formData={formData}
+                                        fieldErrors={fieldErrors}
+                                    />
+                                )
+                            })}
                         </div>
                     </div>
                 )

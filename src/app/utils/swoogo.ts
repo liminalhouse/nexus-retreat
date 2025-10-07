@@ -178,6 +178,14 @@ export const SWOOGO_CONSTANTS = {
     activities: 'c_6838231',
 }
 
+// Reverse mapping: Swoogo field ID -> our form field key
+export const SWOOGO_FIELD_ID_TO_KEY: Record<string, string> = Object.entries(
+    SWOOGO_CONSTANTS
+).reduce((acc, [key, value]) => {
+    acc[value] = key
+    return acc
+}, {} as Record<string, string>)
+
 interface SwoogoRegistrant {
     first_name: string
     last_name: string
@@ -251,6 +259,24 @@ export async function createSwoogoRegistrant(
 
     if (!response.ok) {
         const errorText = await response.text()
+
+        // Try to parse validation errors from Swoogo
+        try {
+            const errorData = JSON.parse(errorText)
+            if (Array.isArray(errorData) && errorData.length > 0) {
+                // Swoogo returns validation errors as an array
+                const error: any = new Error('Validation failed')
+                error.validationErrors = errorData
+                throw error
+            }
+        } catch (parseError) {
+            // If it's our validation error, re-throw it
+            if (parseError instanceof Error && (parseError as any).validationErrors) {
+                throw parseError
+            }
+            // Otherwise, it's a JSON parse error, continue to generic error
+        }
+
         throw new Error(
             `Failed to create registrant: ${response.statusText} - ${errorText}`
         )

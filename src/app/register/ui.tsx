@@ -117,6 +117,21 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         value: any,
         subfield?: string
     ) => {
+        // Clear field error for this specific field when user edits it
+        if (fieldErrors[formDataKey]) {
+            setFieldErrors((prev) => {
+                const newErrors = { ...prev }
+                delete newErrors[formDataKey]
+
+                // Only clear submit error if this was the last field error
+                if (Object.keys(newErrors).length === 0 && submitError) {
+                    setSubmitError(null)
+                }
+
+                return newErrors
+            })
+        }
+
         if (subfield) {
             setFormData((prev) => ({
                 ...prev,
@@ -167,9 +182,22 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
             return // Don't proceed to next stage
         }
 
-        // Clear any existing errors if validation passed
-        setFieldErrors({})
+        // Clear only stage validation error (not field errors from server)
         setStageValidationError(null)
+
+        // Clear field errors only for fields in the current stage that just passed validation
+        const currentStageFields = getAllFieldsFromStage(currentStage - 1)
+        const currentStageFieldKeys = currentStageFields
+            .map(f => f.formDataKey)
+            .filter(Boolean) as string[]
+
+        setFieldErrors((prev) => {
+            const newErrors = { ...prev }
+            currentStageFieldKeys.forEach(key => {
+                delete newErrors[key]
+            })
+            return newErrors
+        })
 
         // Proceed to next stage
         if (currentStage === 1) {
@@ -182,7 +210,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
     const handlePreviousStage = () => {
         // Clear any stage validation errors when going back
         setStageValidationError(null)
-        setFieldErrors({})
+        // Don't clear field errors - they should persist across stages
 
         if (currentStage === 3) {
             setCurrentStage(2)
@@ -431,8 +459,50 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
 
             const result = await response.json()
 
+            console.log('API response status:', response.ok)
+            console.log('API result:', result)
+            console.log('Has fieldErrors?', !!result.fieldErrors)
+            console.log('fieldErrors:', result.fieldErrors)
+
             if (!response.ok) {
-                throw new Error(result.message || 'Registration failed')
+                // Handle field-level validation errors from server
+                if (result.fieldErrors) {
+                    console.log('Setting field errors:', result.fieldErrors)
+                    setFieldErrors(result.fieldErrors)
+
+                    // Find which stage has the first error and navigate to it
+                    const errorFields = Object.keys(result.fieldErrors)
+                    let errorStage = currentStage
+
+                    // Check which stage contains the error fields
+                    for (let stageIndex = 0; stageIndex < formConfig.length; stageIndex++) {
+                        const stageFields = getAllFieldsFromStage(stageIndex)
+                        const hasError = stageFields.some(field =>
+                            field.formDataKey && errorFields.includes(field.formDataKey)
+                        )
+                        if (hasError) {
+                            errorStage = stageIndex + 1 // Convert to 1-based
+                            break
+                        }
+                    }
+
+                    // Navigate to the stage with errors
+                    if (errorStage !== currentStage) {
+                        setCurrentStage(errorStage)
+                    }
+
+                    // Show a more specific error message when we have field errors
+                    setSubmitError(
+                        result.message ||
+                            'Please fix the errors and try again.'
+                    )
+                } else {
+                    console.log('No fieldErrors in response')
+                    // Generic error without field-level details
+                    setSubmitError(result.message || 'Registration failed')
+                }
+                setIsSubmitting(false)
+                return
             }
 
             setSubmitSuccess(true)
@@ -541,6 +611,19 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
                     <Typography color="error" variant="body2">
                         {submitError}
                     </Typography>
+                    {fieldErrors && Object.keys(fieldErrors).length > 0 && (
+                        <Box mt={1}>
+                            {Object.entries(fieldErrors).map(([key, error]) => (
+                                <Typography
+                                    key={key}
+                                    color="error"
+                                    variant="body2"
+                                >
+                                    {error}
+                                </Typography>
+                            ))}
+                        </Box>
+                    )}
                 </Box>
             )}
 

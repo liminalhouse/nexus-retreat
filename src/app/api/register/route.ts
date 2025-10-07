@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createSwoogoRegistrant, type SwoogoRegistrant } from '@/utils/swoogo'
+import {
+    createSwoogoRegistrant,
+    type SwoogoRegistrant,
+    SWOOGO_FIELD_ID_TO_KEY,
+} from '@/utils/swoogo'
 import { z } from 'zod'
 import { getAllFormFields } from '../../register/formConfig'
 
@@ -259,6 +263,36 @@ export async function POST(request: NextRequest) {
         if (error instanceof Error) {
             console.error('Error message:', error.message)
             console.error('Error stack:', error.stack)
+            console.error('Has validationErrors?', !!(error as any).validationErrors)
+            console.error('validationErrors:', (error as any).validationErrors)
+
+            // Handle Swoogo validation errors
+            if ((error as any).validationErrors) {
+                const validationErrors = (error as any).validationErrors
+                const fieldErrors: Record<string, string> = {}
+
+                console.log('Processing validation errors:', validationErrors)
+
+                // Use the Swoogo field IDs directly since our form uses them as formDataKey
+                validationErrors.forEach(
+                    (err: { field: string; message: string }) => {
+                        console.log(`Adding error for field: ${err.field}`)
+                        fieldErrors[err.field] = err.message
+                    }
+                )
+
+                console.log('Returning fieldErrors:', fieldErrors)
+
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message:
+                            'Please fix the validation errors and try again.',
+                        fieldErrors,
+                    },
+                    { status: 400 }
+                )
+            }
 
             // Handle specific Swoogo validation errors
             if (
