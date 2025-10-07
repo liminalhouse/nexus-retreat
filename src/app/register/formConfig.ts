@@ -1,20 +1,5 @@
 import { FormField, FormStage, rawFormConfig } from './rawFormConfig'
 
-// Helper function to extract form data key from field name
-// function getFormDataKey(fieldName: string): string {
-//     // Handle nested address structure: Address[Registrant][work_address_id][field]
-//     if (fieldName.includes('Address[Registrant][work_address_id]')) {
-//         const match = fieldName.match(
-//             /Address\[Registrant\]\[work_address_id\]\[([^\]]+)\]/
-//         )
-//         return match ? `work_address_id.${match[1]}` : fieldName
-//     }
-
-//     // Handle regular Registrant fields: Registrant[field]
-//     const match = fieldName.match(/\[([^\]]+)\]$/)
-//     return match ? match[1] : fieldName
-// }
-
 // Helper function to get validation type from field type and name
 function getValidationType(field: {
     type: string

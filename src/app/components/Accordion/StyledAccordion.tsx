@@ -5,7 +5,12 @@ import styles from './accordion.module.scss'
 
 const StyledAccordion: React.FC<AccordionProps> = ({ children, ...rest }) => {
     return (
-        <Accordion className={styles.accordion} allowMultiple={true} {...rest}>
+        <Accordion
+            className={styles.accordion}
+            allowMultiple={true}
+            transition={true}
+            {...rest}
+        >
             {children}
         </Accordion>
     )

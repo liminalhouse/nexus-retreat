@@ -13,7 +13,6 @@ const FAQ = () => {
                 <AccordionItem
                     header="This is my first time being invited, what can I expect?"
                     id="first-time-attendee"
-                    itemKey={0}
                 >
                     <p>
                         This invitation-only retreat has gathered a
@@ -51,7 +50,6 @@ const FAQ = () => {
                 <AccordionItem
                     header="Why is the retreat moving this year?"
                     id="why-move-retreat"
-                    itemKey={0}
                 >
                     <p>
                         Our objective remains to create an intimate,
@@ -68,11 +66,8 @@ const FAQ = () => {
                     </p>
                 </AccordionItem>
                 <AccordionItem
-                    header="
-Is this now called Nexus?
-"
+                    header="Is this now called Nexus?"
                     id="nexus-name"
-                    itemKey={1}
                 >
                     <p>
                         The one-of-a-kind event has evolved into more than a
@@ -86,7 +81,6 @@ Is this now called Nexus?
                 <AccordionItem
                     header="Are there any substantive changes guests can expect?"
                     id="substantive-changes"
-                    itemKey={1}
                 >
                     <p>
                         We always strive to make each year better and more
@@ -97,20 +91,6 @@ Is this now called Nexus?
                         dinners, and, as always, plenty of fun.
                     </p>
                 </AccordionItem>
-                {/* <AccordionItem
-                    header="Will there be changes to the structure?"
-                    id="changes-to-structure"
-                    itemKey={2}
-                >
-                    <p>
-                        Attendees can anticipate the same VIP treatment and
-                        quality content as in previous years. We aim for this to
-                        be a distinguished experience featuring excellent
-                        programming, exceptional dinners, a variety of
-                        activities, valuable networking opportunities, and some
-                        unexpected elements.
-                    </p>
-                </AccordionItem> */}
                 <AccordionItem
                     header="Will there still be activities like we had in years past?"
                     id="activities"
@@ -128,7 +108,6 @@ Is this now called Nexus?
                 <AccordionItem
                     header="What do I need to know in terms of travel?"
                     id="travel-info"
-                    itemKey={3}
                 >
                     <p>
                         Boca Raton is conveniently situated between Palm Beach
@@ -163,7 +142,6 @@ Is this now called Nexus?
                 <AccordionItem
                     header="As a guest, what expenses am I responsible for?"
                     id="guest-expenses"
-                    itemKey={4}
                 >
                     <p>
                         All hotel costs (excluding incidentals), meals, and
@@ -216,7 +194,6 @@ Is this now called Nexus?
                 <AccordionItem
                     header="In previous years, ground transportation was covered, why the change this year?"
                     id="ground-transportation-change"
-                    itemKey={4}
                 >
                     <p>
                         After reviewing guest feedback and analyzing the
@@ -232,7 +209,6 @@ Is this now called Nexus?
                 <AccordionItem
                     header="Can I extend my stay?"
                     id="can-i-extend-my-stay"
-                    itemKey={5}
                 >
                     <p>
                         Of course! We can help you work directly with the hotel,
@@ -247,7 +223,6 @@ Is this now called Nexus?
                 <AccordionItem
                     header="Can I bring a guest?"
                     id="can-i-bring-guest"
-                    itemKey={6}
                 >
                     <p>
                         Yes, we encourage you to bring a spouse / partner for

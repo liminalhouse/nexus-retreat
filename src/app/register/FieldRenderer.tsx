@@ -100,10 +100,10 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                         ''
                                     )
                                 }
-                                onChange(field.formDataKey, inputValue)
+                                onChange(field.formDataKey!, inputValue)
                             }}
                             onBlur={(e) =>
-                                onBlur?.(field.formDataKey, e.target.value)
+                                onBlur?.(field.formDataKey!, e.target.value)
                             }
                             autoComplete={field.autoComplete}
                             placeholder={field.placeholder}
@@ -133,10 +133,10 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             required={field.required}
                             value={value || ''}
                             onChange={(e) =>
-                                onChange(field.formDataKey, e.target.value)
+                                onChange(field.formDataKey!, e.target.value)
                             }
                             onBlur={(e) =>
-                                onBlur?.(field.formDataKey, e.target.value)
+                                onBlur?.(field.formDataKey!, e.target.value)
                             }
                             placeholder={field.placeholder}
                             className={styles.textareaInput}
@@ -156,7 +156,9 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                     return (
                         <CountrySelect
                             value={value || ''}
-                            onChange={(val) => onChange(field.formDataKey, val)}
+                            onChange={(val) =>
+                                onChange(field.formDataKey!, val)
+                            }
                             className={styles.formField}
                         />
                     )
@@ -174,10 +176,10 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                             label={field.label}
                             value={value || ''}
                             onChange={(e) =>
-                                onChange(field.formDataKey, e.target.value)
+                                onChange(field.formDataKey!, e.target.value)
                             }
                             onBlur={(e) =>
-                                onBlur?.(field.formDataKey, e.target.value)
+                                onBlur?.(field.formDataKey!, e.target.value)
                             }
                             required={field.required}
                         >
@@ -238,7 +240,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                                 }
                                                 onChange={(e) =>
                                                     onCheckboxChange?.(
-                                                        field.formDataKey,
+                                                        field.formDataKey!,
                                                         option.value,
                                                         e.target.checked
                                                     )
@@ -348,7 +350,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                 )}
                                 onChange={(key, val) => {
                                     // Handle nested field updates for address
-                                    const fieldKey = key.split('.')?.[1]
+                                    const fieldKey = key?.split('.')?.[1]
                                     if (fieldKey) {
                                         onChange(
                                             'work_address_id',
@@ -416,23 +418,23 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 }
 
 // Helper function to get nested values from form data
-const getNestedValue = (obj: any, path: string): any => {
+const getNestedValue = (obj: any, key: string): any => {
     if (!obj) return ''
 
     // Handle [work_address_id][field] format
-    const addressMatch = path.split('.')?.[1]
+    const addressMatch = key.split('.')?.[1]
     if (addressMatch) {
         return obj.work_address_id?.[addressMatch] || ''
     }
 
     // Handle Registrant[field] format
-    const registrantMatch = path.match(/Registrant\[([^\]]+)\]/)
+    const registrantMatch = key.match(/Registrant\[([^\]]+)\]/)
     if (registrantMatch) {
         return obj[registrantMatch[1]] || ''
     }
 
     // Handle direct keys (e.g., emergency_contact_name, point_of_contact_name)
-    return obj[path] || ''
+    return obj[key] || ''
 }
 
 export default FieldRenderer

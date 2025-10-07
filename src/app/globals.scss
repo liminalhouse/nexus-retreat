@@ -88,3 +88,13 @@ a {
         display: block;
     }
 }
+
+// Animation styles for accordion transitions
+.szh-accordion__item-content {
+    transition: height 0.25s cubic-bezier(0, 0, 0, 1);
+}
+
+.szh-accordion__item--status-exited .szh-accordion__item-panel {
+    height: 0;
+    overflow: hidden;
+}

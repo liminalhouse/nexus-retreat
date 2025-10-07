@@ -60,7 +60,6 @@ export default async function Home() {
                             transition: 'all 0.3s linear',
                             color: 'white !important',
                             marginTop: '2rem',
-                            // color: 'var(--boca-navy)',
                             '&:hover': {
                                 background: 'var(--boca-navy)',
                                 color: 'var(--link-hover) !important',
