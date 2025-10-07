@@ -48,27 +48,29 @@ export default async function Home() {
                         this retreat remains the only event of its kind
                         dedicated exclusively to the global sports leadership.
                     </p>
-                    <Button
-                        variant="contained"
-                        size="large"
-                        sx={{
-                            fontWeight: 600,
-                            fontSize: '1.1rem',
-                            zIndex: 1,
-                            background: `var(--blue-gradient)`,
-                            letterSpacing: '0.1rem',
-                            transition: 'all 0.3s linear',
-                            color: 'white !important',
-                            marginTop: '2rem',
-                            '&:hover': {
-                                background: 'var(--boca-navy)',
-                                color: 'var(--link-hover) !important',
-                            },
-                        }}
-                        href="/register"
-                    >
-                        Register &raquo;
-                    </Button>
+                    {process.env.NODE_ENV !== 'production' && (
+                        <Button
+                            variant="contained"
+                            size="large"
+                            sx={{
+                                fontWeight: 600,
+                                fontSize: '1.1rem',
+                                zIndex: 1,
+                                background: `var(--blue-gradient)`,
+                                letterSpacing: '0.1rem',
+                                transition: 'all 0.3s linear',
+                                color: 'white !important',
+                                marginTop: '2rem',
+                                '&:hover': {
+                                    background: 'var(--boca-navy)',
+                                    color: 'var(--link-hover) !important',
+                                },
+                            }}
+                            href="/register"
+                        >
+                            Register &raquo;
+                        </Button>
+                    )}
                 </div>
             </header>
             <main className={styles.main}>

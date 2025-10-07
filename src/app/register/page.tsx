@@ -10,7 +10,8 @@ export const metadata = {
 export default async function RegisterPage() {
     const session = await getSession()
 
-    if (!session.isAuthenticated) {
+    // TODO: Remove production later
+    if (!session.isAuthenticated || process.env.NODE_ENV === 'production') {
         redirect('/sign-in')
     }
 

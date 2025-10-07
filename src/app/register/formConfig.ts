@@ -1,10 +1,9 @@
 import { FormField, FormStage, rawFormConfig } from './rawFormConfig'
 
-// Helper function to get validation type from field type and name
-function getValidationType(field: {
-    type: string
-    name: string
-}): 'email' | 'phone' | 'text' | undefined {
+// Helper function to get validation type from field type
+function getValidationType(
+    field: FormField
+): 'email' | 'phone' | 'text' | undefined {
     if (field.type === 'email') return 'email'
     if (field.type === 'tel') return 'phone'
     return 'text'
