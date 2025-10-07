@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import {
     createSwoogoRegistrant,
+    sendRegistrantEmail,
     type SwoogoRegistrant,
     SWOOGO_FIELD_ID_TO_KEY,
 } from '@/utils/swoogo'
@@ -237,6 +238,14 @@ export async function POST(request: NextRequest) {
         // Transform form data to Swoogo format
         const swoogoData = transformFormDataToSwoogo(formData)
         const result = await createSwoogoRegistrant(`${event_id}`, swoogoData)
+
+        // Send confirmation email
+        try {
+            await sendRegistrantEmail(result.id.toString(), 'registration_created')
+        } catch (emailError) {
+            // Log the error but don't fail the registration
+            console.error('Failed to send confirmation email:', emailError)
+        }
 
         return NextResponse.json(
             {

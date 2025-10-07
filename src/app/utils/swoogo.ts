@@ -288,4 +288,34 @@ export async function createSwoogoRegistrant(
     return await response.json()
 }
 
+export async function sendRegistrantEmail(
+    registrantId: string,
+    emailType: 'registration_created' | 'registration_abandoned' | 'registration_modified' | 'registration_cancelled'
+): Promise<void> {
+    const baseUrl = process.env.SWOOGO_BASE_URL || 'https://api.swoogo.com'
+    const accessToken = await getSwoogoAccessToken()
+
+    const url = `${baseUrl}/api/v1/registrants/${registrantId}/trigger-email/${emailType}`
+    console.log(`Sending ${emailType} email to registrant ${registrantId} via ${url}`)
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+        },
+    })
+
+    if (!response.ok) {
+        const errorText = await response.text()
+        console.error(`Failed to send ${emailType} email:`, errorText)
+        console.error(`Response status: ${response.status} ${response.statusText}`)
+        throw new Error(`Failed to send email: ${response.statusText} - ${errorText}`)
+    }
+
+    const responseData = await response.text()
+    console.log(`Successfully sent ${emailType} email to registrant ${registrantId}`)
+    console.log(`Email API response:`, responseData)
+}
+
 export type { SwoogoRegistrant, SwoogoRegistrantResponse }
