@@ -3,7 +3,6 @@ import {
     createSwoogoRegistrant,
     sendRegistrantEmail,
     type SwoogoRegistrant,
-    SWOOGO_FIELD_ID_TO_KEY,
 } from '@/utils/swoogo'
 import { z } from 'zod'
 import { getAllFormFields } from '../../register/formConfig'
@@ -241,7 +240,10 @@ export async function POST(request: NextRequest) {
 
         // Send confirmation email
         try {
-            await sendRegistrantEmail(result.id.toString(), 'registration_created')
+            await sendRegistrantEmail(
+                result.id.toString(),
+                'registration_created'
+            )
         } catch (emailError) {
             // Log the error but don't fail the registration
             console.error('Failed to send confirmation email:', emailError)

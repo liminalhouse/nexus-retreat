@@ -178,14 +178,6 @@ export const SWOOGO_CONSTANTS = {
     activities: 'c_6838231',
 }
 
-// Reverse mapping: Swoogo field ID -> our form field key
-export const SWOOGO_FIELD_ID_TO_KEY: Record<string, string> = Object.entries(
-    SWOOGO_CONSTANTS
-).reduce((acc, [key, value]) => {
-    acc[value] = key
-    return acc
-}, {} as Record<string, string>)
-
 interface SwoogoRegistrant {
     first_name: string
     last_name: string

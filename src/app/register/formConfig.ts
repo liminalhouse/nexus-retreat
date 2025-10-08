@@ -47,26 +47,6 @@ export function getAllFormFields(): FormField[] {
     return allFields
 }
 
-export function getRequiredFields(): FormField[] {
-    return getAllFormFields().filter((field) => field.required)
-}
-
 export function getFieldByFormDataKey(key: string): FormField | undefined {
     return getAllFormFields().find((field) => field.formDataKey === key)
-}
-
-// export function getFieldByName(name: string): FormField | undefined {
-//     return getAllFormFields().find((field) => field.name === name)
-// }
-
-export function getPhoneFields(): FormField[] {
-    return getAllFormFields().filter(
-        (field) => field.validationType === 'phone'
-    )
-}
-
-export function getEmailFields(): FormField[] {
-    return getAllFormFields().filter(
-        (field) => field.validationType === 'email'
-    )
 }
