@@ -150,7 +150,7 @@ export const SWOOGO_CONSTANTS = {
     work_address_state: 'work_address_id.state',
     work_address_zip: 'work_address_id.zip',
     work_address_country_code: 'work_address_id.country_code',
-    profile_picture: 'profile_picture',
+    // profile_picture: 'profile_picture', // Can't upload to Swoogo
     // Custom fields with c_ prefix
     office_phone: 'c_6716229',
     title: 'c_6716230',
@@ -202,7 +202,7 @@ interface SwoogoRegistrant {
     work_address_state?: string
     work_address_zip?: string
     work_address_country_code?: string
-    profile_picture?: any | undefined
+    // profile_picture?: any | undefined // Can't upload to Swoogo
     // Custom fields with c_ prefix
     [SWOOGO_CONSTANTS.office_phone]?: string // office_phone
     [SWOOGO_CONSTANTS.title]?: string // title (legacy)
@@ -290,13 +290,19 @@ export async function createSwoogoRegistrant(
 
 export async function sendRegistrantEmail(
     registrantId: string,
-    emailType: 'registration_created' | 'registration_abandoned' | 'registration_modified' | 'registration_cancelled'
+    emailType:
+        | 'registration_created'
+        | 'registration_abandoned'
+        | 'registration_modified'
+        | 'registration_cancelled'
 ): Promise<void> {
     const baseUrl = process.env.SWOOGO_BASE_URL || 'https://api.swoogo.com'
     const accessToken = await getSwoogoAccessToken()
 
     const url = `${baseUrl}/api/v1/registrants/${registrantId}/trigger-email/${emailType}`
-    console.log(`Sending ${emailType} email to registrant ${registrantId} via ${url}`)
+    console.log(
+        `Sending ${emailType} email to registrant ${registrantId} via ${url}`
+    )
 
     const response = await fetch(url, {
         method: 'POST',
@@ -309,12 +315,18 @@ export async function sendRegistrantEmail(
     if (!response.ok) {
         const errorText = await response.text()
         console.error(`Failed to send ${emailType} email:`, errorText)
-        console.error(`Response status: ${response.status} ${response.statusText}`)
-        throw new Error(`Failed to send email: ${response.statusText} - ${errorText}`)
+        console.error(
+            `Response status: ${response.status} ${response.statusText}`
+        )
+        throw new Error(
+            `Failed to send email: ${response.statusText} - ${errorText}`
+        )
     }
 
     const responseData = await response.text()
-    console.log(`Successfully sent ${emailType} email to registrant ${registrantId}`)
+    console.log(
+        `Successfully sent ${emailType} email to registrant ${registrantId}`
+    )
     console.log(`Email API response:`, responseData)
 }
 

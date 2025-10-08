@@ -36,7 +36,7 @@ interface FormData {
         country_code: string
     }
     mobile_phone: string
-    profile_picture?: any | undefined
+    // profile_picture?: any | undefined // Can't upload to Swoogo
     [SWOOGO_CONSTANTS.name_for_credentials]: string // name_for_credentials
     [SWOOGO_CONSTANTS.organization_for_credentials]: string // organization_for_credentials
     [SWOOGO_CONSTANTS.emergency_contact_name]: string // emergency_contact_name
@@ -88,7 +88,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
             country_code: '',
         },
         mobile_phone: '',
-        profile_picture: undefined,
+        // profile_picture: undefined, // Can't upload to Swoogo
         [SWOOGO_CONSTANTS.name_for_credentials]: '',
         [SWOOGO_CONSTANTS.organization_for_credentials]: '',
         [SWOOGO_CONSTANTS.emergency_contact_name]: '',
