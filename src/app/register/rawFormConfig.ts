@@ -158,6 +158,7 @@ export const rawFormConfig: FormStage[] = [
                         autoComplete: 'postal-code',
                     },
                     {
+                        id: 'country-select',
                         formDataKey: SWOOGO_CONSTANTS.work_address_country_code,
                         type: 'select',
                         label: 'Country',
@@ -166,12 +167,12 @@ export const rawFormConfig: FormStage[] = [
                     },
                 ],
             },
-            {
-                formDataKey: SWOOGO_CONSTANTS.profile_picture,
-                type: 'file',
-                label: 'Upload a Profile Picture',
-                accept: 'image/*',
-            },
+            // {
+            //     formDataKey: SWOOGO_CONSTANTS.profile_picture,
+            //     type: 'file',
+            //     label: 'Upload a Profile Picture',
+            //     accept: 'image/*',
+            // },
         ],
     },
     // Stage 2: Additional Details
