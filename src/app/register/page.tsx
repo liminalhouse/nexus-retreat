@@ -11,7 +11,7 @@ export default async function RegisterPage() {
     const session = await getSession()
 
     // TODO: Remove production later
-    if (!session.isAuthenticated || process.env.NODE_ENV === 'production') {
+    if (!session.isAuthenticated || process.env.VERCEL_ENV === 'production') {
         redirect('/sign-in')
     }
 

@@ -48,7 +48,7 @@ export default async function Home() {
                         this retreat remains the only event of its kind
                         dedicated exclusively to the global sports leadership.
                     </p>
-                    {process.env.NODE_ENV !== 'production' && (
+                    {process.env.VERCEL_ENV !== 'production' && (
                         <Button
                             variant="contained"
                             size="large"
