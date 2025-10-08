@@ -10,8 +10,8 @@ export const sessionOptions: SessionOptions = {
     cookieName: '_auth',
     cookieOptions: {
         secure:
-            process.env.NODE_ENV == 'production' ||
-            process.env.NODE_ENV == 'test',
+            process.env.VERCEL_ENV == 'production' ||
+            process.env.VERCEL_ENV == 'preview',
     },
 }
 

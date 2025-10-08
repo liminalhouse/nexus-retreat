@@ -17,10 +17,10 @@ export const metadata: Metadata = {
     // keywords: ['nextjs', 'next14', 'pwa', 'next-pwa'],
     // viewport:
     //     'minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover',
-    // icons: [
-    //     { rel: 'apple-touch-icon', url: 'icons/favicon.svg' },
-    //     { rel: 'icon', url: 'icons/favicon.svg' },
-    // ],
+    icons: [
+        { rel: 'apple-touch-icon', url: 'icons/favicon.svg' },
+        { rel: 'icon', url: 'icons/favicon.svg' },
+    ],
 }
 
 export default function RootLayout({
