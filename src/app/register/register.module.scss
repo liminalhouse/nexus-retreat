@@ -157,8 +157,6 @@
             outline: none;
             border-color: #1976d2;
             background: white;
-            // box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1),
-            //     0 4px 12px rgba(25, 118, 210, 0.15);
         }
 
         &:focus + .bar {
@@ -191,7 +189,6 @@
         &:focus {
             border-color: #1976d2;
             background: white;
-            // box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1);
         }
     }
 }
