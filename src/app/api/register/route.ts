@@ -244,9 +244,9 @@ export async function POST(request: NextRequest) {
                 result.id.toString(),
                 'registration_created'
             )
-        } catch (emailError) {
+        } catch (error) {
             // Log the error but don't fail the registration
-            console.error('Failed to send confirmation email:', emailError)
+            console.error('Failed to send confirmation email:', error)
         }
 
         return NextResponse.json(
