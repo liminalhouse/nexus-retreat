@@ -80,6 +80,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
             case 'text':
             case 'email':
             case 'tel':
+            case 'password':
                 return (
                     <div className={styles.inputWrapper}>
                         <TextField

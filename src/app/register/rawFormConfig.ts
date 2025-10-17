@@ -12,6 +12,7 @@ export interface FormField {
         | 'file'
         | 'fieldset'
         | 'group'
+        | 'password'
     label: string
     id?: string
     name?: string
@@ -269,6 +270,33 @@ export const rawFormConfig: FormStage[] = [
                             SWOOGO_CONSTANTS.secondary_point_of_contact_phone,
                         type: 'tel',
                         label: 'Phone',
+                    },
+                ],
+            },
+            {
+                id: 'credit-card-group',
+                name: 'credit_card_group',
+                type: 'group',
+                label: 'Credit Card Information',
+                fields: [
+                    {
+                        formDataKey: SWOOGO_CONSTANTS.credit_card_number,
+                        type: 'password',
+                        label: 'Credit Card Number',
+                        autoComplete: 'cc-number',
+                    },
+                    {
+                        formDataKey: SWOOGO_CONSTANTS.credit_card_cvv,
+                        type: 'password',
+                        label: 'CVV',
+                        autoComplete: 'cc-csc',
+                    },
+                    {
+                        formDataKey: SWOOGO_CONSTANTS.credit_card_expiry,
+                        type: 'text',
+                        label: 'Expiry Date',
+                        placeholder: 'MM/YY',
+                        autoComplete: 'cc-exp',
                     },
                 ],
             },

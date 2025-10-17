@@ -58,6 +58,9 @@ interface FormData {
     [SWOOGO_CONSTANTS.guest_relation]: string // guest_relation
     [SWOOGO_CONSTANTS.guest_email]: string // guest_email
     [SWOOGO_CONSTANTS.activities]: string[] // activities
+    [SWOOGO_CONSTANTS.credit_card_number]: string // credit_card_number
+    [SWOOGO_CONSTANTS.credit_card_cvv]: string // credit_card_cvv
+    [SWOOGO_CONSTANTS.credit_card_expiry]: string // credit_card_expiry
 }
 
 interface HardcodedRegistrationFormProps {
@@ -110,6 +113,9 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         [SWOOGO_CONSTANTS.guest_relation]: '',
         [SWOOGO_CONSTANTS.guest_email]: '',
         [SWOOGO_CONSTANTS.activities]: [],
+        [SWOOGO_CONSTANTS.credit_card_number]: '',
+        [SWOOGO_CONSTANTS.credit_card_cvv]: '',
+        [SWOOGO_CONSTANTS.credit_card_expiry]: '',
     })
 
     const handleInputChange = (

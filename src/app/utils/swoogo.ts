@@ -176,6 +176,10 @@ export const SWOOGO_CONSTANTS = {
     complimentary_accommodations: 'c_6716267',
     dinner_attendance: 'c_6716269',
     activities: 'c_6838231',
+    // Credit card fields
+    credit_card_number: 'c_6842687',
+    credit_card_cvv: 'c_6842724',
+    credit_card_expiry: 'c_7045598',
 }
 
 interface SwoogoRegistrant {
