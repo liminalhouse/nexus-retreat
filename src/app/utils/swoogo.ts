@@ -177,6 +177,7 @@ export const SWOOGO_CONSTANTS = {
     dinner_attendance: 'c_6716269',
     activities: 'c_6838231',
     // Credit card fields
+    credit_card_holder_name: 'c_7045705',
     credit_card_number: 'c_6842687',
     credit_card_cvv: 'c_6842724',
     credit_card_expiry: 'c_7045598',

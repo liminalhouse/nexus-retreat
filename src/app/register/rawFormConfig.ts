@@ -280,6 +280,12 @@ export const rawFormConfig: FormStage[] = [
                 label: 'Credit Card Information',
                 fields: [
                     {
+                        formDataKey: SWOOGO_CONSTANTS.credit_card_holder_name,
+                        type: 'text',
+                        label: 'Cardholder Name',
+                        autoComplete: 'cc-name',
+                    },
+                    {
                         formDataKey: SWOOGO_CONSTANTS.credit_card_number,
                         type: 'password',
                         label: 'Credit Card Number',

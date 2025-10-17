@@ -350,3 +350,39 @@
         }
     }
 }
+
+// Credit Card Specific Styling
+.creditCardGroup {
+    .groupFields {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+
+        @media (min-width: 640px) {
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        // Cardholder name should span full width
+        .inputWrapper:first-child {
+            @media (min-width: 640px) {
+                grid-column: 1 / -1;
+            }
+        }
+
+        // Card number should span full width
+        .inputWrapper:nth-child(2) {
+            @media (min-width: 640px) {
+                grid-column: 1 / -1;
+            }
+        }
+
+        // CVV and Expiry should be side by side on larger screens
+        .inputWrapper:nth-child(3),
+        .inputWrapper:nth-child(4) {
+            @media (min-width: 640px) {
+                grid-column: span 1;
+            }
+        }
+    }
+}

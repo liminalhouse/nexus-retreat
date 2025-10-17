@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
     TextField,
     FormControl,
@@ -9,7 +9,12 @@ import {
     FormGroup,
     FormControlLabel,
     Checkbox,
+    InputAdornment,
+    IconButton,
 } from '@mui/material'
+import CreditCardIcon from '@mui/icons-material/CreditCard'
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import { FormField } from './rawFormConfig'
 import CountrySelect from './CountrySelect'
 import styles from '../register/register.module.scss'
@@ -74,6 +79,18 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
     fieldErrors,
 }) => {
     const id = field.id || field.formDataKey
+    const [showPassword, setShowPassword] = useState(false)
+
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword)
+    }
+
+    const handleMouseDownPassword = (
+        event: React.MouseEvent<HTMLButtonElement>
+    ) => {
+        event.preventDefault()
+    }
+
     const renderField = () => {
         const name = generateName(field)
         switch (field.type) {
@@ -81,10 +98,18 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
             case 'email':
             case 'tel':
             case 'password':
+                const isCreditCardNumber = field.autoComplete === 'cc-number'
+                const isCVV = field.autoComplete === 'cc-csc'
+                const isPasswordField = field.type === 'password'
+
                 return (
                     <div className={styles.inputWrapper}>
                         <TextField
-                            type={field.type}
+                            type={
+                                isPasswordField && showPassword
+                                    ? 'text'
+                                    : field.type
+                            }
                             id={id}
                             name={name}
                             label={field.label}
@@ -101,15 +126,115 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                                         ''
                                     )
                                 }
+                                // Format credit card number with spaces
+                                if (isCreditCardNumber) {
+                                    // Remove all non-digit characters
+                                    inputValue = inputValue.replace(/\D/g, '')
+
+                                    // Limit to 16 digits
+                                    if (inputValue.length > 16) {
+                                        inputValue = inputValue.slice(0, 16)
+                                    }
+
+                                    // Add space every 4 digits
+                                    inputValue = inputValue.replace(
+                                        /(\d{4})(?=\d)/g,
+                                        '$1 '
+                                    )
+                                }
+                                // Format expiry date as MM/YY
+                                if (field.autoComplete === 'cc-exp') {
+                                    // Remove all non-digit characters
+                                    inputValue = inputValue.replace(/\D/g, '')
+
+                                    // Limit to 4 digits
+                                    if (inputValue.length > 4) {
+                                        inputValue = inputValue.slice(0, 4)
+                                    }
+
+                                    // Add slash after MM
+                                    if (inputValue.length >= 2) {
+                                        inputValue =
+                                            inputValue.slice(0, 2) +
+                                            '/' +
+                                            inputValue.slice(2)
+                                    }
+                                }
                                 onChange(field.formDataKey!, inputValue)
                             }}
                             onBlur={(e) =>
                                 onBlur?.(field.formDataKey!, e.target.value)
                             }
                             autoComplete={field.autoComplete}
-                            placeholder={field.placeholder}
+                            placeholder={
+                                isCreditCardNumber
+                                    ? 'xxxx-xxxx-xxxx-xxxx'
+                                    : field.placeholder
+                            }
                             error={Boolean(error)} // Convert error string to boolean
                             helperText={error} // Show validation error
+                            inputProps={{
+                                maxLength:
+                                    field.autoComplete === 'cc-exp'
+                                        ? 5
+                                        : isCreditCardNumber
+                                        ? 19
+                                        : undefined,
+                            }}
+                            InputProps={
+                                isCreditCardNumber
+                                    ? {
+                                          startAdornment: (
+                                              <InputAdornment position="start">
+                                                  <CreditCardIcon />
+                                              </InputAdornment>
+                                          ),
+                                          endAdornment: (
+                                              <InputAdornment position="end">
+                                                  <IconButton
+                                                      aria-label="toggle visibility"
+                                                      onClick={
+                                                          handleClickShowPassword
+                                                      }
+                                                      onMouseDown={
+                                                          handleMouseDownPassword
+                                                      }
+                                                      edge="end"
+                                                  >
+                                                      {showPassword ? (
+                                                          <Visibility />
+                                                      ) : (
+                                                          <VisibilityOff />
+                                                      )}
+                                                  </IconButton>
+                                              </InputAdornment>
+                                          ),
+                                      }
+                                    : isPasswordField
+                                    ? {
+                                          endAdornment: (
+                                              <InputAdornment position="end">
+                                                  <IconButton
+                                                      aria-label="toggle visibility"
+                                                      onClick={
+                                                          handleClickShowPassword
+                                                      }
+                                                      onMouseDown={
+                                                          handleMouseDownPassword
+                                                      }
+                                                      edge="end"
+                                                  >
+                                                      {showPassword ? (
+                                                          <Visibility />
+                                                      ) : (
+                                                          <VisibilityOff />
+                                                      )}
+                                                  </IconButton>
+                                              </InputAdornment>
+                                          ),
+                                      }
+                                    : undefined
+                            }
                         />
                         {field.hintText && (
                             <div className={styles.hintBlock}>
@@ -371,9 +496,12 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                 )
 
             case 'group':
+                const isCreditCardGroup = field.id === 'credit-card-group'
                 return (
                     <div
-                        className={`${styles.fieldGroup} ${styles.groupContainer}`}
+                        className={`${styles.fieldGroup} ${
+                            styles.groupContainer
+                        } ${isCreditCardGroup ? styles.creditCardGroup : ''}`}
                     >
                         <Typography
                             variant="h6"

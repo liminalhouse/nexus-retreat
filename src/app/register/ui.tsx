@@ -16,6 +16,7 @@ import { formConfig, getFieldByFormDataKey } from './formConfig'
 import { FormField } from './rawFormConfig'
 import FieldRenderer from './FieldRenderer'
 import { SWOOGO_CONSTANTS } from '@/utils/swoogo'
+import cardValidator from 'card-validator'
 
 interface FormData {
     email: string
@@ -58,6 +59,7 @@ interface FormData {
     [SWOOGO_CONSTANTS.guest_relation]: string // guest_relation
     [SWOOGO_CONSTANTS.guest_email]: string // guest_email
     [SWOOGO_CONSTANTS.activities]: string[] // activities
+    [SWOOGO_CONSTANTS.credit_card_holder_name]: string // credit_card_holder_name
     [SWOOGO_CONSTANTS.credit_card_number]: string // credit_card_number
     [SWOOGO_CONSTANTS.credit_card_cvv]: string // credit_card_cvv
     [SWOOGO_CONSTANTS.credit_card_expiry]: string // credit_card_expiry
@@ -113,6 +115,7 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         [SWOOGO_CONSTANTS.guest_relation]: '',
         [SWOOGO_CONSTANTS.guest_email]: '',
         [SWOOGO_CONSTANTS.activities]: [],
+        [SWOOGO_CONSTANTS.credit_card_holder_name]: '',
         [SWOOGO_CONSTANTS.credit_card_number]: '',
         [SWOOGO_CONSTANTS.credit_card_cvv]: '',
         [SWOOGO_CONSTANTS.credit_card_expiry]: '',
@@ -254,6 +257,47 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
         return null
     }
 
+    const validateCreditCardNumber = (cardNumber: string): string | null => {
+        if (!cardNumber) return null
+        // Remove spaces before validation
+        const cleanedNumber = cardNumber.replace(/\s/g, '')
+        const validation = cardValidator.number(cleanedNumber)
+        if (!validation.isValid) {
+            return 'Please enter a valid credit card number'
+        }
+        return null
+    }
+
+    const validateCVV = (cvv: string, cardNumber?: string): string | null => {
+        if (!cvv) return null
+
+        // Get card type from card number if available
+        let maxLength = 4
+        if (cardNumber) {
+            // Remove spaces from card number before validation
+            const cleanedCardNumber = cardNumber.replace(/\s/g, '')
+            const cardValidation = cardValidator.number(cleanedCardNumber)
+            if (cardValidation.card?.code) {
+                maxLength = cardValidation.card.code.size
+            }
+        }
+
+        const validation = cardValidator.cvv(cvv, maxLength)
+        if (!validation.isValid) {
+            return 'Please enter a valid CVV'
+        }
+        return null
+    }
+
+    const validateExpiryDate = (expiry: string): string | null => {
+        if (!expiry) return null
+        const validation = cardValidator.expirationDate(expiry)
+        if (!validation.isValid) {
+            return 'Please enter a valid expiry date (MM/YY)'
+        }
+        return null
+    }
+
     const validateRequired = (
         value: string,
         fieldLabel: string
@@ -304,6 +348,20 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
 
         if (field.validationType === 'phone') {
             return validatePhone(value)
+        }
+
+        // Credit card field validation
+        if (formDataKey === SWOOGO_CONSTANTS.credit_card_number) {
+            return validateCreditCardNumber(value)
+        }
+
+        if (formDataKey === SWOOGO_CONSTANTS.credit_card_cvv) {
+            const cardNumber = formData[SWOOGO_CONSTANTS.credit_card_number]
+            return validateCVV(value, cardNumber)
+        }
+
+        if (formDataKey === SWOOGO_CONSTANTS.credit_card_expiry) {
+            return validateExpiryDate(value)
         }
 
         return null
