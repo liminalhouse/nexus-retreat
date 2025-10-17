@@ -357,7 +357,11 @@ const HardcodedRegistrationForm: React.FC<HardcodedRegistrationFormProps> = ({
 
         if (formDataKey === SWOOGO_CONSTANTS.credit_card_cvv) {
             const cardNumber = formData[SWOOGO_CONSTANTS.credit_card_number]
-            return validateCVV(value, cardNumber)
+            // Ensure cardNumber is a string before passing to validation
+            return validateCVV(
+                value,
+                typeof cardNumber === 'string' ? cardNumber : undefined
+            )
         }
 
         if (formDataKey === SWOOGO_CONSTANTS.credit_card_expiry) {

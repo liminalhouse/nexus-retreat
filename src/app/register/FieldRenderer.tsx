@@ -99,7 +99,6 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
             case 'tel':
             case 'password':
                 const isCreditCardNumber = field.autoComplete === 'cc-number'
-                const isCVV = field.autoComplete === 'cc-csc'
                 const isPasswordField = field.type === 'password'
 
                 return (
