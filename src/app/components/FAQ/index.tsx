@@ -197,12 +197,12 @@ const FAQ = () => {
                 >
                     <p>
                         After reviewing guest feedback and analyzing the
-                        operation, we decided to make this slight change.
-                        Nothing will change operationally. We will continue to
-                        organize transportation and ensure that once you land at
-                        any of the nearby airports in Florida, you&apos;ll have
-                        VIP transportation ready to whisk you to The Boca Raton
-                        and back to the airport for your return trip.
+                        operation, we decided to make this slight change. We
+                        will continue to organize transportation and ensure that
+                        once you land at any of the nearby airports in Florida,
+                        you&apos;ll have VIP transportation ready to whisk you
+                        to The Boca Raton and back to the airport for your
+                        return trip.
                     </p>
                 </AccordionItem>
 
