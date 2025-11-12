@@ -78,6 +78,7 @@ export const getPageQuery = defineQuery(`
     _type,
     name,
     slug,
+    bgColor,
     heading,
     subheading,
     "pageBuilder": pageBuilder[]{

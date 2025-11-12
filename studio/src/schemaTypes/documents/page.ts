@@ -18,7 +18,16 @@ export const page = defineType({
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
-
+    defineField({
+      name: 'heading',
+      title: 'Heading',
+      type: 'string',
+    }),
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'blockContent',
+    }),
     defineField({
       name: 'slug',
       title: 'Slug',
@@ -27,6 +36,18 @@ export const page = defineType({
       options: {
         source: 'name',
         maxLength: 96,
+      },
+    }),
+    defineField({
+      name: 'bgColor',
+      title: 'Background color',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Beige', value: 'beige'},
+          {title: 'Navy', value: 'navy'},
+          {title: 'White', value: 'white'},
+        ],
       },
     }),
     defineField({

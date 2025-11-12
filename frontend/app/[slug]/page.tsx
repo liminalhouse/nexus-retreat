@@ -56,18 +56,16 @@ export default async function Page(props: Props) {
     )
   }
 
-  console.log('page', page)
-
   return (
-    <div className="my-12 lg:my-24">
+    <div className={`py-12 lg:py-24 bg-nexus-${page.bgColor || 'white'}`}>
       <Head>
         <title>{page.heading}</title>
       </Head>
       <div className="">
         <div className="container">
-          <div className="pb-6 border-b border-gray-100">
-            <div className="max-w-3xl">
-              <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-7xl">
+          <div className="pb-6 border-b border-nexus-coral">
+            <div className="w-full">
+              <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-5xl text-center">
                 {page.heading}
               </h2>
               <p className="mt-4 text-base lg:text-lg leading-relaxed text-gray-600 uppercase font-light">
