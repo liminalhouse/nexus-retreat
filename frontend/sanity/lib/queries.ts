@@ -43,12 +43,7 @@ export const homepageQuery = defineQuery(`*[_type == "page" && !defined(slug.cur
       eventLocation,
       ctaText,
       ctaLink,
-      backgroundImage{
-        asset->{
-          _id,
-          url
-        }
-      }
+      backgroundImage
     },
     _type == "callToAction" => {
       ...,
