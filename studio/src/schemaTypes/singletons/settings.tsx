@@ -91,14 +91,6 @@ export const settings = defineType({
     }),
     // Navigation Settings
     defineField({
-      name: 'logoText',
-      title: 'Logo Text',
-      type: 'string',
-      initialValue: 'NEXUS',
-      validation: (rule) => rule.required(),
-      group: 'navigation',
-    }),
-    defineField({
       name: 'navLinks',
       title: 'Navigation Links',
       type: 'array',
@@ -138,13 +130,6 @@ export const settings = defineType({
       ],
     }),
     // Footer Settings
-    defineField({
-      name: 'footerLogoText',
-      title: 'Footer Logo Text',
-      type: 'string',
-      initialValue: 'NEXUS',
-      group: 'footer',
-    }),
     defineField({
       name: 'footerTagline',
       title: 'Footer Tagline',

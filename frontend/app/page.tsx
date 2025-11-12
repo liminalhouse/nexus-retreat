@@ -26,7 +26,7 @@ export default async function Page() {
     <div className="min-h-screen">
       {/* Hero Section */}
       {hero && (
-        <section className="relative h-[calc(100vh-0px)] flex items-center justify-center bg-[#3d4663]">
+        <section className="relative h-[calc(100vh-0px)] flex items-center justify-center bg-nexus-navy">
           {/* Background Image */}
           <div
             className="absolute inset-0 bg-cover bg-center opacity-40"
@@ -36,7 +36,7 @@ export default async function Page() {
           />
 
           {/* Overlay */}
-          <div className="absolute inset-0 bg-[#3d4663] opacity-60" />
+          <div className="absolute inset-0 bg-nexus-navy opacity-60" />
 
           {/* Content */}
           <div className="relative z-10 text-center text-white px-6 max-w-4xl">
@@ -88,7 +88,7 @@ export default async function Page() {
             {ctaText && (
               <Link
                 href={ctaLink}
-                className="inline-block px-8 py-3 bg-[#f49898] text-gray-900 rounded hover:bg-[#f5a8a8] transition-colors font-medium"
+                className="inline-block px-8 py-3 bg-nexus-coral text-gray-900 rounded hover:bg-nexus-coral-light transition-colors font-medium"
               >
                 {ctaText}
               </Link>

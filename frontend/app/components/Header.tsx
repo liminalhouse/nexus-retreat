@@ -1,13 +1,13 @@
 import Link from 'next/link'
 import {settingsQuery} from '@/sanity/lib/queries'
 import {sanityFetch} from '@/sanity/lib/live'
+import NexusLogo from './NexusLogo'
 
 export default async function Header() {
   const {data: settings} = await sanityFetch({
     query: settingsQuery,
   })
 
-  const logoText = settings?.logoText || 'NEXUS'
   const navLinks = settings?.navLinks || []
 
   return (
@@ -15,7 +15,7 @@ export default async function Header() {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <Link href="/" className="text-2xl font-bold tracking-tight">
-            {logoText}
+            <NexusLogo styleType="lockup" className="w-[100px] h-[40px]" />
           </Link>
 
           <nav className="flex items-center gap-3">

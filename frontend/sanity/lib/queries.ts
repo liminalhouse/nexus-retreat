@@ -11,13 +11,11 @@ export const settingsQuery = defineQuery(`*[_type == "settings"][0]{
   title,
   description,
   ogImage,
-  logoText,
   navLinks[]{
     label,
     href,
     highlighted
   },
-  footerLogoText,
   footerTagline,
   footerEmail,
   footerQuickLinks[]{

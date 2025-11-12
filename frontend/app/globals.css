@@ -28,6 +28,12 @@
   --color-gray-900: #1b1d27;
   --color-gray-950: #13141b;
 
+  /* Nexus brand colors */
+  --color-nexus-navy: #3d4663;
+  --color-nexus-navy-dark: #1c2544;
+  --color-nexus-coral: #f49898;
+  --color-nexus-coral-light: #f5a8a8;
+
   --font-display: 'Inter', 'sans-serif';
   --font-sans: 'Inter', 'sans-serif';
 
