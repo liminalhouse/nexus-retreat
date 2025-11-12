@@ -56,8 +56,10 @@ export default async function Page(props: Props) {
     )
   }
 
+  const bg = `bg-nexus-${page.bgColor ?? 'white'}`
+
   return (
-    <div className={`py-12 lg:py-24 bg-nexus-${page.bgColor || 'white'}`}>
+    <div className={`${bg} py-12 lg:py-24`}>
       <Head>
         <title>{page.heading}</title>
       </Head>

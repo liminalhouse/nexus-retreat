@@ -1,6 +1,12 @@
 @import 'tailwindcss';
 
+/* Plugins */
+@plugin "@tailwindcss/forms";
 @plugin "@tailwindcss/typography";
+
+/* Preline UI */
+@source "preline/dist/*.js";
+@import 'preline/variants';
 
 @utility container {
   margin: 0 auto;
