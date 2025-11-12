@@ -529,15 +529,10 @@ export type AllSanitySchemaTypes =
 export declare const internalGroqTypeReferenceTo: unique symbol
 // Source: ./sanity/lib/queries.ts
 // Variable: settingsQuery
-// Query: *[_type == "settings"][0]
+// Query: *[_type == "settings"][0]{  title,  description,  ogImage,  logoText,  navLinks[]{    label,    href,    highlighted  },  footerLogoText,  footerTagline,  footerEmail,  footerQuickLinks[]{    label,    href  },  footerCopyright}
 export type SettingsQueryResult = {
-  _id: string
-  _type: 'settings'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
   title: string
-  description?: Array<{
+  description: Array<{
     children?: Array<{
       marks?: Array<string>
       text?: string
@@ -568,8 +563,8 @@ export type SettingsQueryResult = {
     level?: number
     _type: 'block'
     _key: string
-  }>
-  ogImage?: {
+  }> | null
+  ogImage: {
     asset?: {
       _ref: string
       _type: 'reference'
@@ -582,7 +577,22 @@ export type SettingsQueryResult = {
     alt?: string
     metadataBase?: string
     _type: 'image'
-  }
+  } | null
+  logoText: null
+  navLinks: null
+  footerLogoText: null
+  footerTagline: null
+  footerEmail: null
+  footerQuickLinks: null
+  footerCopyright: null
+} | null
+// Variable: homepageQuery
+// Query: *[_type == "page" && slug.current == "/"][0]{  _id,  name,  slug,  hero{    description[]{      ...,      markDefs[]{        ...,          _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }      }    },    eventDate,    eventLocation,    ctaText,    ctaLink,    backgroundImage{      asset->{        _id,        url      }    }  }}
+export type HomepageQueryResult = {
+  _id: string
+  name: string
+  slug: Slug
+  hero: null
 } | null
 // Variable: getPageQuery
 // Query: *[_type == 'page' && slug.current == $slug][0]{    _id,    _type,    name,    slug,    heading,    subheading,    "pageBuilder": pageBuilder[]{      ...,      _type == "callToAction" => {          link {      ...,        _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }      },      },      _type == "infoSection" => {        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }          }        }      },    },  }
@@ -810,7 +820,8 @@ export type PagesSlugsResult = Array<{
 import '@sanity/client'
 declare module '@sanity/client' {
   interface SanityQueries {
-    '*[_type == "settings"][0]': SettingsQueryResult
+    '*[_type == "settings"][0]{\n  title,\n  description,\n  ogImage,\n  logoText,\n  navLinks[]{\n    label,\n    href,\n    highlighted\n  },\n  footerLogoText,\n  footerTagline,\n  footerEmail,\n  footerQuickLinks[]{\n    label,\n    href\n  },\n  footerCopyright\n}': SettingsQueryResult
+    '*[_type == "page" && slug.current == "/"][0]{\n  _id,\n  name,\n  slug,\n  hero{\n    description[]{\n      ...,\n      markDefs[]{\n        ...,\n        \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n    },\n    eventDate,\n    eventLocation,\n    ctaText,\n    ctaLink,\n    backgroundImage{\n      asset->{\n        _id,\n        url\n      }\n    }\n  }\n}': HomepageQueryResult
     '\n  *[_type == \'page\' && slug.current == $slug][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    heading,\n    subheading,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      _type == "callToAction" => {\n        \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n,\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n          }\n        }\n      },\n    },\n  }\n': GetPageQueryResult
     '\n  *[_type == "page" || _type == "post" && defined(slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
     '\n  *[_type == "post" && defined(slug.current)] | order(date desc, _updatedAt desc) {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': AllPostsQueryResult

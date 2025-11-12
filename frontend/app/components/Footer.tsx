@@ -1,6 +1,18 @@
 import Link from 'next/link'
+import {settingsQuery} from '@/sanity/lib/queries'
+import {sanityFetch} from '@/sanity/lib/live'
 
-export default function Footer() {
+export default async function Footer() {
+  const {data: settings} = await sanityFetch({
+    query: settingsQuery,
+  })
+
+  const logoText = settings?.footerLogoText || 'NEXUS'
+  const tagline = settings?.footerTagline || 'George Pyne • Jay Penske'
+  const email = settings?.footerEmail || 'nexus-retreat@gmail.com'
+  const quickLinks = settings?.footerQuickLinks || []
+  const copyright = settings?.footerCopyright || 'Copyright © Bruin Capital Holdings, LLC 2025. All rights reserved.'
+
   return (
     <footer className="bg-[#3d4663] text-white">
       <div className="container mx-auto px-6 py-12">
@@ -9,16 +21,13 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li>
-                <Link href="/faq" className="text-gray-300 hover:text-white transition-colors">
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link href="/registration" className="text-gray-300 hover:text-white transition-colors">
-                  Registration
-                </Link>
-              </li>
+              {quickLinks.map((link: any, index: number) => (
+                <li key={index}>
+                  <Link href={link.href} className="text-gray-300 hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -26,19 +35,19 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact</h3>
             <a
-              href="mailto:nexus-retreat@gmail.com"
+              href={`mailto:${email}`}
               className="text-gray-300 hover:text-white transition-colors"
             >
-              nexus-retreat@gmail.com
+              {email}
             </a>
           </div>
 
           {/* Logo */}
           <div className="flex justify-start md:justify-end items-start">
             <div className="text-right">
-              <div className="text-3xl font-bold tracking-tight mb-1">NEXUS</div>
+              <div className="text-3xl font-bold tracking-tight mb-1">{logoText}</div>
               <div className="text-xs text-gray-400 uppercase tracking-wider">
-                George Pyne • Jay Penske
+                {tagline}
               </div>
             </div>
           </div>
@@ -46,7 +55,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <div className="mt-12 pt-6 border-t border-gray-600 text-center text-sm text-gray-400">
-          Copyright © Bruin Capital Holdings, LLC 2025. All rights reserved.
+          {copyright}
         </div>
       </div>
     </footer>

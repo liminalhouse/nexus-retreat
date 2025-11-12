@@ -1,6 +1,65 @@
 import {defineQuery} from 'next-sanity'
 
-export const settingsQuery = defineQuery(`*[_type == "settings"][0]`)
+const linkReference = /* groq */ `
+  _type == "link" => {
+    "page": page->slug.current,
+    "post": post->slug.current
+  }
+`
+
+export const settingsQuery = defineQuery(`*[_type == "settings"][0]{
+  title,
+  description,
+  ogImage,
+  logoText,
+  navLinks[]{
+    label,
+    href,
+    highlighted
+  },
+  footerLogoText,
+  footerTagline,
+  footerEmail,
+  footerQuickLinks[]{
+    label,
+    href
+  },
+  footerCopyright
+}`)
+
+export const homepageQuery = defineQuery(`*[_type == "page" && !defined(slug.current)][0]{
+  _id,
+  name,
+  slug,
+  pageBuilder[]{
+    _type,
+    _type == "hero" => {
+      description[]{
+        ...,
+        markDefs[]{
+          ...,
+          ${linkReference}
+        }
+      },
+      eventDate,
+      eventLocation,
+      ctaText,
+      ctaLink,
+      backgroundImage{
+        asset->{
+          _id,
+          url
+        }
+      }
+    },
+    _type == "callToAction" => {
+      ...,
+    },
+    _type == "infoSection" => {
+      ...,
+    }
+  }
+}`)
 
 const postFields = /* groq */ `
   _id,
@@ -11,13 +70,6 @@ const postFields = /* groq */ `
   coverImage,
   "date": coalesce(date, _updatedAt),
   "author": author->{firstName, lastName, picture},
-`
-
-const linkReference = /* groq */ `
-  _type == "link" => {
-    "page": page->slug.current,
-    "post": post->slug.current
-  }
 `
 
 const linkFields = /* groq */ `

@@ -13,23 +13,29 @@ export const settings = defineType({
   title: 'Settings',
   type: 'document',
   icon: CogIcon,
+  groups: [
+    {name: 'navigation', title: 'Navigation'},
+    {name: 'footer', title: 'Footer'},
+    {name: 'seo', title: 'SEO'},
+  ],
   fields: [
     defineField({
       name: 'title',
-      description: 'This field is the title of your blog.',
-      title: 'Title',
+      description: 'Site title used for SEO and metadata.',
+      title: 'Site Title',
       type: 'string',
       initialValue: demo.title,
       validation: (rule) => rule.required(),
+      group: 'seo',
     }),
     defineField({
       name: 'description',
-      description: 'Used on the Homepage',
-      title: 'Description',
+      description: 'Used for SEO metadata',
+      title: 'Site Description',
       type: 'array',
       initialValue: demo.description,
+      group: 'seo',
       of: [
-        // Define a minified block content field for the description. https://www.sanity.io/docs/block-content
         defineArrayMember({
           type: 'block',
           options: {},
@@ -37,76 +43,7 @@ export const settings = defineType({
           lists: [],
           marks: {
             decorators: [],
-            annotations: [
-              {
-                name: 'link',
-                type: 'object',
-                title: 'Link',
-                fields: [
-                  defineField({
-                    name: 'linkType',
-                    title: 'Link Type',
-                    type: 'string',
-                    initialValue: 'href',
-                    options: {
-                      list: [
-                        {title: 'URL', value: 'href'},
-                        {title: 'Page', value: 'page'},
-                        {title: 'Post', value: 'post'},
-                      ],
-                      layout: 'radio',
-                    },
-                  }),
-                  defineField({
-                    name: 'href',
-                    title: 'URL',
-                    type: 'url',
-                    hidden: ({parent}) => parent?.linkType !== 'href' && parent?.linkType != null,
-                    validation: (Rule) =>
-                      Rule.custom((value, context: any) => {
-                        if (context.parent?.linkType === 'href' && !value) {
-                          return 'URL is required when Link Type is URL'
-                        }
-                        return true
-                      }),
-                  }),
-                  defineField({
-                    name: 'page',
-                    title: 'Page',
-                    type: 'reference',
-                    to: [{type: 'page'}],
-                    hidden: ({parent}) => parent?.linkType !== 'page',
-                    validation: (Rule) =>
-                      Rule.custom((value, context: any) => {
-                        if (context.parent?.linkType === 'page' && !value) {
-                          return 'Page reference is required when Link Type is Page'
-                        }
-                        return true
-                      }),
-                  }),
-                  defineField({
-                    name: 'post',
-                    title: 'Post',
-                    type: 'reference',
-                    to: [{type: 'post'}],
-                    hidden: ({parent}) => parent?.linkType !== 'post',
-                    validation: (Rule) =>
-                      Rule.custom((value, context: any) => {
-                        if (context.parent?.linkType === 'post' && !value) {
-                          return 'Post reference is required when Link Type is Post'
-                        }
-                        return true
-                      }),
-                  }),
-                  defineField({
-                    name: 'openInNewTab',
-                    title: 'Open in new tab',
-                    type: 'boolean',
-                    initialValue: false,
-                  }),
-                ],
-              },
-            ],
+            annotations: [],
           },
         }),
       ],
@@ -116,6 +53,7 @@ export const settings = defineType({
       title: 'Open Graph Image',
       type: 'image',
       description: 'Displayed on social cards and search engine results.',
+      group: 'seo',
       options: {
         hotspot: true,
         aiAssist: {
@@ -150,6 +88,115 @@ export const settings = defineType({
           ),
         }),
       ],
+    }),
+    // Navigation Settings
+    defineField({
+      name: 'logoText',
+      title: 'Logo Text',
+      type: 'string',
+      initialValue: 'NEXUS',
+      validation: (rule) => rule.required(),
+      group: 'navigation',
+    }),
+    defineField({
+      name: 'navLinks',
+      title: 'Navigation Links',
+      type: 'array',
+      group: 'navigation',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'navLink',
+          fields: [
+            defineField({
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'href',
+              title: 'URL',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'highlighted',
+              title: 'Highlighted Button',
+              type: 'boolean',
+              description: 'Show this link as a highlighted button',
+              initialValue: false,
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'label',
+              subtitle: 'href',
+            },
+          },
+        }),
+      ],
+    }),
+    // Footer Settings
+    defineField({
+      name: 'footerLogoText',
+      title: 'Footer Logo Text',
+      type: 'string',
+      initialValue: 'NEXUS',
+      group: 'footer',
+    }),
+    defineField({
+      name: 'footerTagline',
+      title: 'Footer Tagline',
+      type: 'string',
+      initialValue: 'George Pyne • Jay Penske',
+      group: 'footer',
+    }),
+    defineField({
+      name: 'footerEmail',
+      title: 'Contact Email',
+      type: 'string',
+      initialValue: 'nexus-retreat@gmail.com',
+      validation: (rule) => rule.email(),
+      group: 'footer',
+    }),
+    defineField({
+      name: 'footerQuickLinks',
+      title: 'Quick Links',
+      type: 'array',
+      group: 'footer',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'href',
+              title: 'URL',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'label',
+              subtitle: 'href',
+            },
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'footerCopyright',
+      title: 'Copyright Text',
+      type: 'string',
+      initialValue: 'Copyright © Bruin Capital Holdings, LLC 2025. All rights reserved.',
+      group: 'footer',
     }),
   ],
   preview: {

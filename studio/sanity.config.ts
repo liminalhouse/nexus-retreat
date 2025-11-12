@@ -37,7 +37,7 @@ function resolveHref(documentType?: string, slug?: string): string | undefined {
     case 'post':
       return slug ? `/posts/${slug}` : undefined
     case 'page':
-      return slug ? `/${slug}` : undefined
+      return slug ? `/${slug}` : '/' // If no slug, it's the homepage
     default:
       console.warn('Invalid document type:', documentType)
       return undefined
@@ -66,7 +66,7 @@ export default defineConfig({
         mainDocuments: defineDocuments([
           {
             route: '/',
-            filter: `_type == "settings" && _id == "siteSettings"`,
+            filter: `_type == "page" && !defined(slug.current)`,
           },
           {
             route: '/:slug',
