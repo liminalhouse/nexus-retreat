@@ -56,6 +56,8 @@ export default async function Page(props: Props) {
     )
   }
 
+  console.log('page', page)
+
   return (
     <div className="my-12 lg:my-24">
       <Head>

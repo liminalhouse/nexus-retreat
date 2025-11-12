@@ -94,6 +94,9 @@ export const getPageQuery = defineQuery(`
           }
         }
       },
+       _type == "faq" => {
+        ...,
+      }
     },
   }
 `)
