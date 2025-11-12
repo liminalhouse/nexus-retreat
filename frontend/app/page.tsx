@@ -7,7 +7,6 @@ export default async function Page() {
     query: homepageQuery,
   })
 
-  // Find the hero component in the pageBuilder array
   const hero = homepage?.pageBuilder?.find((block: any) => block._type === 'hero')
 
   return <div className="min-h-screen">{hero && <Hero hero={hero} />}</div>
