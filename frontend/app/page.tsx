@@ -1,83 +1,65 @@
-import {Suspense} from 'react'
 import Link from 'next/link'
-import {PortableText} from '@portabletext/react'
 
-import {AllPosts} from '@/app/components/Posts'
-import GetStartedCode from '@/app/components/GetStartedCode'
-import SideBySideIcons from '@/app/components/SideBySideIcons'
-import {settingsQuery} from '@/sanity/lib/queries'
-import {sanityFetch} from '@/sanity/lib/live'
-
-export default async function Page() {
-  const {data: settings} = await sanityFetch({
-    query: settingsQuery,
-  })
-
+export default function Page() {
   return (
-    <>
-      <div className="relative">
-        <div className="relative bg-[url(/images/tile-1-black.png)] bg-size-[5px]">
-          <div className="bg-gradient-to-b from-white w-full h-full absolute top-0"></div>
-          <div className="container">
-            <div className="relative min-h-[40vh] mx-auto max-w-2xl pt-10 xl:pt-20 pb-30 space-y-6 lg:max-w-4xl lg:px-12 flex flex-col items-center justify-center">
-              <div className="flex flex-col gap-4 items-center">
-                <div className="text-md leading-6 prose uppercase py-1 px-3 bg-white font-mono italic">
-                  A starter template for
-                </div>
-                <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-black">
-                  <Link
-                    className="underline decoration-brand hover:text-brand underline-offset-8 hover:underline-offset-4 transition-all ease-out"
-                    href="https://sanity.io/"
-                  >
-                    Sanity
-                  </Link>
-                  +
-                  <Link
-                    className="underline decoration-black text-framework underline-offset-8 hover:underline-offset-4 transition-all ease-out"
-                    href="https://nextjs.org/"
-                  >
-                    Next.js
-                  </Link>
-                </h1>
-              </div>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative h-[calc(100vh-70px)] flex items-center justify-center bg-[#3d4663]">
+        {/* Background Image - You'll need to add your resort image to /public/images/ */}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-40"
+          style={{
+            backgroundImage: "url('/images/hero-bg.jpg')",
+          }}
+        />
+
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-[#3d4663] opacity-60" />
+
+        {/* Content */}
+        <div className="relative z-10 text-center text-white px-6 max-w-4xl">
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6">
+            NEXUS
+          </h1>
+
+          <div className="text-lg md:text-xl mb-8">
+            <p className="mb-2">Hosted by</p>
+            <p className="font-semibold">
+              <span className="uppercase">George Pyne</span> and <span className="uppercase">Jay Penske</span>
+            </p>
+          </div>
+
+          <p className="text-base md:text-lg leading-relaxed mb-12 max-w-3xl mx-auto">
+            George Pyne and Jay Penske will host an invitation-only gathering of
+            international sports leaders, March 18 - 20, 2026 at The Boca Raton resort in
+            Boca Raton, Florida. Now in its fifth year, this retreat remains the only event of its
+            kind dedicated exclusively to the global sports leadership.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12 text-sm">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>March 18-20</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>Boca Raton, FL</span>
             </div>
           </div>
+
+          <Link
+            href="/register"
+            className="inline-block px-8 py-3 bg-[#f49898] text-gray-900 rounded hover:bg-[#f5a8a8] transition-colors font-medium"
+          >
+            Register Now
+          </Link>
         </div>
-        <div className=" flex flex-col items-center">
-          <SideBySideIcons />
-          <div className="container relative mx-auto max-w-2xl pb-20 pt-10 space-y-6 lg:max-w-4xl lg:px-12 flex flex-col items-center">
-            <div className="prose sm:prose-lg md:prose-xl xl:prose-2xl text-gray-700 prose-a:text-gray-700 font-light text-center">
-              {settings?.description && <PortableText value={settings.description} />}
-              <div className="flex items-center flex-col gap-4">
-                <GetStartedCode />
-                <Link
-                  href="https://www.sanity.io/docs"
-                  className="inline-flex text-brand text-xs md:text-sm underline hover:text-gray-900"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Sanity Documentation
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    className="w-4 h-4 ml-1 inline"
-                    fill="currentColor"
-                  >
-                    <path d="M10 6V8H5V19H16V14H18V20C18 20.5523 17.5523 21 17 21H4C3.44772 21 3 20.5523 3 20V7C3 6.44772 3.44772 6 4 6H10ZM21 3V12L17.206 8.207L11.2071 14.2071L9.79289 12.7929L15.792 6.793L12 3H21Z"></path>
-                  </svg>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="border-t border-gray-100 bg-gray-50">
-        <div className="container">
-          <aside className="py-12 sm:py-20">
-            <Suspense>{await AllPosts()}</Suspense>
-          </aside>
-        </div>
-      </div>
-    </>
+      </section>
+    </div>
   )
 }

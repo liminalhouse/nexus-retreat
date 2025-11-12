@@ -1,25 +1,52 @@
+import Link from 'next/link'
+
 export default function Footer() {
   return (
-    <footer className="bg-gray-50 relative">
-      <div className="absolute inset-0 bg-[url(/images/tile-grid-black.png)] bg-size-[17px] opacity-20 bg-position-[0_1]" />
-      <div className="container relative">
-        <div className="flex flex-col items-center py-28 lg:flex-row">
-          <h3 className="mb-10 text-center text-4xl font-mono leading-tight tracking-tighter lg:mb-0 lg:w-1/2 lg:pr-4 lg:text-left lg:text-2xl">
-            Built with Sanity + Next.js.
-          </h3>
-          <div className="flex flex-col gap-3 items-center justify-center lg:w-1/2 lg:flex-row lg:pl-4">
+    <footer className="bg-[#3d4663] text-white">
+      <div className="container mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/faq" className="text-gray-300 hover:text-white transition-colors">
+                  FAQ
+                </Link>
+              </li>
+              <li>
+                <Link href="/registration" className="text-gray-300 hover:text-white transition-colors">
+                  Registration
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Contact</h3>
             <a
-              href="https://github.com/sanity-io/sanity-template-nextjs-clean"
-              className="rounded-full flex gap-2 font-mono whitespace-nowrap items-center bg-black hover:bg-blue focus:bg-blue py-3 px-6 text-white transition-colors duration-200"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="mailto:nexus-retreat@gmail.com"
+              className="text-gray-300 hover:text-white transition-colors"
             >
-              View on GitHub
-            </a>
-            <a href="https://nextjs.org/docs" className="mx-3 hover:underline font-mono">
-              Read Next.js Documentation
+              nexus-retreat@gmail.com
             </a>
           </div>
+
+          {/* Logo */}
+          <div className="flex justify-start md:justify-end items-start">
+            <div className="text-right">
+              <div className="text-3xl font-bold tracking-tight mb-1">NEXUS</div>
+              <div className="text-xs text-gray-400 uppercase tracking-wider">
+                George Pyne • Jay Penske
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Copyright */}
+        <div className="mt-12 pt-6 border-t border-gray-600 text-center text-sm text-gray-400">
+          Copyright © Bruin Capital Holdings, LLC 2025. All rights reserved.
         </div>
       </div>
     </footer>
