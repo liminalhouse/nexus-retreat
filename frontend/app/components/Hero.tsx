@@ -86,13 +86,19 @@ export default function Hero({block}: HeroProps) {
           )}
         </div>
 
-        {ctaText && (
+        {/* TODO: Disable link for now */}
+        {/* {ctaText && (
           <Link
             href={ctaLink}
             className="inline-block px-8 py-3 bg-nexus-coral text-gray-900 rounded hover:bg-nexus-coral-light transition-colors font-medium"
           >
             {ctaText}
           </Link>
+        )} */}
+        {ctaText && (
+          <div className="inline-block px-8 py-3 bg-nexus-coral text-gray-900 rounded transition-colors font-medium">
+            {ctaText}
+          </div>
         )}
       </div>
     </section>

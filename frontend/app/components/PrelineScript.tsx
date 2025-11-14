@@ -1,8 +1,11 @@
 'use client'
 
 import {useEffect} from 'react'
+import {usePathname} from 'next/navigation'
 
 export default function PrelineScript() {
+  const pathname = usePathname()
+
   useEffect(() => {
     const loadPreline = async () => {
       try {
@@ -25,7 +28,7 @@ export default function PrelineScript() {
     }
 
     loadPreline()
-  }, [])
+  }, [pathname])
 
   return null
 }
