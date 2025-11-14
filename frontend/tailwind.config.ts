@@ -1,5 +1,6 @@
 import type {Config} from 'tailwindcss'
 import typography from '@tailwindcss/typography'
+import forms from '@tailwindcss/forms'
 
 export default {
   content: ['./app/**/*.{ts,tsx}', './sanity/**/*.{ts,tsx}'],
@@ -94,13 +95,10 @@ export default {
           950: '#14211a',
         },
       },
-      fontFamily: {
-        sans: ['var(--font-inter)'],
-      },
     },
   },
   future: {
     hoverOnlyWhenSupported: true,
   },
-  plugins: [typography],
+  plugins: [typography, forms],
 } satisfies Config

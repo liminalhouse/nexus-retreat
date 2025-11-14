@@ -2,8 +2,8 @@ import './globals.css'
 
 import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata} from 'next'
-import {Inter} from 'next/font/google'
-import {draftMode} from 'next/headers'
+import {Geist} from 'next/font/google'
+import {draftMode, headers} from 'next/headers'
 import {VisualEditing, toPlainText} from 'next-sanity'
 import {Toaster} from 'sonner'
 
@@ -52,17 +52,19 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-const inter = Inter({
-  variable: '--font-inter',
+const geist = Geist({
   subsets: ['latin'],
   display: 'swap',
 })
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const {isEnabled: isDraftMode} = await draftMode()
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') || ''
+  const isSignInPage = pathname === '/sign-in'
 
   return (
-    <html lang="en" className={`${inter.variable} bg-white text-black`}>
+    <html lang="en" className={`${geist.className} bg-white text-black`}>
       <body>
         <PrelineScript />
         <div className="min-h-screen flex flex-col">
@@ -77,9 +79,9 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           )}
           {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
           <SanityLive onError={handleError} />
-          <Header />
-          <main className="flex-1 pt-[70px]">{children}</main>
-          <Footer />
+          {!isSignInPage && <Header />}
+          <main className={isSignInPage ? 'flex-1' : 'flex-1 pt-[70px]'}>{children}</main>
+          {!isSignInPage && <Footer />}
         </div>
         <SpeedInsights />
       </body>
