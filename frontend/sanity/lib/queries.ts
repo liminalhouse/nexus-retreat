@@ -25,35 +25,6 @@ export const settingsQuery = defineQuery(`*[_type == "settings"][0]{
   footerCopyright
 }`)
 
-export const homepageQuery = defineQuery(`*[_type == "page" && !defined(slug.current)][0]{
-  _id,
-  name,
-  slug,
-  pageBuilder[]{
-    _type,
-    _type == "hero" => {
-      description[]{
-        ...,
-        markDefs[]{
-          ...,
-          ${linkReference}
-        }
-      },
-      eventDate,
-      eventLocation,
-      ctaText,
-      ctaLink,
-      backgroundImage
-    },
-    _type == "callToAction" => {
-      ...,
-    },
-    _type == "infoSection" => {
-      ...,
-    }
-  }
-}`)
-
 const postFields = /* groq */ `
   _id,
   "status": select(_originalId in path("drafts.**") => "draft", "published"),
@@ -73,7 +44,10 @@ const linkFields = /* groq */ `
 `
 
 export const getPageQuery = defineQuery(`
-  *[_type == 'page' && slug.current == $slug][0]{
+  *[_type == 'page' && (
+    (defined($slug) && slug.current == $slug) ||
+    (!defined($slug) && !defined(slug.current))
+  )][0]{
     _id,
     _type,
     name,
@@ -83,6 +57,20 @@ export const getPageQuery = defineQuery(`
     subheading,
     "pageBuilder": pageBuilder[]{
       ...,
+      _type == "hero" => {
+        description[]{
+          ...,
+          markDefs[]{
+            ...,
+            ${linkReference}
+          }
+        },
+        eventDate,
+        eventLocation,
+        ctaText,
+        ctaLink,
+        backgroundImage
+      },
       _type == "callToAction" => {
         ${linkFields},
       },

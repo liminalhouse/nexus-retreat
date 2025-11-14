@@ -4,7 +4,7 @@ import {urlForImage} from '@/sanity/lib/utils'
 import NexusLogo from './NexusLogo'
 
 interface HeroProps {
-  hero: {
+  block: {
     description?: any
     eventDate?: string
     eventLocation?: string
@@ -12,15 +12,16 @@ interface HeroProps {
     ctaLink?: string
     backgroundImage?: any
   }
+  index: number
 }
 
-export default function Hero({hero}: HeroProps) {
-  const description = hero?.description
-  const eventDate = hero?.eventDate || 'March 18-20'
-  const eventLocation = hero?.eventLocation || 'Boca Raton, FL'
-  const ctaText = hero?.ctaText || 'Register Now'
-  const ctaLink = hero?.ctaLink || '/register'
-  const backgroundImage = hero?.backgroundImage
+export default function Hero({block}: HeroProps) {
+  const description = block?.description
+  const eventDate = block?.eventDate || 'March 18-20'
+  const eventLocation = block?.eventLocation || 'Boca Raton, FL'
+  const ctaText = block?.ctaText || 'Register Now'
+  const ctaLink = block?.ctaLink || '/register'
+  const backgroundImage = block?.backgroundImage
   const backgroundImageUrl = backgroundImage
     ? urlForImage(backgroundImage)?.url()
     : '/images/hero-bg.jpg'

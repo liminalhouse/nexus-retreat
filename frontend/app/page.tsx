@@ -1,13 +1,44 @@
-import {homepageQuery} from '@/sanity/lib/queries'
-import {sanityFetch} from '@/sanity/lib/live'
-import Hero from '@/app/components/Hero'
+import type {Metadata} from 'next'
+import Head from 'next/head'
 
-export default async function Page() {
-  const {data: homepage} = await sanityFetch({
-    query: homepageQuery,
+import PageBuilderPage from '@/app/components/PageBuilder'
+import {sanityFetch} from '@/sanity/lib/live'
+import {getPageQuery} from '@/sanity/lib/queries'
+import {GetPageQueryResult} from '@/sanity.types'
+
+/**
+ * Generate metadata for the homepage.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const {data: page} = await sanityFetch({
+    query: getPageQuery,
+    params: {slug: null},
+    stega: false,
   })
 
-  const hero = homepage?.pageBuilder?.find((block: any) => block._type === 'hero')
+  return {
+    title: page?.name,
+    description: page?.heading,
+  } satisfies Metadata
+}
 
-  return <div className="min-h-screen">{hero && <Hero hero={hero} />}</div>
+export default async function HomePage() {
+  const [{data: page}] = await Promise.all([
+    sanityFetch({query: getPageQuery, params: {slug: null}}),
+  ])
+
+  if (!page?._id) {
+    return <div className="py-40">Not found.</div>
+  }
+
+  const bg = `bg-nexus-${page.bgColor ?? 'white'}`
+
+  return (
+    <div className={`${bg}`}>
+      <Head>
+        <title>{page.heading}</title>
+      </Head>
+      <PageBuilderPage page={page as GetPageQueryResult} />
+    </div>
+  )
 }

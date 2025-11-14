@@ -4,6 +4,7 @@ import Cta from '@/app/components/Cta'
 import Info from '@/app/components/InfoSection'
 import Faq from '@/app/components/Faq'
 import {dataAttr} from '@/sanity/lib/utils'
+import Hero from './Hero'
 
 type BlocksType = {
   [key: string]: React.FC<any>
@@ -25,6 +26,7 @@ const Blocks: BlocksType = {
   callToAction: Cta,
   infoSection: Info,
   faq: Faq,
+  hero: Hero,
 }
 
 /**
