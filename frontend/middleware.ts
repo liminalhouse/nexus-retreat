@@ -12,9 +12,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/', request.url))
     }
     // Allow access to sign-in page if not authenticated
-    const response = NextResponse.next()
-    response.headers.set('x-pathname', request.nextUrl.pathname)
-    return response
+    return NextResponse.next()
   }
 
   // Check if the request is for API routes, static files, or Next.js internals
@@ -35,9 +33,7 @@ export function middleware(request: NextRequest) {
   }
 
   // User is authenticated, allow access
-  const response = NextResponse.next()
-  response.headers.set('x-pathname', request.nextUrl.pathname)
-  return response
+  return NextResponse.next()
 }
 
 export const config = {

@@ -3,7 +3,7 @@
 import {useState} from 'react'
 import {useRouter, useSearchParams} from 'next/navigation'
 import {EyeIcon, EyeSlashIcon} from '@heroicons/react/24/outline'
-import NexusLogo from '../components/NexusLogo'
+import NexusLogo from '@/app/components/NexusLogo'
 
 export default function SignInPage() {
   const [password, setPassword] = useState('')
@@ -29,14 +29,13 @@ export default function SignInPage() {
       })
 
       if (response.ok) {
-        router.push(from)
-        router.refresh()
+        window.location.href = from
       } else {
         setError('Invalid password. Please check your invitation email.')
+        setLoading(false)
       }
     } catch (err) {
       setError('An error occurred. Please try again.')
-    } finally {
       setLoading(false)
     }
   }

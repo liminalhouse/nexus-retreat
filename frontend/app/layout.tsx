@@ -3,13 +3,11 @@ import './globals.css'
 import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata} from 'next'
 import {Geist} from 'next/font/google'
-import {draftMode, headers} from 'next/headers'
+import {draftMode} from 'next/headers'
 import {VisualEditing, toPlainText} from 'next-sanity'
 import {Toaster} from 'sonner'
 
 import DraftModeToast from '@/app/components/DraftModeToast'
-import Footer from '@/app/components/Footer'
-import Header from '@/app/components/Header'
 import PrelineScript from '@/app/components/PrelineScript'
 import * as demo from '@/sanity/lib/demo'
 import {sanityFetch, SanityLive} from '@/sanity/lib/live'
@@ -59,9 +57,6 @@ const geist = Geist({
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const {isEnabled: isDraftMode} = await draftMode()
-  const headersList = await headers()
-  const pathname = headersList.get('x-pathname') || ''
-  const isSignInPage = pathname === '/sign-in'
 
   return (
     <html lang="en" className={`${geist.className} bg-white text-black`}>
@@ -79,9 +74,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           )}
           {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
           <SanityLive onError={handleError} />
-          {!isSignInPage && <Header />}
-          <main className={isSignInPage ? 'flex-1' : 'flex-1 pt-[70px]'}>{children}</main>
-          {!isSignInPage && <Footer />}
+          {children}
         </div>
         <SpeedInsights />
       </body>

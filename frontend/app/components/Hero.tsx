@@ -19,7 +19,7 @@ export default function Hero({block}: HeroProps) {
   const description = block?.description
   const eventDate = block?.eventDate || 'March 18-20'
   const eventLocation = block?.eventLocation || 'Boca Raton, FL'
-  const ctaText = block?.ctaText || 'Register Now'
+  const ctaText = block?.ctaText
   const ctaLink = block?.ctaLink || '/register'
   const backgroundImage = block?.backgroundImage
   const backgroundImageUrl = backgroundImage
