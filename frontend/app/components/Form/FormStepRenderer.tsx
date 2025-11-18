@@ -27,7 +27,7 @@ export default function FormStepRenderer({
       ? group.showIfFieldHasValue
       : [group.showIfFieldHasValue]
 
-    return fieldsToCheck.some((fieldName) => {
+    return fieldsToCheck.some((fieldName: string) => {
       const value = formData[fieldName]
       return value !== undefined && value !== null && value !== ''
     })

@@ -1,5 +1,13 @@
 import {COUNTRIES} from '@/lib/constants/countries'
 import type {FormConfig} from '@/app/components/Form/types'
+import {
+  ACCOMMODATION_OPTIONS,
+  GUEST_ACCOMMODATION_OPTIONS,
+  DINNER_OPTIONS,
+  GUEST_DINNER_OPTIONS,
+  ACTIVITY_OPTIONS,
+  GUEST_ACTIVITY_OPTIONS,
+} from '@/lib/utils/formatRegistrationFields'
 
 export const registrationFormConfig: FormConfig = {
   title: 'Register for the Retreat',
@@ -250,10 +258,7 @@ export const registrationFormConfig: FormConfig = {
             fieldType: 'checkboxGroup',
             name: 'accommodations',
             label: 'Which nights will you be staying with us?',
-            options: [
-              {label: 'I will use my complimentary room the night of March 18', value: 'march_18'},
-              {label: 'I will use my complimentary room the night of March 19', value: 'march_19'},
-            ],
+            options: ACCOMMODATION_OPTIONS,
           },
         ],
       },
@@ -265,10 +270,7 @@ export const registrationFormConfig: FormConfig = {
             fieldType: 'checkboxGroup',
             name: 'dinner_attendance',
             label: 'Which nights will you attend dinner?',
-            options: [
-              {label: 'I will attend the Dinner on March 18', value: 'march_18'},
-              {label: 'I will attend the Dinner on March 19', value: 'march_19'},
-            ],
+            options: DINNER_OPTIONS,
           },
         ],
       },
@@ -281,24 +283,7 @@ export const registrationFormConfig: FormConfig = {
             fieldType: 'checkboxGroup',
             name: 'activities',
             label: 'What activities are you interested in joining?',
-            options: [
-              {
-                label: 'Pickleball tournament (sunrise / downriver style) on March 19',
-                value: 'pickleball',
-              },
-              {label: 'Golf - Full round', value: 'golf_full'},
-              {label: 'Golf - 9 holes', value: 'golf_9'},
-              {label: 'Golf - Drive, Chip, and Putt contest', value: 'golf_drive_chip_putt'},
-              {label: 'Tennis', value: 'tennis'},
-              {label: 'March 19 morning yoga', value: 'yoga_march_19'},
-              {label: 'March 19 morning bootcamp', value: 'bootcamp_march_19'},
-              {label: 'March 20 morning yoga', value: 'yoga_march_20'},
-              {label: 'March 20 morning bootcamp', value: 'bootcamp_march_20'},
-              {
-                label: "Please don't bother me, I'll be at the spa :)",
-                value: 'spa',
-              },
-            ],
+            options: ACTIVITY_OPTIONS,
           },
         ],
       },
@@ -336,18 +321,9 @@ export const registrationFormConfig: FormConfig = {
         fields: [
           {
             fieldType: 'checkboxGroup',
-            name: 'accommodations',
+            name: 'guest_accommodations',
             label: 'Which nights will your guest be staying with us?',
-            options: [
-              {
-                label: 'My guest will use a complimentary room the night of March 18',
-                value: 'march_18',
-              },
-              {
-                label: 'My guest will use a complimentary room the night of March 19',
-                value: 'march_19',
-              },
-            ],
+            options: GUEST_ACCOMMODATION_OPTIONS,
           },
         ],
       },
@@ -358,12 +334,9 @@ export const registrationFormConfig: FormConfig = {
         fields: [
           {
             fieldType: 'checkboxGroup',
-            name: 'dinner_attendance',
+            name: 'guest_dinner_attendance',
             label: 'Which nights will your guest attend dinner?',
-            options: [
-              {label: 'My guest will attend the Dinner on March 18', value: 'march_18'},
-              {label: 'My guest will attend the Dinner on March 19', value: 'march_19'},
-            ],
+            options: GUEST_DINNER_OPTIONS,
           },
         ],
       },
@@ -377,24 +350,7 @@ export const registrationFormConfig: FormConfig = {
             fieldType: 'checkboxGroup',
             name: 'guest_activities',
             label: 'What activities is your guest interested in joining?',
-            options: [
-              {
-                label: 'Pickleball tournament (sunrise / downriver style) on March 19',
-                value: 'pickleball',
-              },
-              {label: 'Golf - Full round', value: 'golf_full'},
-              {label: 'Golf - 9 holes', value: 'golf_9'},
-              {label: 'Golf - Drive, Chip, and Putt contest', value: 'golf_drive_chip_putt'},
-              {label: 'Tennis', value: 'tennis'},
-              {label: 'March 19 morning yoga', value: 'yoga_march_19'},
-              {label: 'March 19 morning bootcamp', value: 'bootcamp_march_19'},
-              {label: 'March 20 morning yoga', value: 'yoga_march_20'},
-              {label: 'March 20 morning bootcamp', value: 'bootcamp_march_20'},
-              {
-                label: 'My guest will be at the spa :)',
-                value: 'spa',
-              },
-            ],
+            options: GUEST_ACTIVITY_OPTIONS,
           },
         ],
       },

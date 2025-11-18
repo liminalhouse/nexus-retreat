@@ -47,3 +47,7 @@
 
   --default-transition-duration: 250ms;
 }
+
+button {
+  cursor: pointer;
+}

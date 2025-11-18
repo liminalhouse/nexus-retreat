@@ -1,7 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import {useState} from 'react'
 import EditModal from './EditModal'
+import {
+  formatAccommodations,
+  formatDinnerAttendance,
+  formatActivities,
+} from '@/lib/utils/formatRegistrationFields'
 
 type Registration = {
   id: string
@@ -9,13 +14,195 @@ type Registration = {
   email: string
   first_name?: string
   last_name?: string
-  phone?: string
-  form_data: any
-  status?: string
-  notes?: string
+  title?: string | null
+  organization?: string | null
+  mobile_phone?: string
+  address_line_1?: string
+  address_line_2?: string | null
+  city?: string
+  state?: string
+  zip?: string
+  country?: string
+  emergency_contact_name?: string
+  emergency_contact_phone?: string
+  assistant_name?: string | null
+  assistant_email?: string | null
+  guest_name?: string | null
+  guest_email?: string | null
+  dietary_restrictions?: string | null
+  jacket_size?: string | null
+  accommodations?: string[] | null
+  dinner_attendance?: string[] | null
+  activities?: string[] | null
+  guest_dietary_restrictions?: string | null
+  guest_jacket_size?: string | null
+  guest_accommodations?: string[] | null
+  guest_dinner_attendance?: string[] | null
+  guest_activities?: string[] | null
 }
 
-export default function RegistrationsTable({ registrations }: { registrations: Registration[] }) {
+type ColumnConfig = {
+  key: string
+  label: string
+  width: string
+  render: (registration: Registration) => React.ReactNode
+}
+
+const GRID_TEMPLATE_COLUMNS =
+  'minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(200px, 2fr) minmax(150px, 1.2fr) minmax(150px, 1.5fr) minmax(180px, 1.5fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(180px, 1.5fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(180px, 1.5fr) minmax(120px, 1fr)'
+
+const formatDate = (dateStr: string) => {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
+const columns: ColumnConfig[] = [
+  {
+    key: 'date',
+    label: 'Date',
+    width: 'minmax(120px, 1fr)',
+    render: (reg) => formatDate(reg.created_at),
+  },
+  {
+    key: 'name',
+    label: 'Name',
+    width: 'minmax(150px, 1.5fr)',
+    render: (reg) => (
+      <span className="font-medium text-gray-900">
+        {reg.first_name} {reg.last_name}
+      </span>
+    ),
+  },
+  {
+    key: 'title',
+    label: 'Title',
+    width: 'minmax(120px, 1fr)',
+    render: (reg) => reg.title || '-',
+  },
+  {
+    key: 'organization',
+    label: 'Organization',
+    width: 'minmax(150px, 1.5fr)',
+    render: (reg) => reg.organization || '-',
+  },
+  {
+    key: 'email',
+    label: 'Email',
+    width: 'minmax(200px, 2fr)',
+    render: (reg) => reg.email,
+  },
+  {
+    key: 'phone',
+    label: 'Phone',
+    width: 'minmax(150px, 1.2fr)',
+    render: (reg) => <span className="whitespace-nowrap">{reg.mobile_phone || '-'}</span>,
+  },
+  {
+    key: 'location',
+    label: 'Location',
+    width: 'minmax(150px, 1.5fr)',
+    render: (reg) => (reg.city && reg.state ? `${reg.city}, ${reg.state}` : '-'),
+  },
+  {
+    key: 'emergency',
+    label: 'Emergency Contact',
+    width: 'minmax(180px, 1.5fr)',
+    render: (reg) =>
+      reg.emergency_contact_name ? (
+        <div className="flex flex-col">
+          <span className="font-medium">{reg.emergency_contact_name}</span>
+          <span className="text-xs text-gray-400">{reg.emergency_contact_phone}</span>
+        </div>
+      ) : (
+        '-'
+      ),
+  },
+  {
+    key: 'assistant',
+    label: 'Assistant',
+    width: 'minmax(150px, 1.5fr)',
+    render: (reg) =>
+      reg.assistant_name ? (
+        <div className="flex flex-col">
+          <span className="font-medium">{reg.assistant_name}</span>
+          <span className="text-xs text-gray-400">{reg.assistant_email}</span>
+        </div>
+      ) : (
+        '-'
+      ),
+  },
+  {
+    key: 'guest',
+    label: 'Guest',
+    width: 'minmax(120px, 1fr)',
+    render: (reg) => reg.guest_name || '-',
+  },
+  {
+    key: 'dietary',
+    label: 'Dietary',
+    width: 'minmax(150px, 1.5fr)',
+    render: (reg) => <span className="truncate">{reg.dietary_restrictions || '-'}</span>,
+  },
+  {
+    key: 'jacket',
+    label: 'Jacket Size',
+    width: 'minmax(100px, 1fr)',
+    render: (reg) => reg.jacket_size || '-',
+  },
+  {
+    key: 'accommodations',
+    label: 'Accommodations',
+    width: 'minmax(150px, 1.5fr)',
+    render: (reg) => formatAccommodations(reg.accommodations),
+  },
+  {
+    key: 'dinners',
+    label: 'Dinners',
+    width: 'minmax(120px, 1fr)',
+    render: (reg) => formatDinnerAttendance(reg.dinner_attendance),
+  },
+  {
+    key: 'activities',
+    label: 'Activities',
+    width: 'minmax(180px, 1.5fr)',
+    render: (reg) => formatActivities(reg.activities),
+  },
+  {
+    key: 'guest_dietary',
+    label: 'Guest Dietary',
+    width: 'minmax(150px, 1.5fr)',
+    render: (reg) => <span className="truncate">{reg.guest_dietary_restrictions || '-'}</span>,
+  },
+  {
+    key: 'guest_jacket',
+    label: 'Guest Jacket Size',
+    width: 'minmax(100px, 1fr)',
+    render: (reg) => reg.guest_jacket_size || '-',
+  },
+  {
+    key: 'guest_accommodations',
+    label: 'Guest Accommodations',
+    width: 'minmax(150px, 1.5fr)',
+    render: (reg) => formatAccommodations(reg.guest_accommodations),
+  },
+  {
+    key: 'guest_dinners',
+    label: 'Guest Dinners',
+    width: 'minmax(120px, 1fr)',
+    render: (reg) => formatDinnerAttendance(reg.guest_dinner_attendance),
+  },
+  {
+    key: 'guest_activities',
+    label: 'Guest Activities',
+    width: 'minmax(180px, 1.5fr)',
+    render: (reg) => formatActivities(reg.guest_activities),
+  },
+]
+
+export default function RegistrationsTable({registrations}: {registrations: Registration[]}) {
   const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null)
   const [filter, setFilter] = useState('')
 
@@ -25,16 +212,17 @@ export default function RegistrationsTable({ registrations }: { registrations: R
       reg.email?.toLowerCase().includes(searchStr) ||
       reg.first_name?.toLowerCase().includes(searchStr) ||
       reg.last_name?.toLowerCase().includes(searchStr) ||
-      reg.phone?.includes(searchStr)
+      reg.organization?.toLowerCase().includes(searchStr) ||
+      reg.mobile_phone?.includes(searchStr)
     )
   })
 
   return (
     <>
-      <div className="mb-4">
+      <div className="container mb-4">
         <input
           type="text"
-          placeholder="Search by email, name, or phone..."
+          placeholder="Search by name, email, organization, or phone..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
@@ -43,69 +231,56 @@ export default function RegistrationsTable({ registrations }: { registrations: R
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Phone
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+          <div className="min-w-full">
+            {/* Header */}
+            <div className="grid" style={{gridTemplateColumns: GRID_TEMPLATE_COLUMNS}}>
+              {columns.map((column) => (
+                <div
+                  key={column.key}
+                  className="bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200"
+                >
+                  {column.label}
+                </div>
+              ))}
+              <div
+                className="sticky right-0 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-l-2 border-gray-200"
+                style={{boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.1)'}}
+              >
+                Actions
+              </div>
+            </div>
+
+            {/* Body Rows */}
+            <div>
               {filteredRegistrations.map((registration) => (
-                <tr key={registration.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(registration.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {registration.first_name} {registration.last_name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {registration.email}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {registration.phone || '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        registration.status === 'approved'
-                          ? 'bg-green-100 text-green-800'
-                          : registration.status === 'rejected'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                      }`}
+                <div
+                  key={registration.id}
+                  className="grid group"
+                  style={{gridTemplateColumns: GRID_TEMPLATE_COLUMNS}}
+                >
+                  {columns.map((column) => (
+                    <div
+                      key={column.key}
+                      className="bg-white group-hover:bg-gray-50 px-6 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto"
                     >
-                      {registration.status || 'pending'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      {column.render(registration)}
+                    </div>
+                  ))}
+                  <div
+                    className="sticky right-0 bg-white group-hover:bg-gray-50 px-6 py-4 text-sm font-medium border-b border-l-2 border-gray-200 flex items-center"
+                    style={{boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.1)'}}
+                  >
                     <button
                       onClick={() => setSelectedRegistration(registration)}
-                      className="text-nexus-coral hover:text-nexus-coral-dark"
+                      className="text-nexus-coral hover:text-nexus-coral-light font-semibold"
                     >
                       View/Edit
                     </button>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </div>
         </div>
       </div>
 
