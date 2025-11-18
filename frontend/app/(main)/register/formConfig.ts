@@ -1,5 +1,5 @@
 import {COUNTRIES} from '@/lib/constants/countries'
-import type {FormConfig} from '../components/Form/types'
+import type {FormConfig} from '@/app/components/Form/types'
 
 export const registrationFormConfig: FormConfig = {
   title: 'Register for the Retreat',
@@ -69,6 +69,7 @@ export const registrationFormConfig: FormConfig = {
             name: 'address_line_1',
             label: 'Address Line 1',
             placeholder: 'Address line 1',
+            required: true,
           },
           {
             fieldType: 'text',
@@ -81,18 +82,21 @@ export const registrationFormConfig: FormConfig = {
             name: 'city',
             label: 'City',
             placeholder: 'City',
+            required: true,
           },
           {
             fieldType: 'text',
             name: 'state',
             label: 'State / Province / County',
             placeholder: 'Your region (i.e. California, Ontario, etc.)',
+            required: true,
           },
           {
             fieldType: 'text',
             name: 'zip',
             label: 'Zip / Postal Code',
             placeholder: 'Zip or postal code',
+            required: true,
           },
           {
             fieldType: 'select',
@@ -103,6 +107,7 @@ export const registrationFormConfig: FormConfig = {
               label: country,
               value: country,
             })),
+            required: true,
           },
         ],
       },
@@ -239,11 +244,12 @@ export const registrationFormConfig: FormConfig = {
       {
         groupTitle: 'Accommodations',
         groupDescription:
-          'Complimentary accommodations are provided at The Boca Raton the nights of March 18 and March 19. Please share which nights you will be staying with us.',
+          'Complimentary accommodations are provided at The Boca Raton the nights of March 18 and March 19.',
         fields: [
           {
             fieldType: 'checkboxGroup',
             name: 'accommodations',
+            label: 'Which nights will you be staying with us?',
             options: [
               {label: 'I will use my complimentary room the night of March 18', value: 'march_18'},
               {label: 'I will use my complimentary room the night of March 19', value: 'march_19'},
@@ -253,12 +259,12 @@ export const registrationFormConfig: FormConfig = {
       },
       {
         groupTitle: 'Dinner Attendance',
-        groupDescription:
-          'Which nights will you attend dinner? Please note both dinners have keynote speakers.',
+        groupDescription: 'Please note both dinners have keynote speakers.',
         fields: [
           {
             fieldType: 'checkboxGroup',
             name: 'dinner_attendance',
+            label: 'Which nights will you attend dinner?',
             options: [
               {label: 'I will attend the Dinner on March 18', value: 'march_18'},
               {label: 'I will attend the Dinner on March 19', value: 'march_19'},
@@ -325,12 +331,13 @@ export const registrationFormConfig: FormConfig = {
       {
         groupTitle: 'Guest Accommodations',
         groupDescription:
-          'Complimentary accommodations are provided at The Boca Raton the nights of March 18 and March 19. Please share which nights your guest will be staying with us.',
+          'Complimentary accommodations are provided at The Boca Raton the nights of March 18 and March 19.',
         showIfFieldHasValue: ['guest_name', 'guest_email'],
         fields: [
           {
             fieldType: 'checkboxGroup',
             name: 'accommodations',
+            label: 'Which nights will your guest be staying with us?',
             options: [
               {
                 label: 'My guest will use a complimentary room the night of March 18',
@@ -346,13 +353,13 @@ export const registrationFormConfig: FormConfig = {
       },
       {
         groupTitle: 'Guest Dinner Attendance',
-        groupDescription:
-          'Which nights will your guest attend dinner? Please note both dinners have keynote speakers.',
+        groupDescription: 'Please note both dinners have keynote speakers.',
         showIfFieldHasValue: ['guest_name', 'guest_email'],
         fields: [
           {
             fieldType: 'checkboxGroup',
             name: 'dinner_attendance',
+            label: 'Which nights will your guest attend dinner?',
             options: [
               {label: 'My guest will attend the Dinner on March 18', value: 'march_18'},
               {label: 'My guest will attend the Dinner on March 19', value: 'march_19'},
