@@ -17,12 +17,12 @@ export default function Form({config, showLogo = true, showProgress = true}: For
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  // Convert the 3 hardcoded steps into an array
-  const steps = [
-    config.formBuilder?.step1,
-    config.formBuilder?.step2,
-    config.formBuilder?.step3,
-  ].filter(Boolean)
+  // Get the number of steps from config (default to 1)
+  const numberOfSteps = config.numberOfSteps || 1
+
+  // Convert the steps into an array based on numberOfSteps
+  const allSteps = [config.step1, config.step2, config.step3]
+  const steps = allSteps.slice(0, numberOfSteps).filter(Boolean)
   const totalSteps = steps.length
   const progress = ((currentStep + 1) / totalSteps) * 100
 

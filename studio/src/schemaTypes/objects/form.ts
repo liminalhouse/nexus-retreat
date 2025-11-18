@@ -25,11 +25,78 @@ export const form = defineType({
       rows: 3,
     }),
     defineField({
-      name: 'formBuilder',
-      title: 'Form Steps',
-      type: 'formBuilder',
-      description: 'Build your multi-step form (3 steps)',
-      validation: (Rule) => Rule.required(),
+      name: 'numberOfSteps',
+      title: 'Number of Steps',
+      type: 'number',
+      description: 'How many steps should this form have?',
+      options: {
+        list: [
+          {title: '1 Step (Single Page)', value: 1},
+          {title: '2 Steps', value: 2},
+          {title: '3 Steps', value: 3},
+        ],
+      },
+      initialValue: 1,
+      validation: (Rule) => Rule.required().min(1).max(3),
+    }),
+    defineField({
+      name: 'step1',
+      title: 'Step 1',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'title',
+          title: 'Step Title',
+          type: 'string',
+          initialValue: 'Step 1',
+        }),
+        defineField({
+          name: 'fieldGroups',
+          title: 'Field Groups',
+          type: 'array',
+          of: [{type: 'fieldGroup'}],
+        }),
+      ],
+    }),
+    defineField({
+      name: 'step2',
+      title: 'Step 2',
+      type: 'object',
+      hidden: ({parent}) => (parent?.numberOfSteps || 1) < 2,
+      fields: [
+        defineField({
+          name: 'title',
+          title: 'Step Title',
+          type: 'string',
+          initialValue: 'Step 2',
+        }),
+        defineField({
+          name: 'fieldGroups',
+          title: 'Field Groups',
+          type: 'array',
+          of: [{type: 'fieldGroup'}],
+        }),
+      ],
+    }),
+    defineField({
+      name: 'step3',
+      title: 'Step 3',
+      type: 'object',
+      hidden: ({parent}) => (parent?.numberOfSteps || 1) < 3,
+      fields: [
+        defineField({
+          name: 'title',
+          title: 'Step Title',
+          type: 'string',
+          initialValue: 'Step 3',
+        }),
+        defineField({
+          name: 'fieldGroups',
+          title: 'Field Groups',
+          type: 'array',
+          of: [{type: 'fieldGroup'}],
+        }),
+      ],
     }),
     defineField({
       name: 'submitButtonText',

@@ -90,61 +90,60 @@ export const getPageQuery = defineQuery(`
         title,
         subtitle,
         description,
-        formBuilder {
-          step1 {
-            title,
-            fieldGroups[] {
-              groupTitle,
-              groupDescription,
-              fields[] {
-                fieldType,
+        numberOfSteps,
+        step1 {
+          title,
+          fieldGroups[] {
+            groupTitle,
+            groupDescription,
+            fields[] {
+              fieldType,
+              label,
+              name,
+              placeholder,
+              helperText,
+              required,
+              options[] {
                 label,
-                name,
-                placeholder,
-                helperText,
-                required,
-                options[] {
-                  label,
-                  value
-                }
+                value
               }
             }
-          },
-          step2 {
-            title,
-            fieldGroups[] {
-              groupTitle,
-              groupDescription,
-              fields[] {
-                fieldType,
+          }
+        },
+        step2 {
+          title,
+          fieldGroups[] {
+            groupTitle,
+            groupDescription,
+            fields[] {
+              fieldType,
+              label,
+              name,
+              placeholder,
+              helperText,
+              required,
+              options[] {
                 label,
-                name,
-                placeholder,
-                helperText,
-                required,
-                options[] {
-                  label,
-                  value
-                }
+                value
               }
             }
-          },
-          step3 {
-            title,
-            fieldGroups[] {
-              groupTitle,
-              groupDescription,
-              fields[] {
-                fieldType,
+          }
+        },
+        step3 {
+          title,
+          fieldGroups[] {
+            groupTitle,
+            groupDescription,
+            fields[] {
+              fieldType,
+              label,
+              name,
+              placeholder,
+              helperText,
+              required,
+              options[] {
                 label,
-                name,
-                placeholder,
-                helperText,
-                required,
-                options[] {
-                  label,
-                  value
-                }
+                value
               }
             }
           }
@@ -208,61 +207,60 @@ export const registrationFormQuery = defineQuery(`
     title,
     subtitle,
     eventDate,
-    formBuilder {
-      step1 {
-        title,
-        fieldGroups[] {
-          groupTitle,
-          groupDescription,
-          fields[] {
-            fieldType,
+    numberOfSteps,
+    step1 {
+      title,
+      fieldGroups[] {
+        groupTitle,
+        groupDescription,
+        fields[] {
+          fieldType,
+          label,
+          name,
+          placeholder,
+          helperText,
+          required,
+          options[] {
             label,
-            name,
-            placeholder,
-            helperText,
-            required,
-            options[] {
-              label,
-              value
-            }
+            value
           }
         }
-      },
-      step2 {
-        title,
-        fieldGroups[] {
-          groupTitle,
-          groupDescription,
-          fields[] {
-            fieldType,
+      }
+    },
+    step2 {
+      title,
+      fieldGroups[] {
+        groupTitle,
+        groupDescription,
+        fields[] {
+          fieldType,
+          label,
+          name,
+          placeholder,
+          helperText,
+          required,
+          options[] {
             label,
-            name,
-            placeholder,
-            helperText,
-            required,
-            options[] {
-              label,
-              value
-            }
+            value
           }
         }
-      },
-      step3 {
-        title,
-        fieldGroups[] {
-          groupTitle,
-          groupDescription,
-          fields[] {
-            fieldType,
+      }
+    },
+    step3 {
+      title,
+      fieldGroups[] {
+        groupTitle,
+        groupDescription,
+        fields[] {
+          fieldType,
+          label,
+          name,
+          placeholder,
+          helperText,
+          required,
+          options[] {
             label,
-            name,
-            placeholder,
-            helperText,
-            required,
-            options[] {
-              label,
-              value
-            }
+            value
           }
         }
       }

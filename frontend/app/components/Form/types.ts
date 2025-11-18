@@ -36,19 +36,16 @@ export interface FormStep {
   fieldGroups?: FieldGroup[]
 }
 
-export interface FormBuilder {
-  step1?: FormStep
-  step2?: FormStep
-  step3?: FormStep
-}
-
 export interface FormConfig {
   _id?: string
   _type?: string
   title?: string
   subtitle?: string
   description?: string
-  formBuilder?: FormBuilder
+  numberOfSteps?: number
+  step1?: FormStep
+  step2?: FormStep
+  step3?: FormStep
   submitButtonText?: string
   nextButtonText?: string
   backButtonText?: string

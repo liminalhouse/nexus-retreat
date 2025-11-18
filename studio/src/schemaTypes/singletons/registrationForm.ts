@@ -25,11 +25,78 @@ export const registrationForm = defineType({
       description: 'Event date to display (e.g., "March 18-20, 2026")',
     }),
     defineField({
-      name: 'formBuilder',
-      title: 'Registration Form Steps',
-      type: 'formBuilder',
-      description: 'Build your multi-step registration form',
-      validation: (Rule) => Rule.required(),
+      name: 'numberOfSteps',
+      title: 'Number of Steps',
+      type: 'number',
+      description: 'How many steps should this form have?',
+      options: {
+        list: [
+          {title: '1 Step (Single Page)', value: 1},
+          {title: '2 Steps', value: 2},
+          {title: '3 Steps', value: 3},
+        ],
+      },
+      initialValue: 3,
+      validation: (Rule) => Rule.required().min(1).max(3),
+    }),
+    defineField({
+      name: 'step1',
+      title: 'Step 1',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'title',
+          title: 'Step Title',
+          type: 'string',
+          initialValue: 'Personal Details',
+        }),
+        defineField({
+          name: 'fieldGroups',
+          title: 'Field Groups',
+          type: 'array',
+          of: [{type: 'fieldGroup'}],
+        }),
+      ],
+    }),
+    defineField({
+      name: 'step2',
+      title: 'Step 2',
+      type: 'object',
+      hidden: ({parent}) => (parent?.numberOfSteps || 3) < 2,
+      fields: [
+        defineField({
+          name: 'title',
+          title: 'Step Title',
+          type: 'string',
+          initialValue: 'Emergency & Contact Information',
+        }),
+        defineField({
+          name: 'fieldGroups',
+          title: 'Field Groups',
+          type: 'array',
+          of: [{type: 'fieldGroup'}],
+        }),
+      ],
+    }),
+    defineField({
+      name: 'step3',
+      title: 'Step 3',
+      type: 'object',
+      hidden: ({parent}) => (parent?.numberOfSteps || 3) < 3,
+      fields: [
+        defineField({
+          name: 'title',
+          title: 'Step Title',
+          type: 'string',
+          initialValue: 'Event Details',
+        }),
+        defineField({
+          name: 'fieldGroups',
+          title: 'Field Groups',
+          type: 'array',
+          of: [{type: 'fieldGroup'}],
+        }),
+      ],
     }),
     defineField({
       name: 'submitButtonText',
