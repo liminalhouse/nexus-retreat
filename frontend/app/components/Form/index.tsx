@@ -134,7 +134,7 @@ export default function Form({config, showLogo = true, showProgress = true}: For
 
         {/* Step Indicators */}
         {totalSteps > 1 && (
-          <div className="flex justify-between mb-8">
+          <div className="flex justify-between mb-12">
             {steps.map((step, index) => (
               <div key={index} className="flex flex-col items-center flex-1">
                 <div

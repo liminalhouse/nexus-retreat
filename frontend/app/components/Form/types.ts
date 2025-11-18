@@ -29,6 +29,7 @@ export interface FieldGroup {
   groupTitle?: string
   groupDescription?: string
   fields?: FormField[]
+  showIfFieldHasValue?: string | string[]
 }
 
 export interface FormStep {
