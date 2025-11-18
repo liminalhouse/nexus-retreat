@@ -16,6 +16,9 @@ export default function Form({config, showLogo = true, showProgress = true}: For
   const [formData, setFormData] = useState<Record<string, any>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({})
+  const [allStepErrors, setAllStepErrors] = useState<Record<string, string>>({})
 
   // Get the number of steps from config (default to 1)
   const numberOfSteps = config.numberOfSteps || 1
@@ -26,7 +29,90 @@ export default function Form({config, showLogo = true, showProgress = true}: For
   const totalSteps = steps.length
   const progress = ((currentStep + 1) / totalSteps) * 100
 
+  const validateAllSteps = () => {
+    const errors: Record<string, string> = {}
+
+    steps.forEach((stepConfig, stepIndex) => {
+      stepConfig?.fieldGroups?.forEach((group) => {
+        // Check if group should be shown
+        const shouldShow =
+          !group?.showIfFieldHasValue ||
+          (Array.isArray(group.showIfFieldHasValue)
+            ? group.showIfFieldHasValue.some((fieldName) => {
+                const value = formData[fieldName]
+                return value !== undefined && value !== null && value !== ''
+              })
+            : formData[group.showIfFieldHasValue])
+
+        if (!shouldShow) return
+
+        group?.fields?.forEach((field) => {
+          const fieldName = field?.name || ''
+          const value = formData[fieldName]
+          const isEmpty = value === undefined || value === null || value === ''
+
+          if (field?.required && isEmpty) {
+            errors[fieldName] = `${field.label || fieldName} is required`
+          }
+        })
+      })
+    })
+
+    return errors
+  }
+
+  const validateField = (fieldName: string) => {
+    // Find the field config across all steps
+    let fieldConfig = null
+    let shouldShow = true
+
+    for (const step of steps) {
+      for (const group of step?.fieldGroups || []) {
+        // Check if group should be shown
+        shouldShow =
+          !group?.showIfFieldHasValue ||
+          (Array.isArray(group.showIfFieldHasValue)
+            ? group.showIfFieldHasValue.some((fn) => {
+                const value = formData[fn]
+                return value !== undefined && value !== null && value !== ''
+              })
+            : formData[group.showIfFieldHasValue])
+
+        if (!shouldShow) continue
+
+        const field = group?.fields?.find((f) => f?.name === fieldName)
+        if (field) {
+          fieldConfig = field
+          break
+        }
+      }
+      if (fieldConfig) break
+    }
+
+    if (!fieldConfig || !shouldShow) return null
+
+    const value = formData[fieldName]
+    const isEmpty = value === undefined || value === null || value === ''
+
+    if (fieldConfig.required && isEmpty) {
+      return `${fieldConfig.label || fieldName} is required`
+    }
+
+    return null
+  }
+
   const handleNext = () => {
+    // Validate all steps when moving to last step or already on last step
+    const isMovingToLastStep = currentStep === totalSteps - 2
+    const isOnLastStep = currentStep === totalSteps - 1
+
+    if (isMovingToLastStep || isOnLastStep) {
+      const errors = validateAllSteps()
+      setAllStepErrors(errors)
+      setFieldErrors(errors) // Also set individual field errors so they show on inputs
+    }
+
+    // Allow progression to next step
     if (currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1)
       window.scrollTo({top: 0, behavior: 'smooth'})
@@ -45,6 +131,39 @@ export default function Form({config, showLogo = true, showProgress = true}: For
       ...prev,
       [name]: value,
     }))
+
+    // Clear error for this field when user starts typing
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => {
+        const newErrors = {...prev}
+        delete newErrors[name]
+        return newErrors
+      })
+    }
+
+    // Clear from all step errors too
+    if (allStepErrors[name]) {
+      setAllStepErrors((prev) => {
+        const newErrors = {...prev}
+        delete newErrors[name]
+        return newErrors
+      })
+    }
+  }
+
+  const handleFieldBlur = (name: string) => {
+    setTouchedFields((prev) => ({...prev, [name]: true}))
+
+    const error = validateField(name)
+    if (error) {
+      setFieldErrors((prev) => ({...prev, [name]: error}))
+    } else {
+      setFieldErrors((prev) => {
+        const newErrors = {...prev}
+        delete newErrors[name]
+        return newErrors
+      })
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -163,7 +282,25 @@ export default function Form({config, showLogo = true, showProgress = true}: For
               step={steps[currentStep]}
               formData={formData}
               onFieldChange={handleFieldChange}
+              onFieldBlur={handleFieldBlur}
+              fieldErrors={fieldErrors}
             />
+          )}
+
+          {/* Validation Summary - Only show on last step */}
+          {currentStep === totalSteps - 1 && Object.keys(allStepErrors).length > 0 && (
+            <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <h3 className="text-sm font-semibold text-red-800 mb-2">
+                Please complete the following required fields:
+              </h3>
+              <ul className="list-disc list-inside space-y-1">
+                {Object.entries(allStepErrors).map(([fieldName, error]) => (
+                  <li key={fieldName} className="text-sm text-red-700">
+                    {error}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
 
           {/* Navigation Buttons */}
@@ -188,7 +325,7 @@ export default function Form({config, showLogo = true, showProgress = true}: For
             {currentStep === totalSteps - 1 ? (
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || Object.keys(allStepErrors).length > 0}
                 className="px-8 py-3 bg-nexus-navy-dark text-white rounded-md hover:bg-nexus-navy transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? 'Submitting...' : config.submitButtonText || 'SUBMIT'}

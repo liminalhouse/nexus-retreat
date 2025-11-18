@@ -6,9 +6,17 @@ interface FormFieldRendererProps {
   field: FormField | undefined
   value: any
   onChange: (value: any) => void
+  onBlur: () => void
+  error?: string
 }
 
-export default function FormFieldRenderer({field, value, onChange}: FormFieldRendererProps) {
+export default function FormFieldRenderer({
+  field,
+  value,
+  onChange,
+  onBlur,
+  error,
+}: FormFieldRendererProps) {
   if (!field) return null
 
   const fieldType = field.fieldType
@@ -20,10 +28,13 @@ export default function FormFieldRenderer({field, value, onChange}: FormFieldRen
   const options = field.options || []
 
   // Base input classes with modern styling
-  const inputClasses =
-    'block w-full px-4 py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 transition-all duration-300 ease-out focus:border-blue-600 focus:ring-0 focus:outline-none focus:shadow-lg focus:shadow-blue-100 hover:border-gray-400'
+  const inputClasses = error
+    ? 'block w-full px-4 py-3 rounded-lg border-2 border-red-500 bg-white text-gray-900 transition-all duration-300 ease-out focus:border-red-600 focus:ring-0 focus:outline-none focus:shadow-lg focus:shadow-red-100 hover:border-red-600'
+    : 'block w-full px-4 py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 transition-all duration-300 ease-out focus:border-blue-600 focus:ring-0 focus:outline-none focus:shadow-lg focus:shadow-blue-100 hover:border-gray-400'
 
-  const labelClasses = 'block text-sm font-medium text-gray-700 mb-1'
+  const labelClasses = error
+    ? 'block text-sm font-medium text-red-700 mb-1'
+    : 'block text-sm font-medium text-gray-700 mb-1'
 
   // Text Input
   if (fieldType === 'text' || fieldType === 'email' || fieldType === 'tel') {
@@ -41,6 +52,7 @@ export default function FormFieldRenderer({field, value, onChange}: FormFieldRen
           name={name}
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
           placeholder={placeholder || ''}
           required={required}
           className={inputClasses}
@@ -52,8 +64,9 @@ export default function FormFieldRenderer({field, value, onChange}: FormFieldRen
 
   // Textarea
   if (fieldType === 'textarea') {
-    const textareaClasses =
-      'block w-full px-4 py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 placeholder-gray-400 transition-all duration-300 ease-out focus:border-blue-600 focus:ring-0 focus:outline-none focus:shadow-lg focus:shadow-blue-100 hover:border-gray-400 resize-none'
+    const textareaClasses = error
+      ? 'block w-full px-4 py-3 rounded-lg border-2 border-red-500 bg-white text-gray-900 placeholder-gray-400 transition-all duration-300 ease-out focus:border-red-600 focus:ring-0 focus:outline-none focus:shadow-lg focus:shadow-red-100 hover:border-red-600 resize-none'
+      : 'block w-full px-4 py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 placeholder-gray-400 transition-all duration-300 ease-out focus:border-blue-600 focus:ring-0 focus:outline-none focus:shadow-lg focus:shadow-blue-100 hover:border-gray-400 resize-none'
 
     return (
       <div>
@@ -68,6 +81,7 @@ export default function FormFieldRenderer({field, value, onChange}: FormFieldRen
           name={name}
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
           placeholder={placeholder || ''}
           required={required}
           rows={4}
@@ -80,8 +94,9 @@ export default function FormFieldRenderer({field, value, onChange}: FormFieldRen
 
   // Select Dropdown
   if (fieldType === 'select') {
-    const selectClasses =
-      'block w-full px-4 py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 transition-all duration-300 ease-out focus:border-blue-600 focus:ring-0 focus:outline-none focus:shadow-lg focus:shadow-blue-100 hover:border-gray-400 appearance-none cursor-pointer'
+    const selectClasses = error
+      ? 'block w-full px-4 py-3 rounded-lg border-2 border-red-500 bg-white text-gray-900 transition-all duration-300 ease-out focus:border-red-600 focus:ring-0 focus:outline-none focus:shadow-lg focus:shadow-red-100 hover:border-red-600 appearance-none cursor-pointer'
+      : 'block w-full px-4 py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 transition-all duration-300 ease-out focus:border-blue-600 focus:ring-0 focus:outline-none focus:shadow-lg focus:shadow-blue-100 hover:border-gray-400 appearance-none cursor-pointer'
 
     return (
       <div>
@@ -97,6 +112,7 @@ export default function FormFieldRenderer({field, value, onChange}: FormFieldRen
             name={name}
             value={value || ''}
             onChange={(e) => onChange(e.target.value)}
+            onBlur={onBlur}
             required={required}
             className={selectClasses}
           >

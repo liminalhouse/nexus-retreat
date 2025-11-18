@@ -7,9 +7,17 @@ interface FormStepRendererProps {
   step: FormStep
   formData: Record<string, any>
   onFieldChange: (name: string, value: any) => void
+  onFieldBlur: (name: string) => void
+  fieldErrors?: Record<string, string>
 }
 
-export default function FormStepRenderer({step, formData, onFieldChange}: FormStepRendererProps) {
+export default function FormStepRenderer({
+  step,
+  formData,
+  onFieldChange,
+  onFieldBlur,
+  fieldErrors = {},
+}: FormStepRendererProps) {
   const fieldGroups = step?.fieldGroups || []
 
   const shouldShowGroup = (group: any) => {
@@ -47,15 +55,25 @@ export default function FormStepRenderer({step, formData, onFieldChange}: FormSt
 
             {/* Fields */}
             <div className="space-y-6">
-              {group?.fields?.map((field, fieldIndex) => (
-                <div key={fieldIndex}>
-                  <FormFieldRenderer
-                    field={field}
-                    value={formData[field?.name || '']}
-                    onChange={(value) => onFieldChange(field?.name || '', value)}
-                  />
-                </div>
-              ))}
+              {group?.fields?.map((field, fieldIndex) => {
+                const fieldName = field?.name || ''
+                const hasError = !!fieldErrors[fieldName]
+
+                return (
+                  <div key={fieldIndex}>
+                    <FormFieldRenderer
+                      field={field}
+                      value={formData[fieldName]}
+                      onChange={(value) => onFieldChange(fieldName, value)}
+                      onBlur={() => onFieldBlur(fieldName)}
+                      error={fieldErrors[fieldName]}
+                    />
+                    {hasError && (
+                      <p className="mt-1 text-sm text-red-600">{fieldErrors[fieldName]}</p>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </div>
         )
