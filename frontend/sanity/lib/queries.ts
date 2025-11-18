@@ -132,3 +132,79 @@ export const pagesSlugs = defineQuery(`
   *[_type == "page" && defined(slug.current)]
   {"slug": slug.current}
 `)
+
+export const registrationFormQuery = defineQuery(`
+  *[_type == "registrationForm"][0]{
+    _id,
+    title,
+    subtitle,
+    eventDate,
+    formBuilder {
+      step1 {
+        title,
+        fieldGroups[] {
+          groupTitle,
+          groupDescription,
+          fields[] {
+            fieldType,
+            label,
+            name,
+            placeholder,
+            helperText,
+            required,
+            options[] {
+              label,
+              value
+            },
+            width
+          }
+        }
+      },
+      step2 {
+        title,
+        fieldGroups[] {
+          groupTitle,
+          groupDescription,
+          fields[] {
+            fieldType,
+            label,
+            name,
+            placeholder,
+            helperText,
+            required,
+            options[] {
+              label,
+              value
+            },
+            width
+          }
+        }
+      },
+      step3 {
+        title,
+        fieldGroups[] {
+          groupTitle,
+          groupDescription,
+          fields[] {
+            fieldType,
+            label,
+            name,
+            placeholder,
+            helperText,
+            required,
+            options[] {
+              label,
+              value
+            },
+            width
+          }
+        }
+      }
+    },
+    submitButtonText,
+    nextButtonText,
+    backButtonText,
+    backToHomeText,
+    successMessage
+  }
+`)

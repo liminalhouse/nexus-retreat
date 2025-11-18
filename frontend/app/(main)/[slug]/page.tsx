@@ -51,6 +51,8 @@ export default async function Page(props: Props) {
     return <div className="py-40">This page does not exist.</div>
   }
 
+  console.log('page.bgColor:', page?.bgColor)
+
   const bg = `bg-nexus-${page.bgColor ?? 'white'}`
 
   return (

@@ -4,16 +4,19 @@ import {post} from './documents/post'
 import {callToAction} from './objects/callToAction'
 import {infoSection} from './objects/infoSection'
 import {settings} from './singletons/settings'
+import {registrationForm} from './singletons/registrationForm'
 import {link} from './objects/link'
 import {blockContent} from './objects/blockContent'
 import {hero} from './objects/hero'
 import {faq, faqItem} from './objects/faq'
+import {formBuilder, fieldGroup, formField} from './objects/formBuilder'
 
 // Export an array of all the schema types.  This is used in the Sanity Studio configuration. https://www.sanity.io/docs/schema-types
 
 export const schemaTypes = [
   // Singletons
   settings,
+  registrationForm,
   // Documents
   page,
   post,
@@ -26,4 +29,7 @@ export const schemaTypes = [
   hero,
   faqItem,
   faq,
+  formBuilder,
+  fieldGroup,
+  formField,
 ]

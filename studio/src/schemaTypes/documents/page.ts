@@ -46,6 +46,7 @@ export const page = defineType({
         list: [
           {title: 'Beige', value: 'beige'},
           {title: 'Navy', value: 'navy'},
+          {title: 'Blue gradient', value: 'blueGradient'},
           {title: 'White', value: 'white'},
         ],
       },

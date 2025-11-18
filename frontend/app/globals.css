@@ -40,6 +40,7 @@
   --color-nexus-coral: #f49898;
   --color-nexus-coral-light: #f5a8a8;
   --color-nexus-beige: #faf5f1;
+  --color-nexus-blueGradient: linear-gradient(90deg, #0052ff 0%, #00c6ff 100%);
 
   --font-display: 'Inter', 'sans-serif';
   --font-sans: 'Inter', 'sans-serif';
