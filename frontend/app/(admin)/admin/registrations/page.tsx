@@ -1,11 +1,11 @@
-import { supabaseAdmin } from '@/lib/supabase/server'
+import { getSupabaseAdmin } from '@/lib/supabase/server'
 import RegistrationsTable from './RegistrationsTable'
 import ExportButton from './ExportButton'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminRegistrations() {
-  // Fetch registrations from Supabase
+  const supabaseAdmin = getSupabaseAdmin()
   const { data: registrations, error } = await supabaseAdmin
     .from('registrations')
     .select('*')
