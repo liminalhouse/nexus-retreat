@@ -18,7 +18,8 @@ export const registrationFormConfig: FormConfig = {
   submitButtonText: 'REGISTER',
   nextButtonText: 'NEXT',
   backButtonText: '← BACK',
-  successMessage: 'Thank you for registering! We look forward to seeing you at the retreat.',
+  successMessage:
+    'Thank you for registering! We look forward to seeing you at the retreat. If you need any help, email us at nexus-retreat@gmail.com.',
 
   // Step 1: Personal Details
   step1: {

@@ -224,42 +224,301 @@ export default function Form({config, showLogo = true, showProgress = true}: For
 
     setIsSubmitting(true)
 
-    try {
-      const response = await fetch(config.submitEndpoint || '/api/form-submission', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
+    // Fake submission - simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      if (response.ok) {
-        setIsSubmitted(true)
-        window.scrollTo({top: 0, behavior: 'smooth'})
-      } else {
-        const errorData = await response.json().catch(() => ({}))
-        console.error('Form submission failed:', errorData)
-        alert('There was an error submitting your form. Please try again.')
-      }
-    } catch (error) {
-      console.error('Form submission error:', error)
-      alert('There was an error submitting your form. Please try again.')
-    } finally {
-      setIsSubmitting(false)
-    }
+    // For now, just mark as submitted without actually calling the API
+    setIsSubmitted(true)
+    window.scrollTo({top: 0, behavior: 'smooth'})
+    setIsSubmitting(false)
+
+    // TODO: Re-enable actual submission when Supabase is ready
+    // try {
+    //   const response = await fetch(config.submitEndpoint || '/api/form-submission', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(formData),
+    //   })
+
+    //   if (response.ok) {
+    //     setIsSubmitted(true)
+    //     window.scrollTo({top: 0, behavior: 'smooth'})
+    //   } else {
+    //     const errorData = await response.json().catch(() => ({}))
+    //     console.error('Form submission failed:', errorData)
+    //     alert('There was an error submitting your form. Please try again.')
+    //   }
+    // } catch (error) {
+    //   console.error('Form submission error:', error)
+    //   alert('There was an error submitting your form. Please try again.')
+    // } finally {
+    //   setIsSubmitting(false)
+    // }
   }
 
   if (isSubmitted) {
     return (
-      <div className="w-full max-w-2xl mx-auto bg-white rounded-lg p-8 md:p-12">
+      <div className="w-full max-w-4xl mx-auto bg-white rounded-lg p-8 md:p-12">
         {showLogo && (
           <div className="text-center mb-8">
             <NexusLogo styleType="lockup" className="w-[168px] my-6 mx-auto" />
           </div>
         )}
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Success!</h2>
-          <p className="text-gray-600 mb-8">{config.successMessage}</p>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Registration Confirmed!</h2>
+          <p className="text-gray-600">{config.successMessage}</p>
+        </div>
+
+        {/* Registration Summary */}
+        <div className="border-t border-gray-200 pt-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">Your Registration Details</h3>
+
+          <div className="space-y-6">
+            {/* Personal Information */}
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Personal Information</h4>
+              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">First Name:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.first_name || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Last Name:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.last_name || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Email:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.email || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Phone:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.mobile_phone || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Title:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.title || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Organization:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.organization || '-'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Address */}
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Address</h4>
+              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Street:</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.address_line_1
+                      ? `${formData.address_line_1}${formData.address_line_2 ? `, ${formData.address_line_2}` : ''}`
+                      : '-'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">City:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.city || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">State:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.state || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Zip Code:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.zip || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Country:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.country || '-'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Emergency Contact */}
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Emergency Contact</h4>
+              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Name:</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.emergency_contact_name || '-'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Relation:</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.emergency_contact_relation || '-'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Phone:</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.emergency_contact_phone || '-'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Email:</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.emergency_contact_email || '-'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Executive Assistant */}
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Executive Assistant</h4>
+              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Name:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.assistant_name || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Title:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.assistant_title || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Email:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.assistant_email || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Phone:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.assistant_phone || '-'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Guest Information */}
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Guest Information</h4>
+              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Guest Name:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.guest_name || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Relation:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.guest_relation || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Guest Email:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.guest_email || '-'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Event Details */}
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Event Details</h4>
+              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Dietary Restrictions:</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.dietary_restrictions || '-'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Jacket Size:</span>
+                  <span className="text-sm font-medium text-gray-900">{formData.jacket_size || '-'}</span>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600 block mb-1">Accommodations:</span>
+                  {formData.accommodations && formData.accommodations.length > 0 ? (
+                    <ul className="text-sm font-medium text-gray-900 list-disc list-inside">
+                      {formData.accommodations.map((acc: string, idx: number) => (
+                        <li key={idx}>{acc.replace('_', ' ')}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span className="text-sm font-medium text-gray-900">-</span>
+                  )}
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600 block mb-1">Dinner Attendance:</span>
+                  {formData.dinner_attendance && formData.dinner_attendance.length > 0 ? (
+                    <ul className="text-sm font-medium text-gray-900 list-disc list-inside">
+                      {formData.dinner_attendance.map((dinner: string, idx: number) => (
+                        <li key={idx}>{dinner.replace('_', ' ')}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span className="text-sm font-medium text-gray-900">-</span>
+                  )}
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600 block mb-1">Activities:</span>
+                  {formData.activities && formData.activities.length > 0 ? (
+                    <ul className="text-sm font-medium text-gray-900 list-disc list-inside">
+                      {formData.activities.map((activity: string, idx: number) => (
+                        <li key={idx}>{activity.replace(/_/g, ' ')}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span className="text-sm font-medium text-gray-900">-</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Guest Event Details */}
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Guest Event Details</h4>
+              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Guest Dietary Restrictions:</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.guest_dietary_restrictions || '-'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Guest Jacket Size:</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.guest_jacket_size || '-'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600 block mb-1">Guest Accommodations:</span>
+                  {formData.guest_accommodations && formData.guest_accommodations.length > 0 ? (
+                    <ul className="text-sm font-medium text-gray-900 list-disc list-inside">
+                      {formData.guest_accommodations.map((acc: string, idx: number) => (
+                        <li key={idx}>{acc.replace('_', ' ')}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span className="text-sm font-medium text-gray-900">-</span>
+                  )}
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600 block mb-1">Guest Dinner Attendance:</span>
+                  {formData.guest_dinner_attendance && formData.guest_dinner_attendance.length > 0 ? (
+                    <ul className="text-sm font-medium text-gray-900 list-disc list-inside">
+                      {formData.guest_dinner_attendance.map((dinner: string, idx: number) => (
+                        <li key={idx}>{dinner.replace('_', ' ')}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span className="text-sm font-medium text-gray-900">-</span>
+                  )}
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600 block mb-1">Guest Activities:</span>
+                  {formData.guest_activities && formData.guest_activities.length > 0 ? (
+                    <ul className="text-sm font-medium text-gray-900 list-disc list-inside">
+                      {formData.guest_activities.map((activity: string, idx: number) => (
+                        <li key={idx}>{activity.replace(/_/g, ' ')}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span className="text-sm font-medium text-gray-900">-</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )

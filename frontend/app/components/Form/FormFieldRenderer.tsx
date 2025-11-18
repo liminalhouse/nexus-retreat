@@ -53,6 +53,11 @@ export default function FormFieldRenderer({
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+            }
+          }}
           placeholder={placeholder || ''}
           required={required}
           className={inputClasses}
