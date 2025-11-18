@@ -53,6 +53,21 @@ export default function Form({config, showLogo = true, showProgress = true}: For
 
           if (field?.required && isEmpty) {
             errors[fieldName] = `${field.label || fieldName} is required`
+          } else if (!isEmpty && value) {
+            // Validate email format
+            if (field?.fieldType === 'email') {
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+              if (!emailRegex.test(value)) {
+                errors[fieldName] = 'Please enter a valid email address'
+              }
+            }
+            // Validate phone format (allows various formats)
+            if (field?.fieldType === 'tel') {
+              const phoneRegex = /^[\d\s\-\(\)\+\.]+$/
+              if (!phoneRegex.test(value) || value.replace(/\D/g, '').length < 10) {
+                errors[fieldName] = 'Please enter a valid phone number'
+              }
+            }
           }
         })
       })
@@ -96,6 +111,24 @@ export default function Form({config, showLogo = true, showProgress = true}: For
 
     if (fieldConfig.required && isEmpty) {
       return `${fieldConfig.label || fieldName} is required`
+    }
+
+    // Validate format for non-empty values
+    if (!isEmpty && value) {
+      // Email validation
+      if (fieldConfig.fieldType === 'email') {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(value)) {
+          return 'Please enter a valid email address'
+        }
+      }
+      // Phone validation
+      if (fieldConfig.fieldType === 'tel') {
+        const phoneRegex = /^[\d\s\-\(\)\+\.]+$/
+        if (!phoneRegex.test(value) || value.replace(/\D/g, '').length < 10) {
+          return 'Please enter a valid phone number'
+        }
+      }
     }
 
     return null
@@ -168,6 +201,17 @@ export default function Form({config, showLogo = true, showProgress = true}: For
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Prevent submission if there are validation errors
+    if (Object.keys(allStepErrors).length > 0) {
+      return
+    }
+
+    // Prevent submission if not on last step
+    if (currentStep !== totalSteps - 1) {
+      return
+    }
+
     setIsSubmitting(true)
 
     try {

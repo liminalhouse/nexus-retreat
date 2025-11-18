@@ -1,10 +1,12 @@
 {
   "name": "frontend",
   "private": true,
-  "prettier": "@sanity/prettier-config",
   "scripts": {
     "prebuild": "npm run typegen",
     "build": "next build",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
     "predev": "npm run typegen",
     "dev": "next dev --turbopack",
     "lint": "next lint",
@@ -12,6 +14,7 @@
     "type-check": "tsc --noEmit",
     "typegen": "sanity typegen generate"
   },
+  "prettier": "@sanity/prettier-config",
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@preline/accordion": "^3.2.3",
@@ -27,9 +30,11 @@
     "@vercel/speed-insights": "^1.2.0",
     "autoprefixer": "^10.4.21",
     "date-fns": "^4.1.0",
+    "drizzle-orm": "^0.44.7",
     "next": "^15.5.0",
     "next-sanity": "^10.0.14",
     "postcss": "^8.5.6",
+    "postgres": "^3.4.7",
     "preline": "^3.2.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -44,6 +49,7 @@
     "@types/node": "^20.19.11",
     "@types/react": "^19.1.11",
     "@types/react-dom": "^19.1.7",
+    "drizzle-kit": "^0.31.7",
     "eslint": "^9.34.0",
     "eslint-config-next": "^15.5.0",
     "typescript": "5.9.2"

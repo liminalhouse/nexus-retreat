@@ -1,57 +1,105 @@
 import {NextRequest, NextResponse} from 'next/server'
-import {getSupabaseAdmin} from '@/lib/supabase/server'
+import {db} from '@/lib/db'
+import {registrations} from '@/lib/db/schema'
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.json()
 
-    // Extract standard fields (if they exist)
-    const {email, first_name, last_name, phone, ...additionalData} = formData
+    // Map form field names to database column names
+    const registrationData = {
+      // Step 1: Personal Details
+      email: formData.email,
+      firstName: formData.first_name,
+      lastName: formData.last_name,
+      title: formData.title || null,
+      organization: formData.organization || null,
+      mobilePhone: formData.mobile_phone,
 
-    // Validate required fields
-    if (!email) {
-      return NextResponse.json(
-        {success: false, message: 'Email is required'},
-        {status: 400},
-      )
+      // Work Address
+      addressLine1: formData.address_line_1,
+      addressLine2: formData.address_line_2 || null,
+      city: formData.city,
+      state: formData.state,
+      zip: formData.zip,
+      country: formData.country,
+
+      // Step 2: Emergency & Contact Information
+      emergencyContactName: formData.emergency_contact_name,
+      emergencyContactRelation: formData.emergency_contact_relation || null,
+      emergencyContactEmail: formData.emergency_contact_email,
+      emergencyContactPhone: formData.emergency_contact_phone,
+
+      // Executive Assistant
+      assistantName: formData.assistant_name || null,
+      assistantTitle: formData.assistant_title || null,
+      assistantEmail: formData.assistant_email || null,
+      assistantPhone: formData.assistant_phone || null,
+
+      // Guest Information
+      guestName: formData.guest_name || null,
+      guestRelation: formData.guest_relation || null,
+      guestEmail: formData.guest_email || null,
+
+      // Step 3: Event Details (arrays stored as JSONB)
+      dietaryRestrictions: formData.dietary_restrictions || null,
+      jacketSize: formData.jacket_size || null,
+      accommodations: formData.accommodations || null,
+      dinnerAttendance: formData.dinner_attendance || null,
+      activities: formData.activities || null,
+
+      // Guest Event Details
+      guestDietaryRestrictions: formData.guest_dietary_restrictions || null,
+      guestJacketSize: formData.guest_jacket_size || null,
+      guestAccommodations: formData.guest_accommodations || null,
+      guestDinnerAttendance: formData.guest_dinner_attendance || null,
+      guestActivities: formData.guest_activities || null,
     }
 
-    const supabase = getSupabaseAdmin()
-
-    // Insert into Supabase - works with ANY form structure!
-    const {data, error} = await supabase
-      .from('registrations')
-      .insert({
-        email,
-        first_name: first_name || null,
-        last_name: last_name || null,
-        phone: phone || null,
-        form_data: formData, // Store ALL data including custom fields
-      })
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Supabase error:', error)
-      return NextResponse.json(
-        {success: false, message: 'Failed to save registration'},
-        {status: 500},
-      )
-    }
+    // Insert into database using Drizzle ORM
+    const result = await db.insert(registrations).values(registrationData).returning()
 
     return NextResponse.json(
       {
         success: true,
         message: 'Registration submitted successfully',
-        data,
+        data: result[0],
       },
-      {status: 200},
+      {status: 201}
     )
-  } catch (error) {
+  } catch (error: any) {
     console.error('Registration error:', error)
+
+    // Handle unique constraint violation (duplicate email)
+    if (error.code === '23505') {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'This email has already been registered',
+        },
+        {status: 400}
+      )
+    }
+
+    // Handle not null constraint violations
+    if (error.code === '23502') {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Missing required fields',
+          details: error.message,
+        },
+        {status: 400}
+      )
+    }
+
     return NextResponse.json(
-      {success: false, message: 'Failed to process registration'},
-      {status: 500},
+      {
+        success: false,
+        error: 'Failed to submit registration',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      },
+      {status: 500}
     )
   }
 }
