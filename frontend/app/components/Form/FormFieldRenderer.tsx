@@ -19,86 +19,120 @@ export default function FormFieldRenderer({field, value, onChange}: FormFieldRen
   const required = field.required
   const options = field.options || []
 
-  // Base input classes
+  // Base input classes with modern styling
   const inputClasses =
-    'block w-full rounded-md border-gray-300 shadow-sm focus:border-nexus-navy focus:ring-nexus-navy sm:text-sm'
+    'peer block w-full px-4 py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 placeholder-transparent transition-all duration-200 focus:border-blue-600 focus:ring-0 focus:outline-none'
+
+  const labelClasses =
+    'absolute left-3 -top-2.5 bg-white px-2 text-xs font-medium text-gray-600 transition-all duration-200 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 peer-placeholder-shown:left-4 peer-focus:-top-2.5 peer-focus:left-3 peer-focus:text-xs peer-focus:text-blue-600'
 
   // Text Input
   if (fieldType === 'text' || fieldType === 'email' || fieldType === 'tel') {
     return (
       <div>
-        {label && (
-          <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
-            {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
-          </label>
-        )}
-        <input
-          type={fieldType}
-          id={name}
-          name={name}
-          value={value || ''}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder || ''}
-          required={required}
-          className={inputClasses}
-        />
-        {helperText && <p className="mt-1 text-xs text-gray-500">{helperText}</p>}
+        <div className="relative">
+          <input
+            type={fieldType}
+            id={name}
+            name={name}
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={label || placeholder || ''}
+            required={required}
+            className={inputClasses}
+          />
+          {label && (
+            <label htmlFor={name} className={labelClasses}>
+              {label}
+              {required && <span className="text-red-500 ml-1">*</span>}
+            </label>
+          )}
+        </div>
+        {helperText && <p className="mt-2 text-xs text-gray-500 pl-4">{helperText}</p>}
       </div>
     )
   }
 
   // Textarea
   if (fieldType === 'textarea') {
+    const textareaClasses =
+      'peer block w-full px-4 py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 placeholder-transparent transition-all duration-200 focus:border-blue-600 focus:ring-0 focus:outline-none resize-none'
+
     return (
       <div>
-        {label && (
-          <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
-            {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
-          </label>
-        )}
-        <textarea
-          id={name}
-          name={name}
-          value={value || ''}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder || ''}
-          required={required}
-          rows={4}
-          className={inputClasses}
-        />
-        {helperText && <p className="mt-1 text-xs text-gray-500">{helperText}</p>}
+        <div className="relative">
+          <textarea
+            id={name}
+            name={name}
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={label || placeholder || ''}
+            required={required}
+            rows={4}
+            className={textareaClasses}
+          />
+          {label && (
+            <label htmlFor={name} className={labelClasses}>
+              {label}
+              {required && <span className="text-red-500 ml-1">*</span>}
+            </label>
+          )}
+        </div>
+        {helperText && <p className="mt-2 text-xs text-gray-500 pl-4">{helperText}</p>}
       </div>
     )
   }
 
   // Select Dropdown
   if (fieldType === 'select') {
+    const selectClasses =
+      'peer block w-full px-4 py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 transition-all duration-200 focus:border-blue-600 focus:ring-0 focus:outline-none appearance-none cursor-pointer'
+
+    const selectLabelClasses =
+      'absolute left-3 -top-2.5 bg-white px-2 text-xs font-medium transition-all duration-200 ' +
+      (value ? 'text-blue-600' : 'text-gray-600')
+
     return (
       <div>
-        {label && (
-          <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
-            {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
-          </label>
-        )}
-        <select
-          id={name}
-          name={name}
-          value={value || ''}
-          onChange={(e) => onChange(e.target.value)}
-          required={required}
-          className={inputClasses}
-        >
-          <option value="">{placeholder || 'Select an option'}</option>
-          {options.map((option, idx) => (
-            <option key={idx} value={option?.value || ''}>
-              {option?.label || option?.value}
-            </option>
-          ))}
-        </select>
-        {helperText && <p className="mt-1 text-xs text-gray-500">{helperText}</p>}
+        <div className="relative">
+          <select
+            id={name}
+            name={name}
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            required={required}
+            className={selectClasses}
+          >
+            <option value="">{placeholder || 'Select an option'}</option>
+            {options.map((option, idx) => (
+              <option key={idx} value={option?.value || ''}>
+                {option?.label || option?.value}
+              </option>
+            ))}
+          </select>
+          {/* Custom dropdown arrow */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+            <svg
+              className="h-5 w-5 text-gray-400"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
+          {label && (
+            <label htmlFor={name} className={selectLabelClasses}>
+              {label}
+              {required && <span className="text-red-500 ml-1">*</span>}
+            </label>
+          )}
+        </div>
+        {helperText && <p className="mt-2 text-xs text-gray-500 pl-4">{helperText}</p>}
       </div>
     )
   }

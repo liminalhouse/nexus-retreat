@@ -162,7 +162,8 @@ export const registrationFormConfig: FormConfig = {
       },
       {
         groupTitle: 'Guest Information',
-        groupDescription: 'If you are bringing a partner or spouse, please provide their information below.',
+        groupDescription:
+          'If you are bringing a partner or spouse, please provide their information below.',
         fields: [
           {
             fieldType: 'text',
@@ -217,30 +218,27 @@ export const registrationFormConfig: FormConfig = {
           'Complimentary accommodations are provided at The Boca Raton the nights of March 18 and March 19. Please share which nights you will be staying with us.',
         fields: [
           {
-            fieldType: 'checkbox',
-            name: 'complimentary_room_march_18',
-            label: 'I will use my complimentary room the night of March 18',
-          },
-          {
-            fieldType: 'checkbox',
-            name: 'complimentary_room_march_19',
-            label: 'I will use my complimentary room the night of March 19',
+            fieldType: 'checkboxGroup',
+            name: 'accommodations',
+            options: [
+              {label: 'I will use my complimentary room the night of March 18', value: 'march_18'},
+              {label: 'I will use my complimentary room the night of March 19', value: 'march_19'},
+            ],
           },
         ],
       },
       {
         groupTitle: 'Dinner Attendance',
-        groupDescription: 'Which nights will you attend dinner? Please note both dinners have keynote speakers.',
+        groupDescription:
+          'Which nights will you attend dinner? Please note both dinners have keynote speakers.',
         fields: [
           {
-            fieldType: 'checkbox',
-            name: 'dinner_march_18',
-            label: 'I will attend the Dinner on March 18',
-          },
-          {
-            fieldType: 'checkbox',
-            name: 'dinner_march_19',
-            label: 'I will attend the Dinner on March 19',
+            fieldType: 'checkboxGroup',
+            name: 'dinner_attendance',
+            options: [
+              {label: 'I will attend the Dinner on March 18', value: 'march_18'},
+              {label: 'I will attend the Dinner on March 19', value: 'march_19'},
+            ],
           },
         ],
       },
@@ -252,7 +250,10 @@ export const registrationFormConfig: FormConfig = {
             fieldType: 'checkboxGroup',
             name: 'activities',
             options: [
-              {label: 'Pickleball tournament (sunrise / downriver style) on March 19', value: 'pickleball'},
+              {
+                label: 'Pickleball tournament (sunrise / downriver style) on March 19',
+                value: 'pickleball',
+              },
               {label: 'Golf - Full round', value: 'golf_full'},
               {label: 'Golf - 9 holes', value: 'golf_9'},
               {label: 'Golf - Drive, Chip, and Putt contest', value: 'golf_drive_chip_putt'},
@@ -262,7 +263,7 @@ export const registrationFormConfig: FormConfig = {
               {label: 'March 20 morning yoga', value: 'yoga_march_20'},
               {label: 'March 20 morning bootcamp', value: 'bootcamp_march_20'},
               {
-                label: 'Please don\'t bother me, I\'ll be at the spa :)',
+                label: "Please don't bother me, I'll be at the spa :)",
                 value: 'spa',
               },
             ],
@@ -280,7 +281,7 @@ export const registrationFormConfig: FormConfig = {
           {
             fieldType: 'select',
             name: 'guest_jacket_size',
-            label: 'What is your jacket size?',
+            label: "What is your guest's jacket size?",
             options: [
               {label: 'XS', value: 'XS'},
               {label: 'S', value: 'S'},
@@ -298,30 +299,27 @@ export const registrationFormConfig: FormConfig = {
           'Complimentary accommodations are provided at The Boca Raton the nights of March 18 and March 19. Please share which nights you will be staying with us.',
         fields: [
           {
-            fieldType: 'checkbox',
-            name: 'guest_complimentary_room_march_18',
-            label: 'I will use my complimentary room the night of March 18',
-          },
-          {
-            fieldType: 'checkbox',
-            name: 'guest_complimentary_room_march_19',
-            label: 'I will use my complimentary room the night of March 19',
+            fieldType: 'checkboxGroup',
+            name: 'accommodations',
+            options: [
+              {label: 'I will use my complimentary room the night of March 18', value: 'march_18'},
+              {label: 'I will use my complimentary room the night of March 19', value: 'march_19'},
+            ],
           },
         ],
       },
       {
         groupTitle: 'Guest Dinner Attendance',
-        groupDescription: 'Which nights will you attend dinner? Please note both dinners have keynote speakers.',
+        groupDescription:
+          'Which nights will you attend dinner? Please note both dinners have keynote speakers.',
         fields: [
           {
-            fieldType: 'checkbox',
-            name: 'guest_dinner_march_18',
-            label: 'I will attend the Dinner on March 18',
-          },
-          {
-            fieldType: 'checkbox',
-            name: 'guest_dinner_march_19',
-            label: 'I will attend the Dinner on March 19',
+            fieldType: 'checkboxGroup',
+            name: 'dinner_attendance',
+            options: [
+              {label: 'I will attend the Dinner on March 18', value: 'march_18'},
+              {label: 'I will attend the Dinner on March 19', value: 'march_19'},
+            ],
           },
         ],
       },
@@ -333,7 +331,10 @@ export const registrationFormConfig: FormConfig = {
             fieldType: 'checkboxGroup',
             name: 'guest_activities',
             options: [
-              {label: 'Pickleball tournament (sunrise / downriver style) on March 19', value: 'pickleball'},
+              {
+                label: 'Pickleball tournament (sunrise / downriver style) on March 19',
+                value: 'pickleball',
+              },
               {label: 'Golf - Full round', value: 'golf_full'},
               {label: 'Golf - 9 holes', value: 'golf_9'},
               {label: 'Golf - Drive, Chip, and Putt contest', value: 'golf_drive_chip_putt'},
@@ -343,7 +344,7 @@ export const registrationFormConfig: FormConfig = {
               {label: 'March 20 morning yoga', value: 'yoga_march_20'},
               {label: 'March 20 morning bootcamp', value: 'bootcamp_march_20'},
               {
-                label: 'Please don\'t bother me, I\'ll be at the spa :)',
+                label: "Please don't bother me, I'll be at the spa :)",
                 value: 'spa',
               },
             ],
