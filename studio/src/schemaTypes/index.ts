@@ -1,4 +1,5 @@
 import {page} from './documents/page'
+import {emailTemplate} from './documents/emailTemplate'
 import {callToAction} from './objects/callToAction'
 import {infoSection} from './objects/infoSection'
 import {settings} from './singletons/settings'
@@ -16,6 +17,7 @@ export const schemaTypes = [
   settings,
   // Documents
   page,
+  emailTemplate,
   // Objects
   blockContent,
   infoSection,

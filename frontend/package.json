@@ -38,6 +38,7 @@
     "preline": "^3.2.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "resend": "^6.5.0",
     "sanity": "^4.15.0",
     "sanity-plugin-asset-source-unsplash": "^4.0.1",
     "sonner": "^2.0.7",

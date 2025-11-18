@@ -227,7 +227,30 @@ export default function Form({config, showLogo = true, showProgress = true}: For
     // Fake submission - simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    // For now, just mark as submitted without actually calling the API
+    // Send confirmation email
+    try {
+      console.log('Sending confirmation email...')
+      const response = await fetch('/api/send-registration-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+      const result = await response.json()
+      console.log('Email API response:', result)
+
+      if (!response.ok) {
+        console.error('Email API error:', result)
+      } else {
+        console.log('Email sent successfully')
+      }
+    } catch (error) {
+      console.error('Failed to send confirmation email:', error)
+      // Don't block submission if email fails
+    }
+
+    // Mark as submitted
     setIsSubmitted(true)
     window.scrollTo({top: 0, behavior: 'smooth'})
     setIsSubmitting(false)
