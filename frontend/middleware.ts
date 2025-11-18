@@ -5,6 +5,11 @@ export function middleware(request: NextRequest) {
   // Get the authentication token from cookies
   const authToken = request.cookies.get('auth-token')
 
+  // Admin routes (/admin/*) handle their own authentication - skip middleware
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    return NextResponse.next()
+  }
+
   // Check if the user is trying to access the sign-in page
   if (request.nextUrl.pathname === '/sign-in') {
     // If already authenticated, redirect to home
