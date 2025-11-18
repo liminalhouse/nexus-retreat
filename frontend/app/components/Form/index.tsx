@@ -143,7 +143,9 @@ export default function Form({config, showLogo = true, showProgress = true}: For
     }
   }, [currentStep, totalSteps])
 
-  const handleNext = () => {
+  const handleNext = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    e?.preventDefault()
+
     // Validate all steps when moving to last step
     const isMovingToLastStep = currentStep === totalSteps - 2
 

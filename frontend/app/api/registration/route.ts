@@ -6,19 +6,25 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.json()
 
+    // Helper function to convert empty strings to null
+    const toNullIfEmpty = (value: any) => {
+      if (value === '' || value === undefined) return null
+      return value
+    }
+
     // Map form field names to database column names
     const registrationData = {
       // Step 1: Personal Details
       email: formData.email,
       firstName: formData.first_name,
       lastName: formData.last_name,
-      title: formData.title || null,
-      organization: formData.organization || null,
+      title: toNullIfEmpty(formData.title),
+      organization: toNullIfEmpty(formData.organization),
       mobilePhone: formData.mobile_phone,
 
       // Work Address
       addressLine1: formData.address_line_1,
-      addressLine2: formData.address_line_2 || null,
+      addressLine2: toNullIfEmpty(formData.address_line_2),
       city: formData.city,
       state: formData.state,
       zip: formData.zip,
@@ -26,24 +32,24 @@ export async function POST(request: NextRequest) {
 
       // Step 2: Emergency & Contact Information
       emergencyContactName: formData.emergency_contact_name,
-      emergencyContactRelation: formData.emergency_contact_relation || null,
+      emergencyContactRelation: toNullIfEmpty(formData.emergency_contact_relation),
       emergencyContactEmail: formData.emergency_contact_email,
       emergencyContactPhone: formData.emergency_contact_phone,
 
       // Executive Assistant
-      assistantName: formData.assistant_name || null,
-      assistantTitle: formData.assistant_title || null,
-      assistantEmail: formData.assistant_email || null,
-      assistantPhone: formData.assistant_phone || null,
+      assistantName: toNullIfEmpty(formData.assistant_name),
+      assistantTitle: toNullIfEmpty(formData.assistant_title),
+      assistantEmail: toNullIfEmpty(formData.assistant_email),
+      assistantPhone: toNullIfEmpty(formData.assistant_phone),
 
       // Guest Information
-      guestName: formData.guest_name || null,
-      guestRelation: formData.guest_relation || null,
-      guestEmail: formData.guest_email || null,
+      guestName: toNullIfEmpty(formData.guest_name),
+      guestRelation: toNullIfEmpty(formData.guest_relation),
+      guestEmail: toNullIfEmpty(formData.guest_email),
 
       // Step 3: Event Details (arrays stored as JSONB)
-      dietaryRestrictions: formData.dietary_restrictions || null,
-      jacketSize: formData.jacket_size || null,
+      dietaryRestrictions: toNullIfEmpty(formData.dietary_restrictions),
+      jacketSize: toNullIfEmpty(formData.jacket_size),
       accommodations: Array.isArray(formData.accommodations) && formData.accommodations.length > 0
         ? formData.accommodations
         : null,
@@ -55,8 +61,8 @@ export async function POST(request: NextRequest) {
         : null,
 
       // Guest Event Details
-      guestDietaryRestrictions: formData.guest_dietary_restrictions || null,
-      guestJacketSize: formData.guest_jacket_size || null,
+      guestDietaryRestrictions: toNullIfEmpty(formData.guest_dietary_restrictions),
+      guestJacketSize: toNullIfEmpty(formData.guest_jacket_size),
       guestAccommodations: Array.isArray(formData.guest_accommodations) && formData.guest_accommodations.length > 0
         ? formData.guest_accommodations
         : null,
