@@ -7,8 +7,8 @@ export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: true,
-  perspective: 'published',
+  useCdn: process.env.NODE_ENV !== 'development', // Disable CDN in development to avoid cache issues with drafts
+  perspective: process.env.NODE_ENV === 'development' ? 'drafts' : 'published',
   token, // Required if you have a private dataset
   stega: {
     studioUrl,

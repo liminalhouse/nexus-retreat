@@ -52,9 +52,3 @@ export interface FormConfig {
   successMessage?: string
   submitEndpoint?: string
 }
-
-// For backward compatibility with registration form
-export interface RegistrationFormConfig extends FormConfig {
-  eventDate?: string
-  backToHomeText?: string
-}

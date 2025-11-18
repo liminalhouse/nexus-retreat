@@ -107,8 +107,12 @@ export default function Form({config, showLogo = true, showProgress = true}: For
           </div>
         )}
 
-        {config.title && <h1 className="text-2xl font-bold text-gray-900 mb-2 text-center">{config.title}</h1>}
-        {config.description && <p className="text-gray-600 text-center mb-6">{config.description}</p>}
+        {config.title && (
+          <h1 className="text-2xl font-bold text-gray-900 mb-2 text-center">{config.title}</h1>
+        )}
+        {config.description && (
+          <p className="text-gray-600 text-center mb-6">{config.description}</p>
+        )}
 
         {/* Progress Bar */}
         {showProgress && totalSteps > 1 && (
@@ -164,7 +168,7 @@ export default function Form({config, showLogo = true, showProgress = true}: For
 
           {/* Navigation Buttons */}
           <div className="flex justify-between mt-8">
-            {totalSteps > 1 ? (
+            {totalSteps > 1 && currentStep > 0 ? (
               <button
                 type="button"
                 onClick={handleBack}

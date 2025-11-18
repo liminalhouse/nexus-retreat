@@ -4,7 +4,6 @@ import {post} from './documents/post'
 import {callToAction} from './objects/callToAction'
 import {infoSection} from './objects/infoSection'
 import {settings} from './singletons/settings'
-import {registrationForm} from './singletons/registrationForm'
 import {link} from './objects/link'
 import {blockContent} from './objects/blockContent'
 import {hero} from './objects/hero'
@@ -17,7 +16,6 @@ import {form} from './objects/form'
 export const schemaTypes = [
   // Singletons
   settings,
-  registrationForm,
   // Documents
   page,
   post,
