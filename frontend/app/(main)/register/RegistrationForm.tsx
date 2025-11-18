@@ -22,7 +22,7 @@ export default function RegistrationForm({config}: RegistrationFormProps) {
     config.formBuilder?.step2,
     config.formBuilder?.step3,
   ].filter(Boolean)
-  const totalSteps = 3
+  const totalSteps = steps.length
   const progress = ((currentStep + 1) / totalSteps) * 100
 
   const handleNext = () => {
@@ -51,7 +51,6 @@ export default function RegistrationForm({config}: RegistrationFormProps) {
     setIsSubmitting(true)
 
     try {
-      // TODO: Replace with your actual API endpoint
       const response = await fetch('/api/registration', {
         method: 'POST',
         headers: {
@@ -64,9 +63,12 @@ export default function RegistrationForm({config}: RegistrationFormProps) {
         setIsSubmitted(true)
         window.scrollTo({top: 0, behavior: 'smooth'})
       } else {
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Registration failed:', errorData)
         alert('There was an error submitting your registration. Please try again.')
       }
     } catch (error) {
+      console.error('Registration error:', error)
       alert('There was an error submitting your registration. Please try again.')
     } finally {
       setIsSubmitting(false)
