@@ -50,28 +50,35 @@ export async function POST(request: NextRequest) {
       // Step 3: Event Details (arrays stored as JSONB)
       dietaryRestrictions: toNullIfEmpty(formData.dietary_restrictions),
       jacketSize: toNullIfEmpty(formData.jacket_size),
-      accommodations: Array.isArray(formData.accommodations) && formData.accommodations.length > 0
-        ? formData.accommodations
-        : null,
-      dinnerAttendance: Array.isArray(formData.dinner_attendance) && formData.dinner_attendance.length > 0
-        ? formData.dinner_attendance
-        : null,
-      activities: Array.isArray(formData.activities) && formData.activities.length > 0
-        ? formData.activities
-        : null,
+      accommodations:
+        Array.isArray(formData.accommodations) && formData.accommodations.length > 0
+          ? formData.accommodations
+          : null,
+      dinnerAttendance:
+        Array.isArray(formData.dinner_attendance) && formData.dinner_attendance.length > 0
+          ? formData.dinner_attendance
+          : null,
+      activities:
+        Array.isArray(formData.activities) && formData.activities.length > 0
+          ? formData.activities
+          : null,
 
       // Guest Event Details
       guestDietaryRestrictions: toNullIfEmpty(formData.guest_dietary_restrictions),
       guestJacketSize: toNullIfEmpty(formData.guest_jacket_size),
-      guestAccommodations: Array.isArray(formData.guest_accommodations) && formData.guest_accommodations.length > 0
-        ? formData.guest_accommodations
-        : null,
-      guestDinnerAttendance: Array.isArray(formData.guest_dinner_attendance) && formData.guest_dinner_attendance.length > 0
-        ? formData.guest_dinner_attendance
-        : null,
-      guestActivities: Array.isArray(formData.guest_activities) && formData.guest_activities.length > 0
-        ? formData.guest_activities
-        : null,
+      guestAccommodations:
+        Array.isArray(formData.guest_accommodations) && formData.guest_accommodations.length > 0
+          ? formData.guest_accommodations
+          : null,
+      guestDinnerAttendance:
+        Array.isArray(formData.guest_dinner_attendance) &&
+        formData.guest_dinner_attendance.length > 0
+          ? formData.guest_dinner_attendance
+          : null,
+      guestActivities:
+        Array.isArray(formData.guest_activities) && formData.guest_activities.length > 0
+          ? formData.guest_activities
+          : null,
     }
 
     // Insert into database using Drizzle ORM
@@ -83,41 +90,47 @@ export async function POST(request: NextRequest) {
         message: 'Registration submitted successfully',
         data: result[0],
       },
-      {status: 201}
+      {status: 201},
     )
   } catch (error: any) {
     console.error('Registration error:', error)
 
+    // Drizzle ORM wraps PostgreSQL errors in a cause property
+    const pgError = error.cause || error
+
     // Handle unique constraint violation (duplicate email)
-    if (error.code === '23505') {
+    if (pgError.code === '23505') {
+      const constraintName = pgError.constraint_name || pgError.constraint
+      const isDuplicateEmail = constraintName === 'registrations_email_unique'
+
       return NextResponse.json(
         {
           success: false,
-          error: 'This email has already been registered',
+          error: isDuplicateEmail
+            ? 'This email has already been registered. Please contact us at nexus.retreat.boca@gmail.com for assistance.'
+            : 'This information has already been registered. Please contact us at nexus.retreat.boca@gmail.com for assistance.',
         },
-        {status: 400}
+        {status: 400},
       )
     }
 
     // Handle not null constraint violations
-    if (error.code === '23502') {
+    if (pgError.code === '23502') {
       return NextResponse.json(
         {
           success: false,
           error: 'Missing required fields',
-          details: error.message,
         },
-        {status: 400}
+        {status: 400},
       )
     }
 
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to submit registration',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+        error: 'Failed to submit registration. Please try again.',
       },
-      {status: 500}
+      {status: 500},
     )
   }
 }

@@ -19,6 +19,7 @@ export default function Form({config, showLogo = true, showProgress = true}: For
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({})
   const [allStepErrors, setAllStepErrors] = useState<Record<string, string>>({})
+  const [serverError, setServerError] = useState<string | null>(null)
 
   // Get the number of steps from config (default to 1)
   const numberOfSteps = config.numberOfSteps || 1
@@ -175,6 +176,11 @@ export default function Form({config, showLogo = true, showProgress = true}: For
       [name]: value,
     }))
 
+    // Clear server error when user starts typing
+    if (serverError) {
+      setServerError(null)
+    }
+
     // Clear error for this field when user starts typing
     if (fieldErrors[name]) {
       setFieldErrors((prev) => {
@@ -212,6 +218,9 @@ export default function Form({config, showLogo = true, showProgress = true}: For
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Clear any previous server errors
+    setServerError(null)
+
     // Prevent submission if there are validation errors
     if (Object.keys(allStepErrors).length > 0) {
       return
@@ -224,61 +233,66 @@ export default function Form({config, showLogo = true, showProgress = true}: For
 
     setIsSubmitting(true)
 
-    // Fake submission - simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Send confirmation email
     try {
-      console.log('Sending confirmation email...')
-      const response = await fetch('/api/send-registration-email', {
+      // Submit to database first
+      const response = await fetch(config.submitEndpoint || '/api/registration', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
       })
-      const result = await response.json()
-      console.log('Email API response:', result)
 
       if (!response.ok) {
-        console.error('Email API error:', result)
-      } else {
-        console.log('Email sent successfully')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Form submission failed:', errorData)
+
+        // Display specific error message from the server
+        const errorMessage =
+          errorData.error ||
+          errorData.details ||
+          'There was an error submitting your registration. Please try again.'
+        setServerError(errorMessage)
+
+        setIsSubmitting(false)
+        window.scrollTo({top: 0, behavior: 'smooth'})
+        return
       }
+
+      // If database submission successful, send confirmation email
+      try {
+        console.log('Sending confirmation email...')
+        const emailResponse = await fetch('/api/send-registration-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        })
+        const emailResult = await emailResponse.json()
+        console.log('Email API response:', emailResult)
+
+        if (!emailResponse.ok) {
+          console.error('Email API error:', emailResult)
+          // Email failed but registration succeeded - show warning
+          console.warn('Registration saved but confirmation email failed to send')
+        } else {
+          console.log('Email sent successfully')
+        }
+      } catch (error) {
+        console.error('Failed to send confirmation email:', error)
+        // Don't block submission if email fails - registration was successful
+      }
+
+      // Mark as submitted
+      setIsSubmitted(true)
+      window.scrollTo({top: 0, behavior: 'smooth'})
     } catch (error) {
-      console.error('Failed to send confirmation email:', error)
-      // Don't block submission if email fails
+      console.error('Form submission error:', error)
+      alert('There was an error submitting your registration. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
-
-    // Mark as submitted
-    setIsSubmitted(true)
-    window.scrollTo({top: 0, behavior: 'smooth'})
-    setIsSubmitting(false)
-
-    // TODO: Re-enable actual submission when Supabase is ready
-    // try {
-    //   const response = await fetch(config.submitEndpoint || '/api/form-submission', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(formData),
-    //   })
-
-    //   if (response.ok) {
-    //     setIsSubmitted(true)
-    //     window.scrollTo({top: 0, behavior: 'smooth'})
-    //   } else {
-    //     const errorData = await response.json().catch(() => ({}))
-    //     console.error('Form submission failed:', errorData)
-    //     alert('There was an error submitting your form. Please try again.')
-    //   }
-    // } catch (error) {
-    //   console.error('Form submission error:', error)
-    //   alert('There was an error submitting your form. Please try again.')
-    // } finally {
-    //   setIsSubmitting(false)
-    // }
   }
 
   if (isSubmitted) {
@@ -305,11 +319,15 @@ export default function Form({config, showLogo = true, showProgress = true}: For
               <div className="bg-gray-50 rounded-lg p-4 space-y-2">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">First Name:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.first_name || '-'}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.first_name || '-'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Last Name:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.last_name || '-'}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.last_name || '-'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Email:</span>
@@ -317,7 +335,9 @@ export default function Form({config, showLogo = true, showProgress = true}: For
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Phone:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.mobile_phone || '-'}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.mobile_phone || '-'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Title:</span>
@@ -325,7 +345,9 @@ export default function Form({config, showLogo = true, showProgress = true}: For
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Organization:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.organization || '-'}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.organization || '-'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -356,7 +378,9 @@ export default function Form({config, showLogo = true, showProgress = true}: For
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Country:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.country || '-'}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.country || '-'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -398,19 +422,27 @@ export default function Form({config, showLogo = true, showProgress = true}: For
               <div className="bg-gray-50 rounded-lg p-4 space-y-2">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Name:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.assistant_name || '-'}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.assistant_name || '-'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Title:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.assistant_title || '-'}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.assistant_title || '-'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Email:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.assistant_email || '-'}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.assistant_email || '-'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Phone:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.assistant_phone || '-'}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.assistant_phone || '-'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -421,15 +453,21 @@ export default function Form({config, showLogo = true, showProgress = true}: For
               <div className="bg-gray-50 rounded-lg p-4 space-y-2">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Guest Name:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.guest_name || '-'}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.guest_name || '-'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Relation:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.guest_relation || '-'}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.guest_relation || '-'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Guest Email:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.guest_email || '-'}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.guest_email || '-'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -446,7 +484,9 @@ export default function Form({config, showLogo = true, showProgress = true}: For
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Jacket Size:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.jacket_size || '-'}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formData.jacket_size || '-'}
+                  </span>
                 </div>
                 <div>
                   <span className="text-sm text-gray-600 block mb-1">Accommodations:</span>
@@ -517,7 +557,8 @@ export default function Form({config, showLogo = true, showProgress = true}: For
                 </div>
                 <div>
                   <span className="text-sm text-gray-600 block mb-1">Guest Dinner Attendance:</span>
-                  {formData.guest_dinner_attendance && formData.guest_dinner_attendance.length > 0 ? (
+                  {formData.guest_dinner_attendance &&
+                  formData.guest_dinner_attendance.length > 0 ? (
                     <ul className="text-sm font-medium text-gray-900 list-disc list-inside">
                       {formData.guest_dinner_attendance.map((dinner: string, idx: number) => (
                         <li key={idx}>{dinner.replace('_', ' ')}</li>
@@ -613,6 +654,31 @@ export default function Form({config, showLogo = true, showProgress = true}: For
 
         {/* Form */}
         <form onSubmit={handleSubmit}>
+          {/* Server Error Message */}
+          {serverError && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-5 w-5 text-red-400"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-semibold text-red-800">{serverError}</h3>
+                </div>
+              </div>
+            </div>
+          )}
+
           {steps[currentStep] && (
             <FormStepRenderer
               step={steps[currentStep]}
