@@ -1,6 +1,6 @@
 'use client'
 
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import NexusLogo from '@/app/components/NexusLogo'
 import FormStepRenderer from './FormStepRenderer'
 import type {FormConfig} from './types'
@@ -134,15 +134,23 @@ export default function Form({config, showLogo = true, showProgress = true}: For
     return null
   }
 
-  const handleNext = () => {
-    // Validate all steps when moving to last step or already on last step
-    const isMovingToLastStep = currentStep === totalSteps - 2
-    const isOnLastStep = currentStep === totalSteps - 1
-
-    if (isMovingToLastStep || isOnLastStep) {
+  // Validate all steps whenever we're on the last step
+  useEffect(() => {
+    if (currentStep === totalSteps - 1) {
       const errors = validateAllSteps()
       setAllStepErrors(errors)
-      setFieldErrors(errors) // Also set individual field errors so they show on inputs
+      setFieldErrors(errors)
+    }
+  }, [currentStep, totalSteps])
+
+  const handleNext = () => {
+    // Validate all steps when moving to last step
+    const isMovingToLastStep = currentStep === totalSteps - 2
+
+    if (isMovingToLastStep) {
+      const errors = validateAllSteps()
+      setAllStepErrors(errors)
+      setFieldErrors(errors)
     }
 
     // Allow progression to next step

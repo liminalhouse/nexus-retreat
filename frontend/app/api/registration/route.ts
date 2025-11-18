@@ -44,16 +44,28 @@ export async function POST(request: NextRequest) {
       // Step 3: Event Details (arrays stored as JSONB)
       dietaryRestrictions: formData.dietary_restrictions || null,
       jacketSize: formData.jacket_size || null,
-      accommodations: formData.accommodations || null,
-      dinnerAttendance: formData.dinner_attendance || null,
-      activities: formData.activities || null,
+      accommodations: Array.isArray(formData.accommodations) && formData.accommodations.length > 0
+        ? formData.accommodations
+        : null,
+      dinnerAttendance: Array.isArray(formData.dinner_attendance) && formData.dinner_attendance.length > 0
+        ? formData.dinner_attendance
+        : null,
+      activities: Array.isArray(formData.activities) && formData.activities.length > 0
+        ? formData.activities
+        : null,
 
       // Guest Event Details
       guestDietaryRestrictions: formData.guest_dietary_restrictions || null,
       guestJacketSize: formData.guest_jacket_size || null,
-      guestAccommodations: formData.guest_accommodations || null,
-      guestDinnerAttendance: formData.guest_dinner_attendance || null,
-      guestActivities: formData.guest_activities || null,
+      guestAccommodations: Array.isArray(formData.guest_accommodations) && formData.guest_accommodations.length > 0
+        ? formData.guest_accommodations
+        : null,
+      guestDinnerAttendance: Array.isArray(formData.guest_dinner_attendance) && formData.guest_dinner_attendance.length > 0
+        ? formData.guest_dinner_attendance
+        : null,
+      guestActivities: Array.isArray(formData.guest_activities) && formData.guest_activities.length > 0
+        ? formData.guest_activities
+        : null,
     }
 
     // Insert into database using Drizzle ORM
