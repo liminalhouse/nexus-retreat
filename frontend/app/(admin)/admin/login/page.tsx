@@ -1,44 +1,33 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 export default function AdminSignIn() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const router = useRouter()
   const searchParams = useSearchParams()
   const from = searchParams.get('from') || '/admin'
 
-  // Handle OAuth callback
   useEffect(() => {
-    // Sanity OAuth can return params in either hash or query string
     const hash = window.location.hash
     const search = window.location.search
-    const searchParams = new URLSearchParams(search)
+    const params = new URLSearchParams(search)
 
-    // Check for session ID (sid) in query params - this is what Sanity returns
-    const sid = searchParams.get('sid')
-    const fetchUrl = searchParams.get('url')
-
-    console.log('OAuth callback received:', { sid, fetchUrl, hash, search })
+    const sid = params.get('sid')
+    const fetchUrl = params.get('url')
 
     if (sid && fetchUrl) {
-      // Show loading immediately when we detect OAuth callback
       setLoading(true)
-      // Sanity's OAuth flow: fetch token from the provided URL
       handleSanitySessionCallback(fetchUrl)
       return
     }
 
-    // Fallback: check for access_token in hash (older flow)
     if (hash) {
-      const params = new URLSearchParams(hash.substring(1))
-      const accessToken = params.get('access_token')
-      const error = params.get('error')
-      const errorDescription = params.get('error_description')
-
-      console.log('Hash callback:', { hasToken: !!accessToken, error, errorDescription })
+      const hashParams = new URLSearchParams(hash.substring(1))
+      const accessToken = hashParams.get('access_token')
+      const error = hashParams.get('error')
+      const errorDescription = hashParams.get('error_description')
 
       if (error) {
         setError(errorDescription || error || 'Authentication failed')
@@ -54,31 +43,16 @@ export default function AdminSignIn() {
   }, [])
 
   const handleSanitySessionCallback = async (fetchUrl: string) => {
-    console.log('Fetching Sanity session token from:', fetchUrl)
-
     try {
-      // Fetch the token from Sanity's fetch URL
-      const tokenResponse = await fetch(fetchUrl, {
-        credentials: 'include'
-      })
+      const response = await fetch(fetchUrl, { credentials: 'include' })
+      if (!response.ok) throw new Error('Failed to fetch session token')
 
-      if (!tokenResponse.ok) {
-        throw new Error('Failed to fetch session token')
-      }
+      const data = await response.json()
+      const token = data.token || data.access_token
+      if (!token) throw new Error('No token in response')
 
-      const tokenData = await tokenResponse.json()
-      console.log('Sanity session response:', tokenData)
-
-      const token = tokenData.token || tokenData.access_token
-
-      if (!token) {
-        throw new Error('No token in response')
-      }
-
-      // Now verify with our backend (this will set loading state)
       await handleOAuthCallback(token)
     } catch (err) {
-      console.error('Session callback error:', err)
       setError('Failed to complete authentication. Please try again.')
       setLoading(false)
     }
@@ -86,31 +60,23 @@ export default function AdminSignIn() {
 
   const handleOAuthCallback = async (token: string) => {
     setLoading(true)
-    console.log('Verifying token with backend...')
 
     try {
       const response = await fetch('/api/auth/sanity/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token }),
       })
 
       const data = await response.json()
-      console.log('Backend response:', { ok: response.ok, status: response.status, data })
 
       if (response.ok) {
-        console.log('Login successful, redirecting to:', from)
-        // Use window.location for hard navigation to ensure cookies are sent
-        // This is more reliable than router.push() for authentication redirects
         window.location.href = from
       } else {
         setError(data.error || 'Authentication failed')
         setLoading(false)
       }
     } catch (err) {
-      console.error('Login error:', err)
       setError('An error occurred. Please try again.')
       setLoading(false)
     }
@@ -127,9 +93,6 @@ export default function AdminSignIn() {
     }
 
     const oauthUrl = `https://api.sanity.io/v2021-06-07/auth/login/google?origin=${encodeURIComponent(redirectUri)}&projectId=${projectId}&type=token`
-    console.log('Redirecting to Sanity OAuth:', oauthUrl)
-
-    // Redirect to Sanity OAuth (page will unload, so no need for loading state)
     window.location.href = oauthUrl
   }
 

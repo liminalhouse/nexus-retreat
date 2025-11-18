@@ -10,32 +10,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Token is required' }, { status: 400 })
     }
 
-    // Get user info (this also validates the token)
-    // No need to call verifySanityToken separately - if getSanityUserInfo succeeds, token is valid
     const userInfo = await getSanityUserInfo(token)
     if (!userInfo) {
-      return NextResponse.json({ error: 'Invalid token or could not get user info' }, { status: 401 })
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
 
-    // Set auth cookies
     const cookieStore = await cookies()
-    cookieStore.set('auth-token', 'authenticated', {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'lax' as const,
       path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    })
+      maxAge: 60 * 60 * 24 * 7,
+    }
 
-    cookieStore.set('sanity-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    })
-
-    console.log('Cookies set successfully for user:', userInfo.email)
+    cookieStore.set('auth-token', 'authenticated', cookieOptions)
+    cookieStore.set('sanity-token', token, cookieOptions)
 
     return NextResponse.json({
       success: true,

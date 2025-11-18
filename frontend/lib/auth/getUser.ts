@@ -3,12 +3,9 @@ import { getSanityUserInfo } from '@/lib/sanity/auth'
 
 export async function getUser() {
   const cookieStore = await cookies()
-  const sanityToken = cookieStore.get('sanity-token')
+  const token = cookieStore.get('sanity-token')?.value
 
-  if (!sanityToken?.value) {
-    return null
-  }
+  if (!token) return null
 
-  const userInfo = await getSanityUserInfo(sanityToken.value)
-  return userInfo
+  return await getSanityUserInfo(token)
 }
