@@ -219,7 +219,7 @@ export default function RegistrationsTable({registrations}: {registrations: Regi
 
   return (
     <>
-      <div className="container mb-4">
+      <div className="container ml-6 mb-4">
         <input
           type="text"
           placeholder="Search by name, email, organization, or phone..."
@@ -228,8 +228,7 @@ export default function RegistrationsTable({registrations}: {registrations: Regi
           className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
         />
       </div>
-
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-sm shadow overflow-hidden ml-6">
         <div className="overflow-x-auto">
           <div className="min-w-full">
             {/* Header */}
@@ -261,7 +260,7 @@ export default function RegistrationsTable({registrations}: {registrations: Regi
                   {columns.map((column) => (
                     <div
                       key={column.key}
-                      className="bg-white group-hover:bg-gray-50 px-6 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto"
+                      className="bg-white group-hover:bg-pink-50 px-6 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto"
                     >
                       {column.render(registration)}
                     </div>
