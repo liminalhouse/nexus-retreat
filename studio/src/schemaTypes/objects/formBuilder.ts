@@ -109,21 +109,6 @@ export const formField = defineType({
           return true
         }),
     }),
-    defineField({
-      name: 'width',
-      title: 'Width',
-      type: 'string',
-      description: 'Width of the field in the layout',
-      options: {
-        list: [
-          {title: 'Full Width', value: 'full'},
-          {title: 'Half Width', value: 'half'},
-          {title: 'One Third', value: 'third'},
-          {title: 'Two Thirds', value: 'twoThirds'},
-        ],
-      },
-      initialValue: 'full',
-    }),
   ],
   preview: {
     select: {

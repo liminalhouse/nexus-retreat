@@ -3,6 +3,7 @@ import React from 'react'
 import Cta from '@/app/components/Cta'
 import Info from '@/app/components/InfoSection'
 import Faq from '@/app/components/Faq'
+import FormBlock from '@/app/components/FormBlock'
 import {dataAttr} from '@/sanity/lib/utils'
 import Hero from './Hero'
 
@@ -27,6 +28,7 @@ const Blocks: BlocksType = {
   infoSection: Info,
   faq: Faq,
   hero: Hero,
+  form: FormBlock,
 }
 
 /**

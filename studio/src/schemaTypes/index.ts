@@ -10,6 +10,7 @@ import {blockContent} from './objects/blockContent'
 import {hero} from './objects/hero'
 import {faq, faqItem} from './objects/faq'
 import {formBuilder, fieldGroup, formField} from './objects/formBuilder'
+import {form} from './objects/form'
 
 // Export an array of all the schema types.  This is used in the Sanity Studio configuration. https://www.sanity.io/docs/schema-types
 
@@ -32,4 +33,5 @@ export const schemaTypes = [
   formBuilder,
   fieldGroup,
   formField,
+  form,
 ]

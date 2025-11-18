@@ -31,19 +31,10 @@ export default function FormStepRenderer({step, formData, onFieldChange}: FormSt
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {group?.fields?.map((field, fieldIndex) => {
               const isFullWidth =
-                field?.width === 'full' ||
-                field?.fieldType === 'textarea' ||
-                field?.fieldType === 'checkboxGroup'
+                field?.fieldType === 'textarea' || field?.fieldType === 'checkboxGroup'
 
               return (
-                <div
-                  key={fieldIndex}
-                  className={`
-                    ${isFullWidth ? 'md:col-span-2' : ''}
-                    ${field?.width === 'twoThirds' ? 'md:col-span-2' : ''}
-                    ${field?.width === 'third' ? 'md:col-span-1' : ''}
-                  `}
-                >
+                <div key={fieldIndex} className={isFullWidth ? 'md:col-span-2' : ''}>
                   <FormFieldRenderer
                     field={field}
                     value={formData[field?.name || '']}

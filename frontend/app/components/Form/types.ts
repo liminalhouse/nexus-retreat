@@ -23,7 +23,6 @@ export interface FormField {
   helperText?: string
   required?: boolean
   options?: FormFieldOption[]
-  width?: 'full' | 'half' | 'third' | 'twoThirds'
 }
 
 export interface FieldGroup {
@@ -43,15 +42,22 @@ export interface FormBuilder {
   step3?: FormStep
 }
 
-export interface RegistrationFormConfig {
+export interface FormConfig {
   _id?: string
+  _type?: string
   title?: string
   subtitle?: string
-  eventDate?: string
+  description?: string
   formBuilder?: FormBuilder
   submitButtonText?: string
   nextButtonText?: string
   backButtonText?: string
-  backToHomeText?: string
   successMessage?: string
+  submitEndpoint?: string
+}
+
+// For backward compatibility with registration form
+export interface RegistrationFormConfig extends FormConfig {
+  eventDate?: string
+  backToHomeText?: string
 }

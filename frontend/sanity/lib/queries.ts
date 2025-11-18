@@ -85,6 +85,75 @@ export const getPageQuery = defineQuery(`
       },
        _type == "faq" => {
         ...,
+      },
+      _type == "form" => {
+        title,
+        subtitle,
+        description,
+        formBuilder {
+          step1 {
+            title,
+            fieldGroups[] {
+              groupTitle,
+              groupDescription,
+              fields[] {
+                fieldType,
+                label,
+                name,
+                placeholder,
+                helperText,
+                required,
+                options[] {
+                  label,
+                  value
+                }
+              }
+            }
+          },
+          step2 {
+            title,
+            fieldGroups[] {
+              groupTitle,
+              groupDescription,
+              fields[] {
+                fieldType,
+                label,
+                name,
+                placeholder,
+                helperText,
+                required,
+                options[] {
+                  label,
+                  value
+                }
+              }
+            }
+          },
+          step3 {
+            title,
+            fieldGroups[] {
+              groupTitle,
+              groupDescription,
+              fields[] {
+                fieldType,
+                label,
+                name,
+                placeholder,
+                helperText,
+                required,
+                options[] {
+                  label,
+                  value
+                }
+              }
+            }
+          }
+        },
+        submitButtonText,
+        nextButtonText,
+        backButtonText,
+        successMessage,
+        submitEndpoint
       }
     },
   }
@@ -155,8 +224,7 @@ export const registrationFormQuery = defineQuery(`
             options[] {
               label,
               value
-            },
-            width
+            }
           }
         }
       },
@@ -175,8 +243,7 @@ export const registrationFormQuery = defineQuery(`
             options[] {
               label,
               value
-            },
-            width
+            }
           }
         }
       },
@@ -195,8 +262,7 @@ export const registrationFormQuery = defineQuery(`
             options[] {
               label,
               value
-            },
-            width
+            }
           }
         }
       }
