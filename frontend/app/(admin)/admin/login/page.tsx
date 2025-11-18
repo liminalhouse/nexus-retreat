@@ -40,6 +40,7 @@ export default function AdminSignIn() {
         handleOAuthCallback(accessToken)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleSanitySessionCallback = async (fetchUrl: string) => {
@@ -151,6 +152,7 @@ export default function AdminSignIn() {
           </button>
 
           <div className="mt-6 text-center">
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a href="/" className="text-sm text-gray-600 hover:text-gray-900">
               ← Back to main site
             </a>
@@ -160,7 +162,7 @@ export default function AdminSignIn() {
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <p className="text-xs text-blue-800">
             <strong>Note:</strong> You must have access to the Sanity project to sign in.
-            If you don't have access, contact your project administrator.
+            If you don&apos;t have access, contact your project administrator.
           </p>
         </div>
       </div>

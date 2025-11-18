@@ -1,6 +1,7 @@
 'use client'
 
 import {useState, useRef, useEffect} from 'react'
+import Image from 'next/image'
 
 type User = {
   id: string
@@ -32,6 +33,7 @@ export default function UserMenu({user}: {user: User | null}) {
 
   if (!user) {
     return (
+      // eslint-disable-next-line @next/next/no-html-link-for-pages
       <a href="/admin/login" className="text-sm text-gray-600 hover:text-gray-900">
         Sign In
       </a>
@@ -55,7 +57,13 @@ export default function UserMenu({user}: {user: User | null}) {
         className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
       >
         {user.profileImage ? (
-          <img src={user.profileImage} alt={user.name} className="w-8 h-8 rounded-full" />
+          <Image
+            src={user.profileImage}
+            alt={user.name}
+            width={32}
+            height={32}
+            className="rounded-full"
+          />
         ) : (
           <div className="w-8 h-8 rounded-full bg-nexus-coral text-white flex items-center justify-center text-sm font-semibold">
             {getInitials(user.name)}
