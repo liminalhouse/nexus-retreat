@@ -28,8 +28,15 @@ export default function UserMenu({ user }: { user: User | null }) {
   }, [])
 
   const handleLogout = async () => {
-    await fetch('/api/auth/sanity/logout', { method: 'POST' })
-    router.push('/admin/login')
+    try {
+      await fetch('/api/auth/sanity/logout', { method: 'POST' })
+      // Use window.location for hard navigation to ensure cookies are cleared
+      window.location.href = '/admin/login'
+    } catch (error) {
+      console.error('Logout error:', error)
+      // Still redirect even if logout fails
+      window.location.href = '/admin/login'
+    }
   }
 
   // Show sign in link if no user

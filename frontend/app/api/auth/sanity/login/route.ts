@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifySanityToken, getSanityUserInfo } from '@/lib/sanity/auth'
+import { getSanityUserInfo } from '@/lib/sanity/auth'
 import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
@@ -10,16 +10,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Token is required' }, { status: 400 })
     }
 
-    // Verify the token is valid
-    const isValid = await verifySanityToken(token)
-    if (!isValid) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-    }
-
-    // Get user info
+    // Get user info (this also validates the token)
+    // No need to call verifySanityToken separately - if getSanityUserInfo succeeds, token is valid
     const userInfo = await getSanityUserInfo(token)
     if (!userInfo) {
-      return NextResponse.json({ error: 'Could not get user info' }, { status: 401 })
+      return NextResponse.json({ error: 'Invalid token or could not get user info' }, { status: 401 })
     }
 
     // Set auth cookies
@@ -28,6 +23,7 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
+      path: '/',
       maxAge: 60 * 60 * 24 * 7, // 7 days
     })
 
@@ -35,8 +31,11 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
+      path: '/',
       maxAge: 60 * 60 * 24 * 7, // 7 days
     })
+
+    console.log('Cookies set successfully for user:', userInfo.email)
 
     return NextResponse.json({
       success: true,

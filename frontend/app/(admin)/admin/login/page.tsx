@@ -12,19 +12,82 @@ export default function AdminSignIn() {
 
   // Handle OAuth callback
   useEffect(() => {
+    // Sanity OAuth can return params in either hash or query string
     const hash = window.location.hash
+    const search = window.location.search
+    const searchParams = new URLSearchParams(search)
+
+    // Check for session ID (sid) in query params - this is what Sanity returns
+    const sid = searchParams.get('sid')
+    const fetchUrl = searchParams.get('url')
+
+    console.log('OAuth callback received:', { sid, fetchUrl, hash, search })
+
+    if (sid && fetchUrl) {
+      // Show loading immediately when we detect OAuth callback
+      setLoading(true)
+      // Sanity's OAuth flow: fetch token from the provided URL
+      handleSanitySessionCallback(fetchUrl)
+      return
+    }
+
+    // Fallback: check for access_token in hash (older flow)
     if (hash) {
       const params = new URLSearchParams(hash.substring(1))
       const accessToken = params.get('access_token')
+      const error = params.get('error')
+      const errorDescription = params.get('error_description')
+
+      console.log('Hash callback:', { hasToken: !!accessToken, error, errorDescription })
+
+      if (error) {
+        setError(errorDescription || error || 'Authentication failed')
+        window.history.replaceState(null, '', window.location.pathname)
+        return
+      }
 
       if (accessToken) {
+        setLoading(true)
         handleOAuthCallback(accessToken)
       }
     }
   }, [])
 
+  const handleSanitySessionCallback = async (fetchUrl: string) => {
+    console.log('Fetching Sanity session token from:', fetchUrl)
+
+    try {
+      // Fetch the token from Sanity's fetch URL
+      const tokenResponse = await fetch(fetchUrl, {
+        credentials: 'include'
+      })
+
+      if (!tokenResponse.ok) {
+        throw new Error('Failed to fetch session token')
+      }
+
+      const tokenData = await tokenResponse.json()
+      console.log('Sanity session response:', tokenData)
+
+      const token = tokenData.token || tokenData.access_token
+
+      if (!token) {
+        throw new Error('No token in response')
+      }
+
+      // Now verify with our backend (this will set loading state)
+      await handleOAuthCallback(token)
+    } catch (err) {
+      console.error('Session callback error:', err)
+      setError('Failed to complete authentication. Please try again.')
+      setLoading(false)
+    }
+  }
+
   const handleOAuthCallback = async (token: string) => {
     setLoading(true)
+    console.log('Verifying token with backend...')
+
     try {
       const response = await fetch('/api/auth/sanity/login', {
         method: 'POST',
@@ -34,26 +97,40 @@ export default function AdminSignIn() {
         body: JSON.stringify({ token }),
       })
 
+      const data = await response.json()
+      console.log('Backend response:', { ok: response.ok, status: response.status, data })
+
       if (response.ok) {
-        router.push(from)
+        console.log('Login successful, redirecting to:', from)
+        // Use window.location for hard navigation to ensure cookies are sent
+        // This is more reliable than router.push() for authentication redirects
+        window.location.href = from
       } else {
-        const data = await response.json()
         setError(data.error || 'Authentication failed')
         setLoading(false)
       }
     } catch (err) {
+      console.error('Login error:', err)
       setError('An error occurred. Please try again.')
       setLoading(false)
     }
   }
 
   const handleGoogleSignIn = () => {
-    setLoading(true)
+    setError('')
     const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
     const redirectUri = `${window.location.origin}/admin/login`
 
-    // Redirect to Sanity OAuth
-    window.location.href = `https://api.sanity.io/v2021-06-07/auth/login/google?origin=${encodeURIComponent(redirectUri)}&projectId=${projectId}&type=token`
+    if (!projectId) {
+      setError('Sanity project ID is not configured')
+      return
+    }
+
+    const oauthUrl = `https://api.sanity.io/v2021-06-07/auth/login/google?origin=${encodeURIComponent(redirectUri)}&projectId=${projectId}&type=token`
+    console.log('Redirecting to Sanity OAuth:', oauthUrl)
+
+    // Redirect to Sanity OAuth (page will unload, so no need for loading state)
+    window.location.href = oauthUrl
   }
 
   if (loading) {
