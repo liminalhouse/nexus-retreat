@@ -585,7 +585,7 @@ export type SettingsQueryResult = {
   footerCopyright: null
 } | null
 // Variable: getPageQuery
-// Query: *[_type == 'page' && (    (defined($slug) && slug.current == $slug) ||    (!defined($slug) && !defined(slug.current))  )][0]{    _id,    _type,    name,    slug,    bgColor,    heading,    subheading,    "pageBuilder": pageBuilder[]{      ...,      _type == "hero" => {        description[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }          }        },        eventDate,        eventLocation,        ctaText,        ctaLink,        backgroundImage      },      _type == "callToAction" => {          link {      ...,        _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }      },      },      _type == "infoSection" => {        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }          }        }      },       _type == "faq" => {        ...,      },      _type == "form" => {        title,        subtitle,        description,        numberOfSteps,        step1 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        step2 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        step3 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        submitButtonText,        nextButtonText,        backButtonText,        successMessage,        submitEndpoint      }    },  }
+// Query: *[_type == 'page' && (    (defined($slug) && slug.current == $slug) ||    (!defined($slug) && !defined(slug.current))  )][0]{    _id,    _type,    name,    slug,    bgColor,    heading,    subheading,    "pageBuilder": pageBuilder[]{      ...,      _type == "hero" => {        description[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current  }          }        },        eventDate,        eventLocation,        ctaText,        ctaLink,        backgroundImage      },      _type == "callToAction" => {          link {      ...,        _type == "link" => {    "page": page->slug.current  }      },      },      _type == "infoSection" => {        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current  }          }        }      },       _type == "faq" => {        ...,      },      _type == "form" => {        title,        subtitle,        description,        numberOfSteps,        step1 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        step2 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        step3 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        submitButtonText,        nextButtonText,        backButtonText,        successMessage,        submitEndpoint      }    },  }
 export type GetPageQueryResult = {
   _id: string
   _type: 'page'
@@ -606,7 +606,12 @@ export type GetPageQueryResult = {
           linkType?: 'href' | 'page' | 'post'
           href?: string
           page: string | null
-          post: string | null
+          post?: {
+            _ref: string
+            _type: 'reference'
+            _weak?: boolean
+            [internalGroqTypeReferenceTo]?: 'post'
+          }
           openInNewTab?: boolean
         } | null
       }
@@ -628,7 +633,12 @@ export type GetPageQueryResult = {
             linkType?: 'href' | 'page' | 'post'
             href?: string
             page: string | null
-            post: string | null
+            post?: {
+              _ref: string
+              _type: 'reference'
+              _weak?: boolean
+              [internalGroqTypeReferenceTo]?: 'post'
+            }
             openInNewTab?: boolean
             _type: 'link'
             _key: string
@@ -641,165 +651,11 @@ export type GetPageQueryResult = {
   > | null
 } | null
 // Variable: sitemapData
-// Query: *[_type == "page" || _type == "post" && defined(slug.current)] | order(_type asc) {    "slug": slug.current,    _type,    _updatedAt,  }
-export type SitemapDataResult = Array<
-  | {
-      slug: string
-      _type: 'page'
-      _updatedAt: string
-    }
-  | {
-      slug: string
-      _type: 'post'
-      _updatedAt: string
-    }
->
-// Variable: allPostsQuery
-// Query: *[_type == "post" && defined(slug.current)] | order(date desc, _updatedAt desc) {      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{firstName, lastName, picture},  }
-export type AllPostsQueryResult = Array<{
-  _id: string
-  status: 'draft' | 'published'
-  title: string
+// Query: *[_type == "page" && defined(slug.current)] | order(_type asc) {    "slug": slug.current,    _type,    _updatedAt,  }
+export type SitemapDataResult = Array<{
   slug: string
-  excerpt: string | null
-  coverImage: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  date: string
-  author: {
-    firstName: string
-    lastName: string
-    picture: {
-      asset?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-      }
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      alt?: string
-      _type: 'image'
-    }
-  } | null
-}>
-// Variable: morePostsQuery
-// Query: *[_type == "post" && _id != $skip && defined(slug.current)] | order(date desc, _updatedAt desc) [0...$limit] {      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{firstName, lastName, picture},  }
-export type MorePostsQueryResult = Array<{
-  _id: string
-  status: 'draft' | 'published'
-  title: string
-  slug: string
-  excerpt: string | null
-  coverImage: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  date: string
-  author: {
-    firstName: string
-    lastName: string
-    picture: {
-      asset?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-      }
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      alt?: string
-      _type: 'image'
-    }
-  } | null
-}>
-// Variable: postQuery
-// Query: *[_type == "post" && slug.current == $slug] [0] {    content[]{    ...,    markDefs[]{      ...,        _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }    }  },      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{firstName, lastName, picture},  }
-export type PostQueryResult = {
-  content: Array<{
-    children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
-    listItem?: 'bullet' | 'number'
-    markDefs: Array<{
-      linkType?: 'href' | 'page' | 'post'
-      href?: string
-      page: string | null
-      post: string | null
-      openInNewTab?: boolean
-      _type: 'link'
-      _key: string
-    }> | null
-    level?: number
-    _type: 'block'
-    _key: string
-  }> | null
-  _id: string
-  status: 'draft' | 'published'
-  title: string
-  slug: string
-  excerpt: string | null
-  coverImage: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  date: string
-  author: {
-    firstName: string
-    lastName: string
-    picture: {
-      asset?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-      }
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      alt?: string
-      _type: 'image'
-    }
-  } | null
-} | null
-// Variable: postPagesSlugs
-// Query: *[_type == "post" && defined(slug.current)]  {"slug": slug.current}
-export type PostPagesSlugsResult = Array<{
-  slug: string
+  _type: 'page'
+  _updatedAt: string
 }>
 // Variable: pagesSlugs
 // Query: *[_type == "page" && defined(slug.current)]  {"slug": slug.current}
@@ -812,12 +668,8 @@ import '@sanity/client'
 declare module '@sanity/client' {
   interface SanityQueries {
     '*[_type == "settings"][0]{\n  title,\n  description,\n  ogImage,\n  navLinks[]{\n    label,\n    href,\n    highlighted\n  },\n  footerTagline,\n  footerEmail,\n  footerQuickLinks[]{\n    label,\n    href\n  },\n  footerCopyright\n}': SettingsQueryResult
-    '\n  *[_type == \'page\' && (\n    (defined($slug) && slug.current == $slug) ||\n    (!defined($slug) && !defined(slug.current))\n  )][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    bgColor,\n    heading,\n    subheading,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      _type == "hero" => {\n        description[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n          }\n        },\n        eventDate,\n        eventLocation,\n        ctaText,\n        ctaLink,\n        backgroundImage\n      },\n      _type == "callToAction" => {\n        \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n,\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n          }\n        }\n      },\n       _type == "faq" => {\n        ...,\n      },\n      _type == "form" => {\n        title,\n        subtitle,\n        description,\n        numberOfSteps,\n        step1 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        step2 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        step3 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        submitButtonText,\n        nextButtonText,\n        backButtonText,\n        successMessage,\n        submitEndpoint\n      }\n    },\n  }\n': GetPageQueryResult
-    '\n  *[_type == "page" || _type == "post" && defined(slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
-    '\n  *[_type == "post" && defined(slug.current)] | order(date desc, _updatedAt desc) {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': AllPostsQueryResult
-    '\n  *[_type == "post" && _id != $skip && defined(slug.current)] | order(date desc, _updatedAt desc) [0...$limit] {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': MorePostsQueryResult
-    '\n  *[_type == "post" && slug.current == $slug] [0] {\n    content[]{\n    ...,\n    markDefs[]{\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n    }\n  },\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': PostQueryResult
-    '\n  *[_type == "post" && defined(slug.current)]\n  {"slug": slug.current}\n': PostPagesSlugsResult
+    '\n  *[_type == \'page\' && (\n    (defined($slug) && slug.current == $slug) ||\n    (!defined($slug) && !defined(slug.current))\n  )][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    bgColor,\n    heading,\n    subheading,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      _type == "hero" => {\n        description[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n          }\n        },\n        eventDate,\n        eventLocation,\n        ctaText,\n        ctaLink,\n        backgroundImage\n      },\n      _type == "callToAction" => {\n        \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n      }\n,\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n          }\n        }\n      },\n       _type == "faq" => {\n        ...,\n      },\n      _type == "form" => {\n        title,\n        subtitle,\n        description,\n        numberOfSteps,\n        step1 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        step2 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        step3 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        submitButtonText,\n        nextButtonText,\n        backButtonText,\n        successMessage,\n        submitEndpoint\n      }\n    },\n  }\n': GetPageQueryResult
+    '\n  *[_type == "page" && defined(slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
   }
 }
