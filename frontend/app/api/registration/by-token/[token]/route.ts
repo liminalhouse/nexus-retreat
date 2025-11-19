@@ -3,9 +3,12 @@ import {db} from '@/lib/db'
 import {registrations} from '@/lib/db/schema'
 import {eq} from 'drizzle-orm'
 
-export async function GET(request: NextRequest, {params}: {params: {token: string}}) {
+export async function GET(
+  request: NextRequest,
+  {params}: {params: Promise<{token: string}>}
+) {
   try {
-    const {token} = params
+    const {token} = await params
 
     // Fetch registration by edit token
     const result = await db

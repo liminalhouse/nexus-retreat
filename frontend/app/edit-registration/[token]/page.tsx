@@ -4,6 +4,7 @@ import {useEffect, useState} from 'react'
 import {useParams, useRouter} from 'next/navigation'
 import EditModal from '@/app/(admin)/admin/registrations/EditModal'
 import type {Registration} from '@/lib/types/registration'
+import Link from 'next/link'
 
 export default function EditRegistrationPage() {
   const params = useParams()
@@ -75,12 +76,12 @@ export default function EditRegistrationPage() {
           <p className="text-gray-600 mb-6">
             {error || 'This edit link is invalid or has expired.'}
           </p>
-          <a
+          <Link
             href="/"
             className="inline-block px-6 py-3 bg-nexus-navy text-white rounded-lg hover:bg-nexus-navy-dark"
           >
             Return Home
-          </a>
+          </Link>
         </div>
       </div>
     )
@@ -103,9 +104,7 @@ export default function EditRegistrationPage() {
             />
           </svg>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Changes Saved!</h1>
-          <p className="text-gray-600 mb-6">
-            Your registration has been updated successfully.
-          </p>
+          <p className="text-gray-600 mb-6">Your registration has been updated successfully.</p>
           <button
             onClick={() => setSaved(false)}
             className="inline-block px-6 py-3 bg-nexus-navy text-white rounded-lg hover:bg-nexus-navy-dark"
@@ -119,11 +118,7 @@ export default function EditRegistrationPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <EditModal
-        registration={registration}
-        onClose={() => router.push('/')}
-        onSave={handleSave}
-      />
+      <EditModal registration={registration} onClose={() => router.push('/')} onSave={handleSave} />
     </div>
   )
 }

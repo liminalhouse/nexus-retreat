@@ -3,9 +3,12 @@ import {db} from '@/lib/db'
 import {registrations} from '@/lib/db/schema'
 import {eq} from 'drizzle-orm'
 
-export async function PATCH(request: NextRequest, {params}: {params: {id: string}}) {
+export async function PATCH(
+  request: NextRequest,
+  {params}: {params: Promise<{id: string}>}
+) {
   try {
-    const {id} = params
+    const {id} = await params
     const formData = await request.json()
 
     // Helper function to convert empty strings to null
