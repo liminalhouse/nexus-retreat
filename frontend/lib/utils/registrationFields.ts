@@ -1,9 +1,9 @@
 import {registrationFormConfig} from '@/app/(main)/register/formConfig'
-import type {FormConfig, Field} from '@/app/components/Form/types'
+import type {FormConfig, FormField} from '@/app/components/Form/types'
 
 // Extract all fields from form config
-export function getAllFormFields(config: FormConfig): Field[] {
-  const fields: Field[] = []
+export function getAllFormFields(config: FormConfig): FormField[] {
+  const fields: FormField[] = []
   const steps = [config.step1, config.step2, config.step3].filter(Boolean)
 
   steps.forEach((step) => {
@@ -20,7 +20,7 @@ export function getAllFormFields(config: FormConfig): Field[] {
 }
 
 // Get field by name
-export function getFieldByName(fieldName: string): Field | undefined {
+export function getFieldByName(fieldName: string): FormField | undefined {
   const allFields = getAllFormFields(registrationFormConfig)
   return allFields.find((field) => field.name === fieldName)
 }

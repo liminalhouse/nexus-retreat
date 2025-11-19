@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useCallback} from 'react'
 import NexusLogo from '@/app/components/NexusLogo'
 import FormStepRenderer from './FormStepRenderer'
 import type {FormConfig} from './types'
@@ -31,7 +31,7 @@ export default function Form({config, showLogo = true, showProgress = true}: For
   const totalSteps = steps.length
   const progress = ((currentStep + 1) / totalSteps) * 100
 
-  const validateAllSteps = () => {
+  const validateAllSteps = useCallback(() => {
     const errors: Record<string, string> = {}
 
     steps.forEach((stepConfig, stepIndex) => {
@@ -76,7 +76,7 @@ export default function Form({config, showLogo = true, showProgress = true}: For
     })
 
     return errors
-  }
+  }, [steps, formData])
 
   const validateField = (fieldName: string) => {
     // Find the field config across all steps
@@ -143,7 +143,7 @@ export default function Form({config, showLogo = true, showProgress = true}: For
       setAllStepErrors(errors)
       setFieldErrors(errors)
     }
-  }, [currentStep, totalSteps])
+  }, [currentStep, totalSteps, validateAllSteps])
 
   const handleNext = (e?: React.MouseEvent<HTMLButtonElement>) => {
     e?.preventDefault()
