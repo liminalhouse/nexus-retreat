@@ -1,7 +1,7 @@
-import Link from 'next/link'
 import {PortableText} from '@portabletext/react'
 import {urlForImage} from '@/sanity/lib/utils'
 import NexusLogo from './NexusLogo'
+import Link from 'next/link'
 
 interface HeroProps {
   block: {
@@ -87,15 +87,15 @@ export default function Hero({block}: HeroProps) {
         </div>
 
         {/* TODO: Disable link for now */}
-        {/* {ctaText && (
+        {process.env.VERCEL_ENV !== 'production' && ctaText && (
           <Link
             href={ctaLink}
             className="inline-block px-8 py-3 bg-nexus-coral text-gray-900 rounded hover:bg-nexus-coral-light transition-colors font-medium"
           >
-            {ctaText}
+            {'Register now'}
           </Link>
-        )} */}
-        {ctaText && (
+        )}
+        {process.env.VERCEL_ENV === 'production' && ctaText && (
           <div className="inline-block px-8 py-3 bg-nexus-coral text-gray-900 rounded transition-colors font-medium">
             {ctaText}
           </div>

@@ -2,8 +2,14 @@ import Form from '@/app/components/Form'
 import {client} from '@/sanity/lib/client'
 import {registrationFormContentQuery} from '@/sanity/lib/queries'
 import {buildFormConfig} from './buildFormConfig'
+import {redirect} from 'next/navigation'
 
 export default async function RegisterPage() {
+  // TODO: Remove
+  if (process.env.VERCEL_ENV === 'production') {
+    redirect('/') // Redirect to homepage in production
+  }
+
   // Fetch registration form content from Sanity
   const sanityContent = await client.fetch(registrationFormContentQuery)
 
