@@ -1,15 +1,47 @@
 'use client'
 
+import {
+  formatAccommodations,
+  formatDinnerAttendance,
+  formatActivities,
+} from '@/lib/utils/formatRegistrationFields'
+
 type Registration = {
   id: string
   created_at: string
   email: string
   first_name?: string
   last_name?: string
-  phone?: string
-  form_data: any
-  status?: string
-  notes?: string
+  title?: string | null
+  organization?: string | null
+  mobile_phone?: string
+  address_line_1?: string
+  address_line_2?: string | null
+  city?: string
+  state?: string
+  zip?: string
+  country?: string
+  emergency_contact_name?: string
+  emergency_contact_relation?: string | null
+  emergency_contact_email?: string
+  emergency_contact_phone?: string
+  assistant_name?: string | null
+  assistant_title?: string | null
+  assistant_email?: string | null
+  assistant_phone?: string | null
+  guest_name?: string | null
+  guest_relation?: string | null
+  guest_email?: string | null
+  dietary_restrictions?: string | null
+  jacket_size?: string | null
+  accommodations?: string[] | null
+  dinner_attendance?: string[] | null
+  activities?: string[] | null
+  guest_dietary_restrictions?: string | null
+  guest_jacket_size?: string | null
+  guest_accommodations?: string[] | null
+  guest_dinner_attendance?: string[] | null
+  guest_activities?: string[] | null
 }
 
 export default function ExportButton({registrations}: {registrations: Registration[]}) {
@@ -19,51 +51,82 @@ export default function ExportButton({registrations}: {registrations: Registrati
       return
     }
 
-    // Get all unique keys from form_data
-    const allKeys = new Set<string>()
-    registrations.forEach((reg) => {
-      Object.keys(reg.form_data || {}).forEach((key) => allKeys.add(key))
-    })
-
-    // Create CSV headers
+    // Create CSV headers with all fields
     const headers = [
-      'ID',
-      'Created At',
+      'Registration Date',
       'Email',
       'First Name',
       'Last Name',
-      'Phone',
-      'Status',
-      'Notes',
-      ...Array.from(allKeys),
+      'Title',
+      'Organization',
+      'Mobile Phone',
+      'Address Line 1',
+      'Address Line 2',
+      'City',
+      'State',
+      'Zip',
+      'Country',
+      'Emergency Contact Name',
+      'Emergency Contact Relation',
+      'Emergency Contact Email',
+      'Emergency Contact Phone',
+      'Assistant Name',
+      'Assistant Title',
+      'Assistant Email',
+      'Assistant Phone',
+      'Guest Name',
+      'Guest Relation',
+      'Guest Email',
+      'Dietary Restrictions',
+      'Jacket Size',
+      'Accommodations',
+      'Dinner Attendance',
+      'Activities',
+      'Guest Dietary Restrictions',
+      'Guest Jacket Size',
+      'Guest Accommodations',
+      'Guest Dinner Attendance',
+      'Guest Activities',
     ]
 
     // Create CSV rows
     const rows = registrations.map((reg) => {
-      const row = [
-        reg.id,
+      return [
         new Date(reg.created_at).toLocaleString(),
         reg.email || '',
         reg.first_name || '',
         reg.last_name || '',
-        reg.phone || '',
-        reg.status || '',
-        reg.notes || '',
+        reg.title || '',
+        reg.organization || '',
+        reg.mobile_phone || '',
+        reg.address_line_1 || '',
+        reg.address_line_2 || '',
+        reg.city || '',
+        reg.state || '',
+        reg.zip || '',
+        reg.country || '',
+        reg.emergency_contact_name || '',
+        reg.emergency_contact_relation || '',
+        reg.emergency_contact_email || '',
+        reg.emergency_contact_phone || '',
+        reg.assistant_name || '',
+        reg.assistant_title || '',
+        reg.assistant_email || '',
+        reg.assistant_phone || '',
+        reg.guest_name || '',
+        reg.guest_relation || '',
+        reg.guest_email || '',
+        reg.dietary_restrictions || '',
+        reg.jacket_size || '',
+        formatAccommodations(reg.accommodations),
+        formatDinnerAttendance(reg.dinner_attendance),
+        formatActivities(reg.activities),
+        reg.guest_dietary_restrictions || '',
+        reg.guest_jacket_size || '',
+        formatAccommodations(reg.guest_accommodations),
+        formatDinnerAttendance(reg.guest_dinner_attendance),
+        formatActivities(reg.guest_activities),
       ]
-
-      // Add form_data fields
-      allKeys.forEach((key) => {
-        const value = reg.form_data?.[key]
-        row.push(
-          value !== null && value !== undefined
-            ? typeof value === 'object'
-              ? JSON.stringify(value)
-              : String(value)
-            : '',
-        )
-      })
-
-      return row
     })
 
     // Convert to CSV string

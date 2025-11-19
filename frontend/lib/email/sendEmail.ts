@@ -20,6 +20,7 @@ type EmailTemplate = {
 }
 
 type RegistrationData = {
+  editToken?: string
   first_name: string
   last_name: string
   email: string
@@ -227,6 +228,26 @@ export async function sendRegistrationConfirmation(data: RegistrationData) {
     // Build email HTML
     const registrationDetails = formatRegistrationDetails(data)
 
+    // Generate edit link if editToken is present
+    const editLink = data.editToken
+      ? `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/edit-registration/${data.editToken}`
+      : ''
+
+    const editLinkHtml = editLink
+      ? `<div style="margin: 32px 0; padding: 24px; background-color: #f0f9ff; border-radius: 8px; border-left: 4px solid #0369a1;">
+           <h3 style="font-size: 16px; font-weight: 600; color: #0369a1; margin: 0 0 12px 0;">Need to Make Changes?</h3>
+           <p style="font-size: 14px; color: #374151; margin: 0 0 16px 0;">
+             If you need to update your registration information, you can use the link below:
+           </p>
+           <a href="${editLink}" style="display: inline-block; padding: 12px 24px; background-color: #0369a1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
+             Edit My Registration
+           </a>
+           <p style="font-size: 12px; color: #6b7280; margin: 16px 0 0 0;">
+             This link is unique to your registration and can be used at any time.
+           </p>
+         </div>`
+      : ''
+
     // Generate header image HTML if present
     const headerImageHtml = template.headerImage?.asset?.url
       ? `<div style="margin-bottom: 24px; text-align: center;">
@@ -252,6 +273,8 @@ export async function sendRegistrationConfirmation(data: RegistrationData) {
               <h2 style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 16px;">Your Registration Details</h2>
               ${registrationDetails}
             </div>
+
+            ${editLinkHtml}
 
             ${bodyOutroText ? `<p style="font-size: 14px; color: #374151; margin-top: 24px; white-space: pre-line;">${bodyOutroText}</p>` : ''}
 

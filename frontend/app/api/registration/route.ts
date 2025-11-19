@@ -2,6 +2,11 @@ import {NextRequest, NextResponse} from 'next/server'
 import {db} from '@/lib/db'
 import {registrations} from '@/lib/db/schema'
 
+// Generate a secure random token
+function generateEditToken(): string {
+  return crypto.randomUUID()
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.json()
@@ -12,8 +17,12 @@ export async function POST(request: NextRequest) {
       return value
     }
 
+    // Generate unique edit token
+    const editToken = generateEditToken()
+
     // Map form field names to database column names
     const registrationData = {
+      editToken,
       // Step 1: Personal Details
       email: formData.email,
       firstName: formData.first_name,
@@ -89,6 +98,7 @@ export async function POST(request: NextRequest) {
         success: true,
         message: 'Registration submitted successfully',
         data: result[0],
+        editToken,
       },
       {status: 201},
     )

@@ -7,6 +7,7 @@ export const registrations = pgTable('registrations', {
   id: uuid('id').defaultRandom().primaryKey(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  editToken: text('edit_token').notNull().unique(),
 
   // Step 1: Personal Details (required fields based on formConfig)
   email: text('email').notNull().unique(),
