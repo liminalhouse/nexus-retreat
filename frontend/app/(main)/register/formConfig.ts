@@ -9,17 +9,17 @@ import {
   GUEST_ACTIVITY_OPTIONS,
 } from '@/lib/utils/formatRegistrationFields'
 
-export const registrationFormConfig: FormConfig = {
-  title: 'Register for the Retreat',
-  subtitle: 'HOSTED BY GEORGE PYNE AND JAY PENSKE',
-  description: 'March 18-20, 2026',
+/**
+ * Base registration form configuration
+ * This contains the structure and field names that won't change.
+ * Text content (labels, placeholders, etc.) will be merged from Sanity CMS.
+ */
+export const registrationFormConfig: Omit<
+  FormConfig,
+  'title' | 'subtitle' | 'description' | 'submitButtonText' | 'nextButtonText' | 'backButtonText' | 'successMessage'
+> = {
   numberOfSteps: 3,
   submitEndpoint: '/api/registration',
-  submitButtonText: 'REGISTER',
-  nextButtonText: 'NEXT',
-  backButtonText: '← BACK',
-  successMessage:
-    'Thank you for registering! We look forward to seeing you at the retreat. If you need any help, email us at nexus-retreat@gmail.com.',
 
   // Step 1: Personal Details
   step1: {

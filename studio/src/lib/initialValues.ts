@@ -2,6 +2,8 @@
  * Demo data used as placeholders and initial values for the blog
  */
 
+import {FORM_DEFAULTS} from './formDefaults'
+
 export const title = 'Blog.'
 
 export const description = [
@@ -57,3 +59,10 @@ export const description = [
 ]
 
 export const ogImageTitle = 'A Next.js Blog with a Native Authoring Experience'
+
+// Initial value template for registration form
+export const registrationFormInitialValue = () => ({
+  _id: 'registrationFormContent',
+  _type: 'registrationForm',
+  ...FORM_DEFAULTS,
+})

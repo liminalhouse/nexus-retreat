@@ -158,3 +158,30 @@ export const pagesSlugs = defineQuery(`
   *[_type == "page" && defined(slug.current)]
   {"slug": slug.current}
 `)
+
+export const registrationFormContentQuery = defineQuery(`
+  *[_type == "registrationForm" && _id == "registrationFormContent"][0]{
+    title,
+    subtitle,
+    description,
+    submitButtonText,
+    nextButtonText,
+    backButtonText,
+    successMessage,
+    step1Title,
+    step2Title,
+    step3Title,
+    email,
+    firstName,
+    lastName,
+    jobTitle,
+    organization,
+    mobilePhone,
+    address,
+    emergencyContact,
+    assistant,
+    guest,
+    attendeeDetails,
+    guestEventDetails
+  }
+`)
