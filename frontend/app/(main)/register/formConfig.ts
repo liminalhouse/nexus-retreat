@@ -16,7 +16,13 @@ import {
  */
 export const registrationFormConfig: Omit<
   FormConfig,
-  'title' | 'subtitle' | 'description' | 'submitButtonText' | 'nextButtonText' | 'backButtonText' | 'successMessage'
+  | 'title'
+  | 'subtitle'
+  | 'description'
+  | 'submitButtonText'
+  | 'nextButtonText'
+  | 'backButtonText'
+  | 'successMessage'
 > = {
   numberOfSteps: 3,
   submitEndpoint: '/api/registration',
@@ -112,6 +118,7 @@ export const registrationFormConfig: Omit<
             name: 'country',
             label: 'Country',
             placeholder: 'Select a country...',
+            defaultValue: 'United States',
             options: COUNTRIES.map((country) => ({
               label: country,
               value: country,

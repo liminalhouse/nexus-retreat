@@ -31,6 +31,26 @@ export default function Form({config, showLogo = true, showProgress = true}: For
   const totalSteps = steps.length
   const progress = ((currentStep + 1) / totalSteps) * 100
 
+  // Initialize form data with default values from config
+  useEffect(() => {
+    const defaultValues: Record<string, any> = {}
+
+    steps.forEach((step) => {
+      step?.fieldGroups?.forEach((group) => {
+        group?.fields?.forEach((field) => {
+          if (field?.name && field?.defaultValue !== undefined) {
+            defaultValues[field.name] = field.defaultValue
+          }
+        })
+      })
+    })
+
+    // Only set if we have default values and formData is empty
+    if (Object.keys(defaultValues).length > 0 && Object.keys(formData).length === 0) {
+      setFormData(defaultValues)
+    }
+  }, [steps]) // Only run when steps config changes
+
   const validateAllSteps = useCallback(() => {
     const errors: Record<string, string> = {}
 

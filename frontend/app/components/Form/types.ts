@@ -23,6 +23,7 @@ export interface FormField {
   helperText?: string
   required?: boolean
   options?: FormFieldOption[]
+  defaultValue?: string | string[] | boolean
 }
 
 export interface FieldGroup {
