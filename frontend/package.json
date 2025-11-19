@@ -23,7 +23,6 @@
     "@sanity/image-url": "^1.1.0",
     "@sanity/uuid": "^3.0.2",
     "@sanity/vision": "^4.15.0",
-    "@supabase/supabase-js": "^2.81.1",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/postcss": "^4.1.12",
     "@tailwindcss/typography": "^0.5.16",
