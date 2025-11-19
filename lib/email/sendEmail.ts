@@ -201,14 +201,14 @@ function formatRegistrationDetails(data: RegistrationData): string {
 
 export async function sendRegistrationConfirmation(data: RegistrationData) {
   try {
-    console.log('Fetching email template from Sanity...')
     // Fetch template from Sanity
     const template = await getEmailTemplate('registration_confirmation')
-    console.log('Template found:', template ? 'Yes' : 'No')
 
     if (!template) {
       console.error('Email template not found in Sanity')
-      throw new Error('Registration confirmation email template not found in Sanity. Please create an active email template with type "registration_confirmation".')
+      throw new Error(
+        'Registration confirmation email template not found in Sanity. Please create an active email template with type "registration_confirmation".',
+      )
     }
 
     // Replace variables in template
@@ -313,7 +313,6 @@ export async function sendRegistrationConfirmation(data: RegistrationData) {
     })
 
     const response = await resend.emails.send(emailData)
-    console.log('Resend response:', response)
 
     return {success: true, data: response}
   } catch (error) {

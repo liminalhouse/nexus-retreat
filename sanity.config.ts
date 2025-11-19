@@ -13,9 +13,10 @@ import {presentationTool} from 'sanity/presentation'
 import {assist} from '@sanity/assist'
 import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
 
-// Import from studio
-import {schemaTypes} from '../studio/src/schemaTypes'
-import {structure} from '../studio/src/structure'
+// Import schemas
+import {schemaTypes} from './sanity/schemas/schemaTypes'
+import {structure} from './sanity/schemas/structure'
+import {templates} from './sanity/schemas/lib/templates'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET!
@@ -48,5 +49,6 @@ export default defineConfig({
 
   schema: {
     types: schemaTypes,
+    templates,
   },
 })

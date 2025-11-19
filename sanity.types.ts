@@ -13,17 +13,140 @@
  */
 
 // Source: schema.json
-export type CallToAction = {
-  _type: 'callToAction'
-  heading: string
-  text?: string
-  buttonText?: string
-  link?: Link
+export type Form = {
+  _type: 'form'
+  title?: string
+  subtitle?: string
+  description?: string
+  numberOfSteps?: 1 | 2 | 3
+  step1?: {
+    title?: string
+    fieldGroups?: Array<
+      {
+        _key: string
+      } & FieldGroup
+    >
+  }
+  step2?: {
+    title?: string
+    fieldGroups?: Array<
+      {
+        _key: string
+      } & FieldGroup
+    >
+  }
+  step3?: {
+    title?: string
+    fieldGroups?: Array<
+      {
+        _key: string
+      } & FieldGroup
+    >
+  }
+  submitButtonText?: string
+  nextButtonText?: string
+  backButtonText?: string
+  successMessage?: string
+  submitEndpoint?: string
+}
+
+export type FormField = {
+  _type: 'formField'
+  fieldType?:
+    | 'text'
+    | 'email'
+    | 'tel'
+    | 'textarea'
+    | 'select'
+    | 'checkbox'
+    | 'checkboxGroup'
+    | 'radio'
+  label?: string
+  name?: string
+  placeholder?: string
+  helperText?: string
+  required?: boolean
+  options?: Array<{
+    label?: string
+    value?: string
+    _key: string
+  }>
+}
+
+export type FieldGroup = {
+  _type: 'fieldGroup'
+  groupTitle?: string
+  groupDescription?: string
+  fields?: Array<
+    {
+      _key: string
+    } & FormField
+  >
+}
+
+export type FormBuilder = {
+  _type: 'formBuilder'
+  step1?: {
+    title?: string
+    fieldGroups?: Array<
+      {
+        _key: string
+      } & FieldGroup
+    >
+  }
+  step2?: {
+    title?: string
+    fieldGroups?: Array<
+      {
+        _key: string
+      } & FieldGroup
+    >
+  }
+  step3?: {
+    title?: string
+    fieldGroups?: Array<
+      {
+        _key: string
+      } & FieldGroup
+    >
+  }
+}
+
+export type Faq = {
+  _type: 'faq'
+  faqBuilder?: Array<unknown> // Unable to locate the referenced type "faqItems" in schema
+}
+
+export type FaqItem = {
+  _type: 'faqItem'
+  question?: string
+  answer?: BlockContent
+}
+
+export type Hero = {
+  _type: 'hero'
+  description?: BlockContent
+  eventDate?: string
+  eventLocation?: string
+  ctaText?: string
+  ctaLink?: string
+  backgroundImage?: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
 }
 
 export type Link = {
   _type: 'link'
-  linkType?: 'href' | 'page' | 'post'
+  linkType?: 'href' | 'page'
   href?: string
   page?: {
     _ref: string
@@ -31,51 +154,22 @@ export type Link = {
     _weak?: boolean
     [internalGroqTypeReferenceTo]?: 'page'
   }
-  post?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'post'
-  }
   openInNewTab?: boolean
+}
+
+export type CallToAction = {
+  _type: 'callToAction'
+  heading?: string
+  text?: string
+  buttonText?: string
+  link?: Link
 }
 
 export type InfoSection = {
   _type: 'infoSection'
   heading?: string
   subheading?: string
-  content?: Array<{
-    children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
-    listItem?: 'bullet' | 'number'
-    markDefs?: Array<{
-      linkType?: 'href' | 'page' | 'post'
-      href?: string
-      page?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'page'
-      }
-      post?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'post'
-      }
-      openInNewTab?: boolean
-      _type: 'link'
-      _key: string
-    }>
-    level?: number
-    _type: 'block'
-    _key: string
-  }>
+  content?: BlockContent
 }
 
 export type BlockContent = Array<{
@@ -88,19 +182,13 @@ export type BlockContent = Array<{
   style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
   listItem?: 'bullet' | 'number'
   markDefs?: Array<{
-    linkType?: 'href' | 'page' | 'post'
+    linkType?: 'href' | 'page'
     href?: string
     page?: {
       _ref: string
       _type: 'reference'
       _weak?: boolean
       [internalGroqTypeReferenceTo]?: 'page'
-    }
-    post?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'post'
     }
     openInNewTab?: boolean
     _type: 'link'
@@ -111,13 +199,301 @@ export type BlockContent = Array<{
   _key: string
 }>
 
+export type EmailTemplate = {
+  _id: string
+  _type: 'emailTemplate'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name?: string
+  type?: 'registration_confirmation'
+  subject?: string
+  headerImage?: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  greeting?: string
+  bodyIntro?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
+  bodyOutro?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
+  signature?: string
+  isActive?: boolean
+}
+
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop'
+  top?: number
+  bottom?: number
+  left?: number
+  right?: number
+}
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot'
+  x?: number
+  y?: number
+  height?: number
+  width?: number
+}
+
+export type Page = {
+  _id: string
+  _type: 'page'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name?: string
+  heading?: string
+  description?: BlockContent
+  slug?: Slug
+  bgColor?: 'beige' | 'navy' | 'blueGradient' | 'white'
+  pageBuilder?: Array<
+    | ({
+        _key: string
+      } & Hero)
+    | ({
+        _key: string
+      } & Faq)
+    | ({
+        _key: string
+      } & CallToAction)
+    | ({
+        _key: string
+      } & InfoSection)
+    | ({
+        _key: string
+      } & Form)
+  >
+}
+
+export type Slug = {
+  _type: 'slug'
+  current?: string
+  source?: string
+}
+
+export type RegistrationForm = {
+  _id: string
+  _type: 'registrationForm'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  subtitle?: string
+  description?: string
+  submitButtonText?: string
+  nextButtonText?: string
+  backButtonText?: string
+  successMessage?: string
+  step1Title?: string
+  email?: {
+    label?: string
+    placeholder?: string
+    helperText?: string
+  }
+  firstName?: {
+    label?: string
+    placeholder?: string
+  }
+  lastName?: {
+    label?: string
+    placeholder?: string
+  }
+  jobTitle?: {
+    label?: string
+    placeholder?: string
+  }
+  organization?: {
+    label?: string
+    placeholder?: string
+  }
+  mobilePhone?: {
+    label?: string
+    placeholder?: string
+  }
+  address?: {
+    sectionTitle?: string
+    line1?: {
+      label?: string
+      placeholder?: string
+    }
+    line2?: {
+      label?: string
+      placeholder?: string
+    }
+    city?: {
+      label?: string
+      placeholder?: string
+    }
+    state?: {
+      label?: string
+      placeholder?: string
+    }
+    zip?: {
+      label?: string
+      placeholder?: string
+    }
+    country?: {
+      label?: string
+      placeholder?: string
+    }
+  }
+  step2Title?: string
+  emergencyContact?: {
+    sectionTitle?: string
+    sectionDescription?: string
+    name?: {
+      label?: string
+      placeholder?: string
+    }
+    relation?: {
+      label?: string
+      placeholder?: string
+    }
+    email?: {
+      label?: string
+      placeholder?: string
+    }
+    phone?: {
+      label?: string
+      placeholder?: string
+    }
+  }
+  assistant?: {
+    sectionTitle?: string
+    sectionDescription?: string
+    name?: {
+      label?: string
+      placeholder?: string
+    }
+    title?: {
+      label?: string
+      placeholder?: string
+    }
+    email?: {
+      label?: string
+      placeholder?: string
+    }
+    phone?: {
+      label?: string
+      placeholder?: string
+    }
+  }
+  guest?: {
+    sectionTitle?: string
+    sectionDescription?: string
+    name?: {
+      label?: string
+      placeholder?: string
+    }
+    relation?: {
+      label?: string
+      placeholder?: string
+    }
+    email?: {
+      label?: string
+      placeholder?: string
+    }
+  }
+  step3Title?: string
+  attendeeDetails?: {
+    sectionTitle?: string
+    dietaryRestrictions?: {
+      label?: string
+      placeholder?: string
+    }
+    jacketSize?: {
+      label?: string
+      placeholder?: string
+    }
+    accommodations?: {
+      label?: string
+      helperText?: string
+    }
+    dinnerAttendance?: {
+      label?: string
+      helperText?: string
+    }
+    activities?: {
+      label?: string
+      helperText?: string
+    }
+  }
+  guestEventDetails?: {
+    sectionTitle?: string
+    sectionDescription?: string
+    dietaryRestrictions?: {
+      label?: string
+      placeholder?: string
+    }
+    jacketSize?: {
+      label?: string
+      placeholder?: string
+    }
+    accommodations?: {
+      label?: string
+      helperText?: string
+    }
+    dinnerAttendance?: {
+      label?: string
+      helperText?: string
+    }
+    activities?: {
+      label?: string
+      helperText?: string
+    }
+  }
+}
+
 export type Settings = {
   _id: string
   _type: 'settings'
   _createdAt: string
   _updatedAt: string
   _rev: string
-  title: string
+  title?: string
   description?: Array<{
     children?: Array<{
       marks?: Array<string>
@@ -127,25 +503,7 @@ export type Settings = {
     }>
     style?: 'normal'
     listItem?: never
-    markDefs?: Array<{
-      linkType?: 'href' | 'page' | 'post'
-      href?: string
-      page?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'page'
-      }
-      post?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'post'
-      }
-      openInNewTab?: boolean
-      _type: 'link'
-      _key: string
-    }>
+    markDefs?: null
     level?: number
     _type: 'block'
     _key: string
@@ -164,81 +522,21 @@ export type Settings = {
     metadataBase?: string
     _type: 'image'
   }
-}
-
-export type Page = {
-  _id: string
-  _type: 'page'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  name: string
-  slug: Slug
-  heading: string
-  subheading?: string
-  pageBuilder?: Array<
-    | ({
-        _key: string
-      } & CallToAction)
-    | ({
-        _key: string
-      } & InfoSection)
-  >
-}
-
-export type Post = {
-  _id: string
-  _type: 'post'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: string
-  slug: Slug
-  content?: BlockContent
-  excerpt?: string
-  coverImage: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  date?: string
-  author?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'person'
-  }
-}
-
-export type Person = {
-  _id: string
-  _type: 'person'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  firstName: string
-  lastName: string
-  picture: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
+  navLinks?: Array<{
+    label?: string
+    href?: string
+    highlighted?: boolean
+    _type: 'navLink'
+    _key: string
+  }>
+  footerTagline?: string
+  footerEmail?: string
+  footerQuickLinks?: Array<{
+    label?: string
+    href?: string
+    _key: string
+  }>
+  footerCopyright?: string
 }
 
 export type SanityAssistInstructionTask = {
@@ -281,7 +579,7 @@ export type SanityAssistOutputField = {
 
 export type SanityAssistInstructionContext = {
   _type: 'sanity.assist.instruction.context'
-  reference: {
+  reference?: {
     _ref: string
     _type: 'reference'
     _weak?: boolean
@@ -314,7 +612,7 @@ export type AssistInstructionContext = {
 
 export type SanityAssistInstructionUserInput = {
   _type: 'sanity.assist.instruction.userInput'
-  message: string
+  message?: string
   description?: string
 }
 
@@ -402,20 +700,15 @@ export type SanityImageDimensions = {
   aspectRatio?: number
 }
 
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot'
-  x?: number
-  y?: number
-  height?: number
-  width?: number
-}
-
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop'
-  top?: number
-  bottom?: number
-  left?: number
-  right?: number
+export type SanityImageMetadata = {
+  _type: 'sanity.imageMetadata'
+  location?: Geopoint
+  dimensions?: SanityImageDimensions
+  palette?: SanityImagePalette
+  lqip?: string
+  blurHash?: string
+  hasAlpha?: boolean
+  isOpaque?: boolean
 }
 
 export type SanityFileAsset = {
@@ -438,6 +731,13 @@ export type SanityFileAsset = {
   path?: string
   url?: string
   source?: SanityAssetSourceData
+}
+
+export type SanityAssetSourceData = {
+  _type: 'sanity.assetSourceData'
+  name?: string
+  id?: string
+  url?: string
 }
 
 export type SanityImageAsset = {
@@ -463,17 +763,6 @@ export type SanityImageAsset = {
   source?: SanityAssetSourceData
 }
 
-export type SanityImageMetadata = {
-  _type: 'sanity.imageMetadata'
-  location?: Geopoint
-  dimensions?: SanityImageDimensions
-  palette?: SanityImagePalette
-  lqip?: string
-  blurHash?: string
-  hasAlpha?: boolean
-  isOpaque?: boolean
-}
-
 export type Geopoint = {
   _type: 'geopoint'
   lat?: number
@@ -481,28 +770,25 @@ export type Geopoint = {
   alt?: number
 }
 
-export type Slug = {
-  _type: 'slug'
-  current: string
-  source?: string
-}
-
-export type SanityAssetSourceData = {
-  _type: 'sanity.assetSourceData'
-  name?: string
-  id?: string
-  url?: string
-}
-
 export type AllSanitySchemaTypes =
-  | CallToAction
+  | Form
+  | FormField
+  | FieldGroup
+  | FormBuilder
+  | Faq
+  | FaqItem
+  | Hero
   | Link
+  | CallToAction
   | InfoSection
   | BlockContent
-  | Settings
+  | EmailTemplate
+  | SanityImageCrop
+  | SanityImageHotspot
   | Page
-  | Post
-  | Person
+  | Slug
+  | RegistrationForm
+  | Settings
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
   | SanityAssistSchemaTypeAnnotations
@@ -518,20 +804,17 @@ export type AllSanitySchemaTypes =
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
-  | SanityImageHotspot
-  | SanityImageCrop
-  | SanityFileAsset
-  | SanityImageAsset
   | SanityImageMetadata
-  | Geopoint
-  | Slug
+  | SanityFileAsset
   | SanityAssetSourceData
+  | SanityImageAsset
+  | Geopoint
 export declare const internalGroqTypeReferenceTo: unique symbol
 // Source: ./sanity/lib/queries.ts
 // Variable: settingsQuery
 // Query: *[_type == "settings"][0]{  title,  description,  ogImage,  navLinks[]{    label,    href,    highlighted  },  footerTagline,  footerEmail,  footerQuickLinks[]{    label,    href  },  footerCopyright}
 export type SettingsQueryResult = {
-  title: string
+  title: string | null
   description: Array<{
     children?: Array<{
       marks?: Array<string>
@@ -541,25 +824,7 @@ export type SettingsQueryResult = {
     }>
     style?: 'normal'
     listItem?: never
-    markDefs?: Array<{
-      linkType?: 'href' | 'page' | 'post'
-      href?: string
-      page?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'page'
-      }
-      post?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'post'
-      }
-      openInNewTab?: boolean
-      _type: 'link'
-      _key: string
-    }>
+    markDefs?: null
     level?: number
     _type: 'block'
     _key: string
@@ -578,41 +843,185 @@ export type SettingsQueryResult = {
     metadataBase?: string
     _type: 'image'
   } | null
-  navLinks: null
-  footerTagline: null
-  footerEmail: null
-  footerQuickLinks: null
-  footerCopyright: null
+  navLinks: Array<{
+    label: string | null
+    href: string | null
+    highlighted: boolean | null
+  }> | null
+  footerTagline: string | null
+  footerEmail: string | null
+  footerQuickLinks: Array<{
+    label: string | null
+    href: string | null
+  }> | null
+  footerCopyright: string | null
 } | null
 // Variable: getPageQuery
 // Query: *[_type == 'page' && (    (defined($slug) && slug.current == $slug) ||    (!defined($slug) && !defined(slug.current))  )][0]{    _id,    _type,    name,    slug,    bgColor,    heading,    subheading,    "pageBuilder": pageBuilder[]{      ...,      _type == "hero" => {        description[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current  }          }        },        eventDate,        eventLocation,        ctaText,        ctaLink,        backgroundImage      },      _type == "callToAction" => {          link {      ...,        _type == "link" => {    "page": page->slug.current  }      },      },      _type == "infoSection" => {        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current  }          }        }      },       _type == "faq" => {        ...,      },      _type == "form" => {        title,        subtitle,        description,        numberOfSteps,        step1 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        step2 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        step3 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        submitButtonText,        nextButtonText,        backButtonText,        successMessage,        submitEndpoint      }    },  }
 export type GetPageQueryResult = {
   _id: string
   _type: 'page'
-  name: string
-  slug: Slug
-  bgColor: null
-  heading: string
-  subheading: string | null
+  name: string | null
+  slug: Slug | null
+  bgColor: 'beige' | 'blueGradient' | 'navy' | 'white' | null
+  heading: string | null
+  subheading: null
   pageBuilder: Array<
     | {
         _key: string
         _type: 'callToAction'
-        heading: string
+        heading?: string
         text?: string
         buttonText?: string
         link: {
           _type: 'link'
-          linkType?: 'href' | 'page' | 'post'
+          linkType?: 'href' | 'page'
           href?: string
           page: string | null
-          post?: {
+          openInNewTab?: boolean
+        } | null
+      }
+    | {
+        _key: string
+        _type: 'faq'
+        faqBuilder?: Array<unknown> // Unable to locate the referenced type "faqItems" in schema
+      }
+    | {
+        _key: string
+        _type: 'form'
+        title: string | null
+        subtitle: string | null
+        description: string | null
+        numberOfSteps: 1 | 2 | 3 | null
+        step1: {
+          title: string | null
+          fieldGroups: Array<{
+            groupTitle: string | null
+            groupDescription: string | null
+            fields: Array<{
+              fieldType:
+                | 'checkbox'
+                | 'checkboxGroup'
+                | 'email'
+                | 'radio'
+                | 'select'
+                | 'tel'
+                | 'text'
+                | 'textarea'
+                | null
+              label: string | null
+              name: string | null
+              placeholder: string | null
+              helperText: string | null
+              required: boolean | null
+              options: Array<{
+                label: string | null
+                value: string | null
+              }> | null
+            }> | null
+          }> | null
+        } | null
+        step2: {
+          title: string | null
+          fieldGroups: Array<{
+            groupTitle: string | null
+            groupDescription: string | null
+            fields: Array<{
+              fieldType:
+                | 'checkbox'
+                | 'checkboxGroup'
+                | 'email'
+                | 'radio'
+                | 'select'
+                | 'tel'
+                | 'text'
+                | 'textarea'
+                | null
+              label: string | null
+              name: string | null
+              placeholder: string | null
+              helperText: string | null
+              required: boolean | null
+              options: Array<{
+                label: string | null
+                value: string | null
+              }> | null
+            }> | null
+          }> | null
+        } | null
+        step3: {
+          title: string | null
+          fieldGroups: Array<{
+            groupTitle: string | null
+            groupDescription: string | null
+            fields: Array<{
+              fieldType:
+                | 'checkbox'
+                | 'checkboxGroup'
+                | 'email'
+                | 'radio'
+                | 'select'
+                | 'tel'
+                | 'text'
+                | 'textarea'
+                | null
+              label: string | null
+              name: string | null
+              placeholder: string | null
+              helperText: string | null
+              required: boolean | null
+              options: Array<{
+                label: string | null
+                value: string | null
+              }> | null
+            }> | null
+          }> | null
+        } | null
+        submitButtonText: string | null
+        nextButtonText: string | null
+        backButtonText: string | null
+        successMessage: string | null
+        submitEndpoint: string | null
+      }
+    | {
+        _key: string
+        _type: 'hero'
+        description: Array<{
+          children?: Array<{
+            marks?: Array<string>
+            text?: string
+            _type: 'span'
+            _key: string
+          }>
+          style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+          listItem?: 'bullet' | 'number'
+          markDefs: Array<{
+            linkType?: 'href' | 'page'
+            href?: string
+            page: string | null
+            openInNewTab?: boolean
+            _type: 'link'
+            _key: string
+          }> | null
+          level?: number
+          _type: 'block'
+          _key: string
+        }> | null
+        eventDate: string | null
+        eventLocation: string | null
+        ctaText: string | null
+        ctaLink: string | null
+        backgroundImage: {
+          asset?: {
             _ref: string
             _type: 'reference'
             _weak?: boolean
-            [internalGroqTypeReferenceTo]?: 'post'
+            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
           }
-          openInNewTab?: boolean
+          media?: unknown
+          hotspot?: SanityImageHotspot
+          crop?: SanityImageCrop
+          _type: 'image'
         } | null
       }
     | {
@@ -630,15 +1039,9 @@ export type GetPageQueryResult = {
           style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
           listItem?: 'bullet' | 'number'
           markDefs: Array<{
-            linkType?: 'href' | 'page' | 'post'
+            linkType?: 'href' | 'page'
             href?: string
             page: string | null
-            post?: {
-              _ref: string
-              _type: 'reference'
-              _weak?: boolean
-              [internalGroqTypeReferenceTo]?: 'post'
-            }
             openInNewTab?: boolean
             _type: 'link'
             _key: string
@@ -653,18 +1056,184 @@ export type GetPageQueryResult = {
 // Variable: sitemapData
 // Query: *[_type == "page" && defined(slug.current)] | order(_type asc) {    "slug": slug.current,    _type,    _updatedAt,  }
 export type SitemapDataResult = Array<{
-  slug: string
+  slug: string | null
   _type: 'page'
   _updatedAt: string
 }>
 // Variable: pagesSlugs
 // Query: *[_type == "page" && defined(slug.current)]  {"slug": slug.current}
 export type PagesSlugsResult = Array<{
-  slug: string
+  slug: string | null
 }>
 // Variable: registrationFormContentQuery
 // Query: *[_type == "registrationForm" && _id == "registrationFormContent"][0]{    title,    subtitle,    description,    submitButtonText,    nextButtonText,    backButtonText,    successMessage,    step1Title,    step2Title,    step3Title,    email,    firstName,    lastName,    jobTitle,    organization,    mobilePhone,    address,    emergencyContact,    assistant,    guest,    attendeeDetails,    guestEventDetails  }
-export type RegistrationFormContentQueryResult = null
+export type RegistrationFormContentQueryResult = {
+  title: string | null
+  subtitle: string | null
+  description: string | null
+  submitButtonText: string | null
+  nextButtonText: string | null
+  backButtonText: string | null
+  successMessage: string | null
+  step1Title: string | null
+  step2Title: string | null
+  step3Title: string | null
+  email: {
+    label?: string
+    placeholder?: string
+    helperText?: string
+  } | null
+  firstName: {
+    label?: string
+    placeholder?: string
+  } | null
+  lastName: {
+    label?: string
+    placeholder?: string
+  } | null
+  jobTitle: {
+    label?: string
+    placeholder?: string
+  } | null
+  organization: {
+    label?: string
+    placeholder?: string
+  } | null
+  mobilePhone: {
+    label?: string
+    placeholder?: string
+  } | null
+  address: {
+    sectionTitle?: string
+    line1?: {
+      label?: string
+      placeholder?: string
+    }
+    line2?: {
+      label?: string
+      placeholder?: string
+    }
+    city?: {
+      label?: string
+      placeholder?: string
+    }
+    state?: {
+      label?: string
+      placeholder?: string
+    }
+    zip?: {
+      label?: string
+      placeholder?: string
+    }
+    country?: {
+      label?: string
+      placeholder?: string
+    }
+  } | null
+  emergencyContact: {
+    sectionTitle?: string
+    sectionDescription?: string
+    name?: {
+      label?: string
+      placeholder?: string
+    }
+    relation?: {
+      label?: string
+      placeholder?: string
+    }
+    email?: {
+      label?: string
+      placeholder?: string
+    }
+    phone?: {
+      label?: string
+      placeholder?: string
+    }
+  } | null
+  assistant: {
+    sectionTitle?: string
+    sectionDescription?: string
+    name?: {
+      label?: string
+      placeholder?: string
+    }
+    title?: {
+      label?: string
+      placeholder?: string
+    }
+    email?: {
+      label?: string
+      placeholder?: string
+    }
+    phone?: {
+      label?: string
+      placeholder?: string
+    }
+  } | null
+  guest: {
+    sectionTitle?: string
+    sectionDescription?: string
+    name?: {
+      label?: string
+      placeholder?: string
+    }
+    relation?: {
+      label?: string
+      placeholder?: string
+    }
+    email?: {
+      label?: string
+      placeholder?: string
+    }
+  } | null
+  attendeeDetails: {
+    sectionTitle?: string
+    dietaryRestrictions?: {
+      label?: string
+      placeholder?: string
+    }
+    jacketSize?: {
+      label?: string
+      placeholder?: string
+    }
+    accommodations?: {
+      label?: string
+      helperText?: string
+    }
+    dinnerAttendance?: {
+      label?: string
+      helperText?: string
+    }
+    activities?: {
+      label?: string
+      helperText?: string
+    }
+  } | null
+  guestEventDetails: {
+    sectionTitle?: string
+    sectionDescription?: string
+    dietaryRestrictions?: {
+      label?: string
+      placeholder?: string
+    }
+    jacketSize?: {
+      label?: string
+      placeholder?: string
+    }
+    accommodations?: {
+      label?: string
+      helperText?: string
+    }
+    dinnerAttendance?: {
+      label?: string
+      helperText?: string
+    }
+    activities?: {
+      label?: string
+      helperText?: string
+    }
+  } | null
+} | null
 
 // Query TypeMap
 import '@sanity/client'
