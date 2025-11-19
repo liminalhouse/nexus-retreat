@@ -49,7 +49,8 @@ export default function Form({config, showLogo = true, showProgress = true}: For
     if (Object.keys(defaultValues).length > 0 && Object.keys(formData).length === 0) {
       setFormData(defaultValues)
     }
-  }, [steps]) // Only run when steps config changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run once on mount
 
   const validateAllSteps = useCallback(() => {
     const errors: Record<string, string> = {}
@@ -163,7 +164,8 @@ export default function Form({config, showLogo = true, showProgress = true}: For
       setAllStepErrors(errors)
       setFieldErrors(errors)
     }
-  }, [currentStep, totalSteps, validateAllSteps])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStep, totalSteps]) // Only depend on step changes, not validateAllSteps function
 
   const handleNext = (e?: React.MouseEvent<HTMLButtonElement>) => {
     e?.preventDefault()
