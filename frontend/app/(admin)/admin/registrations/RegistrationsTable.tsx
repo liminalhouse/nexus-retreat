@@ -202,9 +202,20 @@ const columns: ColumnConfig[] = [
   },
 ]
 
-export default function RegistrationsTable({registrations}: {registrations: Registration[]}) {
+export default function RegistrationsTable({
+  registrations: initialRegistrations,
+}: {
+  registrations: Registration[]
+}) {
+  const [registrations, setRegistrations] = useState<Registration[]>(initialRegistrations)
   const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null)
   const [filter, setFilter] = useState('')
+
+  const handleUpdateRegistration = (updatedRegistration: Registration) => {
+    setRegistrations((prev) =>
+      prev.map((reg) => (reg.id === updatedRegistration.id ? updatedRegistration : reg))
+    )
+  }
 
   const filteredRegistrations = registrations.filter((reg) => {
     const searchStr = filter.toLowerCase()
@@ -260,7 +271,7 @@ export default function RegistrationsTable({registrations}: {registrations: Regi
                   {columns.map((column) => (
                     <div
                       key={column.key}
-                      className="bg-white group-hover:bg-pink-50 px-6 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto"
+                      className="bg-white group-hover:bg-blue-50 px-6 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto"
                     >
                       {column.render(registration)}
                     </div>
@@ -287,6 +298,7 @@ export default function RegistrationsTable({registrations}: {registrations: Regi
         <EditModal
           registration={selectedRegistration}
           onClose={() => setSelectedRegistration(null)}
+          onSave={handleUpdateRegistration}
         />
       )}
     </>

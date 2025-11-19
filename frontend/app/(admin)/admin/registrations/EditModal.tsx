@@ -51,12 +51,15 @@ type Registration = {
 export default function EditModal({
   registration,
   onClose,
+  onSave,
 }: {
   registration: Registration
   onClose: () => void
+  onSave?: (updatedRegistration: Registration) => void
 }) {
   const [formData, setFormData] = useState<Registration>(registration)
   const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleChange = (field: keyof Registration, value: any) => {
     setFormData((prev) => ({...prev, [field]: value}))
@@ -74,12 +77,37 @@ export default function EditModal({
 
   const handleSave = async () => {
     setIsSaving(true)
-    // TODO: Implement save to database
-    // For now with fake data, just close the modal
-    setTimeout(() => {
-      setIsSaving(false)
+    setError(null)
+
+    try {
+      const response = await fetch(`/api/registration/${formData.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to update registration')
+        setIsSaving(false)
+        return
+      }
+
+      // Update the parent component's state with the new data
+      if (onSave) {
+        onSave(formData)
+      }
+
+      // Close the modal
       onClose()
-    }, 500)
+    } catch (err) {
+      console.error('Error updating registration:', err)
+      setError('Failed to update registration. Please try again.')
+      setIsSaving(false)
+    }
   }
 
   const inputClass =
@@ -100,6 +128,31 @@ export default function EditModal({
         </div>
 
         <div className="p-6 space-y-6">
+          {/* Error Message */}
+          {error && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-5 w-5 text-red-400"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-semibold text-red-800">{error}</h3>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Personal Details */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Personal Details</h3>
