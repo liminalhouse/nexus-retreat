@@ -27,7 +27,9 @@ export function getFieldByName(fieldName: string): FormField | undefined {
 
 // Get all field names
 export function getAllFieldNames(): string[] {
-  return getAllFormFields(registrationFormConfig).map((field) => field.name)
+  return getAllFormFields(registrationFormConfig)
+    .map((field) => field.name)
+    .filter((name): name is string => name !== undefined)
 }
 
 // Field metadata for CSV export and display
@@ -53,7 +55,7 @@ export function getFieldMetadata(): FieldMetadata[] {
     step?.fieldGroups?.forEach((group) => {
       const groupTitle = group?.groupTitle || title
       group?.fields?.forEach((field) => {
-        if (field) {
+        if (field && field.name && field.label) {
           metadata.push({
             name: field.name,
             label: field.label,
