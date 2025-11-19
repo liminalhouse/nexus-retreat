@@ -1,0 +1,681 @@
+import {DocumentTextIcon} from '@sanity/icons'
+import {defineField, defineType} from 'sanity'
+
+/**
+ * Registration Form Content Singleton
+ * This singleton stores all editable text content for the registration form
+ * including headings, descriptions, labels, placeholders, and helper text.
+ * The field names are fixed to match the database schema, but all visible text is editable.
+ */
+
+export const registrationForm = defineType({
+  name: 'registrationForm',
+  title: 'Registration Form',
+  type: 'document',
+  icon: DocumentTextIcon,
+  groups: [
+    {name: 'general', title: 'General Settings'},
+    {name: 'step1', title: 'Step 1: Personal Details'},
+    {name: 'step2', title: 'Step 2: Contacts & Guest'},
+    {name: 'step3', title: 'Step 3: Event Details'},
+  ],
+  fields: [
+    // ========== GENERAL SETTINGS ==========
+    defineField({
+      name: 'title',
+      title: 'Form Title',
+      type: 'string',
+      description: 'Main heading displayed at the top of the form',
+      initialValue: 'Register for the Retreat',
+      validation: (rule) => rule.required(),
+      group: 'general',
+    }),
+    defineField({
+      name: 'subtitle',
+      title: 'Form Subtitle',
+      type: 'string',
+      description: 'Subtitle displayed below the title',
+      initialValue: 'HOSTED BY GEORGE PYNE AND JAY PENSKE',
+      group: 'general',
+    }),
+    defineField({
+      name: 'description',
+      title: 'Form Description',
+      type: 'string',
+      description: 'Additional description text (e.g., dates)',
+      initialValue: 'March 18-20, 2026',
+      group: 'general',
+    }),
+    defineField({
+      name: 'submitButtonText',
+      title: 'Submit Button Text',
+      type: 'string',
+      initialValue: 'REGISTER',
+      validation: (rule) => rule.required(),
+      group: 'general',
+    }),
+    defineField({
+      name: 'nextButtonText',
+      title: 'Next Button Text',
+      type: 'string',
+      initialValue: 'NEXT',
+      validation: (rule) => rule.required(),
+      group: 'general',
+    }),
+    defineField({
+      name: 'backButtonText',
+      title: 'Back Button Text',
+      type: 'string',
+      initialValue: '← BACK',
+      validation: (rule) => rule.required(),
+      group: 'general',
+    }),
+    defineField({
+      name: 'successMessage',
+      title: 'Success Message',
+      type: 'text',
+      description: 'Message displayed after successful registration',
+      rows: 3,
+      initialValue:
+        'Thank you for registering! We look forward to seeing you at the retreat. If you need any help, email us at nexus-retreat@gmail.com.',
+      validation: (rule) => rule.required(),
+      group: 'general',
+    }),
+
+    // ========== STEP 1: PERSONAL DETAILS ==========
+    defineField({
+      name: 'step1Title',
+      title: 'Step 1 Title',
+      type: 'string',
+      initialValue: 'Personal Details',
+      validation: (rule) => rule.required(),
+      group: 'step1',
+    }),
+
+    // Email
+    defineField({
+      name: 'emailLabel',
+      title: 'Email - Label',
+      type: 'string',
+      initialValue: 'Email Address',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'emailPlaceholder',
+      title: 'Email - Placeholder',
+      type: 'string',
+      initialValue: 'Your email address',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'emailHelperText',
+      title: 'Email - Helper Text',
+      type: 'text',
+      rows: 2,
+      initialValue: 'This should be the email you receive your invitation from.',
+      group: 'step1',
+    }),
+
+    // First Name
+    defineField({
+      name: 'firstNameLabel',
+      title: 'First Name - Label',
+      type: 'string',
+      initialValue: 'First name',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'firstNamePlaceholder',
+      title: 'First Name - Placeholder',
+      type: 'string',
+      initialValue: 'First name',
+      group: 'step1',
+    }),
+
+    // Last Name
+    defineField({
+      name: 'lastNameLabel',
+      title: 'Last Name - Label',
+      type: 'string',
+      initialValue: 'Last name',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'lastNamePlaceholder',
+      title: 'Last Name - Placeholder',
+      type: 'string',
+      initialValue: 'Last name',
+      group: 'step1',
+    }),
+
+    // Title
+    defineField({
+      name: 'titleLabel',
+      title: 'Title - Label',
+      type: 'string',
+      initialValue: 'Title',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'titlePlaceholder',
+      title: 'Title - Placeholder',
+      type: 'string',
+      initialValue: 'Your title',
+      group: 'step1',
+    }),
+
+    // Organization
+    defineField({
+      name: 'organizationLabel',
+      title: 'Organization - Label',
+      type: 'string',
+      initialValue: 'Organization',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'organizationPlaceholder',
+      title: 'Organization - Placeholder',
+      type: 'string',
+      initialValue: 'Your organization',
+      group: 'step1',
+    }),
+
+    // Mobile Phone
+    defineField({
+      name: 'mobilePhoneLabel',
+      title: 'Mobile Phone - Label',
+      type: 'string',
+      initialValue: 'Mobile phone number',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'mobilePhonePlaceholder',
+      title: 'Mobile Phone - Placeholder',
+      type: 'string',
+      initialValue: 'Your mobile phone number',
+      group: 'step1',
+    }),
+
+    // Address Section
+    defineField({
+      name: 'addressSectionTitle',
+      title: 'Address Section - Title',
+      type: 'string',
+      initialValue: 'Work Address',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'addressLine1Label',
+      title: 'Address Line 1 - Label',
+      type: 'string',
+      initialValue: 'Address Line 1',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'addressLine1Placeholder',
+      title: 'Address Line 1 - Placeholder',
+      type: 'string',
+      initialValue: 'Street address',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'addressLine2Label',
+      title: 'Address Line 2 - Label',
+      type: 'string',
+      initialValue: 'Address Line 2',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'addressLine2Placeholder',
+      title: 'Address Line 2 - Placeholder',
+      type: 'string',
+      initialValue: 'Apartment, suite, etc. (optional)',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'cityLabel',
+      title: 'City - Label',
+      type: 'string',
+      initialValue: 'City',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'cityPlaceholder',
+      title: 'City - Placeholder',
+      type: 'string',
+      initialValue: 'City',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'stateLabel',
+      title: 'State - Label',
+      type: 'string',
+      initialValue: 'State',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'statePlaceholder',
+      title: 'State - Placeholder',
+      type: 'string',
+      initialValue: 'State',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'zipLabel',
+      title: 'Zip - Label',
+      type: 'string',
+      initialValue: 'Zip',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'zipPlaceholder',
+      title: 'Zip - Placeholder',
+      type: 'string',
+      initialValue: 'Zip code',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'countryLabel',
+      title: 'Country - Label',
+      type: 'string',
+      initialValue: 'Country',
+      group: 'step1',
+    }),
+    defineField({
+      name: 'countryPlaceholder',
+      title: 'Country - Placeholder',
+      type: 'string',
+      initialValue: 'Select country',
+      group: 'step1',
+    }),
+
+    // ========== STEP 2: CONTACTS & GUEST ==========
+    defineField({
+      name: 'step2Title',
+      title: 'Step 2 Title',
+      type: 'string',
+      initialValue: 'Emergency & Contact Information',
+      validation: (rule) => rule.required(),
+      group: 'step2',
+    }),
+
+    // Emergency Contact Section
+    defineField({
+      name: 'emergencyContactSectionTitle',
+      title: 'Emergency Contact Section - Title',
+      type: 'string',
+      initialValue: 'Emergency Contact',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'emergencyContactNameLabel',
+      title: 'Emergency Contact Name - Label',
+      type: 'string',
+      initialValue: 'Full name',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'emergencyContactNamePlaceholder',
+      title: 'Emergency Contact Name - Placeholder',
+      type: 'string',
+      initialValue: 'Contact name',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'emergencyContactRelationLabel',
+      title: 'Emergency Contact Relation - Label',
+      type: 'string',
+      initialValue: 'Relation',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'emergencyContactRelationPlaceholder',
+      title: 'Emergency Contact Relation - Placeholder',
+      type: 'string',
+      initialValue: 'Relationship to you',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'emergencyContactEmailLabel',
+      title: 'Emergency Contact Email - Label',
+      type: 'string',
+      initialValue: 'Email address',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'emergencyContactEmailPlaceholder',
+      title: 'Emergency Contact Email - Placeholder',
+      type: 'string',
+      initialValue: 'Contact email',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'emergencyContactPhoneLabel',
+      title: 'Emergency Contact Phone - Label',
+      type: 'string',
+      initialValue: 'Phone number',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'emergencyContactPhonePlaceholder',
+      title: 'Emergency Contact Phone - Placeholder',
+      type: 'string',
+      initialValue: 'Contact phone number',
+      group: 'step2',
+    }),
+
+    // Assistant Section
+    defineField({
+      name: 'assistantSectionTitle',
+      title: 'Assistant Section - Title',
+      type: 'string',
+      initialValue: 'Executive Assistant (Optional)',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'assistantNameLabel',
+      title: 'Assistant Name - Label',
+      type: 'string',
+      initialValue: 'Full name',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'assistantNamePlaceholder',
+      title: 'Assistant Name - Placeholder',
+      type: 'string',
+      initialValue: 'Assistant name',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'assistantTitleLabel',
+      title: 'Assistant Title - Label',
+      type: 'string',
+      initialValue: 'Title',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'assistantTitlePlaceholder',
+      title: 'Assistant Title - Placeholder',
+      type: 'string',
+      initialValue: 'Assistant title',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'assistantEmailLabel',
+      title: 'Assistant Email - Label',
+      type: 'string',
+      initialValue: 'Email address',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'assistantEmailPlaceholder',
+      title: 'Assistant Email - Placeholder',
+      type: 'string',
+      initialValue: 'Assistant email',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'assistantPhoneLabel',
+      title: 'Assistant Phone - Label',
+      type: 'string',
+      initialValue: 'Phone number',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'assistantPhonePlaceholder',
+      title: 'Assistant Phone - Placeholder',
+      type: 'string',
+      initialValue: 'Assistant phone number',
+      group: 'step2',
+    }),
+
+    // Guest Section
+    defineField({
+      name: 'guestSectionTitle',
+      title: 'Guest Section - Title',
+      type: 'string',
+      initialValue: 'Guest Information (Optional)',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'guestSectionDescription',
+      title: 'Guest Section - Description',
+      type: 'text',
+      rows: 2,
+      initialValue: 'Please provide information about your guest if you plan to bring one.',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'guestNameLabel',
+      title: 'Guest Name - Label',
+      type: 'string',
+      initialValue: 'Full name',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'guestNamePlaceholder',
+      title: 'Guest Name - Placeholder',
+      type: 'string',
+      initialValue: 'Guest name',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'guestRelationLabel',
+      title: 'Guest Relation - Label',
+      type: 'string',
+      initialValue: 'Relation',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'guestRelationPlaceholder',
+      title: 'Guest Relation - Placeholder',
+      type: 'string',
+      initialValue: 'Relationship to you',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'guestEmailLabel',
+      title: 'Guest Email - Label',
+      type: 'string',
+      initialValue: 'Email address',
+      group: 'step2',
+    }),
+    defineField({
+      name: 'guestEmailPlaceholder',
+      title: 'Guest Email - Placeholder',
+      type: 'string',
+      initialValue: 'Guest email',
+      group: 'step2',
+    }),
+
+    // ========== STEP 3: EVENT DETAILS ==========
+    defineField({
+      name: 'step3Title',
+      title: 'Step 3 Title',
+      type: 'string',
+      initialValue: 'Event Details',
+      validation: (rule) => rule.required(),
+      group: 'step3',
+    }),
+
+    // Attendee Details Section
+    defineField({
+      name: 'attendeeDetailsSectionTitle',
+      title: 'Attendee Details Section - Title',
+      type: 'string',
+      initialValue: 'Your Details',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'dietaryRestrictionsLabel',
+      title: 'Dietary Restrictions - Label',
+      type: 'string',
+      initialValue: 'Dietary restrictions or allergies',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'dietaryRestrictionsPlaceholder',
+      title: 'Dietary Restrictions - Placeholder',
+      type: 'string',
+      initialValue: 'Please list any dietary restrictions or allergies',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'jacketSizeLabel',
+      title: 'Jacket Size - Label',
+      type: 'string',
+      initialValue: 'Jacket size',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'jacketSizePlaceholder',
+      title: 'Jacket Size - Placeholder',
+      type: 'string',
+      initialValue: 'Select size',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'accommodationsLabel',
+      title: 'Accommodations - Label',
+      type: 'string',
+      initialValue: 'Accommodations',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'accommodationsHelperText',
+      title: 'Accommodations - Helper Text',
+      type: 'text',
+      rows: 2,
+      initialValue: 'Select all nights you will be staying',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'dinnerAttendanceLabel',
+      title: 'Dinner Attendance - Label',
+      type: 'string',
+      initialValue: 'Dinner attendance',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'dinnerAttendanceHelperText',
+      title: 'Dinner Attendance - Helper Text',
+      type: 'text',
+      rows: 2,
+      initialValue: 'Select which dinners you will attend',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'activitiesLabel',
+      title: 'Activities - Label',
+      type: 'string',
+      initialValue: 'Activities',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'activitiesHelperText',
+      title: 'Activities - Helper Text',
+      type: 'text',
+      rows: 2,
+      initialValue: 'Select activities you would like to participate in',
+      group: 'step3',
+    }),
+
+    // Guest Event Details Section
+    defineField({
+      name: 'guestEventDetailsSectionTitle',
+      title: 'Guest Event Details Section - Title',
+      type: 'string',
+      initialValue: 'Guest Details',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'guestEventDetailsSectionDescription',
+      title: 'Guest Event Details Section - Description',
+      type: 'text',
+      rows: 2,
+      initialValue: 'Only fill this out if you are bringing a guest.',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'guestDietaryRestrictionsLabel',
+      title: 'Guest Dietary Restrictions - Label',
+      type: 'string',
+      initialValue: 'Guest dietary restrictions or allergies',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'guestDietaryRestrictionsPlaceholder',
+      title: 'Guest Dietary Restrictions - Placeholder',
+      type: 'string',
+      initialValue: 'Guest dietary restrictions or allergies',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'guestJacketSizeLabel',
+      title: 'Guest Jacket Size - Label',
+      type: 'string',
+      initialValue: 'Guest jacket size',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'guestJacketSizePlaceholder',
+      title: 'Guest Jacket Size - Placeholder',
+      type: 'string',
+      initialValue: 'Select guest size',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'guestAccommodationsLabel',
+      title: 'Guest Accommodations - Label',
+      type: 'string',
+      initialValue: 'Guest accommodations',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'guestAccommodationsHelperText',
+      title: 'Guest Accommodations - Helper Text',
+      type: 'text',
+      rows: 2,
+      initialValue: 'Select all nights your guest will be staying',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'guestDinnerAttendanceLabel',
+      title: 'Guest Dinner Attendance - Label',
+      type: 'string',
+      initialValue: 'Guest dinner attendance',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'guestDinnerAttendanceHelperText',
+      title: 'Guest Dinner Attendance - Helper Text',
+      type: 'text',
+      rows: 2,
+      initialValue: 'Select which dinners your guest will attend',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'guestActivitiesLabel',
+      title: 'Guest Activities - Label',
+      type: 'string',
+      initialValue: 'Guest activities',
+      group: 'step3',
+    }),
+    defineField({
+      name: 'guestActivitiesHelperText',
+      title: 'Guest Activities - Helper Text',
+      type: 'text',
+      rows: 2,
+      initialValue: 'Select activities your guest would like to participate in',
+      group: 'step3',
+    }),
+  ],
+  preview: {
+    prepare() {
+      return {
+        title: 'Registration Form Content',
+        subtitle: 'Editable form text and labels',
+      }
+    },
+  },
+})
