@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 interface AvatarProps {
   src?: string | null
   firstName: string
@@ -38,7 +40,11 @@ export default function Avatar({
   if (src) {
     return (
       <div className={`overflow-hidden rounded-full ${sizeClasses[size]} ${className}`}>
-        <img src={src} alt={`${firstName} ${lastName}`} className={`object-cover w-full h-full`} />
+        <Image
+          src={src}
+          alt={`${firstName} ${lastName}`}
+          className={`object-cover w-full h-full`}
+        />
       </div>
     )
   }

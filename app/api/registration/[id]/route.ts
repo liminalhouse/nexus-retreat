@@ -3,10 +3,7 @@ import {db} from '@/lib/db'
 import {registrations} from '@/lib/db/schema'
 import {eq} from 'drizzle-orm'
 
-export async function PATCH(
-  request: NextRequest,
-  {params}: {params: Promise<{id: string}>}
-) {
+export async function PATCH(request: NextRequest, {params}: {params: Promise<{id: string}>}) {
   try {
     const {id} = await params
     const formData = await request.json()
@@ -86,6 +83,9 @@ export async function PATCH(
           ? formData.guest_activities
           : null,
 
+      // Admin only
+      adminNotes: toNullIfEmpty(formData.admin_notes),
+
       updatedAt: new Date(),
     }
 
@@ -107,7 +107,7 @@ export async function PATCH(
           success: false,
           error: 'Registration not found',
         },
-        {status: 404}
+        {status: 404},
       )
     }
 
@@ -117,7 +117,7 @@ export async function PATCH(
         message: 'Registration updated successfully',
         data: result[0],
       },
-      {status: 200}
+      {status: 200},
     )
   } catch (error: any) {
     console.error('Update registration error:', error)
@@ -137,7 +137,7 @@ export async function PATCH(
             ? 'This email is already registered by another user.'
             : 'This information conflicts with an existing registration.',
         },
-        {status: 400}
+        {status: 400},
       )
     }
 
@@ -148,7 +148,7 @@ export async function PATCH(
           success: false,
           error: 'Missing required fields',
         },
-        {status: 400}
+        {status: 400},
       )
     }
 
@@ -157,7 +157,7 @@ export async function PATCH(
         success: false,
         error: 'Failed to update registration. Please try again.',
       },
-      {status: 500}
+      {status: 500},
     )
   }
 }

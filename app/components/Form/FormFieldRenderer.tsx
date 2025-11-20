@@ -2,6 +2,7 @@
 
 import React from 'react'
 import type {FormField} from './types'
+import Image from 'next/image'
 
 interface FormFieldRendererProps {
   field: FormField | undefined
@@ -18,6 +19,9 @@ export default function FormFieldRenderer({
   onBlur,
   error,
 }: FormFieldRendererProps) {
+  const [uploading, setUploading] = React.useState(false)
+  const [uploadError, setUploadError] = React.useState<string | null>(null)
+
   if (!field) return null
 
   const fieldType = field.fieldType
@@ -268,9 +272,6 @@ export default function FormFieldRenderer({
 
   // File Input
   if (fieldType === 'file') {
-    const [uploading, setUploading] = React.useState(false)
-    const [uploadError, setUploadError] = React.useState<string | null>(null)
-
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0]
       if (!file) return
@@ -325,7 +326,7 @@ export default function FormFieldRenderer({
           />
           {uploading && <span className="text-sm text-gray-600">Uploading...</span>}
           {value && !uploading && (
-            <img
+            <Image
               src={value}
               alt="Preview"
               className="h-12 w-12 rounded-full object-cover border-2 border-gray-200"
