@@ -24,6 +24,7 @@ export default async function AdminRegistrations() {
       email: reg.email,
       first_name: reg.firstName,
       last_name: reg.lastName,
+      profile_picture: reg.profilePicture,
       title: reg.title,
       organization: reg.organization,
       mobile_phone: reg.mobilePhone,

@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import type {FormField} from './types'
 
 interface FormFieldRendererProps {
@@ -261,6 +262,77 @@ export default function FormFieldRenderer({
             )
           })}
         </div>
+      </div>
+    )
+  }
+
+  // File Input
+  if (fieldType === 'file') {
+    const [uploading, setUploading] = React.useState(false)
+    const [uploadError, setUploadError] = React.useState<string | null>(null)
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
+      if (!file) return
+
+      setUploading(true)
+      setUploadError(null)
+
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Upload failed')
+        }
+
+        const data = await response.json()
+        onChange(data.url)
+      } catch (error) {
+        console.error('Upload error:', error)
+        setUploadError(error instanceof Error ? error.message : 'Failed to upload image')
+      } finally {
+        setUploading(false)
+      }
+    }
+
+    return (
+      <div>
+        {label && (
+          <label htmlFor={name} className={labelClasses}>
+            {label}
+            {required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+        )}
+        {helperText && <p className="text-xs text-gray-500 mb-2 cursor-pointer ">{helperText}</p>}
+        <div className="flex items-center gap-4">
+          <input
+            type="file"
+            id={name}
+            name={name}
+            onChange={handleFileChange}
+            onBlur={onBlur}
+            accept={field.accept || 'image/*'}
+            required={required}
+            disabled={uploading}
+            className="block w-full text-sm text-gray-900 border border-2 border-gray-300 rounded-lg cursor-pointer bg-white focus:outline-none focus:border-blue-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          />
+          {uploading && <span className="text-sm text-gray-600">Uploading...</span>}
+          {value && !uploading && (
+            <img
+              src={value}
+              alt="Preview"
+              className="h-12 w-12 rounded-full object-cover border-2 border-gray-200"
+            />
+          )}
+        </div>
+        {uploadError && <p className="mt-2 text-sm text-red-600">{uploadError}</p>}
       </div>
     )
   }

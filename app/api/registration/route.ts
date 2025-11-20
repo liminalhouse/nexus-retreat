@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
       email: formData.email,
       firstName: formData.first_name,
       lastName: formData.last_name,
+      profilePicture: toNullIfEmpty(formData.profile_picture),
       title: toNullIfEmpty(formData.title),
       organization: toNullIfEmpty(formData.organization),
       mobilePhone: formData.mobile_phone,

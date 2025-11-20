@@ -36,6 +36,11 @@ export const FORM_DEFAULTS = {
     placeholder: 'Last name',
     hidden: false,
   },
+  profilePicture: {
+    label: 'Profile Picture',
+    helperText: 'Upload a profile picture (optional)',
+    hidden: false,
+  },
   jobTitle: {
     label: 'Title',
     placeholder: 'Your title or position',

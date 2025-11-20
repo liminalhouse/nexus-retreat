@@ -2,6 +2,7 @@
 
 import {useState} from 'react'
 import EditModal from './EditModal'
+import Avatar from '@/app/components/Avatar'
 import {
   formatAccommodations,
   formatDinnerAttendance,
@@ -17,7 +18,7 @@ type ColumnConfig = {
 }
 
 const GRID_TEMPLATE_COLUMNS =
-  'minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(200px, 2fr) minmax(150px, 1.2fr) minmax(150px, 1.5fr) minmax(180px, 1.5fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(180px, 1.5fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(180px, 1.5fr) minmax(120px, 1fr)'
+  'minmax(65px, 1fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(200px, 2fr) minmax(150px, 1.2fr) minmax(150px, 1.5fr) minmax(180px, 1.5fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(180px, 1.5fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(180px, 1.5fr) minmax(120px, 1fr)'
 
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('en-US', {
@@ -28,6 +29,19 @@ const formatDate = (dateStr: string) => {
 }
 
 const columns: ColumnConfig[] = [
+  {
+    key: 'avatar',
+    label: '',
+    width: 'minmax(60px, 60px)',
+    render: (reg) => (
+      <Avatar
+        src={reg.profile_picture}
+        firstName={reg.first_name}
+        lastName={reg.last_name}
+        size="md"
+      />
+    ),
+  },
   {
     key: 'date',
     label: 'Date',
@@ -241,7 +255,7 @@ export default function RegistrationsTable({
                   {columns.map((column) => (
                     <div
                       key={column.key}
-                      className="bg-white group-hover:bg-blue-50 px-6 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto"
+                      className="bg-white group-hover:bg-blue-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto"
                     >
                       {column.render(registration)}
                     </div>

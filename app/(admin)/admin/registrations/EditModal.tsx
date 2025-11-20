@@ -1,6 +1,7 @@
 'use client'
 
 import {useState} from 'react'
+import Avatar from '@/app/components/Avatar'
 import {
   formatAccommodations,
   formatDinnerAttendance,
@@ -23,6 +24,7 @@ export default function EditModal({
   const [formData, setFormData] = useState<Registration>(registration)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
 
   const handleChange = (field: keyof Registration, value: any) => {
     setFormData((prev) => ({...prev, [field]: value}))
@@ -36,6 +38,52 @@ export default function EditModal({
         : currentValues.filter((v) => v !== value)
       return {...prev, [field]: newValues}
     })
+  }
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size must be less than 5MB')
+      return
+    }
+
+    setIsUploading(true)
+    setError(null)
+
+    try {
+      const uploadFormData = new FormData()
+      uploadFormData.append('file', file)
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadFormData,
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to upload image')
+        setIsUploading(false)
+        return
+      }
+
+      // Update form data with the uploaded image URL
+      handleChange('profile_picture', data.url)
+      setIsUploading(false)
+    } catch (err) {
+      console.error('Upload error:', err)
+      setError('Failed to upload image. Please try again.')
+      setIsUploading(false)
+    }
   }
 
   const handleSave = async () => {
@@ -125,6 +173,42 @@ export default function EditModal({
           {/* Personal Details */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Personal Details</h3>
+
+            {/* Profile Picture */}
+            <div className="mb-6 flex items-center gap-6">
+              <Avatar
+                src={formData.profile_picture}
+                firstName={formData.first_name}
+                lastName={formData.last_name}
+                size="lg"
+              />
+              <div className="flex-1">
+                <label className={labelClass}>Profile Picture</label>
+                <div className="flex items-center gap-3">
+                  <label className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer text-sm font-medium text-gray-700">
+                    {isUploading ? 'Uploading...' : 'Choose File'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      disabled={isUploading}
+                    />
+                  </label>
+                  {formData.profile_picture && (
+                    <button
+                      onClick={() => handleChange('profile_picture', null)}
+                      className="text-sm text-red-600 hover:text-red-700"
+                      disabled={isUploading}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Max 5MB, JPG, PNG, or GIF</p>
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={labelClass}>First Name</label>
@@ -429,7 +513,8 @@ export default function EditModal({
                   ))}
                 </div>
               </div>
-              <div className="col-span-2">
+              {/* TODO: Hide activities */}
+              {/* <div className="col-span-2">
                 <label className={labelClass}>Activities</label>
                 <div className="space-y-2">
                   {ACTIVITY_OPTIONS.map((option) => (
@@ -446,7 +531,7 @@ export default function EditModal({
                     </label>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -491,7 +576,7 @@ export default function EditModal({
                           handleCheckboxChange(
                             'guest_accommodations',
                             option.value,
-                            e.target.checked
+                            e.target.checked,
                           )
                         }
                         className="mr-2"
@@ -515,7 +600,7 @@ export default function EditModal({
                           handleCheckboxChange(
                             'guest_dinner_attendance',
                             option.value,
-                            e.target.checked
+                            e.target.checked,
                           )
                         }
                         className="mr-2"
@@ -527,7 +612,8 @@ export default function EditModal({
                   ))}
                 </div>
               </div>
-              <div className="col-span-2">
+              {/* TODO: Hide activities */}
+              {/* <div className="col-span-2">
                 <label className={labelClass}>Guest Activities</label>
                 <div className="space-y-2">
                   {ACTIVITY_OPTIONS.map((option) => (
@@ -544,7 +630,7 @@ export default function EditModal({
                     </label>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 

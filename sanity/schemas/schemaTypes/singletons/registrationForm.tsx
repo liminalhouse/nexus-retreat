@@ -191,6 +191,36 @@ export const registrationForm = defineType({
       ],
     }),
 
+    // Profile Picture
+    defineField({
+      name: 'profilePicture',
+      title: 'Profile Picture',
+      type: 'object',
+      group: 'step1',
+      fields: [
+        {
+          name: 'label',
+          title: 'Label',
+          type: 'string',
+          initialValue: FORM_DEFAULTS.profilePicture.label,
+        },
+        {
+          name: 'helperText',
+          title: 'Helper Text',
+          type: 'text',
+          rows: 2,
+          initialValue: FORM_DEFAULTS.profilePicture.helperText,
+        },
+        {
+          name: 'hidden',
+          title: 'Hide Field',
+          type: 'boolean',
+          description: 'Toggle to hide this field from the registration form',
+          initialValue: FORM_DEFAULTS.profilePicture.hidden,
+        },
+      ],
+    }),
+
     // Title
     defineField({
       name: 'jobTitle',

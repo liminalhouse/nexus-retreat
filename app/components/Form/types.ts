@@ -17,6 +17,7 @@ export interface FormField {
     | 'checkbox'
     | 'checkboxGroup'
     | 'radio'
+    | 'file'
   label?: string
   name?: string
   placeholder?: string
@@ -25,6 +26,7 @@ export interface FormField {
   options?: FormFieldOption[]
   defaultValue?: string | string[] | boolean
   hidden?: boolean
+  accept?: string
 }
 
 export interface FieldGroup {

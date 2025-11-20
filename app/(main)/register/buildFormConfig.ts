@@ -108,6 +108,7 @@ export function buildFormConfig(sanityContent: any): FormConfig {
   updateField('email', sanityContent.email)
   updateField('first_name', sanityContent.firstName)
   updateField('last_name', sanityContent.lastName)
+  updateField('profile_picture', sanityContent.profilePicture)
   updateField('title', sanityContent.jobTitle)
   updateField('organization', sanityContent.organization)
   updateField('mobile_phone', sanityContent.mobilePhone)

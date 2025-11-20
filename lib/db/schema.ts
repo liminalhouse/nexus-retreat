@@ -13,6 +13,7 @@ export const registrations = pgTable('registrations', {
   email: text('email').notNull().unique(),
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
+  profilePicture: text('profile_picture'),
   title: text('title'),
   organization: text('organization'),
   mobilePhone: text('mobile_phone').notNull(),
