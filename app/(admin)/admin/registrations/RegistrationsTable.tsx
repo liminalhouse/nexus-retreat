@@ -219,7 +219,7 @@ export default function RegistrationsTable({
   })
 
   return (
-    <>
+    <div className="container">
       <div className="ml-6 mb-4">
         <input
           type="text"
@@ -292,6 +292,6 @@ export default function RegistrationsTable({
           isAdminView={true}
         />
       )}
-    </>
+    </div>
   )
 }

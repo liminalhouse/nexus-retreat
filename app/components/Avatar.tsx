@@ -6,6 +6,20 @@ interface AvatarProps {
   className?: string
 }
 
+const randomizedGradients = [
+  'from-blue-500 to-purple-600',
+  'from-green-400 to-blue-500',
+  'from-pink-500 to-purple-500',
+  'from-yellow-400 to-orange-500',
+  'from-teal-400 to-cyan-500',
+  'from-indigo-400 to-purple-500',
+]
+
+const getGradientFromName = (name: string) => {
+  const hash = name.length + name.charCodeAt(0) + name.charCodeAt(name.length - 1) + 1
+  return randomizedGradients[hash % randomizedGradients.length]
+}
+
 export default function Avatar({
   src,
   firstName,
@@ -32,7 +46,7 @@ export default function Avatar({
   // Fallback to initials with a nice gradient background
   return (
     <div
-      className={`rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold ${sizeClasses[size]} ${className}`}
+      className={`rounded-full bg-gradient-to-br ${getGradientFromName(firstName)} flex items-center justify-center text-white font-semibold ${sizeClasses[size]} ${className}`}
     >
       {initials}
     </div>
