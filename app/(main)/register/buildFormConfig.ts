@@ -34,7 +34,7 @@ export function buildFormConfig(sanityContent: any): FormConfig {
     successMessage: sanityContent.successMessage,
   }
 
-  // Helper function to update field labels/placeholders/helperText
+  // Helper function to update field labels/placeholders/helperText and hidden state
   const updateField = (fieldName: string, sanityField: any) => {
     // Find the field across all steps
     const steps = [config.step1, config.step2, config.step3]
@@ -47,8 +47,54 @@ export function buildFormConfig(sanityContent: any): FormConfig {
           if (sanityField.label) field.label = sanityField.label
           if (sanityField.placeholder) field.placeholder = sanityField.placeholder
           if (sanityField.helperText) field.helperText = sanityField.helperText
+          if (sanityField.hidden !== undefined) field.hidden = sanityField.hidden
           return
         }
+      }
+    }
+  }
+
+  // Helper function to update a field group (section) and mark it as hidden if needed
+  const updateFieldGroup = (
+    stepKey: 'step1' | 'step2' | 'step3',
+    groupIndex: number,
+    sanitySection: any,
+  ) => {
+    const step = config[stepKey]
+    if (step?.fieldGroups?.[groupIndex] && sanitySection) {
+      if (sanitySection.sectionTitle) {
+        step.fieldGroups[groupIndex].groupTitle = sanitySection.sectionTitle
+      }
+      if (sanitySection.sectionDescription) {
+        step.fieldGroups[groupIndex].groupDescription = sanitySection.sectionDescription
+      }
+      if (sanitySection.hidden) {
+        step.fieldGroups[groupIndex].hidden = true
+      }
+    }
+  }
+
+  // Helper function to find and update a field group by title
+  const updateFieldGroupByTitle = (
+    stepKey: 'step1' | 'step2' | 'step3',
+    groupTitle: string,
+    sanityFieldData: any,
+  ) => {
+    const step = config[stepKey]
+    if (!step?.fieldGroups) return
+
+    const group = step.fieldGroups.find((g) => g.groupTitle === groupTitle)
+    if (group && sanityFieldData) {
+      // Update the field in this group
+      const field = group.fields?.[0] // Most of these groups have a single field
+      if (field) {
+        if (sanityFieldData.label) field.label = sanityFieldData.label
+        if (sanityFieldData.helperText) field.helperText = sanityFieldData.helperText
+        if (sanityFieldData.hidden) field.hidden = sanityFieldData.hidden
+      }
+      // Also mark the entire group as hidden if the field is hidden
+      if (sanityFieldData.hidden) {
+        group.hidden = true
       }
     }
   }
@@ -68,10 +114,7 @@ export function buildFormConfig(sanityContent: any): FormConfig {
 
   // Update address fields
   if (sanityContent.address) {
-    // Update section title
-    if (config.step1?.fieldGroups?.[1] && sanityContent.address.sectionTitle) {
-      config.step1.fieldGroups[1].groupTitle = sanityContent.address.sectionTitle
-    }
+    updateFieldGroup('step1', 1, sanityContent.address)
     updateField('address_line_1', sanityContent.address.line1)
     updateField('address_line_2', sanityContent.address.line2)
     updateField('city', sanityContent.address.city)
@@ -86,14 +129,8 @@ export function buildFormConfig(sanityContent: any): FormConfig {
   }
 
   // Update Step 2 - Emergency Contact
-  if (sanityContent.emergencyContact && config.step2?.fieldGroups?.[0]) {
-    if (sanityContent.emergencyContact.sectionTitle) {
-      config.step2.fieldGroups[0].groupTitle = sanityContent.emergencyContact.sectionTitle
-    }
-    if (sanityContent.emergencyContact.sectionDescription) {
-      config.step2.fieldGroups[0].groupDescription =
-        sanityContent.emergencyContact.sectionDescription
-    }
+  if (sanityContent.emergencyContact) {
+    updateFieldGroup('step2', 0, sanityContent.emergencyContact)
     updateField('emergency_contact_name', sanityContent.emergencyContact.name)
     updateField('emergency_contact_relation', sanityContent.emergencyContact.relation)
     updateField('emergency_contact_email', sanityContent.emergencyContact.email)
@@ -101,13 +138,8 @@ export function buildFormConfig(sanityContent: any): FormConfig {
   }
 
   // Update Step 2 - Assistant
-  if (sanityContent.assistant && config.step2?.fieldGroups?.[1]) {
-    if (sanityContent.assistant.sectionTitle) {
-      config.step2.fieldGroups[1].groupTitle = sanityContent.assistant.sectionTitle
-    }
-    if (sanityContent.assistant.sectionDescription) {
-      config.step2.fieldGroups[1].groupDescription = sanityContent.assistant.sectionDescription
-    }
+  if (sanityContent.assistant) {
+    updateFieldGroup('step2', 1, sanityContent.assistant)
     updateField('assistant_name', sanityContent.assistant.name)
     updateField('assistant_title', sanityContent.assistant.title)
     updateField('assistant_email', sanityContent.assistant.email)
@@ -115,13 +147,8 @@ export function buildFormConfig(sanityContent: any): FormConfig {
   }
 
   // Update Step 2 - Guest
-  if (sanityContent.guest && config.step2?.fieldGroups?.[2]) {
-    if (sanityContent.guest.sectionTitle) {
-      config.step2.fieldGroups[2].groupTitle = sanityContent.guest.sectionTitle
-    }
-    if (sanityContent.guest.sectionDescription) {
-      config.step2.fieldGroups[2].groupDescription = sanityContent.guest.sectionDescription
-    }
+  if (sanityContent.guest) {
+    updateFieldGroup('step2', 2, sanityContent.guest)
     updateField('guest_name', sanityContent.guest.name)
     updateField('guest_relation', sanityContent.guest.relation)
     updateField('guest_email', sanityContent.guest.email)
@@ -134,108 +161,51 @@ export function buildFormConfig(sanityContent: any): FormConfig {
 
   // Update Step 3 - Attendee Details
   if (sanityContent.attendeeDetails) {
-    if (config.step3?.fieldGroups?.[0] && sanityContent.attendeeDetails.sectionTitle) {
-      config.step3.fieldGroups[0].groupTitle = sanityContent.attendeeDetails.sectionTitle
-    }
+    updateFieldGroup('step3', 0, sanityContent.attendeeDetails)
     updateField('dietary_restrictions', sanityContent.attendeeDetails.dietaryRestrictions)
     updateField('jacket_size', sanityContent.attendeeDetails.jacketSize)
 
-    // Update accommodations
-    const accommodationsField = config.step3?.fieldGroups
-      ?.find((g) => g.groupTitle === 'Accommodations')
-      ?.fields?.find((f) => f.name === 'accommodations')
-    if (accommodationsField && sanityContent.attendeeDetails.accommodations) {
-      if (sanityContent.attendeeDetails.accommodations.label) {
-        accommodationsField.label = sanityContent.attendeeDetails.accommodations.label
-      }
-      if (sanityContent.attendeeDetails.accommodations.helperText) {
-        accommodationsField.helperText = sanityContent.attendeeDetails.accommodations.helperText
-      }
-    }
-
-    // Update dinner attendance
-    const dinnerField = config.step3?.fieldGroups
-      ?.find((g) => g.groupTitle === 'Dinner Attendance')
-      ?.fields?.find((f) => f.name === 'dinner_attendance')
-    if (dinnerField && sanityContent.attendeeDetails.dinnerAttendance) {
-      if (sanityContent.attendeeDetails.dinnerAttendance.label) {
-        dinnerField.label = sanityContent.attendeeDetails.dinnerAttendance.label
-      }
-      if (sanityContent.attendeeDetails.dinnerAttendance.helperText) {
-        dinnerField.helperText = sanityContent.attendeeDetails.dinnerAttendance.helperText
-      }
-    }
-
-    // Update activities
-    const activitiesField = config.step3?.fieldGroups
-      ?.find((g) => g.groupTitle === 'Activities')
-      ?.fields?.find((f) => f.name === 'activities')
-    if (activitiesField && sanityContent.attendeeDetails.activities) {
-      if (sanityContent.attendeeDetails.activities.label) {
-        activitiesField.label = sanityContent.attendeeDetails.activities.label
-      }
-      if (sanityContent.attendeeDetails.activities.helperText) {
-        activitiesField.helperText = sanityContent.attendeeDetails.activities.helperText
-      }
-    }
+    // Update accommodations, dinner, and activities
+    updateFieldGroupByTitle('step3', 'Accommodations', sanityContent.attendeeDetails.accommodations)
+    updateFieldGroupByTitle(
+      'step3',
+      'Dinner Attendance',
+      sanityContent.attendeeDetails.dinnerAttendance,
+    )
+    updateFieldGroupByTitle('step3', 'Activities', sanityContent.attendeeDetails.activities)
   }
 
   // Update Step 3 - Guest Event Details
   if (sanityContent.guestEventDetails) {
-    // Find the guest event details group
+    // Update guest details section title and hidden state
     const guestDetailsGroupIndex = config.step3?.fieldGroups?.findIndex(
       (g) => g.showIfFieldHasValue && g.fields?.some((f) => f.name === 'guest_dietary_restrictions'),
     )
-
     if (guestDetailsGroupIndex !== undefined && guestDetailsGroupIndex >= 0) {
       const guestGroup = config.step3?.fieldGroups?.[guestDetailsGroupIndex]
       if (guestGroup && sanityContent.guestEventDetails.sectionTitle) {
         guestGroup.groupTitle = sanityContent.guestEventDetails.sectionTitle
+      }
+      if (guestGroup && sanityContent.guestEventDetails.hidden) {
+        guestGroup.hidden = true
       }
     }
 
     updateField('guest_dietary_restrictions', sanityContent.guestEventDetails.dietaryRestrictions)
     updateField('guest_jacket_size', sanityContent.guestEventDetails.jacketSize)
 
-    // Update guest accommodations
-    const guestAccommodationsField = config.step3?.fieldGroups
-      ?.find((g) => g.showIfFieldHasValue && g.groupTitle?.includes('Guest Accommodations'))
-      ?.fields?.find((f) => f.name === 'guest_accommodations')
-    if (guestAccommodationsField && sanityContent.guestEventDetails.accommodations) {
-      if (sanityContent.guestEventDetails.accommodations.label) {
-        guestAccommodationsField.label = sanityContent.guestEventDetails.accommodations.label
-      }
-      if (sanityContent.guestEventDetails.accommodations.helperText) {
-        guestAccommodationsField.helperText =
-          sanityContent.guestEventDetails.accommodations.helperText
-      }
-    }
-
-    // Update guest dinner attendance
-    const guestDinnerField = config.step3?.fieldGroups
-      ?.find((g) => g.showIfFieldHasValue && g.groupTitle?.includes('Guest Dinner'))
-      ?.fields?.find((f) => f.name === 'guest_dinner_attendance')
-    if (guestDinnerField && sanityContent.guestEventDetails.dinnerAttendance) {
-      if (sanityContent.guestEventDetails.dinnerAttendance.label) {
-        guestDinnerField.label = sanityContent.guestEventDetails.dinnerAttendance.label
-      }
-      if (sanityContent.guestEventDetails.dinnerAttendance.helperText) {
-        guestDinnerField.helperText = sanityContent.guestEventDetails.dinnerAttendance.helperText
-      }
-    }
-
-    // Update guest activities
-    const guestActivitiesField = config.step3?.fieldGroups
-      ?.find((g) => g.showIfFieldHasValue && g.groupTitle?.includes('Guest Activities'))
-      ?.fields?.find((f) => f.name === 'guest_activities')
-    if (guestActivitiesField && sanityContent.guestEventDetails.activities) {
-      if (sanityContent.guestEventDetails.activities.label) {
-        guestActivitiesField.label = sanityContent.guestEventDetails.activities.label
-      }
-      if (sanityContent.guestEventDetails.activities.helperText) {
-        guestActivitiesField.helperText = sanityContent.guestEventDetails.activities.helperText
-      }
-    }
+    // Update guest accommodations, dinner, and activities
+    updateFieldGroupByTitle(
+      'step3',
+      'Guest Accommodations',
+      sanityContent.guestEventDetails.accommodations,
+    )
+    updateFieldGroupByTitle(
+      'step3',
+      'Guest Dinner Attendance',
+      sanityContent.guestEventDetails.dinnerAttendance,
+    )
+    updateFieldGroupByTitle('step3', 'Guest Activities', sanityContent.guestEventDetails.activities)
   }
 
   return config

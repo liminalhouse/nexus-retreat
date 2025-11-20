@@ -21,6 +21,9 @@ export default function FormStepRenderer({
   const fieldGroups = step?.fieldGroups || []
 
   const shouldShowGroup = (group: any) => {
+    // Don't show if explicitly hidden
+    if (group?.hidden) return false
+
     if (!group?.showIfFieldHasValue) return true
 
     const fieldsToCheck = Array.isArray(group.showIfFieldHasValue)
@@ -55,25 +58,27 @@ export default function FormStepRenderer({
 
             {/* Fields */}
             <div className="space-y-6">
-              {group?.fields?.map((field, fieldIndex) => {
-                const fieldName = field?.name || ''
-                const hasError = !!fieldErrors[fieldName]
+              {group?.fields
+                ?.filter((field) => !field?.hidden) // Filter out hidden fields
+                .map((field, fieldIndex) => {
+                  const fieldName = field?.name || ''
+                  const hasError = !!fieldErrors[fieldName]
 
-                return (
-                  <div key={fieldIndex}>
-                    <FormFieldRenderer
-                      field={field}
-                      value={formData[fieldName]}
-                      onChange={(value) => onFieldChange(fieldName, value)}
-                      onBlur={() => onFieldBlur(fieldName)}
-                      error={fieldErrors[fieldName]}
-                    />
-                    {hasError && (
-                      <p className="mt-1 text-sm text-red-600">{fieldErrors[fieldName]}</p>
-                    )}
-                  </div>
-                )
-              })}
+                  return (
+                    <div key={fieldIndex}>
+                      <FormFieldRenderer
+                        field={field}
+                        value={formData[fieldName]}
+                        onChange={(value) => onFieldChange(fieldName, value)}
+                        onBlur={() => onFieldBlur(fieldName)}
+                        error={fieldErrors[fieldName]}
+                      />
+                      {hasError && (
+                        <p className="mt-1 text-sm text-red-600">{fieldErrors[fieldName]}</p>
+                      )}
+                    </div>
+                  )
+                })}
             </div>
           </div>
         )

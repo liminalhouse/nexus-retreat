@@ -24,6 +24,7 @@ export interface FormField {
   required?: boolean
   options?: FormFieldOption[]
   defaultValue?: string | string[] | boolean
+  hidden?: boolean
 }
 
 export interface FieldGroup {
@@ -31,6 +32,7 @@ export interface FieldGroup {
   groupDescription?: string
   fields?: FormField[]
   showIfFieldHasValue?: string | string[]
+  hidden?: boolean
 }
 
 export interface FormStep {

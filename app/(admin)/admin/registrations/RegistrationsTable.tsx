@@ -132,12 +132,13 @@ const columns: ColumnConfig[] = [
     width: 'minmax(120px, 1fr)',
     render: (reg) => formatDinnerAttendance(reg.dinner_attendance),
   },
-  {
-    key: 'activities',
-    label: 'Activities',
-    width: 'minmax(180px, 1.5fr)',
-    render: (reg) => formatActivities(reg.activities),
-  },
+  // TODO: Hide activities for now
+  // {
+  //   key: 'activities',
+  //   label: 'Activities',
+  //   width: 'minmax(180px, 1.5fr)',
+  //   render: (reg) => formatActivities(reg.activities),
+  // },
   {
     key: 'guest_dietary',
     label: 'Guest Dietary',
@@ -162,12 +163,13 @@ const columns: ColumnConfig[] = [
     width: 'minmax(120px, 1fr)',
     render: (reg) => formatDinnerAttendance(reg.guest_dinner_attendance),
   },
-  {
-    key: 'guest_activities',
-    label: 'Guest Activities',
-    width: 'minmax(180px, 1.5fr)',
-    render: (reg) => formatActivities(reg.guest_activities),
-  },
+  // TODO: Hide guest activities for now
+  // {
+  //   key: 'guest_activities',
+  //   label: 'Guest Activities',
+  //   width: 'minmax(180px, 1.5fr)',
+  //   render: (reg) => formatActivities(reg.guest_activities),
+  // },
 ]
 
 export default function RegistrationsTable({
@@ -181,7 +183,7 @@ export default function RegistrationsTable({
 
   const handleUpdateRegistration = (updatedRegistration: Registration) => {
     setRegistrations((prev) =>
-      prev.map((reg) => (reg.id === updatedRegistration.id ? updatedRegistration : reg))
+      prev.map((reg) => (reg.id === updatedRegistration.id ? updatedRegistration : reg)),
     )
   }
 
@@ -198,7 +200,7 @@ export default function RegistrationsTable({
 
   return (
     <>
-      <div className="container ml-6 mb-4">
+      <div className="ml-6 mb-4">
         <input
           type="text"
           placeholder="Search by name, email, organization, or phone..."
