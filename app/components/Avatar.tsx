@@ -37,13 +37,24 @@ export default function Avatar({
     lg: 'h-12 w-12 text-base',
   }
 
+  const sizePixels = {
+    sm: 32,
+    md: 40,
+    lg: 48,
+  }
+
   if (src) {
+    const pixelSize = sizePixels[size]
     return (
-      <div className={`overflow-hidden rounded-full ${sizeClasses[size]} ${className}`}>
+      <div
+        className={`relative overflow-hidden rounded-full flex-shrink-0 ${sizeClasses[size]} ${className}`}
+      >
         <Image
           src={src}
           alt={`${firstName} ${lastName}`}
-          className={`object-cover w-full h-full`}
+          width={pixelSize}
+          height={pixelSize}
+          className="w-full h-full object-cover"
         />
       </div>
     )

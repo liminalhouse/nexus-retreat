@@ -326,11 +326,15 @@ export default function FormFieldRenderer({
           />
           {uploading && <span className="text-sm text-gray-600">Uploading...</span>}
           {value && !uploading && (
-            <Image
-              src={value}
-              alt="Preview"
-              className="h-12 w-12 rounded-full object-cover border-2 border-gray-200"
-            />
+            <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-gray-200 flex-shrink-0">
+              <Image
+                src={value}
+                alt="Preview"
+                width={48}
+                height={48}
+                className="w-full h-full object-cover"
+              />
+            </div>
           )}
         </div>
         {uploadError && <p className="mt-2 text-sm text-red-600">{uploadError}</p>}
