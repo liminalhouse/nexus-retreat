@@ -27,9 +27,36 @@ export default function EditModal({
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [originalData] = useState<Registration>(registration)
 
   const handleChange = (field: keyof Registration, value: any) => {
     setFormData((prev) => ({...prev, [field]: value}))
+  }
+
+  // Check if form data has changed from original
+  const hasChanges = () => {
+    // Compare all fields, handling nulls and arrays properly
+    const fields = Object.keys(formData) as (keyof Registration)[]
+    return fields.some((key) => {
+      const original = originalData[key]
+      const current = formData[key]
+
+      // Handle array comparisons
+      if (Array.isArray(original) && Array.isArray(current)) {
+        return JSON.stringify(original) !== JSON.stringify(current)
+      }
+
+      // Handle null/undefined comparisons
+      if (original === null || original === undefined) {
+        return current !== null && current !== undefined && current !== ''
+      }
+      if (current === null || current === undefined || current === '') {
+        return original !== null && original !== undefined && original !== ''
+      }
+
+      return original !== current
+    })
   }
 
   const handleCheckboxChange = (field: keyof Registration, value: string, checked: boolean) => {
@@ -88,7 +115,12 @@ export default function EditModal({
     }
   }
 
-  const handleSave = async () => {
+  const handleSave = () => {
+    setShowConfirmation(true)
+  }
+
+  const handleConfirmSave = async () => {
+    setShowConfirmation(false)
     setIsSaving(true)
     setError(null)
 
@@ -684,13 +716,50 @@ export default function EditModal({
           </button>
           <button
             onClick={handleSave}
-            className="px-6 py-2 bg-nexus-navy text-white rounded-lg hover:bg-nexus-navy-dark disabled:opacity-50"
-            disabled={isSaving}
+            className="px-6 py-2 bg-nexus-navy text-white rounded-lg not-disabled:hover:bg-nexus-navy-dark disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSaving || !hasChanges()}
+            title={!hasChanges() ? 'No changes to save' : ''}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmation && (
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+          onClick={() => setShowConfirmation(false)}
+        >
+          <div
+            className="bg-white rounded-lg max-w-md w-full mx-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Confirm Changes</h3>
+              <p className="text-gray-600 mb-6">
+                Are you sure you want to update this registration info?
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowConfirmation(false)}
+                  className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  disabled={isSaving}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmSave}
+                  className="px-6 py-2 bg-nexus-navy text-white rounded-lg hover:bg-nexus-navy-dark disabled:opacity-50"
+                  disabled={isSaving}
+                >
+                  {isSaving ? 'Saving...' : 'Confirm & Save'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
