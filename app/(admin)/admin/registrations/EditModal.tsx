@@ -16,10 +16,12 @@ export default function EditModal({
   registration,
   onClose,
   onSave,
+  isAdminView = false,
 }: {
   registration: Registration
   onClose: () => void
   onSave?: (updatedRegistration: Registration) => void
+  isAdminView?: boolean
 }) {
   const [formData, setFormData] = useState<Registration>(registration)
   const [isSaving, setIsSaving] = useState(false)
@@ -91,12 +93,20 @@ export default function EditModal({
     setError(null)
 
     try {
+      // If not admin view, exclude admin_notes from the update
+      const dataToSend = isAdminView
+        ? formData
+        : {
+            ...formData,
+            admin_notes: undefined, // Don't send admin_notes if not admin
+          }
+
       const response = await fetch(`/api/registration/${formData.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       })
 
       const data = await response.json()
@@ -633,6 +643,25 @@ export default function EditModal({
               </div> */}
             </div>
           </div>
+          {isAdminView && (
+            <>
+              <hr className="my-6 border-t border-gray-200 w-[800px] mx-auto" />
+              {/* Admin Notes */}
+              <div>
+                <h3 className="text-lg font-semibold text-blue-700 mb-3">Admin Notes</h3>
+                <div>
+                  <label className={labelClass}>Internal Notes (Visible to Admins Only)</label>
+                  <textarea
+                    value={formData.admin_notes || ''}
+                    onChange={(e) => handleChange('admin_notes', e.target.value)}
+                    className={`${inputClass} bg-yellow-50`}
+                    rows={4}
+                    placeholder="Add any internal notes or comments about this registration..."
+                  />
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Metadata */}
           <div className="bg-gray-50 p-4 rounded-lg">

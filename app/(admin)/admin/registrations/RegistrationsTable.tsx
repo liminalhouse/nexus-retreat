@@ -18,7 +18,7 @@ type ColumnConfig = {
 }
 
 const GRID_TEMPLATE_COLUMNS =
-  'minmax(65px, 1fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(200px, 2fr) minmax(150px, 1.2fr) minmax(150px, 1.5fr) minmax(180px, 1.5fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(180px, 1.5fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(180px, 1.5fr) minmax(120px, 1fr)'
+  'minmax(65px, 1fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(200px, 2fr) minmax(150px, 1.2fr) minmax(150px, 1.5fr) minmax(180px, 1.5fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(200px, 2fr) minmax(120px, 1fr)'
 
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('en-US', {
@@ -184,6 +184,12 @@ const columns: ColumnConfig[] = [
   //   width: 'minmax(180px, 1.5fr)',
   //   render: (reg) => formatActivities(reg.guest_activities),
   // },
+  {
+    key: 'admin_notes',
+    label: 'Admin Notes (not visible to registrant)',
+    width: 'minmax(200px, 2fr)',
+    render: (reg) => <span className="text-xs">{reg.admin_notes || '-'}</span>,
+  },
 ]
 
 export default function RegistrationsTable({
@@ -255,7 +261,7 @@ export default function RegistrationsTable({
                   {columns.map((column) => (
                     <div
                       key={column.key}
-                      className="bg-white group-hover:bg-blue-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto"
+                      className={`${column.key === 'admin_notes' ? 'bg-yellow-50' : 'bg-white'} group-hover:bg-blue-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto`}
                     >
                       {column.render(registration)}
                     </div>
@@ -283,6 +289,7 @@ export default function RegistrationsTable({
           registration={selectedRegistration}
           onClose={() => setSelectedRegistration(null)}
           onSave={handleUpdateRegistration}
+          isAdminView={true}
         />
       )}
     </>

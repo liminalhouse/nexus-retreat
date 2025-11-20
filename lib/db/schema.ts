@@ -56,6 +56,9 @@ export const registrations = pgTable('registrations', {
   guestAccommodations: jsonb('guest_accommodations').$type<string[]>(),
   guestDinnerAttendance: jsonb('guest_dinner_attendance').$type<string[]>(),
   guestActivities: jsonb('guest_activities').$type<string[]>(),
+
+  // Admin Only
+  adminNotes: text('admin_notes'),
 })
 
 export type Registration = typeof registrations.$inferSelect

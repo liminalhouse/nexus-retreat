@@ -1,0 +1,1 @@
+ALTER TABLE "registrations" ADD COLUMN "admin_notes" text;

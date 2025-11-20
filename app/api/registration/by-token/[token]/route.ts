@@ -30,12 +30,14 @@ export async function GET(
     const registration = result[0]
 
     // Map camelCase to snake_case for frontend compatibility
+    // NOTE: admin_notes is intentionally excluded from user-facing API
     const formattedRegistration = {
       id: registration.id,
       created_at: registration.createdAt.toISOString(),
       email: registration.email,
       first_name: registration.firstName,
       last_name: registration.lastName,
+      profile_picture: registration.profilePicture,
       title: registration.title,
       organization: registration.organization,
       mobile_phone: registration.mobilePhone,

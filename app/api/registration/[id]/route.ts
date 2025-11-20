@@ -89,6 +89,11 @@ export async function PATCH(
       updatedAt: new Date(),
     }
 
+    // Only update admin_notes if explicitly provided (admin users only)
+    if (formData.admin_notes !== undefined) {
+      updateData.adminNotes = toNullIfEmpty(formData.admin_notes)
+    }
+
     // Update the registration in the database
     const result = await db
       .update(registrations)

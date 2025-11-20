@@ -118,7 +118,12 @@ export default function EditRegistrationPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <EditModal registration={registration} onClose={() => router.push('/')} onSave={handleSave} />
+      <EditModal
+        registration={registration}
+        onClose={() => router.push('/')}
+        onSave={handleSave}
+        isAdminView={false}
+      />
     </div>
   )
 }
