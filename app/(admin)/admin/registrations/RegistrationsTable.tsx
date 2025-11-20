@@ -219,8 +219,8 @@ export default function RegistrationsTable({
   })
 
   return (
-    <div className="container">
-      <div className="ml-6 mb-4">
+    <div className="mt-2 sm:mx-auto lg:mx-4 mb-20">
+      <div className="mb-4">
         <input
           type="text"
           placeholder="Search by name, email, organization, or phone..."
@@ -229,7 +229,7 @@ export default function RegistrationsTable({
           className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
         />
       </div>
-      <div className="bg-white rounded-sm shadow overflow-hidden ml-6">
+      <div className="bg-white rounded-sm shadow overflow-hidden">
         <div className="overflow-x-auto">
           <div className="min-w-full">
             {/* Header */}

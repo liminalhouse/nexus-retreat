@@ -55,6 +55,7 @@ export default async function AdminRegistrations() {
       guest_accommodations: reg.guestAccommodations,
       guest_dinner_attendance: reg.guestDinnerAttendance,
       guest_activities: reg.guestActivities,
+      admin_notes: reg.adminNotes,
     }))
   } catch (err) {
     console.error('Error fetching registrations:', err)
@@ -63,8 +64,8 @@ export default async function AdminRegistrations() {
 
   return (
     <>
-      <div className="container mx-auto px-4 mt-10">
-        <div className="mb-6 flex items-center justify-between">
+      <div className="mx-2 md:mx-4 lg:mx-6 px-4 mt-10">
+        <div className="mb-6 flex items-start justify-between flex-col gap-4 sm:items-center sm:flex-row">
           <div>
             <h1 className="text-3xl font-bold mb-2">Registration Data</h1>
             <p className="text-gray-600">
@@ -76,7 +77,7 @@ export default async function AdminRegistrations() {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+          <div className="mt-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
             Error loading registrations: {error.message}
           </div>
         )}
