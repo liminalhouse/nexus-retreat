@@ -2,6 +2,7 @@
 
 import {useState, useEffect, useCallback} from 'react'
 import NexusLogo from '@/app/components/NexusLogo'
+import Avatar from '@/app/components/Avatar'
 import FormStepRenderer from './FormStepRenderer'
 import type {FormConfig} from './types'
 
@@ -340,43 +341,61 @@ export default function Form({config, showLogo = true, showProgress = true}: For
         {/* Registration Summary */}
         <div className="border-t border-gray-200 pt-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-6">Your Registration Details</h3>
-
+          {/* Profile Picture */}
+          <div className="flex-shrink-0 mt-4 mb-8 mx-auto w-full flex justify-center">
+            <Avatar
+              src={formData.profile_picture}
+              firstName={formData.first_name || 'User'}
+              lastName={formData.last_name || 'Name'}
+              size="lg"
+              className="!h-30 !w-30"
+            />
+          </div>
           <div className="space-y-6">
             {/* Personal Information */}
             <div>
               <h4 className="text-sm font-medium text-gray-700 mb-3">Personal Information</h4>
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">First Name:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.first_name || '-'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Last Name:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.last_name || '-'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Email:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.email || '-'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Phone:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.mobile_phone || '-'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Title:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.title || '-'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Organization:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.organization || '-'}
-                  </span>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex gap-6">
+                  {/* Details */}
+                  <div className="flex-1 space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">First Name:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {formData.first_name || '-'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Last Name:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {formData.last_name || '-'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Email:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {formData.email || '-'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Phone:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {formData.mobile_phone || '-'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Title:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {formData.title || '-'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Organization:</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {formData.organization || '-'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

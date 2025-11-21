@@ -47,7 +47,7 @@ export default function Avatar({
     const pixelSize = sizePixels[size]
     return (
       <div
-        className={`relative overflow-hidden rounded-full flex-shrink-0 ${sizeClasses[size]} ${className}`}
+        className={`relative overflow-hidden rounded-full flex-shrink-0 ${sizeClasses[size]} ${className} bg-white border-1 border-gray-200`}
       >
         <Image
           src={src}
