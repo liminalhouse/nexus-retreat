@@ -18,6 +18,9 @@ import {schemaTypes} from './sanity/schemas/schemaTypes'
 import {structure} from './sanity/schemas/structure'
 import {templates} from './sanity/schemas/lib/templates'
 
+// Import custom components
+import {PageNavigator} from './sanity/components/PageNavigator'
+
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET!
 const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-09-25'
@@ -44,6 +47,13 @@ export default defineConfig({
           : PREVIEW_URL,
         previewMode: {
           enable: '/api/draft-mode/enable',
+        },
+      },
+      components: {
+        unstable_navigator: {
+          component: PageNavigator,
+          minWidth: 250,
+          maxWidth: 350,
         },
       },
     }),

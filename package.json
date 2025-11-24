@@ -21,6 +21,7 @@
     "@sanity/assist": "^5.0.2",
     "@sanity/client": "^7.9.0",
     "@sanity/image-url": "^1.1.0",
+    "@sanity/ui": "^3.1.11",
     "@sanity/uuid": "^3.0.2",
     "@sanity/vision": "^4.15.0",
     "@tailwindcss/forms": "^0.5.10",
