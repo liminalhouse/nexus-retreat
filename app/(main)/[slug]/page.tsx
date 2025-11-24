@@ -5,6 +5,7 @@ import PageBuilderPage from '@/app/components/PageBuilder'
 import {sanityFetch} from '@/sanity/lib/live'
 import {getPageQuery, pagesSlugs} from '@/sanity/lib/queries'
 import {GetPageQueryResult} from '@/sanity.types'
+import {getBgColorClass} from '@/lib/utils/bgColor'
 
 type Props = {
   params: Promise<{slug: string}>
@@ -51,10 +52,10 @@ export default async function Page(props: Props) {
     return <div className="py-40">This page does not exist.</div>
   }
 
-  const bg = `bg-nexus-${page.bgColor ?? 'white'}`
+  const bgColorClass = getBgColorClass(page.bgColor)
 
   return (
-    <div className={`${bg} py-12 lg:py-24`}>
+    <div className={bgColorClass + ' py-12 lg:py-24'}>
       <Head>
         <title>{page.heading}</title>
       </Head>

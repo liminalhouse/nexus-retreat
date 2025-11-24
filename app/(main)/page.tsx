@@ -5,6 +5,7 @@ import PageBuilderPage from '@/app/components/PageBuilder'
 import {sanityFetch} from '@/sanity/lib/live'
 import {getPageQuery} from '@/sanity/lib/queries'
 import {GetPageQueryResult} from '@/sanity.types'
+import {getBgColorClass} from '@/lib/utils/bgColor'
 
 /**
  * Generate metadata for the homepage.
@@ -31,10 +32,10 @@ export default async function HomePage() {
     return <div className="py-40">Not found.</div>
   }
 
-  const bg = `bg-nexus-${page.bgColor ?? 'white'}`
+  const bgColorClass = getBgColorClass(page.bgColor)
 
   return (
-    <div className={`${bg}`}>
+    <div className={bgColorClass}>
       <Head>
         <title>{page.heading}</title>
       </Head>
