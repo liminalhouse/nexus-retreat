@@ -39,7 +39,9 @@ export default defineConfig({
     structureTool({structure}),
     presentationTool({
       previewUrl: {
-        origin: PREVIEW_URL,
+        origin: typeof window !== 'undefined' && window.location.origin.includes('vercel.app')
+          ? window.location.origin
+          : PREVIEW_URL,
         previewMode: {
           enable: '/api/draft-mode/enable',
         },
