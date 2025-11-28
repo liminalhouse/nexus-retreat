@@ -26,9 +26,7 @@ const Schedule: React.FC<ScheduleProps> = ({block}) => {
             : 'md:grid-cols-2 lg:grid-cols-5'
 
   return (
-    <div className="relative overflow-hidden">
-      {/* Elegant background with subtle pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-nexus-beige via-white to-nexus-beige opacity-60"></div>
+    <div className="relative overflow-hidden bg-nexus-coral-light/20">
       <div
         className="absolute inset-0"
         style={{
@@ -50,7 +48,7 @@ const Schedule: React.FC<ScheduleProps> = ({block}) => {
 
         {/* Top text */}
         {topText && (
-          <div className="mb-14 md:mb-20 max-w-4xl mx-auto text-center">
+          <div className="mb-14 md:mb-20 max-w-4xl mx-auto text-center md:text-left">
             <p className="text-base md:text-lg lg:text-xl text-gray-700 leading-relaxed font-light">
               {topText}
             </p>
@@ -88,7 +86,7 @@ const Schedule: React.FC<ScheduleProps> = ({block}) => {
         </div>
 
         {/* Desktop: Grid layout */}
-        <div className={`hidden md:grid ${gridColsClass} gap-8 mb-14 md:mb-20`}>
+        <div className={`hidden md:grid ${gridColsClass} gap-8 mb-14 md:mb-20 max-w-4xl mx-auto`}>
           {days.map((day, index) => (
             <div
               key={day._key || index}
@@ -125,8 +123,8 @@ const Schedule: React.FC<ScheduleProps> = ({block}) => {
 
         {/* Bottom text */}
         {bottomText && (
-          <div className="max-w-4xl mx-auto text-center">
-            <p className="text-base md:text-md lg:text-lg text-gray-700 leading-relaxed font-light">
+          <div className="max-w-4xl mx-auto text-center md:text-left">
+            <p className="text-base md:text-lg lg:text-xl text-gray-700 leading-relaxed font-light">
               {bottomText}
             </p>
           </div>

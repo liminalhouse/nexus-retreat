@@ -2,7 +2,7 @@ import './globals.css'
 
 import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata} from 'next'
-import {Geist, Bodoni_Moda} from 'next/font/google'
+import {Inter, Fraunces} from 'next/font/google'
 import {draftMode} from 'next/headers'
 import {VisualEditing, toPlainText} from 'next-sanity'
 import {Toaster} from 'sonner'
@@ -50,24 +50,25 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-const geist = Geist({
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-geist',
+  variable: '--font-inter',
 })
 
-const bodoniModa = Bodoni_Moda({
+const fraunces = Fraunces({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-bodoni',
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-fraunces',
 })
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const {isEnabled: isDraftMode} = await draftMode()
 
   return (
-    <html lang="en" className={`${geist.variable} ${bodoniModa.variable} bg-white text-black`}>
-      <body className={geist.className}>
+    <html lang="en" className={`${inter.variable} ${fraunces.variable} bg-white text-black`}>
+      <body className={inter.className}>
         <PrelineScript />
         <div className="min-h-screen flex flex-col">
           {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
