@@ -87,15 +87,7 @@ export default function Hero({block}: HeroProps) {
         </div>
 
         {/* TODO: Disable link for now */}
-        {process.env.VERCEL_ENV !== 'production' && ctaText && (
-          <Link
-            href={ctaLink}
-            className="inline-block px-8 py-3 bg-nexus-coral text-gray-900 rounded hover:bg-nexus-coral-light transition-colors font-medium"
-          >
-            {'Register now'}
-          </Link>
-        )}
-        {process.env.VERCEL_ENV === 'production' && ctaText && (
+        {ctaText && (
           <div className="inline-block px-8 py-3 bg-nexus-coral text-gray-900 rounded transition-colors font-medium">
             {ctaText}
           </div>
