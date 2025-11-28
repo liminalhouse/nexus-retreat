@@ -12,7 +12,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['var(--font-geist)', 'sans-serif'],
-        serif: ['var(--font-lora)', 'serif'],
+        serif: ['var(--font-bodoni)', 'serif'],
       },
       boxShadow: {
         layer: '0 35px 60px -15px rgba(0, 0, 0, 0.3)',

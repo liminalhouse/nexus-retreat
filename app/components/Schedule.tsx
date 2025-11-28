@@ -42,7 +42,7 @@ const Schedule: React.FC<ScheduleProps> = ({block}) => {
         {/* Heading */}
         {heading && (
           <div className="mb-8 md:mb-12 text-center">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-nexus-navy tracking-wide">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-nexus-navy font-serif">
               {heading}
             </h2>
           </div>

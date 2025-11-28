@@ -2,7 +2,7 @@ import './globals.css'
 
 import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata} from 'next'
-import {Geist, Lora} from 'next/font/google'
+import {Geist, Bodoni_Moda} from 'next/font/google'
 import {draftMode} from 'next/headers'
 import {VisualEditing, toPlainText} from 'next-sanity'
 import {Toaster} from 'sonner'
@@ -56,17 +56,17 @@ const geist = Geist({
   variable: '--font-geist',
 })
 
-const lora = Lora({
+const bodoniModa = Bodoni_Moda({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-lora',
+  variable: '--font-bodoni',
 })
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const {isEnabled: isDraftMode} = await draftMode()
 
   return (
-    <html lang="en" className={`${geist.variable} ${lora.variable} bg-white text-black`}>
+    <html lang="en" className={`${geist.variable} ${bodoniModa.variable} bg-white text-black`}>
       <body className={geist.className}>
         <PrelineScript />
         <div className="min-h-screen flex flex-col">
