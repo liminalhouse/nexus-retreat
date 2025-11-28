@@ -18,8 +18,8 @@ export async function generateMetadata(): Promise<Metadata> {
   })
 
   return {
-    title: page?.name,
-    description: page?.heading,
+    title: page?.name || 'Nexus Retreat',
+    description: page?.heading || 'An exclusive luxury retreat experience',
   } satisfies Metadata
 }
 

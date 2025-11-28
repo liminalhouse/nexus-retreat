@@ -1,6 +1,6 @@
 'use client'
 
-import {PortableText} from '@portabletext/react'
+import CustomPortableText from '@/app/components/PortableText'
 
 interface FaqProps {
   block: {
@@ -67,7 +67,7 @@ export default function Faq({block}: FaqProps) {
                 aria-labelledby={`faq-item-${block._key}-${index}`}
               >
                 <div className="pb-4 px-6">
-                  <PortableText value={faq.answer} />
+                  <CustomPortableText value={faq.answer} />
                 </div>
               </div>
             </div>

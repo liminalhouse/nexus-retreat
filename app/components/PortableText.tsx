@@ -21,6 +21,7 @@ export default function CustomPortableText({
 }) {
   const components: PortableTextComponents = {
     block: {
+      normal: ({children}) => <p className="mb-4">{children}</p>,
       h1: ({children, value}) => (
         // Add an anchor to the h1
         <h1 className="group relative">
@@ -74,6 +75,16 @@ export default function CustomPortableText({
         )
       },
     },
+    list: {
+      bullet: ({children}) => <ul className="list-disc list-outside ml-6 space-y-2">{children}</ul>,
+      number: ({children}) => (
+        <ol className="list-decimal list-outside ml-6 space-y-2">{children}</ol>
+      ),
+    },
+    listItem: {
+      bullet: ({children}) => <li className="pl-2">{children}</li>,
+      number: ({children}) => <li className="pl-2">{children}</li>,
+    },
     marks: {
       link: ({children, value: link}) => {
         return <ResolvedLink link={link}>{children}</ResolvedLink>
@@ -82,7 +93,7 @@ export default function CustomPortableText({
   }
 
   return (
-    <div className={['prose prose-a:text-brand', className].filter(Boolean).join(' ')}>
+    <div className={['', className].filter(Boolean).join(' ')}>
       <PortableText components={components} value={value} />
     </div>
   )
