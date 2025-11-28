@@ -42,8 +42,9 @@
   --color-nexus-beige: #faf5f1;
   --color-nexus-blue-gradient: linear-gradient(90deg, #0052ff 0%, #00c6ff 100%);
 
-  --font-display: 'Inter', 'sans-serif';
-  --font-sans: 'Inter', 'sans-serif';
+  --font-display: var(--font-geist), 'Inter', 'sans-serif';
+  --font-sans: var(--font-geist), 'Inter', 'sans-serif';
+  --font-serif: var(--font-lora), 'Georgia', 'serif';
 
   --default-transition-duration: 250ms;
 }

@@ -15,6 +15,7 @@
 // Source: schema.json
 export type Schedule = {
   _type: 'schedule'
+  heading?: string
   topText?: string
   days?: Array<
     {
@@ -1114,6 +1115,7 @@ export type GetPageQueryResult = {
     | {
         _key: string
         _type: 'schedule'
+        heading?: string
         topText?: string
         days?: Array<
           {

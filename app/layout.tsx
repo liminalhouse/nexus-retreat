@@ -2,7 +2,7 @@ import './globals.css'
 
 import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata} from 'next'
-import {Geist} from 'next/font/google'
+import {Geist, Lora} from 'next/font/google'
 import {draftMode} from 'next/headers'
 import {VisualEditing, toPlainText} from 'next-sanity'
 import {Toaster} from 'sonner'
@@ -53,14 +53,21 @@ export async function generateMetadata(): Promise<Metadata> {
 const geist = Geist({
   subsets: ['latin'],
   display: 'swap',
+  variable: '--font-geist',
+})
+
+const lora = Lora({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-lora',
 })
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const {isEnabled: isDraftMode} = await draftMode()
 
   return (
-    <html lang="en" className={`${geist.className} bg-white text-black`}>
-      <body>
+    <html lang="en" className={`${geist.variable} ${lora.variable} bg-white text-black`}>
+      <body className={geist.className}>
         <PrelineScript />
         <div className="min-h-screen flex flex-col">
           {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}

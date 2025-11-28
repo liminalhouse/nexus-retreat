@@ -10,6 +10,10 @@ export default {
       padding: '2rem',
     },
     extend: {
+      fontFamily: {
+        sans: ['var(--font-geist)', 'sans-serif'],
+        serif: ['var(--font-lora)', 'serif'],
+      },
       boxShadow: {
         layer: '0 35px 60px -15px rgba(0, 0, 0, 0.3)',
       },

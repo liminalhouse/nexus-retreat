@@ -12,6 +12,13 @@
             "value": "schedule"
           }
         },
+        "heading": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        },
         "topText": {
           "type": "objectAttribute",
           "value": {

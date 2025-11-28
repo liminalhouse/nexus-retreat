@@ -7,7 +7,7 @@ interface ScheduleProps {
 }
 
 const Schedule: React.FC<ScheduleProps> = ({block}) => {
-  const {topText, days, bottomText} = block
+  const {heading, topText, days, bottomText} = block
 
   if (!days || days.length === 0) {
     return null
@@ -39,12 +39,14 @@ const Schedule: React.FC<ScheduleProps> = ({block}) => {
       ></div>
 
       <div className="relative container mx-auto px-6 py-16 md:py-24">
-        {/* Decorative top border */}
-        <div className="flex items-center justify-center mb-12 md:mb-16">
-          <div className="h-px bg-gradient-to-r from-transparent via-nexus-coral to-transparent w-full max-w-md"></div>
-          <div className="mx-4 w-2 h-2 bg-nexus-coral rounded-full"></div>
-          <div className="h-px bg-gradient-to-r from-nexus-coral via-nexus-coral to-transparent w-full max-w-md"></div>
-        </div>
+        {/* Heading */}
+        {heading && (
+          <div className="mb-8 md:mb-12 text-center">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-nexus-navy tracking-wide">
+              {heading}
+            </h2>
+          </div>
+        )}
 
         {/* Top text */}
         {topText && (
@@ -97,7 +99,7 @@ const Schedule: React.FC<ScheduleProps> = ({block}) => {
 
               {/* Day header */}
               <div className="relative bg-gradient-to-br from-nexus-navy via-nexus-navy-dark to-nexus-navy px-6 py-8">
-                <h3 className="relative text-white text-lg lg:text-2xl font-semibold text-center uppercase tracking-[0.25rem]">
+                <h3 className="relative text-white text-lg lg:text-2xl font-semibold font-serif text-center uppercase">
                   {day.dayTitle}
                 </h3>
               </div>
@@ -129,13 +131,6 @@ const Schedule: React.FC<ScheduleProps> = ({block}) => {
             </p>
           </div>
         )}
-
-        {/* Decorative bottom border */}
-        <div className="flex items-center justify-center mt-12 md:mt-16">
-          <div className="h-px bg-gradient-to-r from-transparent via-nexus-coral to-transparent w-full max-w-md"></div>
-          <div className="mx-4 w-2 h-2 bg-nexus-coral rounded-full"></div>
-          <div className="h-px bg-gradient-to-r from-nexus-coral via-nexus-coral to-transparent w-full max-w-md"></div>
-        </div>
       </div>
     </div>
   )

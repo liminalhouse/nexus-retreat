@@ -43,6 +43,12 @@ export const schedule = defineType({
   icon: CalendarIcon,
   fields: [
     defineField({
+      name: 'heading',
+      title: 'Heading',
+      type: 'string',
+      description: 'Main heading for the schedule section',
+    }),
+    defineField({
       name: 'topText',
       title: 'Top Text',
       type: 'text',
@@ -67,12 +73,13 @@ export const schedule = defineType({
   ],
   preview: {
     select: {
+      heading: 'heading',
       days: 'days',
     },
-    prepare({days}) {
+    prepare({heading, days}) {
       const dayCount = days?.length || 0
       return {
-        title: `Schedule (${dayCount} ${dayCount === 1 ? 'day' : 'days'})`,
+        title: heading || `Schedule (${dayCount} ${dayCount === 1 ? 'day' : 'days'})`,
         subtitle: 'Event Schedule',
       }
     },
