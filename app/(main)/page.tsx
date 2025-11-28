@@ -1,5 +1,4 @@
 import type {Metadata} from 'next'
-import Head from 'next/head'
 
 import PageBuilderPage from '@/app/components/PageBuilder'
 import {sanityFetch} from '@/sanity/lib/live'
@@ -36,9 +35,6 @@ export default async function HomePage() {
 
   return (
     <div className={bgColorClass}>
-      <Head>
-        <title>{page.heading}</title>
-      </Head>
       <PageBuilderPage page={page as GetPageQueryResult} />
     </div>
   )
