@@ -1,5 +1,90 @@
 [
   {
+    "name": "schedule",
+    "type": "type",
+    "value": {
+      "type": "object",
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "schedule"
+          }
+        },
+        "topText": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        },
+        "days": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "array",
+            "of": {
+              "type": "object",
+              "attributes": {
+                "_key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              },
+              "rest": {
+                "type": "inline",
+                "name": "scheduleDay"
+              }
+            }
+          },
+          "optional": true
+        },
+        "bottomText": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        }
+      }
+    }
+  },
+  {
+    "name": "scheduleDay",
+    "type": "type",
+    "value": {
+      "type": "object",
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "scheduleDay"
+          }
+        },
+        "dayTitle": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        },
+        "items": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "array",
+            "of": {
+              "type": "string"
+            }
+          },
+          "optional": true
+        }
+      }
+    }
+  },
+  {
     "name": "form",
     "type": "type",
     "value": {
@@ -1878,6 +1963,21 @@
                   "type": "inline",
                   "name": "form"
                 }
+              },
+              {
+                "type": "object",
+                "attributes": {
+                  "_key": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "rest": {
+                  "type": "inline",
+                  "name": "schedule"
+                }
               }
             ]
           }
@@ -2032,6 +2132,13 @@
                 "type": "string"
               },
               "optional": true
+            },
+            "hidden": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "boolean"
+              },
+              "optional": true
             }
           }
         },
@@ -2053,6 +2160,13 @@
               "type": "objectAttribute",
               "value": {
                 "type": "string"
+              },
+              "optional": true
+            },
+            "hidden": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "boolean"
               },
               "optional": true
             }
@@ -2078,6 +2192,43 @@
                 "type": "string"
               },
               "optional": true
+            },
+            "hidden": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "boolean"
+              },
+              "optional": true
+            }
+          }
+        },
+        "optional": true
+      },
+      "profilePicture": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "object",
+          "attributes": {
+            "label": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "helperText": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "hidden": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "boolean"
+              },
+              "optional": true
             }
           }
         },
@@ -2099,6 +2250,13 @@
               "type": "objectAttribute",
               "value": {
                 "type": "string"
+              },
+              "optional": true
+            },
+            "hidden": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "boolean"
               },
               "optional": true
             }
@@ -2124,6 +2282,13 @@
                 "type": "string"
               },
               "optional": true
+            },
+            "hidden": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "boolean"
+              },
+              "optional": true
             }
           }
         },
@@ -2145,6 +2310,13 @@
               "type": "objectAttribute",
               "value": {
                 "type": "string"
+              },
+              "optional": true
+            },
+            "hidden": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "boolean"
               },
               "optional": true
             }
@@ -2182,6 +2354,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2203,6 +2382,13 @@
                     "type": "objectAttribute",
                     "value": {
                       "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
                     },
                     "optional": true
                   }
@@ -2228,6 +2414,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2249,6 +2442,13 @@
                     "type": "objectAttribute",
                     "value": {
                       "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
                     },
                     "optional": true
                   }
@@ -2274,6 +2474,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2295,6 +2502,13 @@
                     "type": "objectAttribute",
                     "value": {
                       "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
                     },
                     "optional": true
                   }
@@ -2350,6 +2564,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2371,6 +2592,13 @@
                     "type": "objectAttribute",
                     "value": {
                       "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
                     },
                     "optional": true
                   }
@@ -2396,6 +2624,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2417,6 +2652,13 @@
                     "type": "objectAttribute",
                     "value": {
                       "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
                     },
                     "optional": true
                   }
@@ -2465,6 +2707,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2486,6 +2735,13 @@
                     "type": "objectAttribute",
                     "value": {
                       "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
                     },
                     "optional": true
                   }
@@ -2511,6 +2767,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2532,6 +2795,13 @@
                     "type": "objectAttribute",
                     "value": {
                       "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
                     },
                     "optional": true
                   }
@@ -2580,6 +2850,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2603,6 +2880,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2624,6 +2908,13 @@
                     "type": "objectAttribute",
                     "value": {
                       "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
                     },
                     "optional": true
                   }
@@ -2672,6 +2963,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2693,6 +2991,13 @@
                     "type": "objectAttribute",
                     "value": {
                       "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
                     },
                     "optional": true
                   }
@@ -2718,6 +3023,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2741,6 +3053,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2762,6 +3081,13 @@
                     "type": "objectAttribute",
                     "value": {
                       "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
                     },
                     "optional": true
                   }
@@ -2810,6 +3136,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2831,6 +3164,13 @@
                     "type": "objectAttribute",
                     "value": {
                       "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
                     },
                     "optional": true
                   }
@@ -2856,6 +3196,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2879,6 +3226,13 @@
                       "type": "string"
                     },
                     "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
+                    },
+                    "optional": true
                   }
                 }
               },
@@ -2900,6 +3254,13 @@
                     "type": "objectAttribute",
                     "value": {
                       "type": "string"
+                    },
+                    "optional": true
+                  },
+                  "hidden": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean"
                     },
                     "optional": true
                   }

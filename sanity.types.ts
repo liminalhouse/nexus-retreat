@@ -13,6 +13,23 @@
  */
 
 // Source: schema.json
+export type Schedule = {
+  _type: 'schedule'
+  topText?: string
+  days?: Array<
+    {
+      _key: string
+    } & ScheduleDay
+  >
+  bottomText?: string
+}
+
+export type ScheduleDay = {
+  _type: 'scheduleDay'
+  dayTitle?: string
+  items?: Array<string>
+}
+
 export type Form = {
   _type: 'form'
   title?: string
@@ -305,6 +322,9 @@ export type Page = {
     | ({
         _key: string
       } & Form)
+    | ({
+        _key: string
+      } & Schedule)
   >
 }
 
@@ -332,52 +352,69 @@ export type RegistrationForm = {
     label?: string
     placeholder?: string
     helperText?: string
+    hidden?: boolean
   }
   firstName?: {
     label?: string
     placeholder?: string
+    hidden?: boolean
   }
   lastName?: {
     label?: string
     placeholder?: string
+    hidden?: boolean
+  }
+  profilePicture?: {
+    label?: string
+    helperText?: string
+    hidden?: boolean
   }
   jobTitle?: {
     label?: string
     placeholder?: string
+    hidden?: boolean
   }
   organization?: {
     label?: string
     placeholder?: string
+    hidden?: boolean
   }
   mobilePhone?: {
     label?: string
     placeholder?: string
+    hidden?: boolean
   }
   address?: {
     sectionTitle?: string
     line1?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     line2?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     city?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     state?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     zip?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     country?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
   }
   step2Title?: string
@@ -387,18 +424,22 @@ export type RegistrationForm = {
     name?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     relation?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     email?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     phone?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
   }
   assistant?: {
@@ -407,18 +448,22 @@ export type RegistrationForm = {
     name?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     title?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     email?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     phone?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
   }
   guest?: {
@@ -427,14 +472,17 @@ export type RegistrationForm = {
     name?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     relation?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     email?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
   }
   step3Title?: string
@@ -443,22 +491,27 @@ export type RegistrationForm = {
     dietaryRestrictions?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     jacketSize?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     accommodations?: {
       label?: string
       helperText?: string
+      hidden?: boolean
     }
     dinnerAttendance?: {
       label?: string
       helperText?: string
+      hidden?: boolean
     }
     activities?: {
       label?: string
       helperText?: string
+      hidden?: boolean
     }
   }
   guestEventDetails?: {
@@ -467,22 +520,27 @@ export type RegistrationForm = {
     dietaryRestrictions?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     jacketSize?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     accommodations?: {
       label?: string
       helperText?: string
+      hidden?: boolean
     }
     dinnerAttendance?: {
       label?: string
       helperText?: string
+      hidden?: boolean
     }
     activities?: {
       label?: string
       helperText?: string
+      hidden?: boolean
     }
   }
 }
@@ -771,6 +829,8 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
+  | Schedule
+  | ScheduleDay
   | Form
   | FormField
   | FieldGroup
@@ -1051,6 +1111,17 @@ export type GetPageQueryResult = {
           _key: string
         }> | null
       }
+    | {
+        _key: string
+        _type: 'schedule'
+        topText?: string
+        days?: Array<
+          {
+            _key: string
+          } & ScheduleDay
+        >
+        bottomText?: string
+      }
   > | null
 } | null
 // Variable: sitemapData
@@ -1082,52 +1153,64 @@ export type RegistrationFormContentQueryResult = {
     label?: string
     placeholder?: string
     helperText?: string
+    hidden?: boolean
   } | null
   firstName: {
     label?: string
     placeholder?: string
+    hidden?: boolean
   } | null
   lastName: {
     label?: string
     placeholder?: string
+    hidden?: boolean
   } | null
   jobTitle: {
     label?: string
     placeholder?: string
+    hidden?: boolean
   } | null
   organization: {
     label?: string
     placeholder?: string
+    hidden?: boolean
   } | null
   mobilePhone: {
     label?: string
     placeholder?: string
+    hidden?: boolean
   } | null
   address: {
     sectionTitle?: string
     line1?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     line2?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     city?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     state?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     zip?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     country?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
   } | null
   emergencyContact: {
@@ -1136,18 +1219,22 @@ export type RegistrationFormContentQueryResult = {
     name?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     relation?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     email?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     phone?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
   } | null
   assistant: {
@@ -1156,18 +1243,22 @@ export type RegistrationFormContentQueryResult = {
     name?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     title?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     email?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     phone?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
   } | null
   guest: {
@@ -1176,14 +1267,17 @@ export type RegistrationFormContentQueryResult = {
     name?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     relation?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     email?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
   } | null
   attendeeDetails: {
@@ -1191,22 +1285,27 @@ export type RegistrationFormContentQueryResult = {
     dietaryRestrictions?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     jacketSize?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     accommodations?: {
       label?: string
       helperText?: string
+      hidden?: boolean
     }
     dinnerAttendance?: {
       label?: string
       helperText?: string
+      hidden?: boolean
     }
     activities?: {
       label?: string
       helperText?: string
+      hidden?: boolean
     }
   } | null
   guestEventDetails: {
@@ -1215,22 +1314,27 @@ export type RegistrationFormContentQueryResult = {
     dietaryRestrictions?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     jacketSize?: {
       label?: string
       placeholder?: string
+      hidden?: boolean
     }
     accommodations?: {
       label?: string
       helperText?: string
+      hidden?: boolean
     }
     dinnerAttendance?: {
       label?: string
       helperText?: string
+      hidden?: boolean
     }
     activities?: {
       label?: string
       helperText?: string
+      hidden?: boolean
     }
   } | null
 } | null
