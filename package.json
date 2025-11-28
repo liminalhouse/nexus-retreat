@@ -1,35 +1,59 @@
 {
-  "name": "nexus-retreat",
-  "description": "Next.js + Sanity: A Powerful Website Starter with Real-time Visual Editing",
-  "keywords": [
-    "Sanity",
-    "Next.js",
-    "Headless CMS",
-    "Visual Editing",
-    "Live Content API (LCAPI)",
-    "Real-time"
-  ],
-  "homepage": "https://github.com/sanity-io/sanity-template-nextjs-clean#readme",
-  "bugs": {
-    "url": "https://github.com/sanity-io/sanity-template-nextjs-clean/issues"
-  },
-  "workspaces": [
-    "studio",
-    "frontend"
-  ],
+  "name": "frontend",
+  "private": true,
   "scripts": {
-    "dev": "npm-run-all --parallel --print-label dev:*",
-    "dev:next": "npm run dev --workspace=frontend",
-    "dev:studio": "npm run dev --workspace=studio",
-    "format": "prettier --cache --write .",
-    "import-sample-data": "cd studio && sanity dataset import sample-data.tar.gz --replace",
-    "lint": "npm run lint --workspace=frontend",
-    "type-check": "npm run type-check --workspaces"
+    "prebuild": "npm run typegen",
+    "build": "next build",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "predev": "npm run typegen",
+    "dev": "next dev --turbopack",
+    "lint": "next lint",
+    "start": "next start",
+    "type-check": "tsc --noEmit",
+    "typegen": "sanity typegen generate"
   },
   "prettier": "@sanity/prettier-config",
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@preline/accordion": "^3.2.3",
+    "@sanity/assist": "^5.0.2",
+    "@sanity/client": "^7.9.0",
+    "@sanity/image-url": "^1.1.0",
+    "@sanity/ui": "^3.1.11",
+    "@sanity/uuid": "^3.0.2",
+    "@sanity/vision": "^4.15.0",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/postcss": "^4.1.12",
+    "@tailwindcss/typography": "^0.5.16",
+    "@vercel/blob": "^2.0.0",
+    "@vercel/speed-insights": "^1.2.0",
+    "autoprefixer": "^10.4.21",
+    "date-fns": "^4.1.0",
+    "drizzle-orm": "^0.44.7",
+    "next": "^15.5.0",
+    "next-sanity": "^10.0.14",
+    "postcss": "^8.5.6",
+    "postgres": "^3.4.7",
+    "preline": "^3.2.3",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "resend": "^6.5.0",
+    "sanity": "^4.15.0",
+    "sanity-plugin-asset-source-unsplash": "^4.0.1",
+    "sonner": "^2.0.7",
+    "styled-components": "^6.1.19",
+    "tailwindcss": "^4.1.12"
+  },
   "devDependencies": {
     "@sanity/prettier-config": "^2.0.1",
-    "npm-run-all2": "^5.0.2",
-    "prettier": "^3.6.2"
+    "@types/node": "^20.19.11",
+    "@types/react": "^19.1.11",
+    "@types/react-dom": "^19.1.7",
+    "drizzle-kit": "^0.31.7",
+    "eslint": "^9.34.0",
+    "eslint-config-next": "^15.5.0",
+    "typescript": "5.9.2"
   }
 }
