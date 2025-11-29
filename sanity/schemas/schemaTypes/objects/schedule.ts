@@ -51,9 +51,8 @@ export const schedule = defineType({
     defineField({
       name: 'topText',
       title: 'Top Text',
-      type: 'text',
+      type: 'blockContent',
       description: 'Introduction text displayed above the schedule',
-      rows: 4,
     }),
     defineField({
       name: 'days',
@@ -66,9 +65,8 @@ export const schedule = defineType({
     defineField({
       name: 'bottomText',
       title: 'Bottom Text',
-      type: 'text',
+      type: 'blockContent',
       description: 'Additional information displayed below the schedule',
-      rows: 4,
     }),
   ],
   preview: {

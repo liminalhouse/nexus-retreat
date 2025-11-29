@@ -1,5 +1,7 @@
 import React from 'react'
 import {Schedule as ScheduleType} from '@/sanity.types'
+import CustomPortableText from '@/app/components/PortableText'
+import {type PortableTextBlock} from 'next-sanity'
 
 interface ScheduleProps {
   block: ScheduleType
@@ -48,10 +50,10 @@ const Schedule: React.FC<ScheduleProps> = ({block}) => {
 
         {/* Top text */}
         {topText && (
-          <div className="mb-14 md:mb-20 max-w-4xl mx-auto text-center md:text-left">
-            <p className="text-base md:text-lg lg:text-xl text-gray-700 leading-relaxed font-light">
-              {topText}
-            </p>
+          <div className="mb-14 md:mb-14 max-w-4xl mx-auto text-center md:text-left">
+            <div className="text-base md:text-lg lg:text-lg text-gray-700 leading-relaxed font-light">
+              <CustomPortableText value={topText as PortableTextBlock[]} />
+            </div>
           </div>
         )}
 
@@ -63,7 +65,7 @@ const Schedule: React.FC<ScheduleProps> = ({block}) => {
               className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md overflow-hidden border border-nexus-coral/20"
             >
               {/* Day header */}
-              <div className="relative bg-gradient-to-br from-nexus-navy via-nexus-navy-dark to-nexus-navy px-6 py-6">
+              <div className="relative bg-nexus-navy px-6 py-6">
                 <h3 className="relative text-white text-2xl font-serif font-semibold text-center tracking-wide">
                   {day.dayTitle}
                 </h3>
@@ -124,9 +126,9 @@ const Schedule: React.FC<ScheduleProps> = ({block}) => {
         {/* Bottom text */}
         {bottomText && (
           <div className="max-w-4xl mx-auto text-center md:text-left">
-            <p className="text-base md:text-lg lg:text-xl text-gray-700 leading-relaxed font-light">
-              {bottomText}
-            </p>
+            <div className="text-base text-gray-700 leading-relaxed font-light">
+              <CustomPortableText value={bottomText as PortableTextBlock[]} />
+            </div>
           </div>
         )}
       </div>

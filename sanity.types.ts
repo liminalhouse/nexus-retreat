@@ -16,13 +16,13 @@
 export type Schedule = {
   _type: 'schedule'
   heading?: string
-  topText?: string
+  topText?: BlockContent
   days?: Array<
     {
       _key: string
     } & ScheduleDay
   >
-  bottomText?: string
+  bottomText?: BlockContent
 }
 
 export type ScheduleDay = {
@@ -1116,13 +1116,13 @@ export type GetPageQueryResult = {
         _key: string
         _type: 'schedule'
         heading?: string
-        topText?: string
+        topText?: BlockContent
         days?: Array<
           {
             _key: string
           } & ScheduleDay
         >
-        bottomText?: string
+        bottomText?: BlockContent
       }
   > | null
 } | null

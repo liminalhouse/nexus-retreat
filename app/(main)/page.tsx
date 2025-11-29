@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: page?.name || 'Nexus Retreat',
-    description: page?.heading || 'An exclusive luxury retreat experience',
+    description: page?.heading || 'An invitation-only gathering for international sports leaders.',
   } satisfies Metadata
 }
 

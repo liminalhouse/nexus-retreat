@@ -22,7 +22,8 @@
         "topText": {
           "type": "objectAttribute",
           "value": {
-            "type": "string"
+            "type": "inline",
+            "name": "blockContent"
           },
           "optional": true
         },
@@ -51,7 +52,8 @@
         "bottomText": {
           "type": "objectAttribute",
           "value": {
-            "type": "string"
+            "type": "inline",
+            "name": "blockContent"
           },
           "optional": true
         }
