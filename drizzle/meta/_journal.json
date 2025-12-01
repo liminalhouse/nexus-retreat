@@ -36,6 +36,13 @@
       "when": 1763676596825,
       "tag": "0004_silly_mongoose",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1764619290850,
+      "tag": "0005_unique_ezekiel",
+      "breakpoints": true
     }
   ]
 }

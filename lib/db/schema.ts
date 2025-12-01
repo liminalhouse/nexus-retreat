@@ -1,7 +1,20 @@
 import {pgTable, text, timestamp, uuid, jsonb, pgEnum} from 'drizzle-orm/pg-core'
 
 // Enum for jacket sizes
-export const jacketSizeEnum = pgEnum('jacket_size_enum', ['XS', 'S', 'M', 'L', 'XL', 'XXL'])
+export const jacketSizeEnum = pgEnum('jacket_size_enum', [
+  "Women's - XS",
+  "Women's - Small",
+  "Women's - Medium",
+  "Women's - Large",
+  "Women's - XL",
+  "Women's - XXL",
+  "Men's - XS",
+  "Men's - Small",
+  "Men's - Medium",
+  "Men's - Large",
+  "Men's - XL",
+  "Men's - XXL",
+])
 
 export const registrations = pgTable('registrations', {
   id: uuid('id').defaultRandom().primaryKey(),
