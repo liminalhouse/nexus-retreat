@@ -286,12 +286,12 @@ export async function sendRegistrationConfirmation(data: RegistrationData) {
       </html>
     `
 
-    // Build CC list
+    // Build CC list (exclude the primary email to avoid duplicates)
     const cc: string[] = []
-    if (data.assistant_email) {
+    if (data.assistant_email && data.assistant_email !== data.email) {
       cc.push(data.assistant_email)
     }
-    if (data.guest_email) {
+    if (data.guest_email && data.guest_email !== data.email) {
       cc.push(data.guest_email)
     }
 
@@ -307,14 +307,23 @@ export async function sendRegistrationConfirmation(data: RegistrationData) {
       emailData.cc = cc
     }
 
+    // Use editToken as idempotency key to prevent duplicate emails
+    const headers: Record<string, string> = {}
+    if (data.editToken) {
+      headers['Idempotency-Key'] = `registration-${data.editToken}`
+    }
+
     console.log('Sending email via Resend...', {
       from: emailData.from,
       to: emailData.to,
       cc: emailData.cc,
       subject: emailData.subject,
+      idempotencyKey: headers['Idempotency-Key'],
     })
 
-    const response = await resend.emails.send(emailData)
+    const response = await resend.emails.send(emailData, {
+      headers,
+    })
 
     return {success: true, data: response}
   } catch (error) {
