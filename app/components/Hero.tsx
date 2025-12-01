@@ -36,6 +36,8 @@ export default function Hero({block}: HeroProps) {
 
   // Preload the hero image
   useEffect(() => {
+    if (!backgroundImageUrl) return
+
     const link = document.createElement('link')
     link.rel = 'preload'
     link.as = 'image'
