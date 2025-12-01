@@ -35,8 +35,8 @@ export function useSettings() {
     const subscription = browserClient
       .listen(settingsQuery, {}, {includeResult: true})
       .subscribe((update) => {
-        if (update.result) {
-          setSettings(update.result)
+        if ('result' in update && update.result) {
+          setSettings(update.result as unknown as SettingsQueryResult)
         }
       })
 
