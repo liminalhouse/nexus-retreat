@@ -1,6 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server'
 import {db} from '@/lib/db'
 import {registrations} from '@/lib/db/schema'
+import {sendRegistrationConfirmation} from '@/lib/email/sendEmail'
 
 // Generate a secure random token
 function generateEditToken(): string {
@@ -93,6 +94,17 @@ export async function POST(request: NextRequest) {
 
     // Insert into database using Drizzle ORM
     const result = await db.insert(registrations).values(registrationData).returning()
+
+    // Send confirmation email
+    const emailResult = await sendRegistrationConfirmation({
+      ...formData,
+      editToken,
+    })
+
+    if (!emailResult.success) {
+      console.error('Failed to send confirmation email:', emailResult.error)
+      // Don't fail the registration if email fails, just log it
+    }
 
     return NextResponse.json(
       {

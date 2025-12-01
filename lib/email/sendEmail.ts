@@ -56,6 +56,8 @@ type RegistrationData = {
   guest_activities?: string[]
 }
 
+const resendEmailFrom = process.env.RESEND_FROM_EMAIL || 'noreply@noreply.nexus-retreat.com'
+
 async function getEmailTemplate(type: string): Promise<EmailTemplate | null> {
   const query = `*[_type == "emailTemplate" && type == $type && isActive == true][0] {
     subject,
@@ -230,7 +232,7 @@ export async function sendRegistrationConfirmation(data: RegistrationData) {
 
     // Generate edit link if editToken is present
     const editLink = data.editToken
-      ? `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/edit-registration/${data.editToken}`
+      ? `${process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'}/edit-registration/${data.editToken}`
       : ''
 
     const editLinkHtml = editLink
@@ -295,7 +297,7 @@ export async function sendRegistrationConfirmation(data: RegistrationData) {
 
     // Send email using Resend
     const emailData: any = {
-      from: process.env.RESEND_FROM_EMAIL || 'noreply@nexusretreat.com',
+      from: `Nexus Retreat <${resendEmailFrom}>`,
       to: data.email,
       subject,
       html,
