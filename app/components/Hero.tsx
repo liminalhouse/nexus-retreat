@@ -77,7 +77,7 @@ export default function Hero({block}: HeroProps) {
         </div>
 
         {description && (
-          <div className="text-white md:text-lg leading-relaxed mb-12 max-w-3xl mx-auto prose prose-invert prose-a:text-blue-300 hover:prose-a:text-blue-200 animate-fadeInUp-delay-2">
+          <div className="text-white md:text-lg leading-relaxed mb-12 max-w-3xl mx-auto prose prose-invert prose-a:text-teal-100 hover:prose-a:text-blue-200 animate-fadeInUp-delay-2">
             <PortableText value={description} />
           </div>
         )}
@@ -122,10 +122,22 @@ export default function Hero({block}: HeroProps) {
           <div className="animate-fadeInUp-delay-3">
             {ctaText && isRegistrationLive ? (
               <Link
-                className="inline-block px-8 py-3 bg-nexus-coral text-gray-900 rounded transition-colors font-medium"
+                className="inline-block px-8 py-3 bg-nexus-coral hover:bg-nexus-coral-light text-gray-900 rounded transition-colors font-medium"
                 href={ctaLink}
               >
                 {ctaText}
+
+                <span>
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    width={16}
+                    height={16}
+                    className="inline-block ml-2"
+                  >
+                    <path d="m12 4-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
+                  </svg>
+                </span>
               </Link>
             ) : (
               <div className="inline-block px-8 py-3 bg-nexus-coral-light text-gray-900 rounded transition-colors font-medium">
