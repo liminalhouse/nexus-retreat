@@ -1,18 +1,54 @@
 'use client'
 
+import {useRef, useEffect} from 'react'
+import {type PortableTextBlock} from 'next-sanity'
 import CustomPortableText from '@/app/components/PortableText'
+import type {FaqItem} from '@/sanity.types'
 
 interface FaqProps {
   block: {
-    faqBuilder: {
-      question?: string
-      answer?: any
-    }[]
+    faqBuilder: FaqItem[]
     _key: string
   }
 }
 
 export default function Faq({block}: FaqProps) {
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  useEffect(() => {
+    const accordionGroup = document.getElementById(`faq-${block._key}`)
+    if (!accordionGroup) return
+
+    const handleAccordionClick = (event: Event) => {
+      const button = (event.target as HTMLElement).closest('.hs-accordion-toggle')
+      if (!button) return
+
+      const accordionItem = button.closest('.hs-accordion')
+      const index = itemRefs.current.findIndex((ref) => ref === accordionItem)
+
+      if (index !== -1) {
+        setTimeout(() => {
+          const element = itemRefs.current[index]
+          if (element) {
+            const yOffset = -80
+            const y = element.getBoundingClientRect().top + window.scrollY + yOffset
+
+            window.scrollTo({
+              top: y,
+              behavior: 'smooth',
+            })
+          }
+        }, 350)
+      }
+    }
+
+    accordionGroup.addEventListener('click', handleAccordionClick)
+
+    return () => {
+      accordionGroup.removeEventListener('click', handleAccordionClick)
+    }
+  }, [block._key])
+
   return (
     <section className="py-12 bg-nexus-beige h-full">
       <div className="container mx-auto">
@@ -20,6 +56,9 @@ export default function Faq({block}: FaqProps) {
           {block.faqBuilder.map((faq, index) => (
             <div
               key={index}
+              ref={(el) => {
+                itemRefs.current[index] = el
+              }}
               className="hs-accordion bg-white p-4 rounded shadow"
               id={`faq-item-${block._key}-${index}`}
             >
@@ -67,7 +106,7 @@ export default function Faq({block}: FaqProps) {
                 aria-labelledby={`faq-item-${block._key}-${index}`}
               >
                 <div className="pb-4 px-6">
-                  <CustomPortableText value={faq.answer} />
+                  {faq.answer && <CustomPortableText value={faq.answer as PortableTextBlock[]} />}
                 </div>
               </div>
             </div>
