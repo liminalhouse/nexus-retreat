@@ -10,6 +10,7 @@ import {
   DINNER_OPTIONS,
   ACTIVITY_OPTIONS,
 } from '@/lib/utils/formatRegistrationFields'
+import {JACKET_SIZE_OPTIONS} from '@/app/(main)/register/formConfig'
 import type {Registration} from '@/lib/types/registration'
 
 export default function EditModal({
@@ -511,12 +512,11 @@ export default function EditModal({
                   className={inputClass}
                 >
                   <option value="">Select size...</option>
-                  <option value="XS">XS</option>
-                  <option value="S">S</option>
-                  <option value="M">M</option>
-                  <option value="L">L</option>
-                  <option value="XL">XL</option>
-                  <option value="XXL">XXL</option>
+                  {JACKET_SIZE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="col-span-2">
@@ -598,12 +598,11 @@ export default function EditModal({
                   className={inputClass}
                 >
                   <option value="">Select size...</option>
-                  <option value="XS">XS</option>
-                  <option value="S">S</option>
-                  <option value="M">M</option>
-                  <option value="L">L</option>
-                  <option value="XL">XL</option>
-                  <option value="XXL">XXL</option>
+                  {JACKET_SIZE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="col-span-2">

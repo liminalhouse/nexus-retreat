@@ -9,6 +9,21 @@ import {
   GUEST_ACTIVITY_OPTIONS,
 } from '@/lib/utils/formatRegistrationFields'
 
+export const JACKET_SIZE_OPTIONS = [
+  {label: "Women's - XS", value: "Women's - XS"},
+  {label: "Women's - Small", value: "Women's - Small"},
+  {label: "Women's - Medium", value: "Women's - Medium"},
+  {label: "Women's - Large", value: "Women's - Large"},
+  {label: "Women's - XL", value: "Women's - XL"},
+  {label: "Women's - XXL", value: "Women's - XXL"},
+  {label: "Men's - XS", value: "Men's - XS"},
+  {label: "Men's - Small", value: "Men's - Small"},
+  {label: "Men's - Medium", value: "Men's - Medium"},
+  {label: "Men's - Large", value: "Men's - Large"},
+  {label: "Men's - XL", value: "Men's - XL"},
+  {label: "Men's - XXL", value: "Men's - XXL"},
+]
+
 /**
  * Base registration form configuration
  * This contains the structure and field names that won't change.
@@ -254,20 +269,7 @@ export const registrationFormConfig: Omit<
             name: 'jacket_size',
             label: 'What is your jacket size?',
             placeholder: 'Select size',
-            options: [
-              {label: "Women's - XS", value: "Women's - XS"},
-              {label: "Women's - Small", value: "Women's - Small"},
-              {label: "Women's - Medium", value: "Women's - Medium"},
-              {label: "Women's - Large", value: "Women's - Large"},
-              {label: "Women's - XL", value: "Women's - XL"},
-              {label: "Women's - XXL", value: "Women's - XXL"},
-              {label: "Men's - XS", value: "Men's - XS"},
-              {label: "Men's - Small", value: "Men's - Small"},
-              {label: "Men's - Medium", value: "Men's - Medium"},
-              {label: "Men's - Large", value: "Men's - Large"},
-              {label: "Men's - XL", value: "Men's - XL"},
-              {label: "Men's - XXL", value: "Men's - XXL"},
-            ],
+            options: JACKET_SIZE_OPTIONS,
           },
         ],
       },
@@ -324,20 +326,7 @@ export const registrationFormConfig: Omit<
             name: 'guest_jacket_size',
             label: "What is your guest's jacket size?",
             placeholder: 'Select size',
-            options: [
-              {label: "Women's - XS", value: "Women's - XS"},
-              {label: "Women's - Small", value: "Women's - Small"},
-              {label: "Women's - Medium", value: "Women's - Medium"},
-              {label: "Women's - Large", value: "Women's - Large"},
-              {label: "Women's - XL", value: "Women's - XL"},
-              {label: "Women's - XXL", value: "Women's - XXL"},
-              {label: "Men's - XS", value: "Men's - XS"},
-              {label: "Men's - Small", value: "Men's - Small"},
-              {label: "Men's - Medium", value: "Men's - Medium"},
-              {label: "Men's - Large", value: "Men's - Large"},
-              {label: "Men's - XL", value: "Men's - XL"},
-              {label: "Men's - XXL", value: "Men's - XXL"},
-            ],
+            options: JACKET_SIZE_OPTIONS,
           },
         ],
       },
