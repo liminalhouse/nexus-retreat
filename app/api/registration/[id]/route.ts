@@ -161,3 +161,40 @@ export async function PATCH(request: NextRequest, {params}: {params: Promise<{id
     )
   }
 }
+
+export async function DELETE(request: NextRequest, {params}: {params: Promise<{id: string}>}) {
+  try {
+    const {id} = await params
+
+    // Delete the registration from the database
+    const result = await db.delete(registrations).where(eq(registrations.id, id)).returning()
+
+    if (!result || result.length === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Registration not found',
+        },
+        {status: 404},
+      )
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Registration deleted successfully',
+      },
+      {status: 200},
+    )
+  } catch (error: any) {
+    console.error('Delete registration error:', error)
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to delete registration. Please try again.',
+      },
+      {status: 500},
+    )
+  }
+}

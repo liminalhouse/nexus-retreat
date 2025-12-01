@@ -29,6 +29,9 @@ export default function EditModal({
   const [error, setError] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
   const [originalData] = useState<Registration>(registration)
 
   const handleChange = (field: keyof Registration, value: any) => {
@@ -161,6 +164,41 @@ export default function EditModal({
       console.error('Error updating registration:', err)
       setError('Failed to update registration. Please try again.')
       setIsSaving(false)
+    }
+  }
+
+  const handleDelete = () => {
+    setShowDeleteConfirmation(true)
+    setDeleteConfirmText('')
+  }
+
+  const handleConfirmDelete = async () => {
+    if (deleteConfirmText !== 'delete') {
+      return
+    }
+
+    setIsDeleting(true)
+    setError(null)
+
+    try {
+      const response = await fetch(`/api/registration/${formData.id}`, {
+        method: 'DELETE',
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to delete registration')
+        setIsDeleting(false)
+        return
+      }
+
+      // Close the modal and refresh the page
+      window.location.reload()
+    } catch (err) {
+      console.error('Error deleting registration:', err)
+      setError('Failed to delete registration. Please try again.')
+      setIsDeleting(false)
     }
   }
 
@@ -703,24 +741,41 @@ export default function EditModal({
               <strong>Submitted:</strong> {new Date(formData.created_at).toLocaleString()}
             </p>
           </div>
+
+          {/* Delete */}
+          <div>
+            {isAdminView && (
+              <button
+                onClick={handleDelete}
+                className="flex items-center text-red-600 rounded-lg hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isSaving || isDeleting}
+              >
+                <span className="mr-2">⨉</span>
+                Delete Registrant
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="p-6 border-t border-gray-200 flex justify-end gap-3 sticky bottom-0 bg-white">
-          <button
-            onClick={onClose}
-            className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-            disabled={isSaving}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            className="px-6 py-2 bg-nexus-navy text-white rounded-lg not-disabled:hover:bg-nexus-navy-dark disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isSaving || !hasChanges()}
-            title={!hasChanges() ? 'No changes to save' : ''}
-          >
-            {isSaving ? 'Saving...' : 'Save Changes'}
-          </button>
+        <div className="p-6 border-t border-gray-200 flex justify-between sticky bottom-0 bg-white">
+          <div></div>
+          <div className="flex gap-3">
+            <button
+              onClick={onClose}
+              className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              disabled={isSaving || isDeleting}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-6 py-2 bg-nexus-navy text-white rounded-lg not-disabled:hover:bg-nexus-navy-dark disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSaving || isDeleting || !hasChanges()}
+              title={!hasChanges() ? 'No changes to save' : ''}
+            >
+              {isSaving ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -753,6 +808,62 @@ export default function EditModal({
                   disabled={isSaving}
                 >
                   {isSaving ? 'Saving...' : 'Confirm & Save'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirmation && (
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+          onClick={() => setShowDeleteConfirmation(false)}
+        >
+          <div
+            className="bg-white rounded-lg max-w-md w-full mx-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-red-600 mb-2">Delete Registration</h3>
+              <p className="text-gray-900 font-semibold mb-2">
+                {formData.first_name} {formData.last_name}
+              </p>
+              <p className="text-gray-600 mb-4">
+                This action cannot be undone. This will permanently delete the registration and all
+                associated data.
+              </p>
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Type <strong>delete</strong> to confirm
+                </label>
+                <input
+                  type="text"
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  placeholder="Type 'delete' to confirm"
+                  autoFocus
+                />
+              </div>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirmation(false)
+                    setDeleteConfirmText('')
+                  }}
+                  className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  disabled={isDeleting}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isDeleting || deleteConfirmText !== 'delete'}
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete Registration'}
                 </button>
               </div>
             </div>
