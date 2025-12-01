@@ -210,15 +210,32 @@ export default function RegistrationsTable({
   }
 
   const filteredRegistrations = registrations.filter((reg) => {
-    // Search filter
+    // Search filter - search across all text fields
     const searchStr = searchFilter.toLowerCase()
     const matchesSearch =
       !searchFilter ||
-      reg.email?.toLowerCase().includes(searchStr) ||
-      reg.first_name?.toLowerCase().includes(searchStr) ||
-      reg.last_name?.toLowerCase().includes(searchStr) ||
-      reg.organization?.toLowerCase().includes(searchStr) ||
-      reg.mobile_phone?.includes(searchStr)
+      Object.entries(reg).some(([key, value]) => {
+        // Skip non-searchable fields
+        if (
+          key === 'id' ||
+          key === 'created_at' ||
+          key === 'updated_at' ||
+          key === 'edit_token' ||
+          key === 'profile_picture' ||
+          value === null ||
+          value === undefined
+        ) {
+          return false
+        }
+
+        // Handle array fields (accommodations, dinner_attendance, etc.)
+        if (Array.isArray(value)) {
+          return value.some((item) => String(item).toLowerCase().includes(searchStr))
+        }
+
+        // Handle all other fields as strings
+        return String(value).toLowerCase().includes(searchStr)
+      })
 
     // Apply all dynamic filters
     const matchesAllFilters = filters.every((filter) => evaluateFilter(reg, filter))
@@ -231,7 +248,7 @@ export default function RegistrationsTable({
       <div className="mb-4 space-y-4">
         <input
           type="text"
-          placeholder="Search by name, email, organization, or phone..."
+          placeholder="Search all fields..."
           value={searchFilter}
           onChange={(e) => setSearchFilter(e.target.value)}
           className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
