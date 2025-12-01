@@ -5,7 +5,7 @@ import {urlForImage} from '@/sanity/lib/utils'
 import NexusLogo from './NexusLogo'
 import Link from 'next/link'
 import Image from 'next/image'
-import {useEffect, useState} from 'react'
+import {useEffect} from 'react'
 import {useSettings} from '@/lib/hooks'
 
 interface HeroProps {
@@ -32,7 +32,7 @@ export default function Hero({block}: HeroProps) {
     : '/images/hero-bg.jpg'
 
   const {settings} = useSettings()
-  const isRegistrationLive = settings?.registrationIsLive || false
+  const isRegistrationLive = settings?.registrationIsLive || undefined
 
   // Preload the hero image
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function Hero({block}: HeroProps) {
   return (
     <section className="relative h-[calc(100vh-0px)] flex items-center justify-center bg-nexus-navy">
       {/* Background Image */}
-      <div className="absolute inset-0 opacity-40 animate-in fade-in duration-1000">
+      <div className="absolute inset-0 opacity-40 animate-fadeIn">
         {!!backgroundImageUrl && (
           <Image
             src={backgroundImageUrl}
@@ -68,21 +68,21 @@ export default function Hero({block}: HeroProps) {
       </div>
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-nexus-navy opacity-60" />
+      <div className="absolute inset-0 bg-nexus-navy opacity-85" />
 
       {/* Content */}
-      <div className="relative z-10 text-center text-white px-6 max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
-        <div className="mb-6 flex justify-center">
+      <div className="relative z-10 text-center text-white px-6 max-w-4xl">
+        <div className="mb-6 flex justify-center animate-fadeInUp-delay-1">
           <NexusLogo className="w-60 max-w-md md:max-w-lg lg:max-w-xl" color="white" />
         </div>
 
         {description && (
-          <div className="text-base md:text-lg leading-relaxed mb-12 max-w-3xl mx-auto prose prose-invert prose-a:text-blue-300 hover:prose-a:text-blue-200">
+          <div className="text-white md:text-lg leading-relaxed mb-12 max-w-3xl mx-auto prose prose-invert prose-a:text-blue-300 hover:prose-a:text-blue-200 animate-fadeInUp-delay-2">
             <PortableText value={description} />
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12 text-sm">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12 text-sm animate-fadeInUp-delay-2">
           {eventDate && (
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,16 +118,20 @@ export default function Hero({block}: HeroProps) {
         </div>
 
         {/* TODO: Disable link for now */}
-        {ctaText && isRegistrationLive ? (
-          <Link
-            className="inline-block px-8 py-3 bg-nexus-coral text-gray-900 rounded transition-colors font-medium"
-            href={ctaLink}
-          >
-            {ctaText}
-          </Link>
-        ) : (
-          <div className="inline-block px-8 py-3 bg-nexus-coral-light text-gray-900 rounded transition-colors font-medium">
-            Registration opens soon
+        {!!settings && (
+          <div className="animate-fadeInUp-delay-3">
+            {ctaText && isRegistrationLive ? (
+              <Link
+                className="inline-block px-8 py-3 bg-nexus-coral text-gray-900 rounded transition-colors font-medium"
+                href={ctaLink}
+              >
+                {ctaText}
+              </Link>
+            ) : (
+              <div className="inline-block px-8 py-3 bg-nexus-coral-light text-gray-900 rounded transition-colors font-medium">
+                Registration opens soon
+              </div>
+            )}
           </div>
         )}
       </div>
