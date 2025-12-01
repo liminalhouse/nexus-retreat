@@ -14,11 +14,21 @@ export const settings = defineType({
   type: 'document',
   icon: CogIcon,
   groups: [
+    {name: 'general', title: 'General'},
     {name: 'navigation', title: 'Navigation'},
     {name: 'footer', title: 'Footer'},
     {name: 'seo', title: 'SEO'},
   ],
   fields: [
+    defineField({
+      name: 'registrationIsLive',
+      title: 'Registration is Live',
+      type: 'boolean',
+      description: 'Toggle to enable/disable registration form access for the entire site',
+      initialValue: false,
+      validation: (rule) => rule.required(),
+      group: 'general',
+    }),
     defineField({
       name: 'title',
       description: 'Site title used for SEO and metadata.',

@@ -1,14 +1,26 @@
 import Form from '@/app/components/Form'
 import {client} from '@/sanity/lib/client'
-import {registrationFormContentQuery} from '@/sanity/lib/queries'
+import {registrationFormContentQuery, settingsQuery} from '@/sanity/lib/queries'
 import {buildFormConfig} from './buildFormConfig'
 import {redirect} from 'next/navigation'
 import Link from 'next/link'
+import {Metadata} from 'next'
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: {
+      absolute: 'Register | Nexus Retreat',
+    },
+    description: 'Register for the invitation-only gathering for international sports leaders.',
+  } satisfies Metadata
+}
 
 export default async function RegisterPage() {
-  // TODO: Remove
-  if (process.env.VERCEL_ENV === 'production') {
-    redirect('/') // Redirect to homepage in production
+  const settings = await client.fetch(settingsQuery)
+
+  // Only redirect if registration is NOT live
+  if (!settings?.registrationIsLive) {
+    redirect('/')
   }
 
   // Fetch registration form content from Sanity
@@ -24,12 +36,7 @@ export default async function RegisterPage() {
           href="/"
           className="inline-flex items-center gap-2 text-white hover:text-gray-200 mb-6 transition-colors"
         >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

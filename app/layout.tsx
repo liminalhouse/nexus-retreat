@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
     // Metadata should never contain stega
     stega: false,
   })
-  const title = settings?.title
+  const title = settings?.title || 'Nexus Retreat'
   const description = settings?.description
 
   const ogImage = resolveOpenGraphImage(settings?.ogImage)
@@ -39,10 +39,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase,
     title: {
-      template: !!title ? `%s | ${title}` : title,
+      template: `%s | ${title}`,
       default: title,
     },
-    description: toPlainText(description),
+    description: description && Array.isArray(description) ? toPlainText(description) : undefined,
     openGraph: {
       images: ogImage ? [ogImage] : [],
     },

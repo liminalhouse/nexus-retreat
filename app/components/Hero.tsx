@@ -1,7 +1,10 @@
+'use client'
+
 import {PortableText} from '@portabletext/react'
 import {urlForImage} from '@/sanity/lib/utils'
 import NexusLogo from './NexusLogo'
 import Link from 'next/link'
+import {useSettings} from '@/lib/hooks'
 
 interface HeroProps {
   block: {
@@ -25,6 +28,9 @@ export default function Hero({block}: HeroProps) {
   const backgroundImageUrl = backgroundImage
     ? urlForImage(backgroundImage)?.url()
     : '/images/hero-bg.jpg'
+
+  const {settings} = useSettings()
+  const isRegistrationLive = settings?.registrationIsLive || false
 
   return (
     <section className="relative h-[calc(100vh-0px)] flex items-center justify-center bg-nexus-navy">
@@ -87,9 +93,16 @@ export default function Hero({block}: HeroProps) {
         </div>
 
         {/* TODO: Disable link for now */}
-        {ctaText && (
-          <div className="inline-block px-8 py-3 bg-nexus-coral text-gray-900 rounded transition-colors font-medium">
+        {ctaText && isRegistrationLive ? (
+          <Link
+            className="inline-block px-8 py-3 bg-nexus-coral text-gray-900 rounded transition-colors font-medium"
+            href={ctaLink}
+          >
             {ctaText}
+          </Link>
+        ) : (
+          <div className="inline-block px-8 py-3 bg-nexus-coral-light text-gray-900 rounded transition-colors font-medium">
+            Registration opens soon
           </div>
         )}
       </div>
