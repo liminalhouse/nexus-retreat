@@ -1,7 +1,7 @@
 import {CogIcon} from '@sanity/icons'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
-import * as demo from '../../lib/initialValues'
+import * as initialValues from '../../lib/initialValues'
 
 /**
  * Settings schema Singleton.  Singletons are single documents that are displayed not in a collection, handy for things like site settings and other global configurations.
@@ -24,7 +24,7 @@ export const settings = defineType({
       description: 'Site title used for SEO and metadata.',
       title: 'Site Title',
       type: 'string',
-      initialValue: demo.title,
+      initialValue: initialValues.title,
       validation: (rule) => rule.required(),
       group: 'seo',
     }),
@@ -33,7 +33,7 @@ export const settings = defineType({
       description: 'Used for SEO metadata',
       title: 'Site Description',
       type: 'array',
-      initialValue: demo.description,
+      initialValue: initialValues.description,
       group: 'seo',
       of: [
         defineArrayMember({
