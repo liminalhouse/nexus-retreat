@@ -4,6 +4,8 @@ import {PortableText} from '@portabletext/react'
 import {urlForImage} from '@/sanity/lib/utils'
 import NexusLogo from './NexusLogo'
 import Link from 'next/link'
+import Image from 'next/image'
+import {useEffect} from 'react'
 import {useSettings} from '@/lib/hooks'
 
 interface HeroProps {
@@ -26,21 +28,40 @@ export default function Hero({block}: HeroProps) {
   const ctaLink = block?.ctaLink || '/register'
   const backgroundImage = block?.backgroundImage
   const backgroundImageUrl = backgroundImage
-    ? urlForImage(backgroundImage)?.url()
+    ? urlForImage(backgroundImage)?.width(1920).quality(85).url()
     : '/images/hero-bg.jpg'
 
   const {settings} = useSettings()
   const isRegistrationLive = settings?.registrationIsLive || false
 
+  // Preload the hero image
+  useEffect(() => {
+    const link = document.createElement('link')
+    link.rel = 'preload'
+    link.as = 'image'
+    link.href = backgroundImageUrl
+    link.fetchPriority = 'high'
+    document.head.appendChild(link)
+
+    return () => {
+      document.head.removeChild(link)
+    }
+  }, [backgroundImageUrl])
+
   return (
     <section className="relative h-[calc(100vh-0px)] flex items-center justify-center bg-nexus-navy">
       {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-40"
-        style={{
-          backgroundImage: `url('${backgroundImageUrl}')`,
-        }}
-      />
+      <div className="absolute inset-0 opacity-40">
+        <Image
+          src={backgroundImageUrl}
+          alt="Hero background"
+          fill
+          priority
+          quality={85}
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+      </div>
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-nexus-navy opacity-60" />
