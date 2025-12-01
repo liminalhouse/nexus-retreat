@@ -54,15 +54,17 @@ export default function Hero({block}: HeroProps) {
     <section className="relative h-[calc(100vh-0px)] flex items-center justify-center bg-nexus-navy">
       {/* Background Image */}
       <div className="absolute inset-0 opacity-40 animate-in fade-in duration-1000">
-        <Image
-          src={backgroundImageUrl}
-          alt="Hero background"
-          fill
-          priority
-          quality={85}
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+        {!!backgroundImageUrl && (
+          <Image
+            src={backgroundImageUrl}
+            alt="Hero background"
+            fill
+            priority
+            quality={85}
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        )}
       </div>
 
       {/* Overlay */}
