@@ -5,8 +5,18 @@ export function middleware(request: NextRequest) {
   // Get the authentication token from cookies
   const authToken = request.cookies.get('auth-token')
 
-  // Admin routes (/admin/*) handle their own authentication - skip middleware
+  // Allow access to admin login page without authentication
+  if (request.nextUrl.pathname === '/admin/login') {
+    return NextResponse.next()
+  }
+
+  // Protect all other admin routes - require authentication
   if (request.nextUrl.pathname.startsWith('/admin')) {
+    if (!authToken || authToken.value !== 'authenticated') {
+      const loginUrl = new URL('/admin/login', request.url)
+      loginUrl.searchParams.set('from', request.nextUrl.pathname)
+      return NextResponse.redirect(loginUrl)
+    }
     return NextResponse.next()
   }
 
