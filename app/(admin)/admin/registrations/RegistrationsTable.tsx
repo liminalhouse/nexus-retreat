@@ -3,6 +3,7 @@
 import {useState} from 'react'
 import EditModal from './EditModal'
 import Avatar from '@/app/components/Avatar'
+import FilterBuilder, {type FilterCondition, evaluateFilter} from './FilterBuilder'
 import {
   formatAccommodations,
   formatDinnerAttendance,
@@ -199,7 +200,8 @@ export default function RegistrationsTable({
 }) {
   const [registrations, setRegistrations] = useState<Registration[]>(initialRegistrations)
   const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null)
-  const [filter, setFilter] = useState('')
+  const [searchFilter, setSearchFilter] = useState('')
+  const [filters, setFilters] = useState<FilterCondition[]>([])
 
   const handleUpdateRegistration = (updatedRegistration: Registration) => {
     setRegistrations((prev) =>
@@ -208,26 +210,50 @@ export default function RegistrationsTable({
   }
 
   const filteredRegistrations = registrations.filter((reg) => {
-    const searchStr = filter.toLowerCase()
-    return (
-      reg.email?.toLowerCase().includes(searchStr) ||
-      reg.first_name?.toLowerCase().includes(searchStr) ||
-      reg.last_name?.toLowerCase().includes(searchStr) ||
-      reg.organization?.toLowerCase().includes(searchStr) ||
-      reg.mobile_phone?.includes(searchStr)
-    )
+    // Search filter - search across all text fields
+    const searchStr = searchFilter.toLowerCase()
+    const matchesSearch =
+      !searchFilter ||
+      Object.entries(reg).some(([key, value]) => {
+        // Skip non-searchable fields
+        if (
+          key === 'id' ||
+          key === 'created_at' ||
+          key === 'updated_at' ||
+          key === 'edit_token' ||
+          key === 'profile_picture' ||
+          value === null ||
+          value === undefined
+        ) {
+          return false
+        }
+
+        // Handle array fields (accommodations, dinner_attendance, etc.)
+        if (Array.isArray(value)) {
+          return value.some((item) => String(item).toLowerCase().includes(searchStr))
+        }
+
+        // Handle all other fields as strings
+        return String(value).toLowerCase().includes(searchStr)
+      })
+
+    // Apply all dynamic filters
+    const matchesAllFilters = filters.every((filter) => evaluateFilter(reg, filter))
+
+    return matchesSearch && matchesAllFilters
   })
 
   return (
     <div className="mt-2 sm:mx-auto lg:mx-4 mb-20">
-      <div className="mb-4">
+      <div className="mb-4 space-y-4">
         <input
           type="text"
-          placeholder="Search by name, email, organization, or phone..."
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
+          placeholder="Search all fields..."
+          value={searchFilter}
+          onChange={(e) => setSearchFilter(e.target.value)}
           className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
         />
+        <FilterBuilder filters={filters} onChange={setFilters} />
       </div>
       <div className="bg-white rounded-sm shadow overflow-hidden">
         <div className="overflow-x-auto">

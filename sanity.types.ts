@@ -552,6 +552,7 @@ export type Settings = {
   _createdAt: string
   _updatedAt: string
   _rev: string
+  registrationIsLive?: boolean
   title?: string
   description?: Array<{
     children?: Array<{
@@ -873,8 +874,9 @@ export type AllSanitySchemaTypes =
 export declare const internalGroqTypeReferenceTo: unique symbol
 // Source: ./sanity/lib/queries.ts
 // Variable: settingsQuery
-// Query: *[_type == "settings"][0]{  title,  description,  ogImage,  navLinks[]{    label,    href,    highlighted  },  footerTagline,  footerEmail,  footerQuickLinks[]{    label,    href  },  footerCopyright}
+// Query: *[_type == "settings"][0]{  registrationIsLive,  title,  description,  ogImage,  navLinks[]{    label,    href,    highlighted  },  footerTagline,  footerEmail,  footerQuickLinks[]{    label,    href  },  footerCopyright}
 export type SettingsQueryResult = {
+  registrationIsLive: boolean | null
   title: string | null
   description: Array<{
     children?: Array<{
@@ -1345,7 +1347,7 @@ export type RegistrationFormContentQueryResult = {
 import '@sanity/client'
 declare module '@sanity/client' {
   interface SanityQueries {
-    '*[_type == "settings"][0]{\n  title,\n  description,\n  ogImage,\n  navLinks[]{\n    label,\n    href,\n    highlighted\n  },\n  footerTagline,\n  footerEmail,\n  footerQuickLinks[]{\n    label,\n    href\n  },\n  footerCopyright\n}': SettingsQueryResult
+    '*[_type == "settings"][0]{\n  registrationIsLive,\n  title,\n  description,\n  ogImage,\n  navLinks[]{\n    label,\n    href,\n    highlighted\n  },\n  footerTagline,\n  footerEmail,\n  footerQuickLinks[]{\n    label,\n    href\n  },\n  footerCopyright\n}': SettingsQueryResult
     '\n  *[_type == \'page\' && (\n    (defined($slug) && slug.current == $slug) ||\n    (!defined($slug) && !defined(slug.current))\n  )][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    bgColor,\n    heading,\n    subheading,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      _type == "hero" => {\n        description[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n          }\n        },\n        eventDate,\n        eventLocation,\n        ctaText,\n        ctaLink,\n        backgroundImage\n      },\n      _type == "callToAction" => {\n        \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n      }\n,\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n          }\n        }\n      },\n       _type == "faq" => {\n        ...,\n      },\n      _type == "form" => {\n        title,\n        subtitle,\n        description,\n        numberOfSteps,\n        step1 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        step2 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        step3 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        submitButtonText,\n        nextButtonText,\n        backButtonText,\n        successMessage,\n        submitEndpoint\n      }\n    },\n  }\n': GetPageQueryResult
     '\n  *[_type == "page" && defined(slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult

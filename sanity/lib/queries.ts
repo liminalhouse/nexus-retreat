@@ -7,6 +7,7 @@ const linkReference = /* groq */ `
 `
 
 export const settingsQuery = defineQuery(`*[_type == "settings"][0]{
+  registrationIsLive,
   title,
   description,
   ogImage,
