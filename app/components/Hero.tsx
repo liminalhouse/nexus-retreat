@@ -5,7 +5,7 @@ import {urlForImage} from '@/sanity/lib/utils'
 import NexusLogo from './NexusLogo'
 import Link from 'next/link'
 import Image from 'next/image'
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
 import {useSettings} from '@/lib/hooks'
 
 interface HeroProps {
@@ -51,7 +51,7 @@ export default function Hero({block}: HeroProps) {
   return (
     <section className="relative h-[calc(100vh-0px)] flex items-center justify-center bg-nexus-navy">
       {/* Background Image */}
-      <div className="absolute inset-0 opacity-40">
+      <div className="absolute inset-0 opacity-40 animate-in fade-in duration-1000">
         <Image
           src={backgroundImageUrl}
           alt="Hero background"
@@ -67,7 +67,7 @@ export default function Hero({block}: HeroProps) {
       <div className="absolute inset-0 bg-nexus-navy opacity-60" />
 
       {/* Content */}
-      <div className="relative z-10 text-center text-white px-6 max-w-4xl">
+      <div className="relative z-10 text-center text-white px-6 max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
         <div className="mb-6 flex justify-center">
           <NexusLogo className="w-60 max-w-md md:max-w-lg lg:max-w-xl" color="white" />
         </div>
