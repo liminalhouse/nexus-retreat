@@ -12,6 +12,7 @@ import {
 } from '@/lib/utils/formatRegistrationFields'
 import {JACKET_SIZE_OPTIONS} from '@/app/(main)/register/formConfig'
 import type {Registration} from '@/lib/types/registration'
+import {useToast} from '@/app/components/Toast/ToastContext'
 
 export default function EditModal({
   registration,
@@ -24,6 +25,7 @@ export default function EditModal({
   onSave?: (updatedRegistration: Registration) => void
   isAdminView?: boolean
 }) {
+  const {showToast} = useToast()
   const [formData, setFormData] = useState<Registration>(registration)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -158,6 +160,9 @@ export default function EditModal({
         onSave(formData)
       }
 
+      // Show success toast
+      showToast(`Registration updated: ${formData.first_name} ${formData.last_name}`, 'success')
+
       // Close the modal
       onClose()
     } catch (err) {
@@ -193,8 +198,13 @@ export default function EditModal({
         return
       }
 
-      // Close the modal and refresh the page
-      window.location.reload()
+      // Show success toast
+      showToast(`Registration deleted: ${formData.first_name} ${formData.last_name}`, 'success')
+
+      // Close the modal and refresh the page after a short delay to show the toast
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
     } catch (err) {
       console.error('Error deleting registration:', err)
       setError('Failed to delete registration. Please try again.')
