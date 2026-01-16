@@ -48,7 +48,19 @@ export default async function Page(props: Props) {
   const [{data: page}] = await Promise.all([sanityFetch({query: getPageQuery, params})])
 
   if (!page?._id) {
-    return <div className="py-40">This page does not exist.</div>
+    return (
+      <div className="py-40 w-full max-w-7xl mx-auto text-center">
+        <h1 className="text-2xl">This page does not exist.</h1>
+        <br />
+        <p>
+          Contact{' '}
+          <a className="text-nexus-coral" href="mailto:info@nexus-retreat.com">
+            info@nexus-retreat.com
+          </a>{' '}
+          for assistance.
+        </p>
+      </div>
+    )
   }
 
   const bgColorClass = getBgColorClass(page.bgColor)

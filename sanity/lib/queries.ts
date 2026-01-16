@@ -160,6 +160,85 @@ export const pagesSlugs = defineQuery(`
   {"slug": slug.current}
 `)
 
+export const sessionsQuery = defineQuery(`
+  *[_type == "session"] | order(startTime asc) {
+    _id,
+    id,
+    title,
+    description,
+    startTime,
+    endTime,
+    location,
+    tags,
+    photo,
+    "speakers": speakers[]->{
+      _id,
+      id,
+      firstName,
+      lastName,
+      title,
+      profilePicture
+    }
+  }
+`)
+
+export const sessionByIdQuery = defineQuery(`
+  *[_type == "session" && id.current == $id][0]{
+    _id,
+    id,
+    title,
+    description,
+    startTime,
+    endTime,
+    location,
+    tags,
+    photo,
+    "speakers": speakers[]->{
+      _id,
+      id,
+      firstName,
+      lastName,
+      title,
+      bio,
+      profilePicture
+    }
+  }
+`)
+
+export const speakersQuery = defineQuery(`
+  *[_type == "speaker"] | order(lastName asc) {
+    _id,
+    id,
+    firstName,
+    lastName,
+    title,
+    bio,
+    profilePicture
+  }
+`)
+
+export const speakerByIdQuery = defineQuery(`
+  *[_type == "speaker" && id.current == $id][0]{
+    _id,
+    id,
+    firstName,
+    lastName,
+    title,
+    bio,
+    profilePicture,
+    "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {
+      _id,
+      id,
+      title,
+      startTime,
+      endTime,
+      location,
+      tags,
+      photo
+    }
+  }
+`)
+
 export const registrationFormContentQuery = defineQuery(`
   *[_type == "registrationForm" && _id == "registrationFormContent"][0]{
     title,
