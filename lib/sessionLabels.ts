@@ -1,6 +1,8 @@
 // Session type and tag label mappings
 // Keep in sync with sanity/schemas/schemaTypes/documents/session.ts
 
+import {stegaClean} from '@sanity/client/stega'
+
 export const sessionTypeLabels: Record<string, string> = {
   'keynote': 'Keynote',
   'panel': 'Panel',
@@ -32,13 +34,16 @@ export const sessionTagColors: Record<string, {bg: string; text: string}> = {
 }
 
 export function getSessionTypeLabel(value: string): string {
-  return sessionTypeLabels[value] || value
+  const cleanValue = stegaClean(value)
+  return sessionTypeLabels[cleanValue] || cleanValue
 }
 
 export function getSessionTagLabel(value: string): string {
-  return sessionTagLabels[value] || value
+  const cleanValue = stegaClean(value)
+  return sessionTagLabels[cleanValue] || cleanValue
 }
 
 export function getSessionTagColors(value: string): {bg: string; text: string} {
-  return sessionTagColors[value] || {bg: 'bg-gray-100', text: 'text-gray-800'}
+  const cleanValue = stegaClean(value)
+  return sessionTagColors[cleanValue] || {bg: 'bg-gray-100', text: 'text-gray-800'}
 }
