@@ -256,7 +256,8 @@ export type Session = {
     _key: string
     [internalGroqTypeReferenceTo]?: 'speaker'
   }>
-  tags?: Array<string>
+  sessionType?: Array<string>
+  sessionTags?: Array<string>
   location?: string
   photo?: {
     asset?: {
@@ -1245,7 +1246,7 @@ export type PagesSlugsResult = Array<{
   slug: string | null
 }>
 // Variable: sessionsQuery
-// Query: *[_type == "session"] | order(startTime asc) {    _id,    id,    title,    description,    startTime,    endTime,    location,    tags,    photo,    "speakers": speakers[]->{      _id,      id,      firstName,      lastName,      title,      profilePicture    }  }
+// Query: *[_type == "session"] | order(startTime asc) {    _id,    id,    title,    description,    startTime,    endTime,    location,    sessionType,    sessionTags,    photo,    "speakers": speakers[]->{      _id,      id,      firstName,      lastName,      title,      profilePicture    }  }
 export type SessionsQueryResult = Array<{
   _id: string
   id: Slug | null
@@ -1271,7 +1272,8 @@ export type SessionsQueryResult = Array<{
   startTime: string | null
   endTime: string | null
   location: string | null
-  tags: Array<string> | null
+  sessionType: Array<string> | null
+  sessionTags: Array<string> | null
   photo: {
     asset?: {
       _ref: string
@@ -1306,7 +1308,7 @@ export type SessionsQueryResult = Array<{
   }> | null
 }>
 // Variable: sessionByIdQuery
-// Query: *[_type == "session" && id.current == $id][0]{    _id,    id,    title,    description,    startTime,    endTime,    location,    tags,    photo,    "speakers": speakers[]->{      _id,      id,      firstName,      lastName,      title,      bio,      profilePicture    }  }
+// Query: *[_type == "session" && id.current == $id][0]{    _id,    id,    title,    description,    startTime,    endTime,    location,    sessionType,    sessionTags,    photo,    "speakers": speakers[]->{      _id,      id,      firstName,      lastName,      title,      bio,      profilePicture    }  }
 export type SessionByIdQueryResult = {
   _id: string
   id: Slug | null
@@ -1332,7 +1334,8 @@ export type SessionByIdQueryResult = {
   startTime: string | null
   endTime: string | null
   location: string | null
-  tags: Array<string> | null
+  sessionType: Array<string> | null
+  sessionTags: Array<string> | null
   photo: {
     asset?: {
       _ref: string
@@ -1424,7 +1427,7 @@ export type SpeakersQueryResult = Array<{
   } | null
 }>
 // Variable: speakerByIdQuery
-// Query: *[_type == "speaker" && id.current == $id][0]{    _id,    id,    firstName,    lastName,    title,    bio,    profilePicture,    "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {      _id,      id,      title,      startTime,      endTime,      location,      tags,      photo    }  }
+// Query: *[_type == "speaker" && id.current == $id][0]{    _id,    id,    firstName,    lastName,    title,    bio,    profilePicture,    "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {      _id,      id,      title,      startTime,      endTime,      location,      sessionType,      sessionTags,      photo    }  }
 export type SpeakerByIdQueryResult = {
   _id: string
   id: Slug | null
@@ -1468,7 +1471,8 @@ export type SpeakerByIdQueryResult = {
     startTime: string | null
     endTime: string | null
     location: string | null
-    tags: Array<string> | null
+    sessionType: Array<string> | null
+    sessionTags: Array<string> | null
     photo: {
       asset?: {
         _ref: string
@@ -1695,10 +1699,10 @@ declare module '@sanity/client' {
     '\n  *[_type == \'page\' && (\n    (defined($slug) && slug.current == $slug) ||\n    (!defined($slug) && !defined(slug.current))\n  )][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    bgColor,\n    heading,\n    subheading,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      _type == "hero" => {\n        description[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n          }\n        },\n        eventDate,\n        eventLocation,\n        ctaText,\n        ctaLink,\n        backgroundImage\n      },\n      _type == "callToAction" => {\n        \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n      }\n,\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n          }\n        }\n      },\n       _type == "faq" => {\n        ...,\n      },\n      _type == "form" => {\n        title,\n        subtitle,\n        description,\n        numberOfSteps,\n        step1 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        step2 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        step3 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        submitButtonText,\n        nextButtonText,\n        backButtonText,\n        successMessage,\n        submitEndpoint\n      }\n    },\n  }\n': GetPageQueryResult
     '\n  *[_type == "page" && defined(slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
-    '\n  *[_type == "session"] | order(startTime asc) {\n    _id,\n    id,\n    title,\n    description,\n    startTime,\n    endTime,\n    location,\n    tags,\n    photo,\n    "speakers": speakers[]->{\n      _id,\n      id,\n      firstName,\n      lastName,\n      title,\n      profilePicture\n    }\n  }\n': SessionsQueryResult
-    '\n  *[_type == "session" && id.current == $id][0]{\n    _id,\n    id,\n    title,\n    description,\n    startTime,\n    endTime,\n    location,\n    tags,\n    photo,\n    "speakers": speakers[]->{\n      _id,\n      id,\n      firstName,\n      lastName,\n      title,\n      bio,\n      profilePicture\n    }\n  }\n': SessionByIdQueryResult
+    '\n  *[_type == "session"] | order(startTime asc) {\n    _id,\n    id,\n    title,\n    description,\n    startTime,\n    endTime,\n    location,\n    sessionType,\n    sessionTags,\n    photo,\n    "speakers": speakers[]->{\n      _id,\n      id,\n      firstName,\n      lastName,\n      title,\n      profilePicture\n    }\n  }\n': SessionsQueryResult
+    '\n  *[_type == "session" && id.current == $id][0]{\n    _id,\n    id,\n    title,\n    description,\n    startTime,\n    endTime,\n    location,\n    sessionType,\n    sessionTags,\n    photo,\n    "speakers": speakers[]->{\n      _id,\n      id,\n      firstName,\n      lastName,\n      title,\n      bio,\n      profilePicture\n    }\n  }\n': SessionByIdQueryResult
     '\n  *[_type == "speaker"] | order(lastName asc) {\n    _id,\n    id,\n    firstName,\n    lastName,\n    title,\n    bio,\n    profilePicture\n  }\n': SpeakersQueryResult
-    '\n  *[_type == "speaker" && id.current == $id][0]{\n    _id,\n    id,\n    firstName,\n    lastName,\n    title,\n    bio,\n    profilePicture,\n    "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {\n      _id,\n      id,\n      title,\n      startTime,\n      endTime,\n      location,\n      tags,\n      photo\n    }\n  }\n': SpeakerByIdQueryResult
+    '\n  *[_type == "speaker" && id.current == $id][0]{\n    _id,\n    id,\n    firstName,\n    lastName,\n    title,\n    bio,\n    profilePicture,\n    "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {\n      _id,\n      id,\n      title,\n      startTime,\n      endTime,\n      location,\n      sessionType,\n      sessionTags,\n      photo\n    }\n  }\n': SpeakerByIdQueryResult
     '\n  *[_type == "registrationForm" && _id == "registrationFormContent"][0]{\n    title,\n    subtitle,\n    description,\n    submitButtonText,\n    nextButtonText,\n    backButtonText,\n    successMessage,\n    step1Title,\n    step2Title,\n    step3Title,\n    email,\n    firstName,\n    lastName,\n    jobTitle,\n    organization,\n    mobilePhone,\n    address,\n    emergencyContact,\n    assistant,\n    guest,\n    attendeeDetails,\n    guestEventDetails\n  }\n': RegistrationFormContentQueryResult
   }
 }

@@ -74,7 +74,7 @@ function SessionListItem({session, activeTag}: {session: Session; activeTag: str
   return (
     <div className="relative flex flex-col sm:flex-row items-start gap-4 bg-white rounded-xl p-4 border border-gray-100 hover:shadow-md hover:border-nexus-coral/30 transition-all duration-300">
       {/* Main clickable area */}
-      <Link href={`/sessions/${sessionSlug}`} className="absolute inset-0 z-0" />
+      <Link href={`/schedule/${sessionSlug}`} className="absolute inset-0 z-0" />
 
       {/* Photo */}
       {photoUrl && (
@@ -129,8 +129,20 @@ function SessionListItem({session, activeTag}: {session: Session; activeTag: str
           )}
         </div>
 
-        {/* Title */}
-        <h3 className="text-lg font-semibold text-nexus-navy font-serif">{session.title}</h3>
+        {/* Session Type & Title */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {session.sessionType &&
+            session.sessionType.length > 0 &&
+            session.sessionType.map((type) => (
+              <span
+                key={type}
+                className="inline-block px-2 py-0.5 text-xs font-medium bg-nexus-navy text-white rounded-full capitalize"
+              >
+                {type.replace('-', ' ')}
+              </span>
+            ))}
+          <h3 className="text-lg font-semibold text-nexus-navy font-serif">{session.title}</h3>
+        </div>
 
         {/* Speakers & Tags row */}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2 relative z-10">
@@ -146,7 +158,7 @@ function SessionListItem({session, activeTag}: {session: Session; activeTag: str
                   return (
                     <Link
                       key={speaker._id}
-                      href={`/sessions/speakers/${speakerSlug}`}
+                      href={`/speakers/${speakerSlug}`}
                       className="relative hover:z-10 transition-transform hover:scale-110"
                     >
                       {speakerPhotoUrl ? (
@@ -175,7 +187,7 @@ function SessionListItem({session, activeTag}: {session: Session; activeTag: str
                   return (
                     <span key={speaker._id}>
                       <Link
-                        href={`/sessions/speakers/${speakerSlug}`}
+                        href={`/speakers/${speakerSlug}`}
                         className="text-sm text-gray-600 hover:text-nexus-coral transition-colors"
                       >
                         {speaker.firstName} {speaker.lastName}
@@ -190,13 +202,13 @@ function SessionListItem({session, activeTag}: {session: Session; activeTag: str
             </div>
           )}
 
-          {/* Tags */}
-          {session.tags && session.tags.length > 0 && (
+          {/* Session Tags */}
+          {session.sessionTags && session.sessionTags.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
-              {session.tags.map((tag) => (
+              {session.sessionTags.map((tag) => (
                 <Link
                   key={tag}
-                  href={`/sessions?tag=${encodeURIComponent(tag)}`}
+                  href={`/schedule?tag=${encodeURIComponent(tag)}`}
                   className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full transition-colors ${
                     activeTag === tag
                       ? 'bg-nexus-coral text-white'
@@ -234,7 +246,7 @@ export default async function SessionsPage({searchParams}: Props) {
   const {data: sessions} = await sanityFetch({query: sessionsQuery})
 
   const filteredSessions = activeTag
-    ? (sessions || []).filter((session) => session.tags?.includes(activeTag))
+    ? (sessions || []).filter((session) => session.sessionTags?.includes(activeTag))
     : sessions || []
 
   const groupedSessions = groupSessionsByDay(filteredSessions)
@@ -245,10 +257,10 @@ export default async function SessionsPage({searchParams}: Props) {
         {/* Header */}
         <div className="text-center mb-12 md:mb-16">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-nexus-navy font-serif mb-4">
-            Sessions
+            Schedule
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Explore our lineup of sessions, workshops, and keynotes.
+            Explore our exciting lineup of sessions with world-class speakers.
           </p>
         </div>
 
@@ -259,7 +271,7 @@ export default async function SessionsPage({searchParams}: Props) {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-nexus-coral text-white text-sm font-medium rounded-full">
               {activeTag}
               <Link
-                href="/sessions"
+                href="/schedule"
                 className="hover:bg-white/20 rounded-full p-0.5 transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,7 +296,7 @@ export default async function SessionsPage({searchParams}: Props) {
                 : 'No sessions scheduled yet. Check back soon!'}
             </p>
             {activeTag && (
-              <Link href="/sessions" className="inline-block mt-4 text-nexus-coral hover:underline">
+              <Link href="/schedule" className="inline-block mt-4 text-nexus-coral hover:underline">
                 Clear filter
               </Link>
             )}

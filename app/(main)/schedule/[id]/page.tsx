@@ -69,7 +69,7 @@ export default async function SessionPage({params}: Props) {
       <div className="container mx-auto px-6 py-12 md:py-16">
         {/* Back Link */}
         <Link
-          href="/sessions"
+          href="/schedule"
           className="inline-flex items-center gap-2 text-nexus-navy hover:text-nexus-coral transition-colors mb-8"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,13 +100,22 @@ export default async function SessionPage({params}: Props) {
               </div>
             )}
 
-            {/* Tags */}
-            {session.tags && session.tags.length > 0 && (
+            {/* Session Type & Tags */}
+            {((session.sessionType && session.sessionType.length > 0) ||
+              (session.sessionTags && session.sessionTags.length > 0)) && (
               <div className="flex flex-wrap gap-2 mb-4">
-                {session.tags.map((tag) => (
+                {session.sessionType?.map((type) => (
+                  <span
+                    key={type}
+                    className="inline-block px-3 py-1 text-sm font-medium bg-nexus-navy text-white rounded-full capitalize"
+                  >
+                    {type.replace('-', ' ')}
+                  </span>
+                ))}
+                {session.sessionTags?.map((tag) => (
                   <Link
                     key={tag}
-                    href={`/sessions?tag=${encodeURIComponent(tag)}`}
+                    href={`/schedule?tag=${encodeURIComponent(tag)}`}
                     className="inline-block px-3 py-1 text-sm font-medium bg-nexus-coral/10 text-nexus-navy rounded-full hover:bg-nexus-coral/20 transition-colors"
                   >
                     {tag}
@@ -200,7 +209,7 @@ export default async function SessionPage({params}: Props) {
                     return (
                       <Link
                         key={speaker._id}
-                        href={`/sessions/speakers/${speakerSlug}`}
+                        href={`/speakers/${speakerSlug}`}
                         className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100 hover:shadow-md hover:border-nexus-coral/30 transition-all"
                       >
                         {speakerPhotoUrl ? (

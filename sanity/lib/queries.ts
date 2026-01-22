@@ -169,7 +169,8 @@ export const sessionsQuery = defineQuery(`
     startTime,
     endTime,
     location,
-    tags,
+    sessionType,
+    sessionTags,
     photo,
     "speakers": speakers[]->{
       _id,
@@ -191,7 +192,8 @@ export const sessionByIdQuery = defineQuery(`
     startTime,
     endTime,
     location,
-    tags,
+    sessionType,
+    sessionTags,
     photo,
     "speakers": speakers[]->{
       _id,
@@ -233,7 +235,8 @@ export const speakerByIdQuery = defineQuery(`
       startTime,
       endTime,
       location,
-      tags,
+      sessionType,
+      sessionTags,
       photo
     }
   }

@@ -70,7 +70,7 @@ export default async function SpeakerPage({params}: Props) {
       <div className="container mx-auto px-6 py-12 md:py-16">
         {/* Back Link */}
         <Link
-          href="/sessions/speakers"
+          href="/speakers"
           className="inline-flex items-center gap-2 text-nexus-navy hover:text-nexus-coral transition-colors mb-8"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,7 +137,7 @@ export default async function SpeakerPage({params}: Props) {
                   return (
                     <Link
                       key={session._id}
-                      href={`/sessions/${sessionSlug}`}
+                      href={`/schedule/${sessionSlug}`}
                       className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-xl border border-gray-100 hover:shadow-md hover:border-nexus-coral/30 transition-all"
                     >
                       {sessionPhotoUrl && (
@@ -152,10 +152,19 @@ export default async function SpeakerPage({params}: Props) {
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        {/* Tags */}
-                        {session.tags && session.tags.length > 0 && (
+                        {/* Session Type & Tags */}
+                        {((session.sessionType && session.sessionType.length > 0) ||
+                          (session.sessionTags && session.sessionTags.length > 0)) && (
                           <div className="flex flex-wrap gap-1.5 mb-2">
-                            {session.tags.map((tag) => (
+                            {session.sessionType?.map((type) => (
+                              <span
+                                key={type}
+                                className="inline-block px-2 py-0.5 text-xs font-medium bg-nexus-navy text-white rounded-full capitalize"
+                              >
+                                {type.replace('-', ' ')}
+                              </span>
+                            ))}
+                            {session.sessionTags?.map((tag) => (
                               <span
                                 key={tag}
                                 className="inline-block px-2 py-0.5 text-xs font-medium bg-nexus-coral/10 text-nexus-navy rounded-full"

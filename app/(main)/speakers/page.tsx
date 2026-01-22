@@ -26,7 +26,7 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
 
   return (
     <Link
-      href={`/sessions/speakers/${speakerSlug}`}
+      href={`/speakers/${speakerSlug}`}
       className="block bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg hover:border-nexus-coral/30 transition-all duration-300"
     >
       {/* Photo */}
@@ -86,7 +86,7 @@ export default async function SpeakersPage() {
       <div className="container mx-auto px-6 py-16 md:py-24">
         {/* Back Link */}
         <Link
-          href="/sessions"
+          href="/schedule"
           className="inline-flex items-center gap-2 text-nexus-navy hover:text-nexus-coral transition-colors mb-8"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

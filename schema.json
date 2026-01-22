@@ -1481,7 +1481,17 @@
         },
         "optional": true
       },
-      "tags": {
+      "sessionType": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "string"
+          }
+        },
+        "optional": true
+      },
+      "sessionTags": {
         "type": "objectAttribute",
         "value": {
           "type": "array",

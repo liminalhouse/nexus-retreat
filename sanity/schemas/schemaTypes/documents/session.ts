@@ -1,18 +1,23 @@
 import {defineField, defineType, defineArrayMember} from 'sanity'
 import {CalendarIcon} from '@sanity/icons'
 
-const sessionTags = [
-  // Session types
-  {title: 'Workshop', value: 'workshop'},
+const sessionTypes = [
   {title: 'Keynote', value: 'keynote'},
   {title: 'Panel', value: 'panel'},
-  {title: 'Breakout', value: 'breakout'},
-  {title: 'Networking', value: 'networking'},
-  // Topics
-  {title: 'Tech', value: 'tech'},
-  {title: 'Leadership', value: 'leadership'},
-  {title: 'Culture', value: 'culture'},
-  {title: 'Finance', value: 'finance'},
+  {title: 'Lightning talk', value: 'lightning-talk'},
+  {title: 'Social', value: 'social'},
+  {title: 'Meal', value: 'meal'},
+  {title: 'Activity', value: 'activity'},
+]
+
+const sessionTags = [
+  {title: 'Geopolitics', value: 'geopolitics'},
+  {title: 'International Finance & Economics', value: 'international-finance-economics'},
+  {title: 'Future of Cities', value: 'future-of-cities'},
+  {title: 'AI & Tech', value: 'ai-tech'},
+  {title: 'Dinner Speakers', value: 'dinner-speakers'},
+  {title: 'Health & Wellness', value: 'health-wellness'},
+  {title: 'Surprise & Delight', value: 'surprise-delight'},
 ]
 
 export const session = defineType({
@@ -83,8 +88,17 @@ export const session = defineType({
       ],
     }),
     defineField({
-      name: 'tags',
-      title: 'Tags',
+      name: 'sessionType',
+      title: 'Session Type',
+      type: 'array',
+      of: [{type: 'string'}],
+      options: {
+        list: sessionTypes,
+      },
+    }),
+    defineField({
+      name: 'sessionTags',
+      title: 'Session Tags',
       type: 'array',
       of: [{type: 'string'}],
       options: {
