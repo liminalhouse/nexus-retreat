@@ -46,7 +46,7 @@ function formatDate(dateString: string) {
 
 export default async function SessionPage({params}: Props) {
   const user = await getUser()
-  if (!user || process.env.SESSIONS_LIVE === 'true') {
+  if (!user || process.env.SESSIONS_LIVE !== 'true') {
     notFound()
   }
 

@@ -75,7 +75,7 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
 
 export default async function SpeakersPage() {
   const user = await getUser()
-  if (!user || process.env.SESSIONS_LIVE === 'true') {
+  if (!user || process.env.SESSIONS_LIVE !== 'true') {
     notFound()
   }
 
