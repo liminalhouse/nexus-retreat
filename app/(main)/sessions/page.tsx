@@ -1,9 +1,11 @@
 import type {Metadata} from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import {notFound} from 'next/navigation'
 import {sanityFetch} from '@/sanity/lib/live'
 import {sessionsQuery} from '@/sanity/lib/queries'
 import {urlForImage} from '@/sanity/lib/utils'
+import {getUser} from '@/lib/auth/getUser'
 
 export const metadata: Metadata = {
   title: 'Sessions | Nexus Retreat',
@@ -241,6 +243,11 @@ function SessionListItem({session, activeTag}: {session: Session; activeTag: str
 }
 
 export default async function SessionsPage({searchParams}: Props) {
+  const user = await getUser()
+  if (!user && process.env.SESSIONS_LIVE === 'true') {
+    notFound()
+  }
+
   const {tag: activeTag} = await searchParams
   const {data: sessions} = await sanityFetch({query: sessionsQuery})
 

@@ -7,6 +7,7 @@ import {speakerByIdQuery} from '@/sanity/lib/queries'
 import {urlForImage} from '@/sanity/lib/utils'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
+import {getUser} from '@/lib/auth/getUser'
 
 type Props = {
   params: Promise<{id: string}>
@@ -45,6 +46,11 @@ function formatDate(dateString: string) {
 }
 
 export default async function SpeakerPage({params}: Props) {
+  const user = await getUser()
+  if (!user && process.env.SESSIONS_LIVE === 'true') {
+    notFound()
+  }
+
   const {id} = await params
   const {data: speaker} = await sanityFetch({
     query: speakerByIdQuery,
@@ -67,12 +73,7 @@ export default async function SpeakerPage({params}: Props) {
           href="/sessions/speakers"
           className="inline-flex items-center gap-2 text-nexus-navy hover:text-nexus-coral transition-colors mb-8"
         >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -111,9 +112,7 @@ export default async function SpeakerPage({params}: Props) {
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-nexus-navy font-serif mb-2">
                 {speaker.firstName} {speaker.lastName}
               </h1>
-              {speaker.title && (
-                <p className="text-lg text-gray-600 mb-6">{speaker.title}</p>
-              )}
+              {speaker.title && <p className="text-lg text-gray-600 mb-6">{speaker.title}</p>}
 
               {/* Bio */}
               {speaker.bio && (
@@ -127,9 +126,7 @@ export default async function SpeakerPage({params}: Props) {
           {/* Sessions */}
           {speaker.sessions && speaker.sessions.length > 0 && (
             <div className="border-t border-gray-200 pt-8">
-              <h2 className="text-2xl font-semibold text-nexus-navy font-serif mb-6">
-                Sessions
-              </h2>
+              <h2 className="text-2xl font-semibold text-nexus-navy font-serif mb-6">Sessions</h2>
               <div className="space-y-4">
                 {speaker.sessions.map((session) => {
                   const sessionPhotoUrl = session.photo
@@ -174,9 +171,7 @@ export default async function SpeakerPage({params}: Props) {
                         </h3>
 
                         <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
-                          {session.startTime && (
-                            <span>{formatDate(session.startTime)}</span>
-                          )}
+                          {session.startTime && <span>{formatDate(session.startTime)}</span>}
                           {session.startTime && session.endTime && (
                             <span>
                               {formatTime(session.startTime)} - {formatTime(session.endTime)}

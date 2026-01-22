@@ -1,11 +1,13 @@
 import type {Metadata} from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import {notFound} from 'next/navigation'
 import {sanityFetch} from '@/sanity/lib/live'
 import {speakersQuery} from '@/sanity/lib/queries'
 import {urlForImage} from '@/sanity/lib/utils'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
+import {getUser} from '@/lib/auth/getUser'
 
 export const metadata: Metadata = {
   title: 'Speakers | Nexus Retreat',
@@ -61,9 +63,7 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
         </h3>
 
         {/* Title */}
-        {speaker.title && (
-          <p className="text-sm text-gray-600 mb-4">{speaker.title}</p>
-        )}
+        {speaker.title && <p className="text-sm text-gray-600 mb-4">{speaker.title}</p>}
 
         {/* Bio preview */}
         {speaker.bio && (
@@ -73,9 +73,7 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
         )}
 
         <div className="mt-4 pt-4 border-t border-gray-100">
-          <span className="text-sm text-nexus-coral font-medium">
-            View profile →
-          </span>
+          <span className="text-sm text-nexus-coral font-medium">View profile →</span>
         </div>
       </div>
     </Link>
@@ -83,6 +81,11 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
 }
 
 export default async function SpeakersPage() {
+  const user = await getUser()
+  if (!user && process.env.SESSIONS_LIVE === 'true') {
+    notFound()
+  }
+
   const {data: speakers} = await sanityFetch({query: speakersQuery})
 
   return (
@@ -93,12 +96,7 @@ export default async function SpeakersPage() {
           href="/sessions"
           className="inline-flex items-center gap-2 text-nexus-navy hover:text-nexus-coral transition-colors mb-8"
         >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

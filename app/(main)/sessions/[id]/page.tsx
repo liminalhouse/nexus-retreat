@@ -7,6 +7,7 @@ import {sessionByIdQuery} from '@/sanity/lib/queries'
 import {urlForImage} from '@/sanity/lib/utils'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
+import {getUser} from '@/lib/auth/getUser'
 
 type Props = {
   params: Promise<{id: string}>
@@ -44,6 +45,11 @@ function formatDate(dateString: string) {
 }
 
 export default async function SessionPage({params}: Props) {
+  const user = await getUser()
+  if (!user && process.env.SESSIONS_LIVE === 'true') {
+    notFound()
+  }
+
   const {id} = await params
   const {data: session} = await sanityFetch({
     query: sessionByIdQuery,
@@ -66,12 +72,7 @@ export default async function SessionPage({params}: Props) {
           href="/sessions"
           className="inline-flex items-center gap-2 text-nexus-navy hover:text-nexus-coral transition-colors mb-8"
         >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -123,12 +124,7 @@ export default async function SessionPage({params}: Props) {
             <div className="flex flex-wrap gap-6 text-gray-600 mb-8">
               {session.startTime && (
                 <div className="flex items-center gap-2">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -141,12 +137,7 @@ export default async function SessionPage({params}: Props) {
               )}
               {session.startTime && session.endTime && (
                 <div className="flex items-center gap-2">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -161,12 +152,7 @@ export default async function SessionPage({params}: Props) {
               )}
               {session.location && (
                 <div className="flex items-center gap-2">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -203,7 +189,11 @@ export default async function SessionPage({params}: Props) {
                 <div className="space-y-4">
                   {session.speakers.map((speaker) => {
                     const speakerPhotoUrl = speaker.profilePicture
-                      ? urlForImage(speaker.profilePicture)?.width(200).height(200).fit('crop').url()
+                      ? urlForImage(speaker.profilePicture)
+                          ?.width(200)
+                          .height(200)
+                          .fit('crop')
+                          .url()
                       : null
                     const speakerSlug = speaker.id?.current || speaker._id
 
