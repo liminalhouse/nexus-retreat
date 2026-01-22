@@ -6,33 +6,15 @@ import {sanityFetch} from '@/sanity/lib/live'
 import {sessionsQuery} from '@/sanity/lib/queries'
 import {urlForImage} from '@/sanity/lib/utils'
 import {getUser} from '@/lib/auth/getUser'
+import type {SessionsQueryResult} from '@/sanity.types'
 
 export const metadata: Metadata = {
   title: 'Sessions | Nexus Retreat',
   description: 'View all sessions at Nexus Retreat',
 }
 
-type Speaker = {
-  _id: string
-  id?: {current?: string}
-  firstName?: string
-  lastName?: string
-  title?: string
-  profilePicture?: any
-}
-
-type Session = {
-  _id: string
-  id?: {current?: string}
-  title?: string
-  description?: any
-  startTime?: string
-  endTime?: string
-  location?: string
-  tags?: string[]
-  photo?: any
-  speakers?: Speaker[]
-}
+type Session = SessionsQueryResult[number]
+type Speaker = NonNullable<Session['speakers']>[number]
 
 type Props = {
   searchParams: Promise<{tag?: string}>

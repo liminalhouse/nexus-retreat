@@ -8,21 +8,14 @@ import {urlForImage} from '@/sanity/lib/utils'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
 import {getUser} from '@/lib/auth/getUser'
+import type {SpeakersQueryResult} from '@/sanity.types'
 
 export const metadata: Metadata = {
   title: 'Speakers | Nexus Retreat',
   description: 'Meet our speakers at Nexus Retreat',
 }
 
-type Speaker = {
-  _id: string
-  id?: {current?: string}
-  firstName?: string
-  lastName?: string
-  title?: string
-  bio?: any
-  profilePicture?: any
-}
+type Speaker = SpeakersQueryResult[number]
 
 function SpeakerCard({speaker}: {speaker: Speaker}) {
   const photoUrl = speaker.profilePicture
