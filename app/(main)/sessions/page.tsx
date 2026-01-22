@@ -226,7 +226,7 @@ function SessionListItem({session, activeTag}: {session: Session; activeTag: str
 
 export default async function SessionsPage({searchParams}: Props) {
   const user = await getUser()
-  if (!user && process.env.SESSIONS_LIVE === 'true') {
+  if (!user || process.env.SESSIONS_LIVE === 'true') {
     notFound()
   }
 

@@ -47,7 +47,7 @@ function formatDate(dateString: string) {
 
 export default async function SpeakerPage({params}: Props) {
   const user = await getUser()
-  if (!user && process.env.SESSIONS_LIVE === 'true') {
+  if (!user || process.env.SESSIONS_LIVE === 'true') {
     notFound()
   }
 
