@@ -9,6 +9,7 @@ import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
 import {getUser} from '@/lib/auth/getUser'
 import {getSessionTypeLabel, getSessionTagLabel, getSessionTagColors} from '@/lib/sessionLabels'
+import SessionPlaceholder from '@/app/components/SessionPlaceholder'
 
 type Props = {
   params: Promise<{id: string}>
@@ -141,8 +142,8 @@ export default async function SpeakerPage({params}: Props) {
                       href={`/schedule/${sessionSlug}`}
                       className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-xl border border-gray-100 hover:shadow-md hover:border-nexus-coral/30 transition-all"
                     >
-                      {sessionPhotoUrl && (
-                        <div className="relative w-full sm:w-40 h-32 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                      <div className="relative w-full sm:w-40 h-32 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                        {sessionPhotoUrl ? (
                           <Image
                             src={sessionPhotoUrl}
                             alt={session.title || 'Session photo'}
@@ -150,8 +151,13 @@ export default async function SpeakerPage({params}: Props) {
                             className="object-cover"
                             sizes="160px"
                           />
-                        </div>
-                      )}
+                        ) : (
+                          <SessionPlaceholder
+                            tag={session.sessionTags?.[0]}
+                            className="w-full h-full"
+                          />
+                        )}
+                      </div>
                       <div className="flex-1 min-w-0">
                         {/* Session Type & Tags */}
                         {((session.sessionType && session.sessionType.length > 0) ||

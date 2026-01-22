@@ -24,13 +24,13 @@ export const sessionTagLabels: Record<string, string> = {
 
 // Pastel colors for session tags (bg and text colors for contrast)
 export const sessionTagColors: Record<string, {bg: string; text: string}> = {
-  'geopolitics': {bg: 'bg-indigo-100', text: 'text-indigo-800'},
-  'international-finance-economics': {bg: 'bg-cyan-100', text: 'text-cyan-800'},
-  'future-of-cities': {bg: 'bg-purple-100', text: 'text-purple-800'},
-  'ai-tech': {bg: 'bg-pink-100', text: 'text-pink-800'},
-  'dinner-speakers': {bg: 'bg-orange-100', text: 'text-orange-800'},
-  'health-wellness': {bg: 'bg-emerald-100', text: 'text-emerald-800'},
-  'surprise-delight': {bg: 'bg-amber-100', text: 'text-amber-800'},
+  'geopolitics': {bg: 'bg-indigo-50', text: 'text-indigo-800'},
+  'international-finance-economics': {bg: 'bg-cyan-50', text: 'text-cyan-800'},
+  'future-of-cities': {bg: 'bg-purple-50', text: 'text-purple-800'},
+  'ai-tech': {bg: 'bg-pink-50', text: 'text-pink-800'},
+  'dinner-speakers': {bg: 'bg-orange-50', text: 'text-orange-800'},
+  'health-wellness': {bg: 'bg-emerald-50', text: 'text-emerald-800'},
+  'surprise-delight': {bg: 'bg-amber-50', text: 'text-amber-800'},
 }
 
 export function getSessionTypeLabel(value: string): string {

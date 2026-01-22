@@ -8,6 +8,7 @@ import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
 import {getUser} from '@/lib/auth/getUser'
 import type {SessionsQueryResult} from '@/sanity.types'
 import {getSessionTypeLabel, getSessionTagLabel, getSessionTagColors} from '@/lib/sessionLabels'
+import SessionPlaceholder from '@/app/components/SessionPlaceholder'
 
 export const metadata: Metadata = {
   title: 'Schedule | Nexus Retreat',
@@ -84,9 +85,9 @@ function SessionListItem({
       {/* Main clickable area */}
       <Link href={`/schedule/${sessionSlug}`} className="absolute inset-0 z-0" />
 
-      {/* Photo */}
-      {photoUrl && (
-        <div className="relative w-full sm:w-36 h-32 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden">
+      {/* Photo or Placeholder */}
+      <div className="relative w-full sm:w-36 h-32 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden">
+        {photoUrl ? (
           <Image
             src={photoUrl}
             alt={session.title || 'Session photo'}
@@ -94,8 +95,13 @@ function SessionListItem({
             className="object-cover"
             sizes="(max-width: 640px) 100vw, 144px"
           />
-        </div>
-      )}
+        ) : (
+          <SessionPlaceholder
+            tag={session.sessionTags?.[0]}
+            className="w-full h-full"
+          />
+        )}
+      </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">

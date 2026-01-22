@@ -9,6 +9,7 @@ import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
 import {getUser} from '@/lib/auth/getUser'
 import {getSessionTypeLabel, getSessionTagLabel, getSessionTagColors} from '@/lib/sessionLabels'
+import SessionPlaceholder from '@/app/components/SessionPlaceholder'
 
 type Props = {
   params: Promise<{id: string}>
@@ -87,9 +88,9 @@ export default async function SessionPage({params}: Props) {
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
           {/* Main Content */}
           <div className="flex-1 min-w-0">
-            {/* Photo */}
-            {photoUrl && (
-              <div className="relative h-64 md:h-96 w-full rounded-2xl overflow-hidden mb-8">
+            {/* Photo or Placeholder */}
+            <div className="relative h-64 md:h-96 w-full rounded-2xl overflow-hidden mb-8">
+              {photoUrl ? (
                 <Image
                   src={photoUrl}
                   alt={session.title || 'Session photo'}
@@ -98,8 +99,14 @@ export default async function SessionPage({params}: Props) {
                   sizes="(max-width: 1200px) 100vw, 1200px"
                   priority
                 />
-              </div>
-            )}
+              ) : (
+                <SessionPlaceholder
+                  tag={session.sessionTags?.[0]}
+                  className="w-full h-full"
+                  iconSize="lg"
+                />
+              )}
+            </div>
 
             {/* Session Type & Tags */}
             {((session.sessionType && session.sessionType.length > 0) ||
@@ -226,7 +233,7 @@ export default async function SessionPage({params}: Props) {
                             className="rounded-full object-cover flex-shrink-0"
                           />
                         ) : (
-                          <div className="w-16 h-16 rounded-full bg-nexus-coral-light flex items-center justify-center flex-shrink-0">
+                          <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
                             <span className="text-lg font-medium text-nexus-navy">
                               {speaker.firstName?.[0]}
                               {speaker.lastName?.[0]}
