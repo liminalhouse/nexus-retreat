@@ -4,14 +4,13 @@ import Link from 'next/link'
 import {notFound} from 'next/navigation'
 import {sanityFetch} from '@/sanity/lib/live'
 import {sessionsQuery} from '@/sanity/lib/queries'
-import {urlForImage} from '@/sanity/lib/utils'
+import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
 import {getUser} from '@/lib/auth/getUser'
 import type {SessionsQueryResult} from '@/sanity.types'
 import {getSessionTypeLabel, getSessionTagLabel, getSessionTagColors} from '@/lib/sessionLabels'
 
 export const metadata: Metadata = {
-  title: 'Sessions | Nexus Retreat',
-  description: 'View all sessions at Nexus Retreat',
+  title: 'Schedule | Nexus Retreat',
 }
 
 type Session = SessionsQueryResult[number]
@@ -78,7 +77,7 @@ function SessionListItem({
     ? urlForImage(session.photo)?.width(240).height(160).fit('crop').url()
     : null
 
-  const sessionSlug = session.id?.current || session._id
+  const sessionSlug = cleanSlug(session.id?.current) || session._id
 
   return (
     <div className="relative flex flex-col sm:flex-row items-start gap-4 bg-white rounded-xl p-4 border border-gray-100 hover:shadow-md hover:border-nexus-coral/30 transition-all duration-300">
@@ -153,7 +152,7 @@ function SessionListItem({
                   const speakerPhotoUrl = speaker.profilePicture
                     ? urlForImage(speaker.profilePicture)?.width(64).height(64).fit('crop').url()
                     : null
-                  const speakerSlug = speaker.id?.current || speaker._id
+                  const speakerSlug = cleanSlug(speaker.id?.current) || speaker._id
                   return (
                     <Link
                       key={speaker._id}
@@ -182,7 +181,7 @@ function SessionListItem({
               </div>
               <div className="flex flex-wrap gap-x-1">
                 {session.speakers.map((speaker, index) => {
-                  const speakerSlug = speaker.id?.current || speaker._id
+                  const speakerSlug = cleanSlug(speaker.id?.current) || speaker._id
                   return (
                     <span key={speaker._id}>
                       <Link
@@ -254,7 +253,7 @@ function SessionListItem({
 
 export default async function SessionsPage({searchParams}: Props) {
   const user = await getUser()
-  if (!user || process.env.SESSIONS_LIVE !== 'true') {
+  if (!user && process.env.SESSIONS_LIVE !== 'true') {
     notFound()
   }
 

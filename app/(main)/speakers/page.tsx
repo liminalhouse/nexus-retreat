@@ -4,7 +4,7 @@ import Link from 'next/link'
 import {notFound} from 'next/navigation'
 import {sanityFetch} from '@/sanity/lib/live'
 import {speakersQuery} from '@/sanity/lib/queries'
-import {urlForImage} from '@/sanity/lib/utils'
+import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
 import {getUser} from '@/lib/auth/getUser'
@@ -22,7 +22,7 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
     ? urlForImage(speaker.profilePicture)?.width(400).height(400).fit('crop').url()
     : null
 
-  const speakerSlug = speaker.id?.current || speaker._id
+  const speakerSlug = cleanSlug(speaker.id?.current) || speaker._id
 
   return (
     <Link
@@ -75,7 +75,7 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
 
 export default async function SpeakersPage() {
   const user = await getUser()
-  if (!user || process.env.SESSIONS_LIVE !== 'true') {
+  if (!user && process.env.SESSIONS_LIVE !== 'true') {
     notFound()
   }
 

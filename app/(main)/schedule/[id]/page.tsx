@@ -4,7 +4,7 @@ import Link from 'next/link'
 import {notFound} from 'next/navigation'
 import {sanityFetch} from '@/sanity/lib/live'
 import {sessionByIdQuery} from '@/sanity/lib/queries'
-import {urlForImage} from '@/sanity/lib/utils'
+import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
 import {getUser} from '@/lib/auth/getUser'
@@ -47,7 +47,7 @@ function formatDate(dateString: string) {
 
 export default async function SessionPage({params}: Props) {
   const user = await getUser()
-  if (!user || process.env.SESSIONS_LIVE !== 'true') {
+  if (!user && process.env.SESSIONS_LIVE !== 'true') {
     notFound()
   }
 
@@ -209,7 +209,7 @@ export default async function SessionPage({params}: Props) {
                           .fit('crop')
                           .url()
                       : null
-                    const speakerSlug = speaker.id?.current || speaker._id
+                    const speakerSlug = cleanSlug(speaker.id?.current) || speaker._id
 
                     return (
                       <Link
