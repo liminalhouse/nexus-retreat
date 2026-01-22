@@ -30,7 +30,7 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
       className="block bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg hover:border-nexus-coral/30 transition-all duration-300"
     >
       {/* Photo */}
-      <div className="relative h-64 w-full bg-nexus-navy/5">
+      <div className="relative h-64 w-full bg-gray-100">
         {photoUrl ? (
           <Image
             src={photoUrl}

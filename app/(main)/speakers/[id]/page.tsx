@@ -8,6 +8,7 @@ import {urlForImage} from '@/sanity/lib/utils'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
 import {getUser} from '@/lib/auth/getUser'
+import {getSessionTypeLabel, getSessionTagLabel, getSessionTagColors} from '@/lib/sessionLabels'
 
 type Props = {
   params: Promise<{id: string}>
@@ -98,7 +99,7 @@ export default async function SpeakerPage({params}: Props) {
                   priority
                 />
               ) : (
-                <div className="w-[200px] h-[200px] rounded-2xl bg-nexus-navy/10 flex items-center justify-center">
+                <div className="w-[200px] h-[200px] rounded-2xl bg-gray-100 flex items-center justify-center">
                   <span className="text-5xl font-medium text-nexus-navy/30">
                     {speaker.firstName?.[0]}
                     {speaker.lastName?.[0]}
@@ -159,19 +160,22 @@ export default async function SpeakerPage({params}: Props) {
                             {session.sessionType?.map((type) => (
                               <span
                                 key={type}
-                                className="inline-block px-2 py-0.5 text-xs font-medium bg-nexus-navy text-white rounded-full capitalize"
+                                className="inline-block px-2 py-0.5 text-xs font-medium bg-nexus-navy text-white rounded-full"
                               >
-                                {type.replace('-', ' ')}
+                                {getSessionTypeLabel(type)}
                               </span>
                             ))}
-                            {session.sessionTags?.map((tag) => (
-                              <span
-                                key={tag}
-                                className="inline-block px-2 py-0.5 text-xs font-medium bg-nexus-coral/10 text-nexus-navy rounded-full"
-                              >
-                                {tag}
-                              </span>
-                            ))}
+                            {session.sessionTags?.map((tag) => {
+                              const colors = getSessionTagColors(tag)
+                              return (
+                                <span
+                                  key={tag}
+                                  className={`inline-block px-2 py-0.5 text-xs font-medium ${colors.bg} ${colors.text} rounded-full`}
+                                >
+                                  {getSessionTagLabel(tag)}
+                                </span>
+                              )
+                            })}
                           </div>
                         )}
 

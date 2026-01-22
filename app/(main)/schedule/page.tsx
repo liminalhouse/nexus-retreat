@@ -7,6 +7,7 @@ import {sessionsQuery} from '@/sanity/lib/queries'
 import {urlForImage} from '@/sanity/lib/utils'
 import {getUser} from '@/lib/auth/getUser'
 import type {SessionsQueryResult} from '@/sanity.types'
+import {getSessionTypeLabel, getSessionTagLabel, getSessionTagColors} from '@/lib/sessionLabels'
 
 export const metadata: Metadata = {
   title: 'Sessions | Nexus Retreat',
@@ -17,7 +18,7 @@ type Session = SessionsQueryResult[number]
 type Speaker = NonNullable<Session['speakers']>[number]
 
 type Props = {
-  searchParams: Promise<{tag?: string}>
+  searchParams: Promise<{tag?: string; type?: string}>
 }
 
 function formatTime(dateString: string) {
@@ -64,7 +65,15 @@ function groupSessionsByDay(sessions: Session[]) {
   return Object.values(grouped)
 }
 
-function SessionListItem({session, activeTag}: {session: Session; activeTag: string | null}) {
+function SessionListItem({
+  session,
+  activeTag,
+  activeType,
+}: {
+  session: Session
+  activeTag: string | null
+  activeType: string | null
+}) {
   const photoUrl = session.photo
     ? urlForImage(session.photo)?.width(240).height(160).fit('crop').url()
     : null
@@ -131,16 +140,6 @@ function SessionListItem({session, activeTag}: {session: Session; activeTag: str
 
         {/* Session Type & Title */}
         <div className="flex items-center gap-2 flex-wrap">
-          {session.sessionType &&
-            session.sessionType.length > 0 &&
-            session.sessionType.map((type) => (
-              <span
-                key={type}
-                className="inline-block px-2 py-0.5 text-xs font-medium bg-nexus-navy text-white rounded-full capitalize"
-              >
-                {type.replace('-', ' ')}
-              </span>
-            ))}
           <h3 className="text-lg font-semibold text-nexus-navy font-serif">{session.title}</h3>
         </div>
 
@@ -170,7 +169,7 @@ function SessionListItem({session, activeTag}: {session: Session; activeTag: str
                           className="rounded-full object-cover border-2 border-white"
                         />
                       ) : (
-                        <div className="w-7 h-7 rounded-full bg-nexus-navy/10 flex items-center justify-center border-2 border-white">
+                        <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center border-2 border-white">
                           <span className="text-[10px] font-medium text-nexus-navy">
                             {speaker.firstName?.[0]}
                             {speaker.lastName?.[0]}
@@ -202,22 +201,39 @@ function SessionListItem({session, activeTag}: {session: Session; activeTag: str
             </div>
           )}
 
-          {/* Session Tags */}
-          {session.sessionTags && session.sessionTags.length > 0 && (
+          {/* Session Type & Tags */}
+          {((session.sessionType && session.sessionType.length > 0) ||
+            (session.sessionTags && session.sessionTags.length > 0)) && (
             <div className="flex flex-wrap gap-1.5">
-              {session.sessionTags.map((tag) => (
+              {session.sessionType?.map((type) => (
                 <Link
-                  key={tag}
-                  href={`/schedule?tag=${encodeURIComponent(tag)}`}
-                  className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full transition-colors ${
-                    activeTag === tag
-                      ? 'bg-nexus-coral text-white'
-                      : 'bg-nexus-coral/10 text-nexus-navy hover:bg-nexus-coral/20'
+                  key={type}
+                  href={`/schedule?type=${encodeURIComponent(type)}`}
+                  className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full transition-all ${
+                    activeType === type
+                      ? 'bg-nexus-navy text-white ring-2 ring-offset-1 ring-nexus-navy'
+                      : 'bg-nexus-navy text-white hover:opacity-80'
                   }`}
                 >
-                  {tag}
+                  {getSessionTypeLabel(type)}
                 </Link>
               ))}
+              {session.sessionTags?.map((tag) => {
+                const colors = getSessionTagColors(tag)
+                return (
+                  <Link
+                    key={tag}
+                    href={`/schedule?tag=${encodeURIComponent(tag)}`}
+                    className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full transition-all ${
+                      activeTag === tag
+                        ? `${colors.bg} ${colors.text} ring-2 ring-offset-1 ring-current`
+                        : `${colors.bg} ${colors.text} hover:opacity-80`
+                    }`}
+                  >
+                    {getSessionTagLabel(tag)}
+                  </Link>
+                )
+              })}
             </div>
           )}
         </div>
@@ -242,12 +258,20 @@ export default async function SessionsPage({searchParams}: Props) {
     notFound()
   }
 
-  const {tag: activeTag} = await searchParams
+  const {tag: activeTag, type: activeType} = await searchParams
   const {data: sessions} = await sanityFetch({query: sessionsQuery})
 
-  const filteredSessions = activeTag
-    ? (sessions || []).filter((session) => session.sessionTags?.includes(activeTag))
-    : sessions || []
+  let filteredSessions = sessions || []
+  if (activeTag) {
+    filteredSessions = filteredSessions.filter((session) =>
+      session.sessionTags?.includes(activeTag),
+    )
+  }
+  if (activeType) {
+    filteredSessions = filteredSessions.filter((session) =>
+      session.sessionType?.includes(activeType),
+    )
+  }
 
   const groupedSessions = groupSessionsByDay(filteredSessions)
 
@@ -265,25 +289,65 @@ export default async function SessionsPage({searchParams}: Props) {
         </div>
 
         {/* Active filter */}
-        {activeTag && (
-          <div className="flex items-center justify-center gap-2 mb-8">
+        {(activeTag || activeType) && (
+          <div className="flex items-center justify-center gap-2 mb-8 flex-wrap">
             <span className="text-gray-600">Filtering by:</span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-nexus-coral text-white text-sm font-medium rounded-full">
-              {activeTag}
-              <Link
-                href="/schedule"
-                className="hover:bg-white/20 rounded-full p-0.5 transition-colors"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </Link>
-            </span>
+            {activeType && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-nexus-navy text-white text-sm font-medium rounded-full">
+                {getSessionTypeLabel(activeType)}
+                <Link
+                  href={activeTag ? `/schedule?tag=${encodeURIComponent(activeTag)}` : '/schedule'}
+                  className="hover:opacity-60 rounded-full p-0.5 transition-colors"
+                >
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </Link>
+              </span>
+            )}
+            {activeTag &&
+              (() => {
+                const colors = getSessionTagColors(activeTag)
+                return (
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 ${colors.bg} ${colors.text} text-sm font-medium rounded-full`}
+                  >
+                    {getSessionTagLabel(activeTag)}
+                    <Link
+                      href={
+                        activeType
+                          ? `/schedule?type=${encodeURIComponent(activeType)}`
+                          : '/schedule'
+                      }
+                      className="hover:opacity-60 rounded-full p-0.5 transition-colors"
+                    >
+                      <svg
+                        className="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </Link>
+                  </span>
+                )
+              })()}
           </div>
         )}
 
@@ -291,13 +355,13 @@ export default async function SessionsPage({searchParams}: Props) {
         {groupedSessions.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500">
-              {activeTag
-                ? `No sessions found with tag "${activeTag}".`
+              {activeTag || activeType
+                ? `No sessions found with the selected filter${activeTag && activeType ? 's' : ''}.`
                 : 'No sessions scheduled yet. Check back soon!'}
             </p>
-            {activeTag && (
+            {(activeTag || activeType) && (
               <Link href="/schedule" className="inline-block mt-4 text-nexus-coral hover:underline">
-                Clear filter
+                Clear filter{activeTag && activeType ? 's' : ''}
               </Link>
             )}
           </div>
@@ -320,6 +384,7 @@ export default async function SessionsPage({searchParams}: Props) {
                       key={session._id}
                       session={session}
                       activeTag={activeTag || null}
+                      activeType={activeType || null}
                     />
                   ))}
                 </div>

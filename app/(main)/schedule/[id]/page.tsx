@@ -8,6 +8,7 @@ import {urlForImage} from '@/sanity/lib/utils'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
 import {getUser} from '@/lib/auth/getUser'
+import {getSessionTypeLabel, getSessionTagLabel, getSessionTagColors} from '@/lib/sessionLabels'
 
 type Props = {
   params: Promise<{id: string}>
@@ -105,22 +106,26 @@ export default async function SessionPage({params}: Props) {
               (session.sessionTags && session.sessionTags.length > 0)) && (
               <div className="flex flex-wrap gap-2 mb-4">
                 {session.sessionType?.map((type) => (
-                  <span
-                    key={type}
-                    className="inline-block px-3 py-1 text-sm font-medium bg-nexus-navy text-white rounded-full capitalize"
-                  >
-                    {type.replace('-', ' ')}
-                  </span>
-                ))}
-                {session.sessionTags?.map((tag) => (
                   <Link
-                    key={tag}
-                    href={`/schedule?tag=${encodeURIComponent(tag)}`}
-                    className="inline-block px-3 py-1 text-sm font-medium bg-nexus-coral/10 text-nexus-navy rounded-full hover:bg-nexus-coral/20 transition-colors"
+                    key={type}
+                    href={`/schedule?type=${encodeURIComponent(type)}`}
+                    className="inline-block px-3 py-1 text-sm font-medium bg-nexus-navy text-white rounded-full hover:opacity-80 transition-all"
                   >
-                    {tag}
+                    {getSessionTypeLabel(type)}
                   </Link>
                 ))}
+                {session.sessionTags?.map((tag) => {
+                  const colors = getSessionTagColors(tag)
+                  return (
+                    <Link
+                      key={tag}
+                      href={`/schedule?tag=${encodeURIComponent(tag)}`}
+                      className={`inline-block px-3 py-1 text-sm font-medium ${colors.bg} ${colors.text} rounded-full hover:opacity-80 transition-all`}
+                    >
+                      {getSessionTagLabel(tag)}
+                    </Link>
+                  )
+                })}
               </div>
             )}
 
@@ -221,7 +226,7 @@ export default async function SessionPage({params}: Props) {
                             className="rounded-full object-cover flex-shrink-0"
                           />
                         ) : (
-                          <div className="w-16 h-16 rounded-full bg-nexus-navy/10 flex items-center justify-center flex-shrink-0">
+                          <div className="w-16 h-16 rounded-full bg-nexus-coral-light flex items-center justify-center flex-shrink-0">
                             <span className="text-lg font-medium text-nexus-navy">
                               {speaker.firstName?.[0]}
                               {speaker.lastName?.[0]}
