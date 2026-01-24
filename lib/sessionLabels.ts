@@ -75,10 +75,10 @@ export const sessionTagColors: Record<
     imageBg: 'bg-emerald-300',
   },
   'surprise-delight': {
-    bg: 'bg-amber-50',
-    text: 'text-amber-800',
-    border: 'border-amber-200',
-    imageBg: 'bg-amber-300',
+    bg: 'bg-rose-50',
+    text: 'text-rose-800',
+    border: 'border-rose-200',
+    imageBg: 'bg-rose-300',
   },
 }
 

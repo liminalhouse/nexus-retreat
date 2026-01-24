@@ -43,6 +43,56 @@
   --color-nexus-blue-gradient: linear-gradient(90deg, #0052ff 0%, #00c6ff 100%);
   --color-nexus-seafoam: #bed1bf;
 
+  /* Session tag color overrides - Boca resort inspired palette */
+  /* Indigo (Geopolitics) - Navy blue from buildings */
+  --color-indigo-50: #e8eef4;
+  --color-indigo-100: #d1dde9;
+  --color-indigo-200: #a8bdd4;
+  --color-indigo-300: #7a9bbe;
+  --color-indigo-800: #2c3e5a;
+
+  /* Cyan (International Finance) - Ocean turquoise */
+  --color-cyan-50: #e5f4f7;
+  --color-cyan-100: #c5e8ed;
+  --color-cyan-200: #8ecae6;
+  --color-cyan-300: #5bb8d9;
+  --color-cyan-800: #1a5f7a;
+
+  /* Purple (Future of Cities) - Dusty lavender */
+  --color-purple-50: #f0eaf4;
+  --color-purple-100: #ddd0e6;
+  --color-purple-200: #c4b0d4;
+  --color-purple-300: #a88fc0;
+  --color-purple-800: #4a3760;
+
+  /* Pink (AI & Tech) - Soft coral from rooftops */
+  --color-pink-50: #fceee9;
+  --color-pink-100: #f9d8cf;
+  --color-pink-200: #f2b5a8;
+  --color-pink-300: #e89080;
+  --color-pink-800: #8b4a42;
+
+  /* Orange (Dinner Speakers) - Terracotta warmth */
+  --color-orange-50: #f9efe8;
+  --color-orange-100: #f2dccb;
+  --color-orange-200: #e4be9e;
+  --color-orange-300: #d4a07a;
+  --color-orange-800: #7a4a2d;
+
+  /* Emerald (Health & Wellness) - Resort lawn green */
+  --color-emerald-50: #eaf4eb;
+  --color-emerald-100: #cfe6d1;
+  --color-emerald-200: #a5d4a8;
+  --color-emerald-300: #7cb779;
+  --color-emerald-800: #2d5a30;
+
+  /* Rose (Surprise & Delight) - Light blush pink from resort */
+  --color-rose-50: #fdf2f4;
+  --color-rose-100: #fce4e8;
+  --color-rose-200: #f9ced5;
+  --color-rose-300: #f4b0bc;
+  --color-rose-800: #8c3d4d;
+
   --font-display: var(--font-inter), 'system-ui', 'sans-serif';
   --font-sans: var(--font-inter), 'system-ui', 'sans-serif';
   --font-serif: var(--font-fraunces), 'Georgia', 'serif';
