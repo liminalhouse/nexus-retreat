@@ -2,17 +2,31 @@ import {NextResponse} from 'next/server'
 import type {NextRequest} from 'next/server'
 
 export function proxy(request: NextRequest) {
-  // Get the authentication token from cookies
+  // Get the authentication tokens from cookies
   const authToken = request.cookies.get('auth-token')
+  const sanityToken = request.cookies.get('sanity-token')
 
   // Allow access to admin login page without authentication
   if (request.nextUrl.pathname === '/admin/login') {
     return NextResponse.next()
   }
 
-  // Protect all other admin routes - require authentication
+  // Protect all other admin routes - require Sanity authentication (not just regular user auth)
   if (request.nextUrl.pathname.startsWith('/admin')) {
-    if (!authToken || authToken.value !== 'authenticated') {
+    if (!sanityToken?.value) {
+      const loginUrl = new URL('/admin/login', request.url)
+      loginUrl.searchParams.set('from', request.nextUrl.pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+    return NextResponse.next()
+  }
+
+  // Protect /schedule and /speakers routes - require Sanity authentication (admin only)
+  if (
+    request.nextUrl.pathname.startsWith('/schedule') ||
+    request.nextUrl.pathname.startsWith('/speakers')
+  ) {
+    if (!sanityToken?.value) {
       const loginUrl = new URL('/admin/login', request.url)
       loginUrl.searchParams.set('from', request.nextUrl.pathname)
       return NextResponse.redirect(loginUrl)

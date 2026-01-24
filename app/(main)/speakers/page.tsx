@@ -6,7 +6,6 @@ import {speakersQuery} from '@/sanity/lib/queries'
 import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
-import {requireAuth} from '@/lib/auth/requireAuth'
 import type {SpeakersQueryResult} from '@/sanity.types'
 
 export const metadata: Metadata = {
@@ -73,8 +72,6 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
 }
 
 export default async function SpeakersPage() {
-  await requireAuth('/speakers')
-
   const {data: speakers} = await sanityFetch({query: speakersQuery})
 
   return (

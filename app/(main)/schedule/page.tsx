@@ -4,7 +4,6 @@ import Link from 'next/link'
 import {sanityFetch} from '@/sanity/lib/live'
 import {sessionsQuery} from '@/sanity/lib/queries'
 import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
-import {requireAuth} from '@/lib/auth/requireAuth'
 import type {SessionsQueryResult} from '@/sanity.types'
 import {getSessionTypeLabel, getSessionTagLabel, getSessionTagColors} from '@/lib/sessionLabels'
 import {SessionTagsGroup} from '@/app/components/SessionTags'
@@ -231,8 +230,6 @@ function SessionListItem({
 }
 
 export default async function SessionsPage({searchParams}: Props) {
-  await requireAuth('/schedule')
-
   const {tag: activeTag, type: activeType} = await searchParams
   const {data: sessions} = await sanityFetch({query: sessionsQuery})
 
