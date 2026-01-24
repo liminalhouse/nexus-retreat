@@ -26,6 +26,7 @@ function formatTime(dateString: string) {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
+    timeZone: 'America/New_York',
   })
 }
 
@@ -35,6 +36,7 @@ function formatDate(dateString: string) {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
+    timeZone: 'America/New_York',
   })
 }
 
@@ -43,6 +45,7 @@ function getDateKey(dateString: string) {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
+    timeZone: 'America/New_York',
   })
 }
 

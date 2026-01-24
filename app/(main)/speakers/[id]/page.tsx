@@ -36,6 +36,7 @@ function formatTime(dateString: string) {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
+    timeZone: 'America/New_York',
   })
 }
 
@@ -44,6 +45,7 @@ function formatDate(dateString: string) {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
+    timeZone: 'America/New_York',
   })
 }
 
