@@ -41,48 +41,28 @@ export function EasternTimeInput(props: StringInputProps) {
   const toUTCISOString = (dateStr: string, timeStr: string) => {
     if (!dateStr || !timeStr) return undefined
 
-    // Create a date string that JavaScript will parse as Eastern Time
-    // by using the IANA timezone
-    const easternDateTimeStr = `${dateStr}T${timeStr}:00`
+    // Parse the date and time components
+    const [year, month, day] = dateStr.split('-').map(Number)
+    const [hours, minutes] = timeStr.split(':').map(Number)
 
-    // Parse as Eastern Time and convert to UTC
-    const easternDate = new Date(
-      new Date(easternDateTimeStr).toLocaleString('en-US', {
-        timeZone: 'America/New_York',
-      })
-    )
+    // Create a temp date to check if this date is in DST
+    const tempDate = new Date(Date.UTC(year, month - 1, day, 12, 0))
 
-    // Get the offset for Eastern Time at this date
-    const utcDate = new Date(easternDateTimeStr)
-    const easternOffset = getEasternOffset(utcDate)
-
-    // Adjust to UTC
-    utcDate.setMinutes(utcDate.getMinutes() + easternOffset)
-
-    return utcDate.toISOString()
-  }
-
-  // Get Eastern Time offset in minutes (handles DST)
-  const getEasternOffset = (date: Date) => {
-    const jan = new Date(date.getFullYear(), 0, 1)
-    const jul = new Date(date.getFullYear(), 6, 1)
-
-    const stdOffset = Math.max(
-      jan.getTimezoneOffset(),
-      jul.getTimezoneOffset()
-    )
-
-    // Eastern Standard Time is UTC-5 (300 min), EDT is UTC-4 (240 min)
-    // We need to figure out if the target date is in DST
+    // Check if this date is in EDT or EST
     const formatter = new Intl.DateTimeFormat('en-US', {
       timeZone: 'America/New_York',
       timeZoneName: 'short',
     })
-    const parts = formatter.formatToParts(date)
+    const parts = formatter.formatToParts(tempDate)
     const tzName = parts.find((p) => p.type === 'timeZoneName')?.value
 
-    // EDT = Daylight, EST = Standard
-    return tzName === 'EDT' ? 240 : 300
+    // EDT = UTC-4 (240 min), EST = UTC-5 (300 min)
+    const offsetMinutes = tzName === 'EDT' ? 240 : 300
+
+    // Create UTC time: input is in Eastern, so add offset to get UTC
+    const utcMs = Date.UTC(year, month - 1, day, hours, minutes) + offsetMinutes * 60 * 1000
+
+    return new Date(utcMs).toISOString()
   }
 
   const {date, time} = getEasternDateTime(value)
