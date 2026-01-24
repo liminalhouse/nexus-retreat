@@ -23,8 +23,9 @@ export function proxy(request: NextRequest) {
 
   // Protect /schedule and /speakers routes - require Sanity authentication (admin only)
   if (
-    request.nextUrl.pathname.startsWith('/schedule') ||
-    request.nextUrl.pathname.startsWith('/speakers')
+    process.env.VERCEL_ENV === 'production' &&
+    (request.nextUrl.pathname.startsWith('/schedule') ||
+    request.nextUrl.pathname.startsWith('/speakers'))
   ) {
     if (!sanityToken?.value) {
       const loginUrl = new URL('/admin/login', request.url)
