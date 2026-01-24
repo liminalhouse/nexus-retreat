@@ -1,11 +1,10 @@
 import type {Metadata} from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import {notFound} from 'next/navigation'
 import {sanityFetch} from '@/sanity/lib/live'
 import {sessionsQuery} from '@/sanity/lib/queries'
 import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
-import {getUser} from '@/lib/auth/getUser'
+import {requireAuth} from '@/lib/auth/requireAuth'
 import type {SessionsQueryResult} from '@/sanity.types'
 import {getSessionTypeLabel, getSessionTagLabel, getSessionTagColors} from '@/lib/sessionLabels'
 import {SessionTagsGroup} from '@/app/components/SessionTags'
@@ -232,10 +231,7 @@ function SessionListItem({
 }
 
 export default async function SessionsPage({searchParams}: Props) {
-  const user = await getUser()
-  if (!user && process.env.SESSIONS_LIVE !== 'true') {
-    notFound()
-  }
+  await requireAuth('/schedule')
 
   const {tag: activeTag, type: activeType} = await searchParams
   const {data: sessions} = await sanityFetch({query: sessionsQuery})

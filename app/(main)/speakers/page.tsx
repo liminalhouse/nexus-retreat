@@ -1,13 +1,12 @@
 import type {Metadata} from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import {notFound} from 'next/navigation'
 import {sanityFetch} from '@/sanity/lib/live'
 import {speakersQuery} from '@/sanity/lib/queries'
 import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
-import {getUser} from '@/lib/auth/getUser'
+import {requireAuth} from '@/lib/auth/requireAuth'
 import type {SpeakersQueryResult} from '@/sanity.types'
 
 export const metadata: Metadata = {
@@ -74,10 +73,7 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
 }
 
 export default async function SpeakersPage() {
-  const user = await getUser()
-  if (!user && process.env.SESSIONS_LIVE !== 'true') {
-    notFound()
-  }
+  await requireAuth('/speakers')
 
   const {data: speakers} = await sanityFetch({query: speakersQuery})
 

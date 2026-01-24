@@ -7,7 +7,7 @@ import {speakerByIdQuery} from '@/sanity/lib/queries'
 import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
-import {getUser} from '@/lib/auth/getUser'
+import {requireAuth} from '@/lib/auth/requireAuth'
 import {SessionTagsGroup} from '@/app/components/SessionTags'
 import SessionPlaceholder from '@/app/components/SessionPlaceholder'
 
@@ -50,10 +50,7 @@ function formatDate(dateString: string) {
 }
 
 export default async function SpeakerPage({params}: Props) {
-  const user = await getUser()
-  if (!user && process.env.SESSIONS_LIVE !== 'true') {
-    notFound()
-  }
+  await requireAuth(`/speakers/${id}`)
 
   const {id} = await params
   const {data: speaker} = await sanityFetch({
