@@ -6,6 +6,20 @@ export function proxy(request: NextRequest) {
   const authToken = request.cookies.get('auth-token')
   const sanityToken = request.cookies.get('sanity-token')
 
+  // Check for prodMode query param to view published content in non-production
+  const prodMode = request.nextUrl.searchParams.get('prodMode') === 'true'
+  if (prodMode) {
+    const response = NextResponse.next({
+      request: {
+        headers: new Headers({
+          ...Object.fromEntries(request.headers),
+          'x-sanity-perspective': 'published',
+        }),
+      },
+    })
+    return response
+  }
+
   // Allow access to admin login page without authentication
   if (request.nextUrl.pathname === '/admin/login') {
     return NextResponse.next()
