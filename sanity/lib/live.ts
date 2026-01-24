@@ -25,8 +25,15 @@ export const {sanityFetch: baseSanityFetch, SanityLive} = defineLive({
 
 // Wrapper that checks for perspective override via header (set by proxy for ?prodMode=true)
 export const sanityFetch: typeof baseSanityFetch = async (options) => {
-  const headersList = await headers()
-  const perspectiveOverride = headersList.get('x-sanity-perspective')
+  let perspectiveOverride: string | null = null
+
+  // headers() only works during request time, not during static generation
+  try {
+    const headersList = await headers()
+    perspectiveOverride = headersList.get('x-sanity-perspective')
+  } catch {
+    // Static generation - no headers available
+  }
 
   // Use header override if present, otherwise use environment-based default
   const perspective = perspectiveOverride === 'published'
