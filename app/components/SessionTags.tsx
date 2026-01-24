@@ -31,7 +31,12 @@ const sizeClasses: Record<Size, string> = {
   md: 'px-3 py-1 text-sm',
 }
 
-export function SessionTypeTag({type, asLink = false, active = false, size = 'sm'}: SessionTypeTagProps) {
+export function SessionTypeTag({
+  type,
+  asLink = false,
+  active = false,
+  size = 'sm',
+}: SessionTypeTagProps) {
   const label = getSessionTypeLabel(type)
   const baseClasses = `inline-block font-medium rounded-full bg-nexus-navy text-white ${sizeClasses[size]}`
   const activeClasses = active ? 'ring-2 ring-offset-1 ring-nexus-navy' : ''
@@ -53,8 +58,8 @@ export function SessionTypeTag({type, asLink = false, active = false, size = 'sm
 export function SessionTag({tag, asLink = false, active = false, size = 'sm'}: SessionTagProps) {
   const label = getSessionTagLabel(tag)
   const colors = getSessionTagColors(tag)
-  const baseClasses = `inline-block font-medium rounded-full ${colors.bg} ${colors.text} ${sizeClasses[size]}`
-  const activeClasses = active ? 'ring-2 ring-offset-1 ring-current' : ''
+  const baseClasses = `inline-block font-medium rounded-full border-1 ${colors.border}  ${colors.bg} ${colors.text} ${sizeClasses[size]}`
+  const activeClasses = active ? 'ring-2 ring-offset-[-1] ring-current' : ''
   const hoverClasses = asLink ? 'hover:opacity-80 transition-all' : ''
 
   const className = `${baseClasses} ${activeClasses} ${hoverClasses}`
@@ -95,13 +100,7 @@ export function SessionTagsGroup({
         />
       ))}
       {tags?.map((tag) => (
-        <SessionTag
-          key={tag}
-          tag={tag}
-          asLink={asLinks}
-          active={activeTag === tag}
-          size={size}
-        />
+        <SessionTag key={tag} tag={tag} asLink={asLinks} active={activeTag === tag} size={size} />
       ))}
     </div>
   )

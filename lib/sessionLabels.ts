@@ -2,6 +2,17 @@
 // Keep in sync with sanity/schemas/schemaTypes/documents/session.ts
 
 import {stegaClean} from '@sanity/client/stega'
+import {
+  GlobeAmericasIcon,
+  ChartBarIcon,
+  BuildingOffice2Icon,
+  CpuChipIcon,
+  UserGroupIcon,
+  HeartIcon,
+  SparklesIcon,
+  CalendarDaysIcon,
+} from '@heroicons/react/24/outline'
+import type {ComponentType, SVGProps} from 'react'
 
 export const sessionTypeLabels: Record<string, string> = {
   'keynote': 'Keynote',
@@ -22,16 +33,74 @@ export const sessionTagLabels: Record<string, string> = {
   'surprise-delight': 'Surprise & Delight',
 }
 
-// Pastel colors for session tags (bg and text colors for contrast)
-export const sessionTagColors: Record<string, {bg: string; text: string}> = {
-  'geopolitics': {bg: 'bg-indigo-50', text: 'text-indigo-800'},
-  'international-finance-economics': {bg: 'bg-cyan-50', text: 'text-cyan-800'},
-  'future-of-cities': {bg: 'bg-purple-50', text: 'text-purple-800'},
-  'ai-tech': {bg: 'bg-pink-50', text: 'text-pink-800'},
-  'dinner-speakers': {bg: 'bg-orange-50', text: 'text-orange-800'},
-  'health-wellness': {bg: 'bg-emerald-50', text: 'text-emerald-800'},
-  'surprise-delight': {bg: 'bg-amber-50', text: 'text-amber-800'},
+// Colors for session tags - Tailwind classes
+export const sessionTagColors: Record<
+  string,
+  {bg: string; text: string; border: string; imageBg: string}
+> = {
+  'geopolitics': {
+    bg: 'bg-indigo-50',
+    text: 'text-indigo-800',
+    border: 'border-indigo-200',
+    imageBg: 'bg-indigo-300',
+  },
+  'international-finance-economics': {
+    bg: 'bg-cyan-50',
+    text: 'text-cyan-800',
+    border: 'border-cyan-200',
+    imageBg: 'bg-cyan-300',
+  },
+  'future-of-cities': {
+    bg: 'bg-purple-50',
+    text: 'text-purple-800',
+    border: 'border-purple-200',
+    imageBg: 'bg-purple-300',
+  },
+  'ai-tech': {
+    bg: 'bg-pink-50',
+    text: 'text-pink-800',
+    border: 'border-pink-200',
+    imageBg: 'bg-pink-300',
+  },
+  'dinner-speakers': {
+    bg: 'bg-orange-50',
+    text: 'text-orange-800',
+    border: 'border-orange-200',
+    imageBg: 'bg-orange-300',
+  },
+  'health-wellness': {
+    bg: 'bg-emerald-50',
+    text: 'text-emerald-800',
+    border: 'border-emerald-200',
+    imageBg: 'bg-emerald-300',
+  },
+  'surprise-delight': {
+    bg: 'bg-amber-50',
+    text: 'text-amber-800',
+    border: 'border-amber-200',
+    imageBg: 'bg-amber-300',
+  },
 }
+
+const defaultColors = {
+  bg: 'bg-gray-100',
+  text: 'text-gray-800',
+  border: 'border-gray-200',
+  imageBg: 'bg-gray-200',
+}
+
+// Icons for session tags
+export const sessionTagIcons: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
+  'geopolitics': GlobeAmericasIcon,
+  'international-finance-economics': ChartBarIcon,
+  'future-of-cities': BuildingOffice2Icon,
+  'ai-tech': CpuChipIcon,
+  'dinner-speakers': UserGroupIcon,
+  'health-wellness': HeartIcon,
+  'surprise-delight': SparklesIcon,
+}
+
+export const defaultTagIcon = CalendarDaysIcon
 
 export function getSessionTypeLabel(value: string): string {
   const cleanValue = stegaClean(value)
@@ -43,7 +112,12 @@ export function getSessionTagLabel(value: string): string {
   return sessionTagLabels[cleanValue] || cleanValue
 }
 
-export function getSessionTagColors(value: string): {bg: string; text: string} {
+export function getSessionTagColors(value: string) {
   const cleanValue = stegaClean(value)
-  return sessionTagColors[cleanValue] || {bg: 'bg-gray-100', text: 'text-gray-800'}
+  return sessionTagColors[cleanValue] || defaultColors
+}
+
+export function getSessionTagIcon(value: string): ComponentType<SVGProps<SVGSVGElement>> {
+  const cleanValue = stegaClean(value)
+  return sessionTagIcons[cleanValue] || defaultTagIcon
 }
