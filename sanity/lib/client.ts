@@ -19,6 +19,11 @@ export const client = createClient({
         return true
       }
 
+      // Exclude slug fields from stega encoding (they break URLs)
+      if (props.sourcePath.at(-1) === 'current') {
+        return false
+      }
+
       return props.filterDefault(props)
     },
   },

@@ -6,7 +6,7 @@
 
 'use client'
 
-import {defineConfig} from 'sanity'
+import {defineConfig, type SanityDocument} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {presentationTool} from 'sanity/presentation'
@@ -65,5 +65,51 @@ export default defineConfig({
   schema: {
     types: schemaTypes,
     templates,
+  },
+
+  document: {
+    productionUrl: async (prev, context) => {
+      const {document} = context
+      const baseUrl = typeof window !== 'undefined' && window.location.origin.includes('vercel.app')
+        ? window.location.origin
+        : PREVIEW_URL
+
+      let path: string | null = null
+
+      // Speaker preview: /speakers/<slug>
+      if (document._type === 'speaker') {
+        const slug = (document as SanityDocument & {id?: {current?: string}}).id?.current
+        if (slug) {
+          path = `/speakers/${slug}`
+        }
+      }
+
+      // Session preview: /schedule/<slug>
+      if (document._type === 'session') {
+        const slug = (document as SanityDocument & {id?: {current?: string}}).id?.current
+        if (slug) {
+          path = `/schedule/${slug}`
+        }
+      }
+
+      // Page preview: /<slug> or / for homepage
+      if (document._type === 'page') {
+        const slug = (document as SanityDocument & {slug?: {current?: string}}).slug?.current
+        path = `/${slug || ''}`
+      }
+
+      if (path) {
+        // Check if document is a draft (unpublished changes)
+        const isDraft = document._id.startsWith('drafts.')
+        if (isDraft) {
+          // Route through draft mode enable endpoint (validates Sanity auth)
+          const redirectPath = encodeURIComponent(path)
+          return `${baseUrl}/api/draft-mode/enable?redirect=${redirectPath}`
+        }
+        return `${baseUrl}${path}`
+      }
+
+      return prev
+    },
   },
 })

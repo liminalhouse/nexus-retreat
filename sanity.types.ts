@@ -132,7 +132,11 @@ export type FormBuilder = {
 
 export type Faq = {
   _type: 'faq'
-  faqBuilder?: Array<unknown> // Unable to locate the referenced type "faqItems" in schema
+  faqBuilder?: Array<
+    {
+      _key: string
+    } & FaqItem
+  >
 }
 
 export type FaqItem = {
@@ -217,6 +221,123 @@ export type BlockContent = Array<{
   _key: string
 }>
 
+export type Session = {
+  _id: string
+  _type: 'session'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  id?: Slug
+  title?: string
+  description?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
+  startTime?: string
+  endTime?: string
+  speakers?: Array<{
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    _key: string
+    [internalGroqTypeReferenceTo]?: 'speaker'
+  }>
+  sessionType?: Array<string>
+  sessionTags?: Array<string>
+  location?: string
+  photo?: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+}
+
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop'
+  top?: number
+  bottom?: number
+  left?: number
+  right?: number
+}
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot'
+  x?: number
+  y?: number
+  height?: number
+  width?: number
+}
+
+export type Slug = {
+  _type: 'slug'
+  current?: string
+  source?: string
+}
+
+export type Speaker = {
+  _id: string
+  _type: 'speaker'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  firstName?: string
+  lastName?: string
+  id?: Slug
+  title?: string
+  bio?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
+  profilePicture?: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+}
+
 export type EmailTemplate = {
   _id: string
   _type: 'emailTemplate'
@@ -280,22 +401,6 @@ export type EmailTemplate = {
   isActive?: boolean
 }
 
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop'
-  top?: number
-  bottom?: number
-  left?: number
-  right?: number
-}
-
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot'
-  x?: number
-  y?: number
-  height?: number
-  width?: number
-}
-
 export type Page = {
   _id: string
   _type: 'page'
@@ -327,12 +432,6 @@ export type Page = {
         _key: string
       } & Schedule)
   >
-}
-
-export type Slug = {
-  _type: 'slug'
-  current?: string
-  source?: string
 }
 
 export type RegistrationForm = {
@@ -844,11 +943,13 @@ export type AllSanitySchemaTypes =
   | CallToAction
   | InfoSection
   | BlockContent
-  | EmailTemplate
+  | Session
   | SanityImageCrop
   | SanityImageHotspot
-  | Page
   | Slug
+  | Speaker
+  | EmailTemplate
+  | Page
   | RegistrationForm
   | Settings
   | SanityAssistInstructionTask
@@ -871,8 +972,16 @@ export type AllSanitySchemaTypes =
   | SanityAssetSourceData
   | SanityImageAsset
   | Geopoint
+
 export declare const internalGroqTypeReferenceTo: unique symbol
-// Source: ./sanity/lib/queries.ts
+
+type ArrayOf<T> = Array<
+  T & {
+    _key: string
+  }
+>
+
+// Source: sanity/lib/queries.ts
 // Variable: settingsQuery
 // Query: *[_type == "settings"][0]{  registrationIsLive,  title,  description,  ogImage,  navLinks[]{    label,    href,    highlighted  },  footerTagline,  footerEmail,  footerQuickLinks[]{    label,    href  },  footerCopyright}
 export type SettingsQueryResult = {
@@ -919,6 +1028,8 @@ export type SettingsQueryResult = {
   }> | null
   footerCopyright: string | null
 } | null
+
+// Source: sanity/lib/queries.ts
 // Variable: getPageQuery
 // Query: *[_type == 'page' && (    (defined($slug) && slug.current == $slug) ||    (!defined($slug) && !defined(slug.current))  )][0]{    _id,    _type,    name,    slug,    bgColor,    heading,    subheading,    "pageBuilder": pageBuilder[]{      ...,      _type == "hero" => {        description[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current  }          }        },        eventDate,        eventLocation,        ctaText,        ctaLink,        backgroundImage      },      _type == "callToAction" => {          link {      ...,        _type == "link" => {    "page": page->slug.current  }      },      },      _type == "infoSection" => {        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current  }          }        }      },       _type == "faq" => {        ...,      },      _type == "form" => {        title,        subtitle,        description,        numberOfSteps,        step1 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        step2 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        step3 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        submitButtonText,        nextButtonText,        backButtonText,        successMessage,        submitEndpoint      }    },  }
 export type GetPageQueryResult = {
@@ -947,7 +1058,11 @@ export type GetPageQueryResult = {
     | {
         _key: string
         _type: 'faq'
-        faqBuilder?: Array<unknown> // Unable to locate the referenced type "faqItems" in schema
+        faqBuilder?: Array<
+          {
+            _key: string
+          } & FaqItem
+        >
       }
     | {
         _key: string
@@ -1128,6 +1243,8 @@ export type GetPageQueryResult = {
       }
   > | null
 } | null
+
+// Source: sanity/lib/queries.ts
 // Variable: sitemapData
 // Query: *[_type == "page" && defined(slug.current)] | order(_type asc) {    "slug": slug.current,    _type,    _updatedAt,  }
 export type SitemapDataResult = Array<{
@@ -1135,11 +1252,266 @@ export type SitemapDataResult = Array<{
   _type: 'page'
   _updatedAt: string
 }>
+
+// Source: sanity/lib/queries.ts
 // Variable: pagesSlugs
 // Query: *[_type == "page" && defined(slug.current)]  {"slug": slug.current}
 export type PagesSlugsResult = Array<{
   slug: string | null
 }>
+
+// Source: sanity/lib/queries.ts
+// Variable: sessionsQuery
+// Query: *[_type == "session"] | order(startTime asc) {    _id,    id,    title,    description,    startTime,    endTime,    location,    sessionType,    sessionTags,    photo,    "speakers": speakers[]->{      _id,      id,      firstName,      lastName,      title,      profilePicture    }  }
+export type SessionsQueryResult = Array<{
+  _id: string
+  id: Slug | null
+  title: string | null
+  description: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }> | null
+  startTime: string | null
+  endTime: string | null
+  location: string | null
+  sessionType: Array<string> | null
+  sessionTags: Array<string> | null
+  photo: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  } | null
+  speakers: Array<{
+    _id: string
+    id: Slug | null
+    firstName: string | null
+    lastName: string | null
+    title: string | null
+    profilePicture: {
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+    } | null
+  }> | null
+}>
+
+// Source: sanity/lib/queries.ts
+// Variable: sessionByIdQuery
+// Query: *[_type == "session" && id.current == $id][0]{    _id,    id,    title,    description,    startTime,    endTime,    location,    sessionType,    sessionTags,    photo,    "speakers": speakers[]->{      _id,      id,      firstName,      lastName,      title,      bio,      profilePicture    }  }
+export type SessionByIdQueryResult = {
+  _id: string
+  id: Slug | null
+  title: string | null
+  description: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }> | null
+  startTime: string | null
+  endTime: string | null
+  location: string | null
+  sessionType: Array<string> | null
+  sessionTags: Array<string> | null
+  photo: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  } | null
+  speakers: Array<{
+    _id: string
+    id: Slug | null
+    firstName: string | null
+    lastName: string | null
+    title: string | null
+    bio: Array<{
+      children?: Array<{
+        marks?: Array<string>
+        text?: string
+        _type: 'span'
+        _key: string
+      }>
+      style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+      listItem?: 'bullet' | 'number'
+      markDefs?: Array<{
+        href?: string
+        _type: 'link'
+        _key: string
+      }>
+      level?: number
+      _type: 'block'
+      _key: string
+    }> | null
+    profilePicture: {
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+    } | null
+  }> | null
+} | null
+
+// Source: sanity/lib/queries.ts
+// Variable: speakersQuery
+// Query: *[_type == "speaker"] | order(lastName asc) {    _id,    id,    firstName,    lastName,    title,    bio,    profilePicture  }
+export type SpeakersQueryResult = Array<{
+  _id: string
+  id: Slug | null
+  firstName: string | null
+  lastName: string | null
+  title: string | null
+  bio: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }> | null
+  profilePicture: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  } | null
+}>
+
+// Source: sanity/lib/queries.ts
+// Variable: speakerByIdQuery
+// Query: *[_type == "speaker" && id.current == $id][0]{    _id,    id,    firstName,    lastName,    title,    bio,    profilePicture,    "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {      _id,      id,      title,      startTime,      endTime,      location,      sessionType,      sessionTags,      photo    }  }
+export type SpeakerByIdQueryResult = {
+  _id: string
+  id: Slug | null
+  firstName: string | null
+  lastName: string | null
+  title: string | null
+  bio: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }> | null
+  profilePicture: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  } | null
+  sessions: Array<{
+    _id: string
+    id: Slug | null
+    title: string | null
+    startTime: string | null
+    endTime: string | null
+    location: string | null
+    sessionType: Array<string> | null
+    sessionTags: Array<string> | null
+    photo: {
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      alt?: string
+      _type: 'image'
+    } | null
+  }>
+} | null
+
+// Source: sanity/lib/queries.ts
 // Variable: registrationFormContentQuery
 // Query: *[_type == "registrationForm" && _id == "registrationFormContent"][0]{    title,    subtitle,    description,    submitButtonText,    nextButtonText,    backButtonText,    successMessage,    step1Title,    step2Title,    step3Title,    email,    firstName,    lastName,    jobTitle,    organization,    mobilePhone,    address,    emergencyContact,    assistant,    guest,    attendeeDetails,    guestEventDetails  }
 export type RegistrationFormContentQueryResult = {
@@ -1351,6 +1723,10 @@ declare module '@sanity/client' {
     '\n  *[_type == \'page\' && (\n    (defined($slug) && slug.current == $slug) ||\n    (!defined($slug) && !defined(slug.current))\n  )][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    bgColor,\n    heading,\n    subheading,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      _type == "hero" => {\n        description[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n          }\n        },\n        eventDate,\n        eventLocation,\n        ctaText,\n        ctaLink,\n        backgroundImage\n      },\n      _type == "callToAction" => {\n        \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n      }\n,\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n          }\n        }\n      },\n       _type == "faq" => {\n        ...,\n      },\n      _type == "form" => {\n        title,\n        subtitle,\n        description,\n        numberOfSteps,\n        step1 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        step2 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        step3 {\n          title,\n          fieldGroups[] {\n            groupTitle,\n            groupDescription,\n            fields[] {\n              fieldType,\n              label,\n              name,\n              placeholder,\n              helperText,\n              required,\n              options[] {\n                label,\n                value\n              }\n            }\n          }\n        },\n        submitButtonText,\n        nextButtonText,\n        backButtonText,\n        successMessage,\n        submitEndpoint\n      }\n    },\n  }\n': GetPageQueryResult
     '\n  *[_type == "page" && defined(slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
+    '\n  *[_type == "session"] | order(startTime asc) {\n    _id,\n    id,\n    title,\n    description,\n    startTime,\n    endTime,\n    location,\n    sessionType,\n    sessionTags,\n    photo,\n    "speakers": speakers[]->{\n      _id,\n      id,\n      firstName,\n      lastName,\n      title,\n      profilePicture\n    }\n  }\n': SessionsQueryResult
+    '\n  *[_type == "session" && id.current == $id][0]{\n    _id,\n    id,\n    title,\n    description,\n    startTime,\n    endTime,\n    location,\n    sessionType,\n    sessionTags,\n    photo,\n    "speakers": speakers[]->{\n      _id,\n      id,\n      firstName,\n      lastName,\n      title,\n      bio,\n      profilePicture\n    }\n  }\n': SessionByIdQueryResult
+    '\n  *[_type == "speaker"] | order(lastName asc) {\n    _id,\n    id,\n    firstName,\n    lastName,\n    title,\n    bio,\n    profilePicture\n  }\n': SpeakersQueryResult
+    '\n  *[_type == "speaker" && id.current == $id][0]{\n    _id,\n    id,\n    firstName,\n    lastName,\n    title,\n    bio,\n    profilePicture,\n    "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {\n      _id,\n      id,\n      title,\n      startTime,\n      endTime,\n      location,\n      sessionType,\n      sessionTags,\n      photo\n    }\n  }\n': SpeakerByIdQueryResult
     '\n  *[_type == "registrationForm" && _id == "registrationFormContent"][0]{\n    title,\n    subtitle,\n    description,\n    submitButtonText,\n    nextButtonText,\n    backButtonText,\n    successMessage,\n    step1Title,\n    step2Title,\n    step3Title,\n    email,\n    firstName,\n    lastName,\n    jobTitle,\n    organization,\n    mobilePhone,\n    address,\n    emergencyContact,\n    assistant,\n    guest,\n    attendeeDetails,\n    guestEventDetails\n  }\n': RegistrationFormContentQueryResult
   }
 }

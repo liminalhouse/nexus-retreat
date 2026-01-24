@@ -1,4 +1,5 @@
-import createImageUrlBuilder from '@sanity/image-url'
+import {createImageUrlBuilder} from '@sanity/image-url'
+import {stegaClean} from '@sanity/client/stega'
 import {Link} from '@/sanity.types'
 import {dataset, projectId, studioUrl} from '@/sanity/lib/api'
 import {createDataAttribute, CreateDataAttributeProps} from 'next-sanity'
@@ -75,4 +76,13 @@ export function dataAttr(config: DataAttributeConfig) {
     dataset,
     baseUrl: studioUrl,
   }).combine(config)
+}
+
+/**
+ * Strips stega encoding from a slug string.
+ * Use this when constructing URLs to avoid invisible characters breaking links.
+ */
+export function cleanSlug(slug: string | null | undefined): string {
+  if (!slug) return ''
+  return stegaClean(slug)
 }
