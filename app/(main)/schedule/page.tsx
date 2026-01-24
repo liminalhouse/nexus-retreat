@@ -299,7 +299,7 @@ export default async function SessionsPage({searchParams}: Props) {
                 const colors = getSessionTagColors(activeTag)
                 return (
                   <span
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 ${colors.bg} ${colors.text} ${colors.border} text-sm font-medium rounded-full`}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 border-2 ${colors.bg} ${colors.text} ${colors.border} text-sm font-medium rounded-full`}
                   >
                     {getSessionTagLabel(activeTag)}
                     <Link
