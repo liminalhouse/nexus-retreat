@@ -1,5 +1,6 @@
 import {defineField, defineType, defineArrayMember} from 'sanity'
 import {CalendarIcon} from '@sanity/icons'
+import {EasternTimeInput} from '@/sanity/components/EasternTimeInput'
 
 const sessionTypes = [
   {title: 'Keynote', value: 'keynote'},
@@ -53,7 +54,10 @@ export const session = defineType({
     defineField({
       name: 'startTime',
       title: 'Start Time',
-      type: 'datetime',
+      type: 'string',
+      components: {
+        input: EasternTimeInput,
+      },
       validation: (Rule) =>
         Rule.required().custom((startTime, context) => {
           const endTime = (context.document as {endTime?: string})?.endTime
@@ -66,7 +70,10 @@ export const session = defineType({
     defineField({
       name: 'endTime',
       title: 'End Time',
-      type: 'datetime',
+      type: 'string',
+      components: {
+        input: EasternTimeInput,
+      },
       validation: (Rule) =>
         Rule.required().custom((endTime, context) => {
           const startTime = (context.document as {startTime?: string})?.startTime
