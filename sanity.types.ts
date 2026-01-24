@@ -972,8 +972,16 @@ export type AllSanitySchemaTypes =
   | SanityAssetSourceData
   | SanityImageAsset
   | Geopoint
+
 export declare const internalGroqTypeReferenceTo: unique symbol
-// Source: ./sanity/lib/queries.ts
+
+type ArrayOf<T> = Array<
+  T & {
+    _key: string
+  }
+>
+
+// Source: sanity/lib/queries.ts
 // Variable: settingsQuery
 // Query: *[_type == "settings"][0]{  registrationIsLive,  title,  description,  ogImage,  navLinks[]{    label,    href,    highlighted  },  footerTagline,  footerEmail,  footerQuickLinks[]{    label,    href  },  footerCopyright}
 export type SettingsQueryResult = {
@@ -1020,6 +1028,8 @@ export type SettingsQueryResult = {
   }> | null
   footerCopyright: string | null
 } | null
+
+// Source: sanity/lib/queries.ts
 // Variable: getPageQuery
 // Query: *[_type == 'page' && (    (defined($slug) && slug.current == $slug) ||    (!defined($slug) && !defined(slug.current))  )][0]{    _id,    _type,    name,    slug,    bgColor,    heading,    subheading,    "pageBuilder": pageBuilder[]{      ...,      _type == "hero" => {        description[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current  }          }        },        eventDate,        eventLocation,        ctaText,        ctaLink,        backgroundImage      },      _type == "callToAction" => {          link {      ...,        _type == "link" => {    "page": page->slug.current  }      },      },      _type == "infoSection" => {        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current  }          }        }      },       _type == "faq" => {        ...,      },      _type == "form" => {        title,        subtitle,        description,        numberOfSteps,        step1 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        step2 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        step3 {          title,          fieldGroups[] {            groupTitle,            groupDescription,            fields[] {              fieldType,              label,              name,              placeholder,              helperText,              required,              options[] {                label,                value              }            }          }        },        submitButtonText,        nextButtonText,        backButtonText,        successMessage,        submitEndpoint      }    },  }
 export type GetPageQueryResult = {
@@ -1233,6 +1243,8 @@ export type GetPageQueryResult = {
       }
   > | null
 } | null
+
+// Source: sanity/lib/queries.ts
 // Variable: sitemapData
 // Query: *[_type == "page" && defined(slug.current)] | order(_type asc) {    "slug": slug.current,    _type,    _updatedAt,  }
 export type SitemapDataResult = Array<{
@@ -1240,11 +1252,15 @@ export type SitemapDataResult = Array<{
   _type: 'page'
   _updatedAt: string
 }>
+
+// Source: sanity/lib/queries.ts
 // Variable: pagesSlugs
 // Query: *[_type == "page" && defined(slug.current)]  {"slug": slug.current}
 export type PagesSlugsResult = Array<{
   slug: string | null
 }>
+
+// Source: sanity/lib/queries.ts
 // Variable: sessionsQuery
 // Query: *[_type == "session"] | order(startTime asc) {    _id,    id,    title,    description,    startTime,    endTime,    location,    sessionType,    sessionTags,    photo,    "speakers": speakers[]->{      _id,      id,      firstName,      lastName,      title,      profilePicture    }  }
 export type SessionsQueryResult = Array<{
@@ -1307,6 +1323,8 @@ export type SessionsQueryResult = Array<{
     } | null
   }> | null
 }>
+
+// Source: sanity/lib/queries.ts
 // Variable: sessionByIdQuery
 // Query: *[_type == "session" && id.current == $id][0]{    _id,    id,    title,    description,    startTime,    endTime,    location,    sessionType,    sessionTags,    photo,    "speakers": speakers[]->{      _id,      id,      firstName,      lastName,      title,      bio,      profilePicture    }  }
 export type SessionByIdQueryResult = {
@@ -1387,6 +1405,8 @@ export type SessionByIdQueryResult = {
     } | null
   }> | null
 } | null
+
+// Source: sanity/lib/queries.ts
 // Variable: speakersQuery
 // Query: *[_type == "speaker"] | order(lastName asc) {    _id,    id,    firstName,    lastName,    title,    bio,    profilePicture  }
 export type SpeakersQueryResult = Array<{
@@ -1426,6 +1446,8 @@ export type SpeakersQueryResult = Array<{
     _type: 'image'
   } | null
 }>
+
+// Source: sanity/lib/queries.ts
 // Variable: speakerByIdQuery
 // Query: *[_type == "speaker" && id.current == $id][0]{    _id,    id,    firstName,    lastName,    title,    bio,    profilePicture,    "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {      _id,      id,      title,      startTime,      endTime,      location,      sessionType,      sessionTags,      photo    }  }
 export type SpeakerByIdQueryResult = {
@@ -1488,6 +1510,8 @@ export type SpeakerByIdQueryResult = {
     } | null
   }>
 } | null
+
+// Source: sanity/lib/queries.ts
 // Variable: registrationFormContentQuery
 // Query: *[_type == "registrationForm" && _id == "registrationFormContent"][0]{    title,    subtitle,    description,    submitButtonText,    nextButtonText,    backButtonText,    successMessage,    step1Title,    step2Title,    step3Title,    email,    firstName,    lastName,    jobTitle,    organization,    mobilePhone,    address,    emergencyContact,    assistant,    guest,    attendeeDetails,    guestEventDetails  }
 export type RegistrationFormContentQueryResult = {
