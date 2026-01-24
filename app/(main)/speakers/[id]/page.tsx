@@ -8,7 +8,7 @@ import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
 import {getUser} from '@/lib/auth/getUser'
-import {getSessionTypeLabel, getSessionTagLabel, getSessionTagColors} from '@/lib/sessionLabels'
+import {SessionTagsGroup} from '@/app/components/SessionTags'
 import SessionPlaceholder from '@/app/components/SessionPlaceholder'
 
 type Props = {
@@ -162,30 +162,12 @@ export default async function SpeakerPage({params}: Props) {
                       </div>
                       <div className="flex-1 min-w-0">
                         {/* Session Type & Tags */}
-                        {((session.sessionType && session.sessionType.length > 0) ||
-                          (session.sessionTags && session.sessionTags.length > 0)) && (
-                          <div className="flex flex-wrap gap-1.5 mb-2">
-                            {session.sessionType?.map((type) => (
-                              <span
-                                key={type}
-                                className="inline-block px-2 py-0.5 text-xs font-medium bg-nexus-navy text-white rounded-full"
-                              >
-                                {getSessionTypeLabel(type)}
-                              </span>
-                            ))}
-                            {session.sessionTags?.map((tag) => {
-                              const colors = getSessionTagColors(tag)
-                              return (
-                                <span
-                                  key={tag}
-                                  className={`inline-block px-2 py-0.5 text-xs font-medium ${colors.bg} ${colors.text} rounded-full`}
-                                >
-                                  {getSessionTagLabel(tag)}
-                                </span>
-                              )
-                            })}
-                          </div>
-                        )}
+                        <div className="mb-2">
+                          <SessionTagsGroup
+                            types={session.sessionType}
+                            tags={session.sessionTags}
+                          />
+                        </div>
 
                         <h3 className="text-lg font-semibold text-nexus-navy mb-1">
                           {session.title}

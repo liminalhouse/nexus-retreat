@@ -8,6 +8,7 @@ import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
 import {getUser} from '@/lib/auth/getUser'
 import type {SessionsQueryResult} from '@/sanity.types'
 import {getSessionTypeLabel, getSessionTagLabel, getSessionTagColors} from '@/lib/sessionLabels'
+import {SessionTagsGroup} from '@/app/components/SessionTags'
 import SessionPlaceholder from '@/app/components/SessionPlaceholder'
 
 export const metadata: Metadata = {
@@ -210,40 +211,13 @@ function SessionListItem({
           )}
 
           {/* Session Type & Tags */}
-          {((session.sessionType && session.sessionType.length > 0) ||
-            (session.sessionTags && session.sessionTags.length > 0)) && (
-            <div className="flex flex-wrap gap-1.5">
-              {session.sessionType?.map((type) => (
-                <Link
-                  key={type}
-                  href={`/schedule?type=${encodeURIComponent(type)}`}
-                  className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full transition-all ${
-                    activeType === type
-                      ? 'bg-nexus-navy text-white ring-2 ring-offset-1 ring-nexus-navy'
-                      : 'bg-nexus-navy text-white hover:opacity-80'
-                  }`}
-                >
-                  {getSessionTypeLabel(type)}
-                </Link>
-              ))}
-              {session.sessionTags?.map((tag) => {
-                const colors = getSessionTagColors(tag)
-                return (
-                  <Link
-                    key={tag}
-                    href={`/schedule?tag=${encodeURIComponent(tag)}`}
-                    className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full transition-all ${
-                      activeTag === tag
-                        ? `${colors.bg} ${colors.text} ring-2 ring-offset-1 ring-current`
-                        : `${colors.bg} ${colors.text} hover:opacity-80`
-                    }`}
-                  >
-                    {getSessionTagLabel(tag)}
-                  </Link>
-                )
-              })}
-            </div>
-          )}
+          <SessionTagsGroup
+            types={session.sessionType}
+            tags={session.sessionTags}
+            asLinks
+            activeType={activeType}
+            activeTag={activeTag}
+          />
         </div>
       </div>
 

@@ -8,7 +8,7 @@ import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
 import {getUser} from '@/lib/auth/getUser'
-import {getSessionTypeLabel, getSessionTagLabel, getSessionTagColors} from '@/lib/sessionLabels'
+import {SessionTagsGroup} from '@/app/components/SessionTags'
 import SessionPlaceholder from '@/app/components/SessionPlaceholder'
 
 type Props = {
@@ -111,32 +111,14 @@ export default async function SessionPage({params}: Props) {
             </div>
 
             {/* Session Type & Tags */}
-            {((session.sessionType && session.sessionType.length > 0) ||
-              (session.sessionTags && session.sessionTags.length > 0)) && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {session.sessionType?.map((type) => (
-                  <Link
-                    key={type}
-                    href={`/schedule?type=${encodeURIComponent(type)}`}
-                    className="inline-block px-3 py-1 text-sm font-medium bg-nexus-navy text-white rounded-full hover:opacity-80 transition-all"
-                  >
-                    {getSessionTypeLabel(type)}
-                  </Link>
-                ))}
-                {session.sessionTags?.map((tag) => {
-                  const colors = getSessionTagColors(tag)
-                  return (
-                    <Link
-                      key={tag}
-                      href={`/schedule?tag=${encodeURIComponent(tag)}`}
-                      className={`inline-block px-3 py-1 text-sm font-medium ${colors.bg} ${colors.text} rounded-full hover:opacity-80 transition-all`}
-                    >
-                      {getSessionTagLabel(tag)}
-                    </Link>
-                  )
-                })}
-              </div>
-            )}
+            <div className="mb-4">
+              <SessionTagsGroup
+                types={session.sessionType}
+                tags={session.sessionTags}
+                asLinks
+                size="md"
+              />
+            </div>
 
             {/* Title */}
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-nexus-navy font-serif mb-6">
