@@ -3,12 +3,15 @@ import {createClient} from 'next-sanity'
 import {apiVersion, dataset, projectId, studioUrl} from '@/sanity/lib/api'
 import {token} from './token'
 
+// Show drafts in development and staging (preview), published only in production
+const isProduction = process.env.VERCEL_ENV === 'production'
+
 export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: process.env.NODE_ENV !== 'development', // Disable CDN in development to avoid cache issues with drafts
-  perspective: process.env.NODE_ENV === 'development' ? 'drafts' : 'published',
+  useCdn: isProduction, // Disable CDN in dev/staging to avoid cache issues with drafts
+  perspective: isProduction ? 'published' : 'drafts',
   token, // Required if you have a private dataset
   stega: {
     studioUrl,
