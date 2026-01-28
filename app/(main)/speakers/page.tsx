@@ -50,13 +50,13 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
       {/* Content */}
       <div className="flex flex-col flex-1 min-w-0 sm:text-left">
         {/* Name */}
-        <h3 className="text-lg font-semibold text-nexus-navy font-serif text-center">
+        <h3 className="text-lg font-semibold text-nexus-navy font-serif text-center md:text-left">
           {speaker.firstName} {speaker.lastName}
         </h3>
 
         {/* Title */}
         {speaker.title && (
-          <p className="text-xs text-nexus-navy font-semibold mt-0.5 mb-2 line-clamp-1 text-center">{speaker.title}</p>
+          <p className="text-xs text-nexus-navy font-semibold mt-0.5 mb-2 line-clamp-1 text-center md:text-left">{speaker.title}</p>
         )}
 
         {/* Bio preview */}
