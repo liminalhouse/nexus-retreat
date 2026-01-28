@@ -227,9 +227,8 @@ export async function sendActivitySelectionEmail(data: RegistrationData) {
     const bodyIntroText = template.bodyIntro ? toPlainText(template.bodyIntro) : ''
     const bodyOutroText = template.bodyOutro ? toPlainText(template.bodyOutro) : ''
 
-    // Generate edit activities link with base64-encoded email
-    const encodedEmail = Buffer.from(data.email).toString('base64')
-    const editActivitiesLink = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'}/edit-activities?e=${encodeURIComponent(encodedEmail)}`
+    // Generate edit activities link using edit token
+    const editActivitiesLink = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'}/edit-registration/${data.editToken}/activities`
 
     const editActivitiesLinkHtml = `<div style="margin: 32px 0; text-align: center;">
            <a href="${editActivitiesLink}" style="display: inline-block; padding: 14px 32px; background-color: #0369a1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">

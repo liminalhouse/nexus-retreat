@@ -747,6 +747,67 @@ export default function EditModal({
             <p className="text-sm text-gray-600">
               <strong>Submitted:</strong> {new Date(formData.created_at).toLocaleString()}
             </p>
+            {isAdminView && formData.edit_token && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-sm font-medium text-gray-700 mb-2">Shareable Edit Links:</p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      readOnly
+                      value={`${window.location.origin}/edit-registration/${formData.edit_token}`}
+                      className="flex-1 text-xs px-2 py-1 bg-white border border-gray-300 rounded"
+                    />
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          `${window.location.origin}/edit-registration/${formData.edit_token}`,
+                        )
+                        showToast('Full edit link copied!', 'success')
+                      }}
+                      className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded"
+                    >
+                      Copy
+                    </button>
+                    <a
+                      href={`/edit-registration/${formData.edit_token}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2 py-1 text-xs bg-nexus-navy text-white hover:bg-nexus-navy-dark rounded"
+                    >
+                      Open
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      readOnly
+                      value={`${window.location.origin}/edit-registration/${formData.edit_token}/activities`}
+                      className="flex-1 text-xs px-2 py-1 bg-white border border-gray-300 rounded"
+                    />
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          `${window.location.origin}/edit-registration/${formData.edit_token}/activities`,
+                        )
+                        showToast('Activities edit link copied!', 'success')
+                      }}
+                      className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded"
+                    >
+                      Copy
+                    </button>
+                    <a
+                      href={`/edit-registration/${formData.edit_token}/activities`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2 py-1 text-xs bg-nexus-navy text-white hover:bg-nexus-navy-dark rounded"
+                    >
+                      Open
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Delete */}
