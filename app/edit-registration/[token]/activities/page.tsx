@@ -141,11 +141,11 @@ export default function EditActivitiesPage() {
 
   if (pageState === 'editing' || pageState === 'saving') {
     return (
-      <div className="min-h-screen bg-linear-to-t from-blue-800 to-indigo-950 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-t from-blue-800 to-indigo-950 flex items-center justify-center py-24">
         <div className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-xl">
           <div className="p-6 md:p-8">
             <div className="text-center mb-8">
-              <NexusLogo styleType="lockup" className="w-[168px] my-6 mx-auto" />
+              <NexusLogo color="#000" className="w-[168px] my-6 mx-auto" />
             </div>
 
             <h1 className="text-xl font-bold text-gray-900 mb-2 text-center">
@@ -166,7 +166,7 @@ export default function EditActivitiesPage() {
                 </p>
                 <div className="space-y-2">
                   {ACTIVITY_OPTIONS.map((option, idx) => {
-                    const isChecked = activities.includes(option.value)
+                    const isChecked = activities.includes(option?.value)
                     const checkboxId = `activity_${idx}`
 
                     return (
@@ -176,7 +176,7 @@ export default function EditActivitiesPage() {
                             type="checkbox"
                             id={checkboxId}
                             checked={isChecked}
-                            onChange={() => handleActivityToggle(option.value)}
+                            onChange={() => handleActivityToggle(option?.value)}
                             disabled={pageState === 'saving'}
                             className="h-4 w-4 rounded border-2 border-gray-300 text-blue-600 transition-all duration-300 ease-out focus:ring-2 focus:ring-blue-100 focus:border-blue-600 hover:border-gray-400 cursor-pointer"
                           />
@@ -244,7 +244,15 @@ export default function EditActivitiesPage() {
                 </div>
               )}
 
-              <div className="flex justify-between items-center mt-8">
+              <div className="flex justify-between items-center mt-14">
+                <div>
+                  <Link
+                    href={`/edit-registration/${token}`}
+                    className="block w-full px-6 py-3 bg-white text-nexus-navy border border-nexus-navy rounded-lg hover:bg-gray-50 transition-colors font-medium text-center"
+                  >
+                    Edit your full registration
+                  </Link>
+                </div>
                 <button
                   type="submit"
                   disabled={pageState === 'saving'}
