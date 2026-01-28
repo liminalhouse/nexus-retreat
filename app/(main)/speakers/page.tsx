@@ -101,9 +101,8 @@ export default async function SpeakersPage() {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-nexus-navy font-serif mb-4">
             Speakers
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            We have speakers ranging from industry leaders to emerging voices, all sharing their
-            unique insights and experiences.
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Meet the world leaders and industry experts sharing their insights at the Retreat.
           </p>
         </div>
 
