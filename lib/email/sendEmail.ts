@@ -201,6 +201,107 @@ function formatRegistrationDetails(data: RegistrationData): string {
   return sections.join('')
 }
 
+export async function sendActivitySelectionEmail(data: RegistrationData) {
+  try {
+    // Fetch template from Sanity
+    const template = await getEmailTemplate('activity_selection')
+
+    if (!template) {
+      console.error('Activity selection email template not found in Sanity')
+      throw new Error(
+        'Activity selection email template not found in Sanity. Please create an active email template with type "activity_selection".',
+      )
+    }
+
+    // Replace variables in template
+    const variables = {
+      firstName: data.first_name,
+      lastName: data.last_name,
+      fullName: `${data.first_name} ${data.last_name}`,
+    }
+
+    const subject = replaceVariables(template.subject, variables)
+    const greeting = replaceVariables(template.greeting, variables)
+
+    // Convert portable text to plain text for intro and outro
+    const bodyIntroText = template.bodyIntro ? toPlainText(template.bodyIntro) : ''
+    const bodyOutroText = template.bodyOutro ? toPlainText(template.bodyOutro) : ''
+
+    // Generate edit activities link with base64-encoded email
+    const encodedEmail = Buffer.from(data.email).toString('base64')
+    const editActivitiesLink = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'}/edit-activities?e=${encodeURIComponent(encodedEmail)}`
+
+    const editActivitiesLinkHtml = `<div style="margin: 32px 0; text-align: center;">
+           <a href="${editActivitiesLink}" style="display: inline-block; padding: 14px 32px; background-color: #0369a1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+             Select Your Activities
+           </a>
+         </div>`
+
+    // Generate header image HTML if present
+    const headerImageHtml = template.headerImage?.asset?.url
+      ? `<div style="margin-bottom: 24px; text-align: center;">
+           <img src="${template.headerImage.asset.url}" alt="${template.headerImage.alt || 'Email header'}" style="max-width: 100%; height: auto; border-radius: 8px;" />
+         </div>`
+      : ''
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #111827; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #ffffff; padding: 32px; border-radius: 8px;">
+            ${headerImageHtml}
+            <p style="font-size: 16px; margin-bottom: 16px; white-space: pre-line;">${greeting}</p>
+
+            ${bodyIntroText ? `<p style="font-size: 14px; color: #374151; margin-bottom: 24px; white-space: pre-line;">${bodyIntroText}</p>` : ''}
+
+            ${editActivitiesLinkHtml}
+
+            ${bodyOutroText ? `<p style="font-size: 14px; color: #374151; margin-top: 24px; white-space: pre-line;">${bodyOutroText}</p>` : ''}
+
+            ${template.signature ? `<p style="font-size: 14px; color: #374151; margin-top: 24px; white-space: pre-line;">${template.signature}</p>` : ''}
+          </div>
+        </body>
+      </html>
+    `
+
+    // Build CC list: guest, assistant, and info@nexus-retreat.com
+    const cc: string[] = ['info@nexus-retreat.com']
+    if (data.assistant_email && data.assistant_email !== data.email) {
+      cc.push(data.assistant_email)
+    }
+    if (data.guest_email && data.guest_email !== data.email && data.guest_email !== 'info@nexus-retreat.com') {
+      cc.push(data.guest_email)
+    }
+
+    // Send email using Resend
+    const emailData: any = {
+      from: `Nexus Retreat <${resendEmailFrom}>`,
+      to: data.email,
+      subject,
+      html,
+      cc,
+    }
+
+    console.log('Sending activity selection email via Resend...', {
+      from: emailData.from,
+      to: emailData.to,
+      cc: emailData.cc,
+      subject: emailData.subject,
+    })
+
+    const response = await resend.emails.send(emailData)
+
+    return {success: true, data: response}
+  } catch (error) {
+    console.error('Error sending activity selection email:', error)
+    return {success: false, error}
+  }
+}
+
 export async function sendRegistrationConfirmation(data: RegistrationData) {
   try {
     // Fetch template from Sanity

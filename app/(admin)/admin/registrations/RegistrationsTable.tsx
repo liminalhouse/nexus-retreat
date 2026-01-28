@@ -18,8 +18,33 @@ type ColumnConfig = {
   render: (registration: Registration) => React.ReactNode
 }
 
-const GRID_TEMPLATE_COLUMNS =
-  'minmax(65px, 1fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(200px, 2fr) minmax(150px, 1.2fr) minmax(150px, 1.5fr) minmax(180px, 1.5fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(200px, 2fr) minmax(120px, 1fr)'
+const COLUMN_WIDTHS = {
+  avatar: 'minmax(65px, 1fr)',
+  date: 'minmax(120px, 1fr)',
+  name: 'minmax(150px, 1.5fr)',
+  title: 'minmax(120px, 1fr)',
+  organization: 'minmax(150px, 1.5fr)',
+  email: 'minmax(200px, 2fr)',
+  phone: 'minmax(150px, 1.2fr)',
+  location: 'minmax(150px, 1.5fr)',
+  emergency: 'minmax(180px, 1.5fr)',
+  assistant: 'minmax(180px, 1.5fr)',
+  guest: 'minmax(120px, 1fr)',
+  dietary: 'minmax(150px, 1.5fr)',
+  jacket: 'minmax(100px, 1fr)',
+  accommodations: 'minmax(150px, 1.5fr)',
+  dinners: 'minmax(120px, 1fr)',
+  activities: 'minmax(200px, 1.5fr)',
+  guest_dietary: 'minmax(100px, 1fr)',
+  guest_jacket: 'minmax(120px, 1fr)',
+  guest_accommodations: 'minmax(120px, 1fr)',
+  guest_dinners: 'minmax(200px, 2fr)',
+  guest_activities: 'minmax(200px, 1.5fr)',
+  admin_notes: 'minmax(200px, 2fr)',
+  actions: 'minmax(120px, 2fr)',
+}
+
+const GRID_TEMPLATE_COLUMNS = Object.values(COLUMN_WIDTHS).join(' ')
 
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('en-US', {
@@ -147,13 +172,12 @@ const columns: ColumnConfig[] = [
     width: 'minmax(120px, 1fr)',
     render: (reg) => formatDinnerAttendance(reg.dinner_attendance),
   },
-  // TODO: Hide activities for now
-  // {
-  //   key: 'activities',
-  //   label: 'Activities',
-  //   width: 'minmax(180px, 1.5fr)',
-  //   render: (reg) => formatActivities(reg.activities),
-  // },
+  {
+    key: 'activities',
+    label: 'Activities',
+    width: 'minmax(180px, 1.5fr)',
+    render: (reg) => formatActivities(reg.activities),
+  },
   {
     key: 'guest_dietary',
     label: 'Guest Dietary',
@@ -178,13 +202,12 @@ const columns: ColumnConfig[] = [
     width: 'minmax(120px, 1fr)',
     render: (reg) => formatDinnerAttendance(reg.guest_dinner_attendance),
   },
-  // TODO: Hide guest activities for now
-  // {
-  //   key: 'guest_activities',
-  //   label: 'Guest Activities',
-  //   width: 'minmax(180px, 1.5fr)',
-  //   render: (reg) => formatActivities(reg.guest_activities),
-  // },
+  {
+    key: 'guest_activities',
+    label: 'Guest Activities',
+    width: 'minmax(180px, 1.5fr)',
+    render: (reg) => formatActivities(reg.guest_activities),
+  },
   {
     key: 'admin_notes',
     label: 'Admin Notes (not visible to registrant)',
@@ -263,7 +286,7 @@ export default function RegistrationsTable({
               {columns.map((column) => (
                 <div
                   key={column.key}
-                  className="bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200"
+                  className="bg-blue-50 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase border-b border-r border-gray-200"
                 >
                   {column.label}
                 </div>
@@ -287,13 +310,13 @@ export default function RegistrationsTable({
                   {columns.map((column) => (
                     <div
                       key={column.key}
-                      className={`${column.key === 'admin_notes' ? 'bg-yellow-50' : 'bg-white'} group-hover:bg-blue-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto`}
+                      className={`${column.key === 'admin_notes' ? 'bg-yellow-50' : 'bg-white'} group-hover:bg-zinc-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto`}
                     >
                       {column.render(registration)}
                     </div>
                   ))}
                   <div
-                    className="sticky right-0 bg-white group-hover:bg-gray-50 px-6 py-4 text-sm font-medium border-b border-l-2 border-gray-200 flex items-center"
+                    className="sticky right-0 bg-white group-hover:bg-slate-50 px-6 py-4 text-sm font-medium border-b border-l-2 border-gray-200 flex items-center"
                     style={{boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.1)'}}
                   >
                     <button

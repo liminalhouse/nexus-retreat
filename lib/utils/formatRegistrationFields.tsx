@@ -1,3 +1,5 @@
+import type React from 'react'
+
 // Option configurations for form fields
 export const ACCOMMODATION_OPTIONS = [
   {label: 'I will use my complimentary room the night of March 18', value: 'march_18'},
@@ -69,17 +71,73 @@ export const ACTIVITY_LABELS: Record<string, string> = {
   spa: 'Spa',
 }
 
-export function formatAccommodations(values: string[] | null | undefined): string {
-  if (!values || values.length === 0) return '-'
-  return values.map((v) => ACCOMMODATION_LABELS[v] || v).join(', ')
+const ACCOMMODATION_COLORS: Record<string, string> = {
+  march_18: 'bg-fuchsia-100 text-fuchsia-800',
+  march_19: 'bg-blue-100 text-blue-800',
 }
 
-export function formatDinnerAttendance(values: string[] | null | undefined): string {
-  if (!values || values.length === 0) return '-'
-  return values.map((v) => DINNER_LABELS[v] || v).join(', ')
+const DINNER_COLORS: Record<string, string> = {
+  march_18: 'bg-fuchsia-100 text-fuchsia-800',
+  march_19: 'bg-blue-100 text-blue-800',
 }
 
-export function formatActivities(values: string[] | null | undefined): string {
-  if (!values || values.length === 0) return '-'
-  return values.map((v) => ACTIVITY_LABELS[v] || v).join(', ')
+const ACTIVITY_COLORS: Record<string, string> = {
+  pickleball: 'bg-lime-100 text-lime-800',
+  golf_full: 'bg-emerald-100 text-emerald-800',
+  golf_9: 'bg-emerald-100 text-emerald-800',
+  golf_drive_chip_putt: 'bg-emerald-100 text-emerald-800',
+  tennis: 'bg-yellow-100 text-yellow-800',
+  yoga_march_19: 'bg-violet-100 text-violet-800',
+  bootcamp_march_19: 'bg-cyan-100 text-cyan-800',
+  yoga_march_20: 'bg-violet-100 text-violet-800',
+  bootcamp_march_20: 'bg-cyan-100 text-cyan-800',
+  spa: 'bg-pink-100 text-pink-800',
+}
+
+export function formatAccommodations(values: string[] | null | undefined): React.ReactNode {
+  if (!values || values.length === 0) return <>-</>
+  return (
+    <ul className="flex flex-col gap-1">
+      {values.map((v) => (
+        <li
+          key={v}
+          className={`block px-2 py-0.5 text-xs rounded-full ${ACCOMMODATION_COLORS[v] || 'bg-gray-100 text-gray-800'}`}
+        >
+          {ACCOMMODATION_LABELS[v] || v}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+export function formatDinnerAttendance(values: string[] | null | undefined): React.ReactNode {
+  if (!values || values.length === 0) return <>-</>
+  return (
+    <ul className="flex flex-col gap-1">
+      {values.map((v) => (
+        <li
+          key={v}
+          className={`block px-2 py-0.5 text-xs rounded-full ${DINNER_COLORS[v] || 'bg-gray-100 text-gray-800'}`}
+        >
+          {DINNER_LABELS[v] || v}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+export function formatActivities(values: string[] | null | undefined): React.ReactNode {
+  if (!values || values.length === 0) return <>-</>
+  return (
+    <ul className="flex flex-col gap-1">
+      {values.map((v) => (
+        <li
+          key={v}
+          className={`block px-2 py-0.5 text-xs rounded-full ${ACTIVITY_COLORS[v] || 'bg-gray-100 text-gray-800'}`}
+        >
+          {ACTIVITY_LABELS[v] || v}
+        </li>
+      ))}
+    </ul>
+  )
 }

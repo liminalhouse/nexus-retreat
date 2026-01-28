@@ -3,9 +3,6 @@
 import {useState} from 'react'
 import Avatar from '@/app/components/Avatar'
 import {
-  formatAccommodations,
-  formatDinnerAttendance,
-  formatActivities,
   ACCOMMODATION_OPTIONS,
   DINNER_OPTIONS,
   ACTIVITY_OPTIONS,
@@ -603,8 +600,8 @@ export default function EditModal({
                   ))}
                 </div>
               </div>
-              {/* TODO: Hide activities */}
-              {/* <div className="col-span-2">
+              {/* Activities */}
+              <div className="col-span-2">
                 <label className={labelClass}>Activities</label>
                 <div className="space-y-2">
                   {ACTIVITY_OPTIONS.map((option) => (
@@ -621,7 +618,7 @@ export default function EditModal({
                     </label>
                   ))}
                 </div>
-              </div> */}
+              </div>
             </div>
           </div>
 
@@ -701,8 +698,8 @@ export default function EditModal({
                   ))}
                 </div>
               </div>
-              {/* TODO: Hide activities */}
-              {/* <div className="col-span-2">
+              {/* Guest Activities */}
+              <div className="col-span-2">
                 <label className={labelClass}>Guest Activities</label>
                 <div className="space-y-2">
                   {ACTIVITY_OPTIONS.map((option) => (
@@ -719,7 +716,7 @@ export default function EditModal({
                     </label>
                   ))}
                 </div>
-              </div> */}
+              </div>
             </div>
           </div>
           {isAdminView && (
