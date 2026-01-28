@@ -33,6 +33,7 @@ export async function GET(
     const formattedRegistration = {
       id: registration.id,
       first_name: registration.firstName,
+      last_name: registration.lastName,
       guest_name: registration.guestName,
       guest_email: registration.guestEmail,
       activities: registration.activities,

@@ -1,7 +1,7 @@
 'use client'
 
 import {Suspense, useState, useEffect, useCallback} from 'react'
-import {useSearchParams} from 'next/navigation'
+import {useSearchParams, useRouter} from 'next/navigation'
 import NexusLogo from '@/app/components/NexusLogo'
 import {ACTIVITY_OPTIONS, GUEST_ACTIVITY_OPTIONS} from '@/lib/utils/formatRegistrationFields'
 
@@ -10,6 +10,7 @@ type PageState = 'email_entry' | 'loading_lookup' | 'editing' | 'saving' | 'succ
 interface RegistrationData {
   id: string
   first_name: string
+  last_name: string
   guest_name: string | null
   guest_email: string | null
   activities: string[] | null
@@ -38,6 +39,7 @@ function decodeEmailParam(encoded: string | null): string | null {
 
 function EditActivitiesContent() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const emailParam = decodeEmailParam(searchParams.get('e'))
 
   const [pageState, setPageState] = useState<PageState>(
@@ -77,12 +79,16 @@ function EditActivitiesContent() {
       setActivities(data.data.activities || [])
       setGuestActivities(data.data.guest_activities || [])
       setPageState('editing')
+
+      // Update URL with email param so refresh preserves state
+      const encodedEmail = btoa(lookupEmail)
+      router.replace(`/edit-activities?e=${encodedEmail}`, {scroll: false})
     } catch (err) {
       console.error('Lookup error:', err)
       setError('Unable to connect. Please check your internet connection and try again.')
       setPageState('email_entry')
     }
-  }, [])
+  }, [router])
 
   // Auto-lookup when email param is present (runs once on mount)
   useEffect(() => {
@@ -147,6 +153,8 @@ function EditActivitiesContent() {
     setRegistrationData(null)
     setActivities([])
     setGuestActivities([])
+    // Clear URL param
+    router.replace('/edit-activities', {scroll: false})
   }
 
   // Loading view (shown when auto-looking up from URL param)
@@ -221,11 +229,13 @@ function EditActivitiesContent() {
               <NexusLogo styleType="lockup" className="w-[168px] my-6 mx-auto" />
             </div>
 
-            <h1 className="text-2xl font-bold text-gray-900 mb-2 text-center">
-              Hi {registrationData?.first_name}, select the activities you&apos;d like to participate
-              in.
+            <h1 className="text-xl font-bold text-gray-900 mb-2 text-center">
+              Welcome {registrationData?.first_name} {registrationData?.last_name}!
             </h1>
-            <p className="text-gray-500 text-center mb-8 text-sm">Editing for: {email}</p>
+             <h2 className="text-md font-bold text-gray-900 mb-2 text-center">
+              Which activities would you like to join for the retreat?
+            </h2>
+            <p className="text-gray-500 text-center mb-8 text-sm">{email}</p>
 
             <form onSubmit={handleSave}>
               {/* Attendee Activities */}
@@ -316,14 +326,6 @@ function EditActivitiesContent() {
               )}
 
               <div className="flex justify-between items-center mt-8">
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  disabled={pageState === 'saving'}
-                  className="text-sm text-gray-500 hover:text-gray-700 underline disabled:opacity-50"
-                >
-                  Look up a different email
-                </button>
                 <button
                   type="submit"
                   disabled={pageState === 'saving'}
