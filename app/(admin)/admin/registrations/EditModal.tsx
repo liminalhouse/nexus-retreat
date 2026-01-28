@@ -11,13 +11,7 @@ import {JACKET_SIZE_OPTIONS} from '@/app/(main)/register/formConfig'
 import type {Registration} from '@/lib/types/registration'
 import {useToast} from '@/app/components/Toast/ToastContext'
 
-function EditLinkRow({
-  url,
-  onCopy,
-}: {
-  url: string
-  onCopy: () => void
-}) {
+function EditLinkRow({url, onCopy}: {url: string; onCopy: () => void}) {
   return (
     <div className="flex items-center gap-2">
       <input
@@ -26,10 +20,7 @@ function EditLinkRow({
         value={url}
         className="flex-1 text-xs px-2 py-1 bg-white border border-gray-300 rounded"
       />
-      <button
-        onClick={onCopy}
-        className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded"
-      >
+      <button onClick={onCopy} className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">
         Copy
       </button>
       <a
@@ -782,8 +773,8 @@ export default function EditModal({
             </p>
             {isAdminView && formData.edit_token && (
               <div className="mt-4 pt-4 border-t border-gray-200">
-                <p className="text-sm font-medium text-gray-700 mb-2">Shareable Edit Links:</p>
                 <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-700 mb-2">Edit full registration:</p>
                   <EditLinkRow
                     url={`${window.location.origin}/edit-registration/${formData.edit_token}`}
                     onCopy={() => {
@@ -793,6 +784,8 @@ export default function EditModal({
                       showToast('Full edit link copied!', 'success')
                     }}
                   />
+
+                  <p className="text-sm font-medium text-gray-700 mb-2">Activities form:</p>
                   <EditLinkRow
                     url={`${window.location.origin}/edit-registration/${formData.edit_token}/activities`}
                     onCopy={() => {
