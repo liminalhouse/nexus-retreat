@@ -153,7 +153,7 @@ function SessionListItem({
           {session.speakers && session.speakers.length > 0 && (
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
-                {session.speakers.map((speaker) => {
+                {session.speakers.filter(Boolean).map((speaker) => {
                   const speakerPhotoUrl = speaker.profilePicture
                     ? urlForImage(speaker.profilePicture)?.width(64).height(64).fit('crop').url()
                     : null
@@ -185,7 +185,7 @@ function SessionListItem({
                 })}
               </div>
               <div className="flex flex-wrap gap-x-1">
-                {session.speakers.map((speaker, index) => {
+                {session.speakers.filter(Boolean).map((speaker, index, arr) => {
                   const speakerSlug = cleanSlug(speaker.id?.current) || speaker._id
                   return (
                     <span key={speaker._id}>
@@ -195,9 +195,7 @@ function SessionListItem({
                       >
                         {speaker.firstName} {speaker.lastName}
                       </Link>
-                      {index < session.speakers!.length - 1 && (
-                        <span className="text-gray-400">, </span>
-                      )}
+                      {index < arr.length - 1 && <span className="text-gray-400">, </span>}
                     </span>
                   )
                 })}
