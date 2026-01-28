@@ -39,6 +39,8 @@ const COLUMN_WIDTHS = {
   guest_accommodations: 'minmax(120px, 1fr)',
   guest_dinners: 'minmax(200px, 2fr)',
   guest_activities: 'minmax(200px, 1.5fr)',
+  edit_registration_link: 'minmax(280px, 2fr)',
+  edit_activities_link: 'minmax(280px, 2fr)',
   admin_notes: 'minmax(200px, 2fr)',
   actions: 'minmax(120px, 2fr)',
 }
@@ -185,6 +187,40 @@ const columns: ColumnConfig[] = [
     key: 'guest_activities',
     label: 'Guest Activities',
     render: (reg) => formatActivities(reg.guest_activities),
+  },
+  {
+    key: 'edit_registration_link',
+    label: 'Edit Registration Link',
+    render: (reg) => {
+      const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/edit-registration/${reg.edit_token}`
+      return (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-nexus-coral hover:text-nexus-coral-light underline text-xs break-all"
+        >
+          {url}
+        </a>
+      )
+    },
+  },
+  {
+    key: 'edit_activities_link',
+    label: 'Activities Form Link',
+    render: (reg) => {
+      const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/edit-registration/${reg.edit_token}/activities`
+      return (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-nexus-coral hover:text-nexus-coral-light underline text-xs break-all"
+        >
+          {url}
+        </a>
+      )
+    },
   },
   {
     key: 'admin_notes',

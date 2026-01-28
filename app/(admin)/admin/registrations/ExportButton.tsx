@@ -19,7 +19,12 @@ export default function ExportButton({registrations}: {registrations: Registrati
     const fieldMetadata = getFieldMetadata()
 
     // Create CSV headers dynamically from form config
-    const headers = ['Registration Date', ...fieldMetadata.map((field) => field.label)]
+    const headers = [
+      'Registration Date',
+      ...fieldMetadata.map((field) => field.label),
+      'Edit Registration Link',
+      'Activities Form Link',
+    ]
 
     // Helper to format field value
     const formatValue = (fieldName: string, value: any): string => {
@@ -36,6 +41,9 @@ export default function ExportButton({registrations}: {registrations: Registrati
       return String(value)
     }
 
+    // Get the base URL for edit links
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
+
     // Create CSV rows dynamically from field metadata
     const rows = registrations.map((reg) => {
       const row: string[] = [new Date(reg.created_at).toLocaleString()]
@@ -45,6 +53,10 @@ export default function ExportButton({registrations}: {registrations: Registrati
         const value = (reg as any)[field.name]
         row.push(formatValue(field.name, value))
       })
+
+      // Add edit links
+      row.push(`${baseUrl}/edit-registration/${reg.edit_token}`)
+      row.push(`${baseUrl}/edit-registration/${reg.edit_token}/activities`)
 
       return row
     })
