@@ -47,7 +47,7 @@ export async function PATCH(request: NextRequest, {params}: {params: Promise<{id
       },
       {status: 200},
     )
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Update activities error:', error)
 
     return NextResponse.json(

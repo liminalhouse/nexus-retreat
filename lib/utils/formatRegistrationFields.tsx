@@ -94,8 +94,25 @@ const ACTIVITY_COLORS: Record<string, string> = {
   spa: 'bg-pink-100 text-pink-800',
 }
 
+// String formatters for CSV export
+export function formatAccommodationsAsString(values: string[] | null | undefined): string {
+  if (!values || values.length === 0) return ''
+  return values.map((v) => ACCOMMODATION_LABELS[v] || v).join(', ')
+}
+
+export function formatDinnerAttendanceAsString(values: string[] | null | undefined): string {
+  if (!values || values.length === 0) return ''
+  return values.map((v) => DINNER_LABELS[v] || v).join(', ')
+}
+
+export function formatActivitiesAsString(values: string[] | null | undefined): string {
+  if (!values || values.length === 0) return ''
+  return values.map((v) => ACTIVITY_LABELS[v] || v).join(', ')
+}
+
+// ReactNode formatters for display with colored chips
 export function formatAccommodations(values: string[] | null | undefined): React.ReactNode {
-  if (!values || values.length === 0) return <>-</>
+  if (!values || values.length === 0) return '-'
   return (
     <ul className="flex flex-col gap-1">
       {values.map((v) => (
@@ -111,7 +128,7 @@ export function formatAccommodations(values: string[] | null | undefined): React
 }
 
 export function formatDinnerAttendance(values: string[] | null | undefined): React.ReactNode {
-  if (!values || values.length === 0) return <>-</>
+  if (!values || values.length === 0) return '-'
   return (
     <ul className="flex flex-col gap-1">
       {values.map((v) => (
@@ -127,7 +144,7 @@ export function formatDinnerAttendance(values: string[] | null | undefined): Rea
 }
 
 export function formatActivities(values: string[] | null | undefined): React.ReactNode {
-  if (!values || values.length === 0) return <>-</>
+  if (!values || values.length === 0) return '-'
   return (
     <ul className="flex flex-col gap-1">
       {values.map((v) => (

@@ -19,6 +19,11 @@ interface RegistrationData {
   guest_activities: string[] | null
 }
 
+interface ActivityOption {
+  label: string
+  value: string
+}
+
 function LoadingSpinner() {
   return (
     <div className="min-h-screen bg-linear-to-t from-blue-800 to-indigo-950 flex items-center justify-center p-4">
@@ -26,6 +31,47 @@ function LoadingSpinner() {
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
         <p className="text-white/80">Loading...</p>
       </div>
+    </div>
+  )
+}
+
+function ActivityCheckboxList({
+  options,
+  selectedValues,
+  onToggle,
+  disabled,
+  idPrefix,
+}: {
+  options: ActivityOption[]
+  selectedValues: string[]
+  onToggle: (value: string) => void
+  disabled: boolean
+  idPrefix: string
+}) {
+  return (
+    <div className="space-y-2">
+      {options.map((option, idx) => {
+        const isChecked = selectedValues.includes(option.value)
+        const checkboxId = `${idPrefix}_${idx}`
+
+        return (
+          <div key={idx} className="flex items-start">
+            <div className="flex items-center h-5">
+              <input
+                type="checkbox"
+                id={checkboxId}
+                checked={isChecked}
+                onChange={() => onToggle(option.value)}
+                disabled={disabled}
+                className="h-4 w-4 rounded border-2 border-gray-300 text-blue-600 transition-all duration-300 ease-out focus:ring-2 focus:ring-blue-100 focus:border-blue-600 hover:border-gray-400 cursor-pointer"
+              />
+            </div>
+            <label htmlFor={checkboxId} className="ml-3 text-sm text-gray-700 cursor-pointer">
+              {option.label}
+            </label>
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -164,33 +210,13 @@ export default function EditActivitiesPage() {
                   These are optional activities available during the retreat. Please select any that
                   interest you.
                 </p>
-                <div className="space-y-2">
-                  {ACTIVITY_OPTIONS.map((option, idx) => {
-                    const isChecked = activities.includes(option?.value)
-                    const checkboxId = `activity_${idx}`
-
-                    return (
-                      <div key={idx} className="flex items-start">
-                        <div className="flex items-center h-5">
-                          <input
-                            type="checkbox"
-                            id={checkboxId}
-                            checked={isChecked}
-                            onChange={() => handleActivityToggle(option?.value)}
-                            disabled={pageState === 'saving'}
-                            className="h-4 w-4 rounded border-2 border-gray-300 text-blue-600 transition-all duration-300 ease-out focus:ring-2 focus:ring-blue-100 focus:border-blue-600 hover:border-gray-400 cursor-pointer"
-                          />
-                        </div>
-                        <label
-                          htmlFor={checkboxId}
-                          className="ml-3 text-sm text-gray-700 cursor-pointer"
-                        >
-                          {option.label}
-                        </label>
-                      </div>
-                    )
-                  })}
-                </div>
+                <ActivityCheckboxList
+                  options={ACTIVITY_OPTIONS}
+                  selectedValues={activities}
+                  onToggle={handleActivityToggle}
+                  disabled={pageState === 'saving'}
+                  idPrefix="activity"
+                />
               </div>
 
               {/* Guest Activities */}
@@ -208,33 +234,13 @@ export default function EditActivitiesPage() {
                     These are optional activities available during the retreat. Please select any
                     that interest your guest.
                   </p>
-                  <div className="space-y-2">
-                    {GUEST_ACTIVITY_OPTIONS.map((option, idx) => {
-                      const isChecked = guestActivities.includes(option.value)
-                      const checkboxId = `guest_activity_${idx}`
-
-                      return (
-                        <div key={idx} className="flex items-start">
-                          <div className="flex items-center h-5">
-                            <input
-                              type="checkbox"
-                              id={checkboxId}
-                              checked={isChecked}
-                              onChange={() => handleGuestActivityToggle(option.value)}
-                              disabled={pageState === 'saving'}
-                              className="h-4 w-4 rounded border-2 border-gray-300 text-blue-600 transition-all duration-300 ease-out focus:ring-2 focus:ring-blue-100 focus:border-blue-600 hover:border-gray-400 cursor-pointer"
-                            />
-                          </div>
-                          <label
-                            htmlFor={checkboxId}
-                            className="ml-3 text-sm text-gray-700 cursor-pointer"
-                          >
-                            {option.label}
-                          </label>
-                        </div>
-                      )
-                    })}
-                  </div>
+                  <ActivityCheckboxList
+                    options={GUEST_ACTIVITY_OPTIONS}
+                    selectedValues={guestActivities}
+                    onToggle={handleGuestActivityToggle}
+                    disabled={pageState === 'saving'}
+                    idPrefix="guest_activity"
+                  />
                 </div>
               )}
 

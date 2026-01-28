@@ -1,10 +1,22 @@
-import {NextResponse} from 'next/server'
+import {NextRequest, NextResponse} from 'next/server'
 import {db} from '@/lib/db'
 import {registrations} from '@/lib/db/schema'
 import {sendActivitySelectionEmail} from '@/lib/email/sendEmail'
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
+    // Check for admin authorization via secret header
+    const authHeader = request.headers.get('x-admin-secret')
+    if (authHeader !== process.env.ADMIN_API_SECRET) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Unauthorized',
+        },
+        {status: 401},
+      )
+    }
+
     // Fetch all registrations
     const allRegistrations = await db.select().from(registrations)
 
@@ -26,6 +38,7 @@ export async function POST() {
         first_name: registration.firstName,
         last_name: registration.lastName,
         email: registration.email,
+        editToken: registration.editToken,
         assistant_email: registration.assistantEmail || undefined,
         guest_email: registration.guestEmail || undefined,
       }
@@ -53,14 +66,17 @@ export async function POST() {
       },
       {status: 200},
     )
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Bulk activity email error:', error)
 
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to send activity selection emails',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+        details:
+          process.env.NODE_ENV === 'development' && error instanceof Error
+            ? error.message
+            : undefined,
       },
       {status: 500},
     )

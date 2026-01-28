@@ -14,7 +14,6 @@ import type {Registration} from '@/lib/types/registration'
 type ColumnConfig = {
   key: string
   label: string
-  width: string
   render: (registration: Registration) => React.ReactNode
 }
 
@@ -58,7 +57,6 @@ const columns: ColumnConfig[] = [
   {
     key: 'avatar',
     label: '',
-    width: 'minmax(60px, 60px)',
     render: (reg) => (
       <Avatar
         src={reg.profile_picture}
@@ -71,13 +69,11 @@ const columns: ColumnConfig[] = [
   {
     key: 'date',
     label: 'Date',
-    width: 'minmax(120px, 1fr)',
     render: (reg) => formatDate(reg.created_at),
   },
   {
     key: 'name',
     label: 'Name',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) => (
       <span className="font-medium text-gray-900">
         {reg.first_name} {reg.last_name}
@@ -87,37 +83,31 @@ const columns: ColumnConfig[] = [
   {
     key: 'title',
     label: 'Title',
-    width: 'minmax(120px, 1fr)',
     render: (reg) => reg.title || '-',
   },
   {
     key: 'organization',
     label: 'Organization',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) => reg.organization || '-',
   },
   {
     key: 'email',
     label: 'Email',
-    width: 'minmax(200px, 2fr)',
     render: (reg) => reg.email,
   },
   {
     key: 'phone',
     label: 'Phone',
-    width: 'minmax(150px, 1.2fr)',
     render: (reg) => <span className="whitespace-nowrap">{reg.mobile_phone || '-'}</span>,
   },
   {
     key: 'location',
     label: 'Location',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) => (reg.city && reg.state ? `${reg.city}, ${reg.state}` : '-'),
   },
   {
     key: 'emergency',
     label: 'Emergency Contact',
-    width: 'minmax(180px, 1.5fr)',
     render: (reg) =>
       reg.emergency_contact_name ? (
         <div className="flex flex-col">
@@ -131,7 +121,6 @@ const columns: ColumnConfig[] = [
   {
     key: 'assistant',
     label: 'Assistant',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) =>
       reg.assistant_name ? (
         <div className="flex flex-col">
@@ -145,73 +134,61 @@ const columns: ColumnConfig[] = [
   {
     key: 'guest',
     label: 'Guest',
-    width: 'minmax(120px, 1fr)',
     render: (reg) => reg.guest_name || '-',
   },
   {
     key: 'dietary',
     label: 'Dietary',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) => <span className="truncate">{reg.dietary_restrictions || '-'}</span>,
   },
   {
     key: 'jacket',
     label: 'Jacket Size',
-    width: 'minmax(100px, 1fr)',
     render: (reg) => reg.jacket_size || '-',
   },
   {
     key: 'accommodations',
     label: 'Accommodations',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) => formatAccommodations(reg.accommodations),
   },
   {
     key: 'dinners',
     label: 'Dinners',
-    width: 'minmax(120px, 1fr)',
     render: (reg) => formatDinnerAttendance(reg.dinner_attendance),
   },
   {
     key: 'activities',
     label: 'Activities',
-    width: 'minmax(180px, 1.5fr)',
     render: (reg) => formatActivities(reg.activities),
   },
   {
     key: 'guest_dietary',
     label: 'Guest Dietary',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) => <span className="truncate">{reg.guest_dietary_restrictions || '-'}</span>,
   },
   {
     key: 'guest_jacket',
     label: 'Guest Jacket Size',
-    width: 'minmax(100px, 1fr)',
     render: (reg) => reg.guest_jacket_size || '-',
   },
   {
     key: 'guest_accommodations',
     label: 'Guest Accommodations',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) => formatAccommodations(reg.guest_accommodations),
   },
   {
     key: 'guest_dinners',
     label: 'Guest Dinners',
-    width: 'minmax(120px, 1fr)',
     render: (reg) => formatDinnerAttendance(reg.guest_dinner_attendance),
   },
   {
     key: 'guest_activities',
     label: 'Guest Activities',
-    width: 'minmax(180px, 1.5fr)',
     render: (reg) => formatActivities(reg.guest_activities),
   },
   {
     key: 'admin_notes',
     label: 'Admin Notes (not visible to registrant)',
-    width: 'minmax(200px, 2fr)',
     render: (reg) => <span className="text-xs">{reg.admin_notes || '-'}</span>,
   },
 ]

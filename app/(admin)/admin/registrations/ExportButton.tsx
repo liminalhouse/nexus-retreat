@@ -1,9 +1,9 @@
 'use client'
 
 import {
-  formatAccommodations,
-  formatDinnerAttendance,
-  formatActivities,
+  formatAccommodationsAsString,
+  formatDinnerAttendanceAsString,
+  formatActivitiesAsString,
 } from '@/lib/utils/formatRegistrationFields'
 import {getFieldMetadata} from '@/lib/utils/registrationFields'
 import type {Registration} from '@/lib/types/registration'
@@ -27,9 +27,9 @@ export default function ExportButton({registrations}: {registrations: Registrati
 
       // Handle array fields (accommodations, dinners, activities)
       if (Array.isArray(value)) {
-        if (fieldName.includes('accommodations')) return formatAccommodations(value)
-        if (fieldName.includes('dinner')) return formatDinnerAttendance(value)
-        if (fieldName.includes('activities')) return formatActivities(value)
+        if (fieldName.includes('accommodations')) return formatAccommodationsAsString(value)
+        if (fieldName.includes('dinner')) return formatDinnerAttendanceAsString(value)
+        if (fieldName.includes('activities')) return formatActivitiesAsString(value)
         return value.join(', ')
       }
 
