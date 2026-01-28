@@ -301,6 +301,182 @@ export async function sendActivitySelectionEmail(data: RegistrationData) {
   }
 }
 
+type CustomEmailRegistration = {
+  firstName: string
+  lastName: string
+  email: string
+  mobilePhone: string
+  title?: string | null
+  organization?: string | null
+  addressLine1: string
+  addressLine2?: string | null
+  city: string
+  state: string
+  zip: string
+  country: string
+  emergencyContactName: string
+  emergencyContactRelation?: string | null
+  emergencyContactEmail: string
+  emergencyContactPhone: string
+  assistantName?: string | null
+  assistantTitle?: string | null
+  assistantEmail?: string | null
+  assistantPhone?: string | null
+  guestName?: string | null
+  guestRelation?: string | null
+  guestEmail?: string | null
+  dietaryRestrictions?: string | null
+  jacketSize?: string | null
+  accommodations?: string[] | null
+  dinnerAttendance?: string[] | null
+  activities?: string[] | null
+  guestDietaryRestrictions?: string | null
+  guestJacketSize?: string | null
+  guestAccommodations?: string[] | null
+  guestDinnerAttendance?: string[] | null
+  guestActivities?: string[] | null
+  editToken: string
+}
+
+// Helper to format array values for display
+function formatArrayValue(arr: string[] | null | undefined): string {
+  if (!arr || arr.length === 0) return ''
+  return arr.map((item) => item.replace(/_/g, ' ')).join(', ')
+}
+
+export async function sendCustomEmail(data: {
+  to: string
+  subject: string
+  body: string // HTML from Tiptap, supports {{variables}}
+  headerImageUrl?: string
+  cc?: string[]
+  registration: CustomEmailRegistration
+}) {
+  try {
+    const reg = data.registration
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'
+
+    // Build variables object with all registration fields
+    const variables: Record<string, string> = {
+      // Basic Info
+      firstName: reg.firstName,
+      lastName: reg.lastName,
+      fullName: `${reg.firstName} ${reg.lastName}`,
+      email: reg.email,
+      mobilePhone: reg.mobilePhone,
+      title: reg.title || '',
+      organization: reg.organization || '',
+
+      // Address
+      addressLine1: reg.addressLine1,
+      addressLine2: reg.addressLine2 || '',
+      city: reg.city,
+      state: reg.state,
+      zip: reg.zip,
+      country: reg.country,
+
+      // Emergency Contact
+      emergencyContactName: reg.emergencyContactName,
+      emergencyContactRelation: reg.emergencyContactRelation || '',
+      emergencyContactEmail: reg.emergencyContactEmail,
+      emergencyContactPhone: reg.emergencyContactPhone,
+
+      // Executive Assistant
+      assistantName: reg.assistantName || '',
+      assistantTitle: reg.assistantTitle || '',
+      assistantEmail: reg.assistantEmail || '',
+      assistantPhone: reg.assistantPhone || '',
+
+      // Guest
+      guestName: reg.guestName || '',
+      guestRelation: reg.guestRelation || '',
+      guestEmail: reg.guestEmail || '',
+
+      // Event Details
+      dietaryRestrictions: reg.dietaryRestrictions || '',
+      jacketSize: reg.jacketSize || '',
+      accommodations: formatArrayValue(reg.accommodations),
+      dinnerAttendance: formatArrayValue(reg.dinnerAttendance),
+      activities: formatArrayValue(reg.activities),
+
+      // Guest Event Details
+      guestDietaryRestrictions: reg.guestDietaryRestrictions || '',
+      guestJacketSize: reg.guestJacketSize || '',
+      guestAccommodations: formatArrayValue(reg.guestAccommodations),
+      guestDinnerAttendance: formatArrayValue(reg.guestDinnerAttendance),
+      guestActivities: formatArrayValue(reg.guestActivities),
+
+      // Links
+      editLink: `${baseUrl}/edit-registration/${reg.editToken}`,
+      activitiesLink: `${baseUrl}/edit-registration/${reg.editToken}/activities`,
+    }
+
+    const subject = replaceVariables(data.subject, variables)
+    const bodyContent = replaceVariables(data.body, variables)
+
+    // Generate header image HTML if provided
+    const headerImageHtml = data.headerImageUrl
+      ? `<div style="margin-bottom: 24px; text-align: center;">
+           <img src="${data.headerImageUrl}" alt="Email header" style="max-width: 100%; height: auto; border-radius: 8px;" />
+         </div>`
+      : ''
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #111827; }
+            a { color: #0369a1; }
+            ul, ol { padding-left: 20px; margin: 12px 0; }
+            li { margin: 4px 0; }
+            p { margin: 12px 0; }
+          </style>
+        </head>
+        <body style="max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #ffffff; padding: 32px; border-radius: 8px;">
+            ${headerImageHtml}
+            ${bodyContent}
+          </div>
+        </body>
+      </html>
+    `
+
+    const emailData: {
+      from: string
+      to: string
+      subject: string
+      html: string
+      cc?: string[]
+    } = {
+      from: `Nexus Retreat <${resendEmailFrom}>`,
+      to: data.to,
+      subject,
+      html,
+    }
+
+    if (data.cc && data.cc.length > 0) {
+      emailData.cc = data.cc
+    }
+
+    console.log('Sending custom email via Resend...', {
+      from: emailData.from,
+      to: emailData.to,
+      cc: emailData.cc,
+      subject: emailData.subject,
+    })
+
+    const response = await resend.emails.send(emailData)
+
+    return {success: true, data: response}
+  } catch (error) {
+    console.error('Error sending custom email:', error)
+    return {success: false, error}
+  }
+}
+
 export async function sendRegistrationConfirmation(data: RegistrationData) {
   try {
     // Fetch template from Sanity
