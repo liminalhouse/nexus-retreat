@@ -3,6 +3,26 @@ import {client} from '@/sanity/lib/client'
 import {toPlainText} from '@portabletext/react'
 import type {PortableTextBlock} from '@portabletext/types'
 import {getEditRegistrationUrl, getEditActivitiesUrl} from '@/lib/utils/editUrls'
+import {ACTIVITY_OPTIONS} from '@/lib/utils/formatRegistrationFields'
+
+// Create a map for quick lookup of activity options by value
+const ACTIVITY_OPTIONS_MAP = new Map(ACTIVITY_OPTIONS.map((opt) => [opt.value, opt]))
+
+/**
+ * Format an activity value to HTML with label and description
+ */
+function formatActivityForEmail(value: string): string {
+  const option = ACTIVITY_OPTIONS_MAP.get(value)
+  if (!option) {
+    // Fallback for unknown values
+    return value.replace(/_/g, ' ')
+  }
+
+  if (option.description) {
+    return `<strong>${option.label}</strong><br/><span style="color: #6b7280; font-size: 13px;">${option.description}</span>`
+  }
+  return `<strong>${option.label}</strong>`
+}
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -168,7 +188,7 @@ function formatRegistrationDetails(data: RegistrationData): string {
 
   const activitiesHtml =
     data.activities && data.activities.length > 0
-      ? `<ul style="margin: 4px 0; padding-left: 20px;">${data.activities.map((a) => `<li>${a.replace(/_/g, ' ')}</li>`).join('')}</ul>`
+      ? `<ul style="margin: 4px 0; padding-left: 20px; list-style: none;">${data.activities.map((a) => `<li style="margin-bottom: 8px;">${formatActivityForEmail(a)}</li>`).join('')}</ul>`
       : '<strong>-</strong>'
 
   sections.push(`
@@ -195,7 +215,7 @@ function formatRegistrationDetails(data: RegistrationData): string {
 
   const guestActivitiesHtml =
     data.guest_activities && data.guest_activities.length > 0
-      ? `<ul style="margin: 4px 0; padding-left: 20px;">${data.guest_activities.map((a) => `<li>${a.replace(/_/g, ' ')}</li>`).join('')}</ul>`
+      ? `<ul style="margin: 4px 0; padding-left: 20px; list-style: none;">${data.guest_activities.map((a) => `<li style="margin-bottom: 8px;">${formatActivityForEmail(a)}</li>`).join('')}</ul>`
       : '<strong>-</strong>'
 
   sections.push(`
