@@ -82,7 +82,7 @@ export default async function SpeakerPage({params}: Props) {
           <span className="font-medium">Back to Speakers</span>
         </Link>
 
-        <div className="max-w-4xl">
+        <div className="max-w-6xl">
           <div className="flex flex-col md:flex-row gap-8 mb-12">
             {/* Photo */}
             <div className="flex-shrink-0">
@@ -150,6 +150,7 @@ export default async function SpeakerPage({params}: Props) {
                         ) : (
                           <SessionPlaceholder
                             tag={session.sessionTags?.[0]}
+                            sessionType={session.sessionType?.[0]}
                             className="w-full h-full"
                           />
                         )}

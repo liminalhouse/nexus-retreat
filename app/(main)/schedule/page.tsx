@@ -98,7 +98,7 @@ function SessionListItem({
             sizes="(max-width: 640px) 100vw, 144px"
           />
         ) : (
-          <SessionPlaceholder tag={session.sessionTags?.[0]} className="w-full h-full" />
+          <SessionPlaceholder tag={session.sessionTags?.[0]} sessionType={session.sessionType?.[0]} className="w-full h-full" />
         )}
       </div>
 
