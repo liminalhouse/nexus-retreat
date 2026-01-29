@@ -23,7 +23,7 @@ import {PageNavigator} from './sanity/components/PageNavigator'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET!
-const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-09-25'
+const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-11-25'
 
 // Use Vercel's branch URL for automatic preview URLs, fallback to localhost
 const PREVIEW_URL = process.env.VERCEL_BRANCH_URL
