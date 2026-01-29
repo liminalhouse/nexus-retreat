@@ -4,6 +4,7 @@ import {useState} from 'react'
 import RecipientList from './RecipientList'
 import EmailComposer from './EmailComposer'
 import Outbox from './Outbox'
+import {PaperAirplaneIcon, PencilSquareIcon} from '@heroicons/react/24/outline'
 
 type RegistrationForEmail = {
   id: string
@@ -29,11 +30,7 @@ type SendResult = {
 
 type Tab = 'compose' | 'outbox'
 
-export default function EmailPageClient({
-  registrations,
-}: {
-  registrations: RegistrationForEmail[]
-}) {
+export default function EmailPageClient({registrations}: {registrations: RegistrationForEmail[]}) {
   const [activeTab, setActiveTab] = useState<Tab>('compose')
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [subject, setSubject] = useState('')
@@ -142,15 +139,7 @@ export default function EmailPageClient({
             }`}
           >
             <span className="flex items-center gap-2">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
-              Compose
+              <PencilSquareIcon stroke="currentColor" className="w-5 h-5" /> Compose
             </span>
           </button>
           <button
@@ -162,14 +151,7 @@ export default function EmailPageClient({
             }`}
           >
             <span className="flex items-center gap-2">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
-              </svg>
+              <PaperAirplaneIcon stroke="currentColor" className="w-5 h-5" />
               Sent
             </span>
           </button>
