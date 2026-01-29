@@ -98,6 +98,7 @@ export default async function SessionPage({params}: Props) {
               ) : (
                 <SessionPlaceholder
                   tag={session.sessionTags?.[0]}
+                  sessionType={session.sessionType?.[0]}
                   className="w-full h-full"
                   iconSize="lg"
                 />
