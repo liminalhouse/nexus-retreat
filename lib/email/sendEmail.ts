@@ -5,26 +5,13 @@ import type {PortableTextBlock} from '@portabletext/types'
 import {getEditRegistrationUrl, getEditActivitiesUrl} from '@/lib/utils/editUrls'
 import {ACTIVITY_OPTIONS} from '@/lib/utils/formatRegistrationFields'
 
-// Create a map for quick lookup of activity options by value
-const ACTIVITY_OPTIONS_MAP = new Map(ACTIVITY_OPTIONS.map((opt) => [opt.value, opt]))
-
-/**
- * Format an activity value to HTML with label and description
- */
-function formatActivityForEmail(value: string): string {
-  const option = ACTIVITY_OPTIONS_MAP.get(value)
-  if (!option) {
-    // Fallback for unknown values
-    return value.replace(/_/g, ' ')
-  }
-
-  if (option.description) {
-    return `<strong>${option.label}</strong><br/><span style="color: #6b7280; font-size: 13px;">${option.description}</span>`
-  }
-  return `<strong>${option.label}</strong>`
-}
-
 const resend = new Resend(process.env.RESEND_API_KEY)
+const resendEmailFrom = process.env.RESEND_FROM_EMAIL || 'noreply@noreply.nexus-retreat.com'
+const defaultCcEmail = process.env.RESEND_CC_EMAIL || 'info@nexus-retreat.com'
+
+// ============================================================================
+// Types
+// ============================================================================
 
 type EmailTemplate = {
   subject: string
@@ -41,7 +28,7 @@ type EmailTemplate = {
   signature: string
 }
 
-type RegistrationData = {
+export type RegistrationData = {
   editToken?: string
   first_name: string
   last_name: string
@@ -78,9 +65,6 @@ type RegistrationData = {
   guest_activities?: string[]
 }
 
-const resendEmailFrom = process.env.RESEND_FROM_EMAIL || 'noreply@noreply.nexus-retreat.com'
-const defaultCcEmail = process.env.RESEND_CC_EMAIL || 'info@nexus-retreat.com'
-
 interface EmailPayload {
   from: string
   to: string
@@ -88,6 +72,127 @@ interface EmailPayload {
   html: string
   cc?: string[]
 }
+
+interface EmailSection {
+  type: 'greeting' | 'text' | 'button' | 'registrationDetails' | 'editLink' | 'custom'
+  content?: string
+  buttonText?: string
+  buttonUrl?: string
+  title?: string
+}
+
+interface BuildEmailOptions {
+  headerImageUrl?: string
+  headerImageAlt?: string
+  sections: EmailSection[]
+  signature?: string
+}
+
+// ============================================================================
+// Activity Formatting
+// ============================================================================
+
+const ACTIVITY_OPTIONS_MAP = new Map(ACTIVITY_OPTIONS.map((opt) => [opt.value, opt]))
+
+function formatActivityForEmail(value: string): string {
+  const option = ACTIVITY_OPTIONS_MAP.get(value)
+  if (!option) {
+    return value.replace(/_/g, ' ')
+  }
+
+  if (option.description) {
+    return `<strong>${option.label}</strong><br/><span style="color: #6b7280; font-size: 13px;">${option.description}</span>`
+  }
+  return `<strong>${option.label}</strong>`
+}
+
+// ============================================================================
+// Shared Email Builder
+// ============================================================================
+
+function buildEmailHtml(options: BuildEmailOptions): string {
+  const {headerImageUrl, headerImageAlt, sections, signature} = options
+
+  const headerImageHtml = headerImageUrl
+    ? `<div style="margin-bottom: 24px; text-align: center;">
+         <img src="${headerImageUrl}" alt="${headerImageAlt || 'Email header'}" style="max-width: 100%; height: auto; border-radius: 8px;" />
+       </div>`
+    : ''
+
+  const sectionsHtml = sections
+    .map((section) => {
+      switch (section.type) {
+        case 'greeting':
+          return `<p style="font-size: 16px; margin-bottom: 16px; white-space: pre-line;">${section.content}</p>`
+
+        case 'text':
+          return section.content
+            ? `<p style="font-size: 14px; color: #374151; margin-bottom: 24px; white-space: pre-line;">${section.content}</p>`
+            : ''
+
+        case 'button':
+          return `<div style="margin: 32px 0; text-align: center;">
+             <a href="${section.buttonUrl}" style="display: inline-block; padding: 14px 32px; background-color: #0369a1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+               ${section.buttonText}
+             </a>
+           </div>`
+
+        case 'registrationDetails':
+          return `<div style="border-top: 2px solid #e5e7eb; padding-top: 24px;">
+             <h2 style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 16px;">${section.title || 'Your Registration Details'}</h2>
+             ${section.content}
+           </div>`
+
+        case 'editLink':
+          return section.buttonUrl
+            ? `<div style="margin: 32px 0; padding: 24px; background-color: #f0f9ff; border-radius: 8px; border-left: 4px solid #0369a1;">
+               <h3 style="font-size: 16px; font-weight: 600; color: #0369a1; margin: 0 0 12px 0;">Need to Make Changes?</h3>
+               <p style="font-size: 14px; color: #374151; margin: 0 0 16px 0;">
+                 If you need to update your registration information, you can use the link below:
+               </p>
+               <a href="${section.buttonUrl}" style="display: inline-block; padding: 12px 24px; background-color: #0369a1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
+                 Edit My Registration
+               </a>
+               <p style="font-size: 12px; color: #6b7280; margin: 16px 0 0 0;">
+                 This link is unique to your registration and can be used at any time.
+               </p>
+             </div>`
+            : ''
+
+        case 'custom':
+          return section.content || ''
+
+        default:
+          return ''
+      }
+    })
+    .join('\n')
+
+  const signatureHtml = signature
+    ? `<p style="font-size: 14px; color: #374151; margin-top: 24px; white-space: pre-line;">${signature}</p>`
+    : ''
+
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #111827; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #ffffff; padding: 32px; border-radius: 8px;">
+          ${headerImageHtml}
+          ${sectionsHtml}
+          ${signatureHtml}
+        </div>
+      </body>
+    </html>
+  `
+}
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
 
 async function getEmailTemplate(type: string): Promise<EmailTemplate | null> {
   const query = `*[_type == "emailTemplate" && type == $type && isActive == true][0] {
@@ -109,7 +214,7 @@ async function getEmailTemplate(type: string): Promise<EmailTemplate | null> {
   return template
 }
 
-function replaceVariables(text: string, data: Record<string, any>): string {
+function replaceVariables(text: string, data: Record<string, string>): string {
   return text.replace(/\{\{(\w+)\}\}/g, (match, key) => {
     return data[key] || match
   })
@@ -232,19 +337,67 @@ function formatRegistrationDetails(data: RegistrationData): string {
   return sections.join('')
 }
 
+function buildCcList(
+  data: {email: string; assistant_email?: string; guest_email?: string},
+  includeDefault = false,
+): string[] {
+  const cc: string[] = []
+  if (includeDefault) {
+    cc.push(defaultCcEmail)
+  }
+  if (data.assistant_email && data.assistant_email !== data.email) {
+    cc.push(data.assistant_email)
+  }
+  if (
+    data.guest_email &&
+    data.guest_email !== data.email &&
+    data.guest_email !== defaultCcEmail
+  ) {
+    cc.push(data.guest_email)
+  }
+  return cc
+}
+
+async function sendEmail(
+  payload: EmailPayload,
+  options?: {idempotencyKey?: string},
+): Promise<{success: boolean; data?: unknown; error?: unknown}> {
+  try {
+    const headers: Record<string, string> = {}
+    if (options?.idempotencyKey) {
+      headers['Idempotency-Key'] = options.idempotencyKey
+    }
+
+    console.log('Sending email via Resend...', {
+      from: payload.from,
+      to: payload.to,
+      cc: payload.cc,
+      subject: payload.subject,
+      idempotencyKey: options?.idempotencyKey,
+    })
+
+    const response = await resend.emails.send(payload, {headers})
+    return {success: true, data: response}
+  } catch (error) {
+    console.error('Error sending email:', error)
+    return {success: false, error}
+  }
+}
+
+// ============================================================================
+// Email Sending Functions
+// ============================================================================
+
 export async function sendActivitySelectionEmail(data: RegistrationData) {
   try {
-    // Fetch template from Sanity
     const template = await getEmailTemplate('activity_selection')
 
     if (!template) {
-      console.error('Activity selection email template not found in Sanity')
       throw new Error(
-        'Activity selection email template not found in Sanity. Please create an active email template with type "activity_selection".',
+        'Activity selection email template not found. Please create an active template with type "activity_selection".',
       )
     }
 
-    // Replace variables in template
     const variables = {
       firstName: data.first_name,
       lastName: data.last_name,
@@ -253,79 +406,34 @@ export async function sendActivitySelectionEmail(data: RegistrationData) {
 
     const subject = replaceVariables(template.subject, variables)
     const greeting = replaceVariables(template.greeting, variables)
-
-    // Convert portable text to plain text for intro and outro
     const bodyIntroText = template.bodyIntro ? toPlainText(template.bodyIntro) : ''
     const bodyOutroText = template.bodyOutro ? toPlainText(template.bodyOutro) : ''
 
-    // Generate edit activities link using edit token
-    const editActivitiesLink = getEditActivitiesUrl(data.editToken || '')
+    const html = buildEmailHtml({
+      headerImageUrl: template.headerImage?.asset?.url,
+      headerImageAlt: template.headerImage?.alt,
+      sections: [
+        {type: 'greeting', content: greeting},
+        {type: 'text', content: bodyIntroText},
+        {
+          type: 'button',
+          buttonText: 'Select Your Activities',
+          buttonUrl: getEditActivitiesUrl(data.editToken || ''),
+        },
+        {type: 'text', content: bodyOutroText},
+      ],
+      signature: template.signature,
+    })
 
-    const editActivitiesLinkHtml = `<div style="margin: 32px 0; text-align: center;">
-           <a href="${editActivitiesLink}" style="display: inline-block; padding: 14px 32px; background-color: #0369a1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
-             Select Your Activities
-           </a>
-         </div>`
+    const cc = buildCcList(data)
 
-    // Generate header image HTML if present
-    const headerImageHtml = template.headerImage?.asset?.url
-      ? `<div style="margin-bottom: 24px; text-align: center;">
-           <img src="${template.headerImage.asset.url}" alt="${template.headerImage.alt || 'Email header'}" style="max-width: 100%; height: auto; border-radius: 8px;" />
-         </div>`
-      : ''
-
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #111827; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background-color: #ffffff; padding: 32px; border-radius: 8px;">
-            ${headerImageHtml}
-            <p style="font-size: 16px; margin-bottom: 16px; white-space: pre-line;">${greeting}</p>
-
-            ${bodyIntroText ? `<p style="font-size: 14px; color: #374151; margin-bottom: 24px; white-space: pre-line;">${bodyIntroText}</p>` : ''}
-
-            ${editActivitiesLinkHtml}
-
-            ${bodyOutroText ? `<p style="font-size: 14px; color: #374151; margin-top: 24px; white-space: pre-line;">${bodyOutroText}</p>` : ''}
-
-            ${template.signature ? `<p style="font-size: 14px; color: #374151; margin-top: 24px; white-space: pre-line;">${template.signature}</p>` : ''}
-          </div>
-        </body>
-      </html>
-    `
-
-    // Build CC list: guest, assistant
-    const cc: string[] = []
-    if (data.assistant_email && data.assistant_email !== data.email) {
-      cc.push(data.assistant_email)
-    }
-    if (data.guest_email && data.guest_email !== data.email) {
-      cc.push(data.guest_email)
-    }
-
-    // Send email using Resend
-    const emailData: EmailPayload = {
+    return sendEmail({
       from: `Nexus Retreat <${resendEmailFrom}>`,
       to: data.email,
       subject,
       html,
-      cc,
-    }
-
-    console.log('Sending activity selection email via Resend...', {
-      from: emailData.from,
-      to: emailData.to,
-      cc: emailData.cc,
-      subject: emailData.subject,
+      cc: cc.length > 0 ? cc : undefined,
     })
-
-    const response = await resend.emails.send(emailData)
-
-    return {success: true, data: response}
   } catch (error) {
     console.error('Error sending activity selection email:', error)
     return {success: false, error}
@@ -334,17 +442,14 @@ export async function sendActivitySelectionEmail(data: RegistrationData) {
 
 export async function sendRegistrationConfirmation(data: RegistrationData) {
   try {
-    // Fetch template from Sanity
     const template = await getEmailTemplate('registration_confirmation')
 
     if (!template) {
-      console.error('Email template not found in Sanity')
       throw new Error(
-        'Registration confirmation email template not found in Sanity. Please create an active email template with type "registration_confirmation".',
+        'Registration confirmation email template not found. Please create an active template with type "registration_confirmation".',
       )
     }
 
-    // Replace variables in template
     const variables = {
       firstName: data.first_name,
       lastName: data.last_name,
@@ -353,107 +458,40 @@ export async function sendRegistrationConfirmation(data: RegistrationData) {
 
     const subject = replaceVariables(template.subject, variables)
     const greeting = replaceVariables(template.greeting, variables)
-
-    // Convert portable text to plain text for intro and outro
     const bodyIntroText = template.bodyIntro ? toPlainText(template.bodyIntro) : ''
     const bodyOutroText = template.bodyOutro ? toPlainText(template.bodyOutro) : ''
-
-    // Build email HTML
     const registrationDetails = formatRegistrationDetails(data)
+    const editLink = data.editToken ? getEditRegistrationUrl(data.editToken) : ''
 
-    // Generate edit link if editToken is present
-    const editLink = data.editToken
-      ? `${process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'}/edit-registration/${data.editToken}`
-      : ''
-
-    const editLinkHtml = editLink
-      ? `<div style="margin: 32px 0; padding: 24px; background-color: #f0f9ff; border-radius: 8px; border-left: 4px solid #0369a1;">
-           <h3 style="font-size: 16px; font-weight: 600; color: #0369a1; margin: 0 0 12px 0;">Need to Make Changes?</h3>
-           <p style="font-size: 14px; color: #374151; margin: 0 0 16px 0;">
-             If you need to update your registration information, you can use the link below:
-           </p>
-           <a href="${editLink}" style="display: inline-block; padding: 12px 24px; background-color: #0369a1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
-             Edit My Registration
-           </a>
-           <p style="font-size: 12px; color: #6b7280; margin: 16px 0 0 0;">
-             This link is unique to your registration and can be used at any time.
-           </p>
-         </div>`
-      : ''
-
-    // Generate header image HTML if present
-    const headerImageHtml = template.headerImage?.asset?.url
-      ? `<div style="margin-bottom: 24px; text-align: center;">
-           <img src="${template.headerImage.asset.url}" alt="${template.headerImage.alt || 'Email header'}" style="max-width: 100%; height: auto; border-radius: 8px;" />
-         </div>`
-      : ''
-
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #111827; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background-color: #ffffff; padding: 32px; border-radius: 8px;">
-            ${headerImageHtml}
-            <p style="font-size: 16px; margin-bottom: 16px; white-space: pre-line;">${greeting}</p>
-
-            ${bodyIntroText ? `<p style="font-size: 14px; color: #374151; margin-bottom: 24px; white-space: pre-line;">${bodyIntroText}</p>` : ''}
-
-            <div style="border-top: 2px solid #e5e7eb; padding-top: 24px;">
-              <h2 style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 16px;">Your Registration Details</h2>
-              ${registrationDetails}
-            </div>
-
-            ${editLinkHtml}
-
-            ${bodyOutroText ? `<p style="font-size: 14px; color: #374151; margin-top: 24px; white-space: pre-line;">${bodyOutroText}</p>` : ''}
-
-            ${template.signature ? `<p style="font-size: 14px; color: #374151; margin-top: 24px; white-space: pre-line;">${template.signature}</p>` : ''}
-          </div>
-        </body>
-      </html>
-    `
-
-    // Build CC list (exclude the primary email to avoid duplicates)
-    const cc: string[] = []
-    if (data.assistant_email && data.assistant_email !== data.email) {
-      cc.push(data.assistant_email)
-    }
-    if (data.guest_email && data.guest_email !== data.email) {
-      cc.push(data.guest_email)
-    }
-
-    // Send email using Resend
-    const emailData: EmailPayload = {
-      from: `Nexus Retreat <${resendEmailFrom}>`,
-      to: data.email,
-      subject,
-      html,
-      cc: cc.length > 0 ? cc : undefined,
-    }
-
-    // Use editToken as idempotency key to prevent duplicate emails
-    const headers: Record<string, string> = {}
-    if (data.editToken) {
-      headers['Idempotency-Key'] = `registration-${data.editToken}`
-    }
-
-    console.log('Sending email via Resend...', {
-      from: emailData.from,
-      to: emailData.to,
-      cc: emailData.cc,
-      subject: emailData.subject,
-      idempotencyKey: headers['Idempotency-Key'],
+    const html = buildEmailHtml({
+      headerImageUrl: template.headerImage?.asset?.url,
+      headerImageAlt: template.headerImage?.alt,
+      sections: [
+        {type: 'greeting', content: greeting},
+        {type: 'text', content: bodyIntroText},
+        {
+          type: 'registrationDetails',
+          title: 'Your Registration Details',
+          content: registrationDetails,
+        },
+        {type: 'editLink', buttonUrl: editLink},
+        {type: 'text', content: bodyOutroText},
+      ],
+      signature: template.signature,
     })
 
-    const response = await resend.emails.send(emailData, {
-      headers,
-    })
+    const cc = buildCcList(data)
 
-    return {success: true, data: response}
+    return sendEmail(
+      {
+        from: `Nexus Retreat <${resendEmailFrom}>`,
+        to: data.email,
+        subject,
+        html,
+        cc: cc.length > 0 ? cc : undefined,
+      },
+      {idempotencyKey: data.editToken ? `registration-${data.editToken}` : undefined},
+    )
   } catch (error) {
     console.error('Error sending registration confirmation email:', error)
     return {success: false, error}
@@ -462,17 +500,14 @@ export async function sendRegistrationConfirmation(data: RegistrationData) {
 
 export async function sendActivityUpdateConfirmation(data: RegistrationData) {
   try {
-    // Fetch template from Sanity
     const template = await getEmailTemplate('activity_update_confirmation')
 
     if (!template) {
-      console.error('Activity update confirmation email template not found in Sanity')
       throw new Error(
-        'Activity update confirmation email template not found in Sanity. Please create an active email template with type "activity_update_confirmation".',
+        'Activity update confirmation email template not found. Please create an active template with type "activity_update_confirmation".',
       )
     }
 
-    // Replace variables in template
     const variables = {
       firstName: data.first_name,
       lastName: data.last_name,
@@ -481,98 +516,103 @@ export async function sendActivityUpdateConfirmation(data: RegistrationData) {
 
     const subject = replaceVariables(template.subject, variables)
     const greeting = replaceVariables(template.greeting, variables)
-
-    // Convert portable text to plain text for intro and outro
     const bodyIntroText = template.bodyIntro ? toPlainText(template.bodyIntro) : ''
     const bodyOutroText = template.bodyOutro ? toPlainText(template.bodyOutro) : ''
-
-    // Build email HTML with full registration details
     const registrationDetails = formatRegistrationDetails(data)
-
-    // Generate edit link if editToken is present
     const editLink = data.editToken ? getEditRegistrationUrl(data.editToken) : ''
 
-    const editLinkHtml = editLink
-      ? `<div style="margin: 32px 0; padding: 24px; background-color: #f0f9ff; border-radius: 8px; border-left: 4px solid #0369a1;">
-           <h3 style="font-size: 16px; font-weight: 600; color: #0369a1; margin: 0 0 12px 0;">Need to Make Changes?</h3>
-           <p style="font-size: 14px; color: #374151; margin: 0 0 16px 0;">
-             If you need to update your registration information, you can use the link below:
-           </p>
-           <a href="${editLink}" style="display: inline-block; padding: 12px 24px; background-color: #0369a1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
-             Edit My Registration
-           </a>
-           <p style="font-size: 12px; color: #6b7280; margin: 16px 0 0 0;">
-             This link is unique to your registration and can be used at any time.
-           </p>
-         </div>`
-      : ''
+    const html = buildEmailHtml({
+      headerImageUrl: template.headerImage?.asset?.url,
+      headerImageAlt: template.headerImage?.alt,
+      sections: [
+        {type: 'greeting', content: greeting},
+        {type: 'text', content: bodyIntroText},
+        {
+          type: 'registrationDetails',
+          title: 'Your Updated Registration Details',
+          content: registrationDetails,
+        },
+        {type: 'editLink', buttonUrl: editLink},
+        {type: 'text', content: bodyOutroText},
+      ],
+      signature: template.signature,
+    })
 
-    // Generate header image HTML if present
-    const headerImageHtml = template.headerImage?.asset?.url
-      ? `<div style="margin-bottom: 24px; text-align: center;">
-           <img src="${template.headerImage.asset.url}" alt="${template.headerImage.alt || 'Email header'}" style="max-width: 100%; height: auto; border-radius: 8px;" />
-         </div>`
-      : ''
+    const cc = buildCcList(data)
 
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #111827; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background-color: #ffffff; padding: 32px; border-radius: 8px;">
-            ${headerImageHtml}
-            <p style="font-size: 16px; margin-bottom: 16px; white-space: pre-line;">${greeting}</p>
-
-            ${bodyIntroText ? `<p style="font-size: 14px; color: #374151; margin-bottom: 24px; white-space: pre-line;">${bodyIntroText}</p>` : ''}
-
-            <div style="border-top: 2px solid #e5e7eb; padding-top: 24px;">
-              <h2 style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 16px;">Your Updated Registration Details</h2>
-              ${registrationDetails}
-            </div>
-
-            ${editLinkHtml}
-
-            ${bodyOutroText ? `<p style="font-size: 14px; color: #374151; margin-top: 24px; white-space: pre-line;">${bodyOutroText}</p>` : ''}
-
-            ${template.signature ? `<p style="font-size: 14px; color: #374151; margin-top: 24px; white-space: pre-line;">${template.signature}</p>` : ''}
-          </div>
-        </body>
-      </html>
-    `
-
-    // Build CC list (exclude the primary email to avoid duplicates)
-    const cc: string[] = []
-    if (data.assistant_email && data.assistant_email !== data.email) {
-      cc.push(data.assistant_email)
-    }
-    if (data.guest_email && data.guest_email !== data.email) {
-      cc.push(data.guest_email)
-    }
-
-    // Send email using Resend
-    const emailData: EmailPayload = {
+    return sendEmail({
       from: `Nexus Retreat <${resendEmailFrom}>`,
       to: data.email,
       subject,
       html,
       cc: cc.length > 0 ? cc : undefined,
-    }
-
-    console.log('Sending activity update confirmation email via Resend...', {
-      from: emailData.from,
-      to: emailData.to,
-      cc: emailData.cc,
-      subject: emailData.subject,
     })
-
-    const response = await resend.emails.send(emailData)
-
-    return {success: true, data: response}
   } catch (error) {
     console.error('Error sending activity update confirmation email:', error)
+    return {success: false, error}
+  }
+}
+
+// ============================================================================
+// Custom Email (for bulk admin emails)
+// ============================================================================
+
+type CustomEmailRegistration = {
+  firstName: string
+  lastName: string
+  email: string
+  mobilePhone?: string | null
+  title?: string | null
+  organization?: string | null
+  city?: string | null
+  state?: string | null
+  guestName?: string | null
+  editToken?: string | null
+}
+
+type CustomEmailParams = {
+  to: string
+  subject: string
+  body: string
+  headerImageUrl?: string
+  cc?: string[]
+  registration: CustomEmailRegistration
+}
+
+export async function sendCustomEmail(params: CustomEmailParams) {
+  try {
+    const {to, subject, body, headerImageUrl, cc, registration} = params
+
+    const variables: Record<string, string> = {
+      firstName: registration.firstName,
+      lastName: registration.lastName,
+      fullName: `${registration.firstName} ${registration.lastName}`,
+      email: registration.email,
+      mobilePhone: registration.mobilePhone || '',
+      title: registration.title || '',
+      organization: registration.organization || '',
+      city: registration.city || '',
+      state: registration.state || '',
+      guestName: registration.guestName || '',
+    }
+
+    const processedSubject = replaceVariables(subject, variables)
+    const processedBody = replaceVariables(body, variables)
+
+    const html = buildEmailHtml({
+      headerImageUrl,
+      sections: [{type: 'custom', content: `<div style="white-space: pre-line;">${processedBody}</div>`}],
+    })
+
+    return sendEmail({
+      from: `Nexus Retreat <${resendEmailFrom}>`,
+      to,
+      subject: processedSubject,
+      html,
+      cc,
+    })
+  } catch (error) {
+    console.error('Error sending custom email:', error)
     return {success: false, error}
   }
 }

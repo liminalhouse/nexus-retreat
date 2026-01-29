@@ -57,6 +57,10 @@ export async function POST(request: NextRequest) {
 
     const results: {email: string; success: boolean; error?: string}[] = []
 
+    // Rate limit: 600ms between emails to stay under Resend's 2 req/sec limit
+    const DELAY_MS = 600
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
     for (const registration of selectedRegistrations) {
       // Build CC list based on options
       const cc: string[] = []
@@ -82,7 +86,7 @@ export async function POST(request: NextRequest) {
         cc.push(registration.guestEmail)
       }
 
-      // Pass all registration data for variable replacement
+      // Pass registration data for variable replacement
       const result = await sendCustomEmail({
         to: registration.email,
         subject,
@@ -96,33 +100,9 @@ export async function POST(request: NextRequest) {
           mobilePhone: registration.mobilePhone,
           title: registration.title,
           organization: registration.organization,
-          addressLine1: registration.addressLine1,
-          addressLine2: registration.addressLine2,
           city: registration.city,
           state: registration.state,
-          zip: registration.zip,
-          country: registration.country,
-          emergencyContactName: registration.emergencyContactName,
-          emergencyContactRelation: registration.emergencyContactRelation,
-          emergencyContactEmail: registration.emergencyContactEmail,
-          emergencyContactPhone: registration.emergencyContactPhone,
-          assistantName: registration.assistantName,
-          assistantTitle: registration.assistantTitle,
-          assistantEmail: registration.assistantEmail,
-          assistantPhone: registration.assistantPhone,
           guestName: registration.guestName,
-          guestRelation: registration.guestRelation,
-          guestEmail: registration.guestEmail,
-          dietaryRestrictions: registration.dietaryRestrictions,
-          jacketSize: registration.jacketSize,
-          accommodations: registration.accommodations,
-          dinnerAttendance: registration.dinnerAttendance,
-          activities: registration.activities,
-          guestDietaryRestrictions: registration.guestDietaryRestrictions,
-          guestJacketSize: registration.guestJacketSize,
-          guestAccommodations: registration.guestAccommodations,
-          guestDinnerAttendance: registration.guestDinnerAttendance,
-          guestActivities: registration.guestActivities,
           editToken: registration.editToken,
         },
       })
@@ -132,6 +112,9 @@ export async function POST(request: NextRequest) {
         success: result.success,
         error: result.success ? undefined : String(result.error),
       })
+
+      // Wait before sending next email to respect rate limit
+      await delay(DELAY_MS)
     }
 
     const successCount = results.filter((r) => r.success).length
