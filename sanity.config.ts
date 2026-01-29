@@ -8,10 +8,11 @@
 
 import {defineConfig, type SanityDocument} from 'sanity'
 import {structureTool} from 'sanity/structure'
-import {visionTool} from '@sanity/vision'
-import {presentationTool} from 'sanity/presentation'
-import {assist} from '@sanity/assist'
+// import {visionTool} from '@sanity/vision'
+// import {presentationTool} from 'sanity/presentation'
+// import {assist} from '@sanity/assist'
 import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
+import './sanity.global.css'
 
 // Import schemas
 import {schemaTypes} from './sanity/schemas/schemaTypes'
@@ -40,26 +41,26 @@ export default defineConfig({
 
   plugins: [
     structureTool({structure}),
-    presentationTool({
-      previewUrl: {
-        origin: typeof window !== 'undefined' && window.location.origin.includes('vercel.app')
-          ? window.location.origin
-          : PREVIEW_URL,
-        previewMode: {
-          enable: '/api/draft-mode/enable',
-        },
-      },
-      components: {
-        unstable_navigator: {
-          component: PageNavigator,
-          minWidth: 250,
-          maxWidth: 350,
-        },
-      },
-    }),
+    // presentationTool({
+    //   previewUrl: {
+    //     origin: typeof window !== 'undefined' && window.location.origin.includes('vercel.app')
+    //       ? window.location.origin
+    //       : PREVIEW_URL,
+    //     previewMode: {
+    //       enable: '/api/draft-mode/enable',
+    //     },
+    //   },
+    //   components: {
+    //     unstable_navigator: {
+    //       component: PageNavigator,
+    //       minWidth: 250,
+    //       maxWidth: 350,
+    //     },
+    //   },
+    // }),
     unsplashImageAsset(),
-    assist(),
-    visionTool(),
+    // assist(),
+    // visionTool(),
   ],
 
   schema: {
@@ -70,9 +71,10 @@ export default defineConfig({
   document: {
     productionUrl: async (prev, context) => {
       const {document} = context
-      const baseUrl = typeof window !== 'undefined' && window.location.origin.includes('vercel.app')
-        ? window.location.origin
-        : PREVIEW_URL
+      const baseUrl =
+        typeof window !== 'undefined' && window.location.origin.includes('vercel.app')
+          ? window.location.origin
+          : PREVIEW_URL
 
       let path: string | null = null
 
