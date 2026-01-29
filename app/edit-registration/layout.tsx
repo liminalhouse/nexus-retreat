@@ -1,13 +1,11 @@
-'use client'
-
-import {ToastProvider} from '@/app/components/Toast/ToastContext'
-import ToastContainer from '@/app/components/Toast/Toast'
+import Header from '@/app/components/Header'
+import ToastWrapper from './ToastWrapper'
 
 export default function EditRegistrationLayout({children}: {children: React.ReactNode}) {
   return (
-    <ToastProvider>
-      {children}
-      <ToastContainer />
-    </ToastProvider>
+    <ToastWrapper>
+      <Header />
+      <main className="pt-18">{children}</main>
+    </ToastWrapper>
   )
 }

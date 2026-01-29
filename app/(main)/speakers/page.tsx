@@ -17,7 +17,7 @@ type Speaker = SpeakersQueryResult[number]
 
 function SpeakerCard({speaker}: {speaker: Speaker}) {
   const photoUrl = speaker.profilePicture
-    ? urlForImage(speaker.profilePicture)?.width(400).height(400).fit('crop').url()
+    ? urlForImage(speaker.profilePicture)?.width(200).height(200).fit('crop').url()
     : null
 
   const speakerSlug = cleanSlug(speaker.id?.current) || speaker._id
@@ -25,21 +25,21 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
   return (
     <Link
       href={`/speakers/${speakerSlug}`}
-      className="block bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg hover:border-nexus-coral/30 transition-all duration-300"
+      className="flex flex-col sm:flex-row md:h-full bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg hover:border-nexus-coral/30 transition-all duration-300 p-5 gap-4 sm:gap-5"
     >
-      {/* Photo */}
-      <div className="relative h-64 w-full bg-gray-100">
+      {/* Circular Photo */}
+      <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-full overflow-hidden bg-gray-100 mx-auto sm:mx-0">
         {photoUrl ? (
           <Image
             src={photoUrl}
             alt={`${speaker.firstName} ${speaker.lastName}`}
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="96px"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-5xl font-medium text-nexus-navy/30">
+            <span className="text-xl sm:text-2xl font-medium text-nexus-navy/30">
               {speaker.firstName?.[0]}
               {speaker.lastName?.[0]}
             </span>
@@ -47,23 +47,26 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
         )}
       </div>
 
-      <div className="p-6">
+      {/* Content */}
+      <div className="flex flex-col flex-1 min-w-0 sm:text-left">
         {/* Name */}
-        <h3 className="text-xl font-semibold text-nexus-navy font-serif mb-1">
+        <h3 className="text-lg font-semibold text-nexus-navy font-serif text-center md:text-left">
           {speaker.firstName} {speaker.lastName}
         </h3>
 
         {/* Title */}
-        {speaker.title && <p className="text-sm text-gray-600 mb-4">{speaker.title}</p>}
+        {speaker.title && (
+          <p className="text-xs text-nexus-navy font-semibold mt-0.5 mb-2 line-clamp-1 text-center md:text-left">{speaker.title}</p>
+        )}
 
         {/* Bio preview */}
         {speaker.bio && (
-          <div className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+          <div className="text-gray-600 text-sm leading-relaxed line-clamp-6 mt-2 text-left">
             <CustomPortableText value={speaker.bio as PortableTextBlock[]} />
           </div>
         )}
 
-        <div className="mt-4 pt-4 border-t border-gray-100">
+        <div className="mt-auto pt-3">
           <span className="text-sm text-nexus-coral font-medium">View profile →</span>
         </div>
       </div>
@@ -98,8 +101,8 @@ export default async function SpeakersPage() {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-nexus-navy font-serif mb-4">
             Speakers
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Meet the experts and thought leaders presenting at Nexus Retreat.
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Meet the world leaders and industry experts sharing their insights at the Retreat.
           </p>
         </div>
 
@@ -109,7 +112,7 @@ export default async function SpeakersPage() {
             <p className="text-gray-500">No speakers announced yet. Check back soon!</p>
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 md:auto-rows-fr lg:grid-cols-3">
             {speakers.map((speaker) => (
               <SpeakerCard key={speaker._id} speaker={speaker} />
             ))}

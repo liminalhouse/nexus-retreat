@@ -9,17 +9,44 @@ import {
   formatDinnerAttendance,
   formatActivities,
 } from '@/lib/utils/formatRegistrationFields'
+import {getEditRegistrationUrl, getEditActivitiesUrl} from '@/lib/utils/editUrls'
 import type {Registration} from '@/lib/types/registration'
 
 type ColumnConfig = {
   key: string
   label: string
-  width: string
   render: (registration: Registration) => React.ReactNode
 }
 
-const GRID_TEMPLATE_COLUMNS =
-  'minmax(65px, 1fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(200px, 2fr) minmax(150px, 1.2fr) minmax(150px, 1.5fr) minmax(180px, 1.5fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(150px, 1.5fr) minmax(100px, 1fr) minmax(150px, 1.5fr) minmax(120px, 1fr) minmax(200px, 2fr) minmax(120px, 1fr)'
+const COLUMN_WIDTHS = {
+  avatar: 'minmax(65px, 1fr)',
+  date: 'minmax(120px, 1fr)',
+  name: 'minmax(150px, 1.5fr)',
+  title: 'minmax(120px, 1fr)',
+  organization: 'minmax(150px, 1.5fr)',
+  email: 'minmax(200px, 2fr)',
+  phone: 'minmax(150px, 1.2fr)',
+  location: 'minmax(150px, 1.5fr)',
+  emergency: 'minmax(180px, 1.5fr)',
+  assistant: 'minmax(180px, 1.5fr)',
+  guest: 'minmax(120px, 1fr)',
+  dietary: 'minmax(150px, 1.5fr)',
+  jacket: 'minmax(100px, 1fr)',
+  accommodations: 'minmax(150px, 1.5fr)',
+  dinners: 'minmax(120px, 1fr)',
+  activities: 'minmax(200px, 1.5fr)',
+  guest_dietary: 'minmax(100px, 1fr)',
+  guest_jacket: 'minmax(120px, 1fr)',
+  guest_accommodations: 'minmax(120px, 1fr)',
+  guest_dinners: 'minmax(200px, 2fr)',
+  guest_activities: 'minmax(200px, 1.5fr)',
+  edit_registration_link: 'minmax(280px, 2fr)',
+  edit_activities_link: 'minmax(280px, 2fr)',
+  admin_notes: 'minmax(200px, 2fr)',
+  actions: 'minmax(120px, 2fr)',
+}
+
+const GRID_TEMPLATE_COLUMNS = Object.values(COLUMN_WIDTHS).join(' ')
 
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('en-US', {
@@ -33,7 +60,6 @@ const columns: ColumnConfig[] = [
   {
     key: 'avatar',
     label: '',
-    width: 'minmax(60px, 60px)',
     render: (reg) => (
       <Avatar
         src={reg.profile_picture}
@@ -46,13 +72,11 @@ const columns: ColumnConfig[] = [
   {
     key: 'date',
     label: 'Date',
-    width: 'minmax(120px, 1fr)',
     render: (reg) => formatDate(reg.created_at),
   },
   {
     key: 'name',
     label: 'Name',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) => (
       <span className="font-medium text-gray-900">
         {reg.first_name} {reg.last_name}
@@ -62,37 +86,31 @@ const columns: ColumnConfig[] = [
   {
     key: 'title',
     label: 'Title',
-    width: 'minmax(120px, 1fr)',
     render: (reg) => reg.title || '-',
   },
   {
     key: 'organization',
     label: 'Organization',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) => reg.organization || '-',
   },
   {
     key: 'email',
     label: 'Email',
-    width: 'minmax(200px, 2fr)',
     render: (reg) => reg.email,
   },
   {
     key: 'phone',
     label: 'Phone',
-    width: 'minmax(150px, 1.2fr)',
     render: (reg) => <span className="whitespace-nowrap">{reg.mobile_phone || '-'}</span>,
   },
   {
     key: 'location',
     label: 'Location',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) => (reg.city && reg.state ? `${reg.city}, ${reg.state}` : '-'),
   },
   {
     key: 'emergency',
     label: 'Emergency Contact',
-    width: 'minmax(180px, 1.5fr)',
     render: (reg) =>
       reg.emergency_contact_name ? (
         <div className="flex flex-col">
@@ -106,7 +124,6 @@ const columns: ColumnConfig[] = [
   {
     key: 'assistant',
     label: 'Assistant',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) =>
       reg.assistant_name ? (
         <div className="flex flex-col">
@@ -120,75 +137,95 @@ const columns: ColumnConfig[] = [
   {
     key: 'guest',
     label: 'Guest',
-    width: 'minmax(120px, 1fr)',
     render: (reg) => reg.guest_name || '-',
   },
   {
     key: 'dietary',
     label: 'Dietary',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) => <span className="truncate">{reg.dietary_restrictions || '-'}</span>,
   },
   {
     key: 'jacket',
     label: 'Jacket Size',
-    width: 'minmax(100px, 1fr)',
     render: (reg) => reg.jacket_size || '-',
   },
   {
     key: 'accommodations',
     label: 'Accommodations',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) => formatAccommodations(reg.accommodations),
   },
   {
     key: 'dinners',
     label: 'Dinners',
-    width: 'minmax(120px, 1fr)',
     render: (reg) => formatDinnerAttendance(reg.dinner_attendance),
   },
-  // TODO: Hide activities for now
-  // {
-  //   key: 'activities',
-  //   label: 'Activities',
-  //   width: 'minmax(180px, 1.5fr)',
-  //   render: (reg) => formatActivities(reg.activities),
-  // },
+  {
+    key: 'activities',
+    label: 'Activities',
+    render: (reg) => formatActivities(reg.activities),
+  },
   {
     key: 'guest_dietary',
     label: 'Guest Dietary',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) => <span className="truncate">{reg.guest_dietary_restrictions || '-'}</span>,
   },
   {
     key: 'guest_jacket',
     label: 'Guest Jacket Size',
-    width: 'minmax(100px, 1fr)',
     render: (reg) => reg.guest_jacket_size || '-',
   },
   {
     key: 'guest_accommodations',
     label: 'Guest Accommodations',
-    width: 'minmax(150px, 1.5fr)',
     render: (reg) => formatAccommodations(reg.guest_accommodations),
   },
   {
     key: 'guest_dinners',
     label: 'Guest Dinners',
-    width: 'minmax(120px, 1fr)',
     render: (reg) => formatDinnerAttendance(reg.guest_dinner_attendance),
   },
-  // TODO: Hide guest activities for now
-  // {
-  //   key: 'guest_activities',
-  //   label: 'Guest Activities',
-  //   width: 'minmax(180px, 1.5fr)',
-  //   render: (reg) => formatActivities(reg.guest_activities),
-  // },
+  {
+    key: 'guest_activities',
+    label: 'Guest Activities',
+    render: (reg) => formatActivities(reg.guest_activities),
+  },
+  {
+    key: 'edit_registration_link',
+    label: 'Edit Registration Link',
+    render: (reg) => {
+      const url = getEditRegistrationUrl(reg.edit_token)
+      return (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-nexus-coral hover:text-nexus-coral-light underline text-xs break-all"
+        >
+          {url}
+        </a>
+      )
+    },
+  },
+  {
+    key: 'edit_activities_link',
+    label: 'Activities Form Link',
+    render: (reg) => {
+      const url = getEditActivitiesUrl(reg.edit_token)
+      return (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-nexus-coral hover:text-nexus-coral-light underline text-xs break-all"
+        >
+          {url}
+        </a>
+      )
+    },
+  },
   {
     key: 'admin_notes',
     label: 'Admin Notes (not visible to registrant)',
-    width: 'minmax(200px, 2fr)',
     render: (reg) => <span className="text-xs">{reg.admin_notes || '-'}</span>,
   },
 ]
@@ -263,7 +300,7 @@ export default function RegistrationsTable({
               {columns.map((column) => (
                 <div
                   key={column.key}
-                  className="bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200"
+                  className="bg-blue-50 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase border-b border-r border-gray-200"
                 >
                   {column.label}
                 </div>
@@ -287,13 +324,13 @@ export default function RegistrationsTable({
                   {columns.map((column) => (
                     <div
                       key={column.key}
-                      className={`${column.key === 'admin_notes' ? 'bg-yellow-50' : 'bg-white'} group-hover:bg-blue-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto`}
+                      className={`${column.key === 'admin_notes' ? 'bg-yellow-50' : 'bg-white'} group-hover:bg-zinc-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto`}
                     >
                       {column.render(registration)}
                     </div>
                   ))}
                   <div
-                    className="sticky right-0 bg-white group-hover:bg-gray-50 px-6 py-4 text-sm font-medium border-b border-l-2 border-gray-200 flex items-center"
+                    className="sticky right-0 bg-white group-hover:bg-slate-50 px-6 py-4 text-sm font-medium border-b border-l-2 border-gray-200 flex items-center"
                     style={{boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.1)'}}
                   >
                     <button

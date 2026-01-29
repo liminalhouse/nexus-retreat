@@ -77,7 +77,7 @@ export async function GET(
       },
       {status: 200}
     )
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching registration by token:', error)
 
     return NextResponse.json(

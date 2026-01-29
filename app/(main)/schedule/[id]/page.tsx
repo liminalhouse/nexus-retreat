@@ -186,7 +186,7 @@ export default async function SessionPage({params}: Props) {
                   {session.speakers.length === 1 ? 'Speaker' : 'Speakers'}
                 </h2>
                 <div className="space-y-4">
-                  {session.speakers.map((speaker) => {
+                  {session.speakers.filter(Boolean).map((speaker) => {
                     const speakerPhotoUrl = speaker.profilePicture
                       ? urlForImage(speaker.profilePicture)
                           ?.width(200)
