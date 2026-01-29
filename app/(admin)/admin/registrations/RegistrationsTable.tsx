@@ -9,6 +9,7 @@ import {
   formatDinnerAttendance,
   formatActivities,
 } from '@/lib/utils/formatRegistrationFields'
+import {getEditRegistrationUrl, getEditActivitiesUrl} from '@/lib/utils/editUrls'
 import type {Registration} from '@/lib/types/registration'
 
 type ColumnConfig = {
@@ -192,7 +193,7 @@ const columns: ColumnConfig[] = [
     key: 'edit_registration_link',
     label: 'Edit Registration Link',
     render: (reg) => {
-      const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/edit-registration/${reg.edit_token}`
+      const url = getEditRegistrationUrl(reg.edit_token)
       return (
         <a
           href={url}
@@ -209,7 +210,7 @@ const columns: ColumnConfig[] = [
     key: 'edit_activities_link',
     label: 'Activities Form Link',
     render: (reg) => {
-      const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/edit-registration/${reg.edit_token}/activities`
+      const url = getEditActivitiesUrl(reg.edit_token)
       return (
         <a
           href={url}

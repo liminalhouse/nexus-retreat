@@ -22,6 +22,7 @@ export const emailTemplate = defineType({
         list: [
           {title: 'Registration Confirmation', value: 'registration_confirmation'},
           {title: 'Activity Selection', value: 'activity_selection'},
+          {title: 'Activity Update Confirmation', value: 'activity_update_confirmation'},
           // TODO: Add more email types as needed
           // {title: 'Event Reminder', value: 'event_reminder'},
           // {title: 'Event Update', value: 'event_update'},

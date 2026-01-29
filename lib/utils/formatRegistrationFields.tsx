@@ -21,31 +21,69 @@ export const GUEST_DINNER_OPTIONS = [
   {label: 'My guest will attend the Dinner on March 19', value: 'march_19'},
 ]
 
-export const ACTIVITY_OPTIONS = [
-  {label: 'Pickleball tournament (sunrise / downriver style) on March 19', value: 'pickleball'},
+export interface ActivityOption {
+  label: string
+  value: string
+  description?: string
+  chipDescription?: string
+}
+
+export const ACTIVITY_OPTIONS: ActivityOption[] = [
+  {
+    label: 'Golf - 9 holes',
+    value: 'golf_9_march_18',
+    description: 'March 18, 3-5pm',
+    chipDescription: 'March 18',
+  },
+  {
+    label: 'Golf - 9 holes',
+    value: 'golf_9_march_19',
+    description: 'March 19, 3-5pm',
+    chipDescription: 'March 19',
+  },
   {label: 'Golf - Full round', value: 'golf_full'},
-  {label: 'Golf - 9 holes', value: 'golf_9'},
-  {label: 'Golf - Drive, Chip, and Putt contest', value: 'golf_drive_chip_putt'},
-  {label: 'Tennis', value: 'tennis'},
-  {label: 'March 19 morning yoga', value: 'yoga_march_19'},
-  {label: 'March 19 morning bootcamp', value: 'bootcamp_march_19'},
-  {label: 'March 20 morning yoga', value: 'yoga_march_20'},
-  {label: 'March 20 morning bootcamp', value: 'bootcamp_march_20'},
-  {label: "Please don't bother me, I'll be at the spa :)", value: 'spa'},
+  {
+    label: 'Golf Challenge',
+    value: 'golf_challenge',
+    description:
+      'March 19, 3-5pm: 3-hole Invictus challenge on the driving range with Prince Harry. Cocktails, camaraderie, charity, and a competition!',
+    chipDescription: 'March 19',
+  },
+  {label: 'Tennis', value: 'tennis', description: 'Court booking available'},
+  {
+    label: 'Pickleball',
+    value: 'pickleball',
+    description:
+      'March 19, 3-5pm: Up the river / down the river tournament with drinks, laughs, and a winning duo to be crowned!',
+  },
+  {
+    label: 'Sunrise Yoga',
+    value: 'yoga_march_19',
+    description: 'March 19, 6:30am',
+    chipDescription: 'March 19',
+  },
+  {
+    label: 'Sunrise Yoga',
+    value: 'yoga_march_20',
+    description: 'March 20, 6:30am',
+    chipDescription: 'March 20',
+  },
+  {
+    label: 'Bootcamp',
+    value: 'bootcamp_march_19',
+    description: 'March 19, 6:30am',
+    chipDescription: 'March 19',
+  },
+  {
+    label: 'Bootcamp',
+    value: 'bootcamp_march_20',
+    description: 'March 20, 6:30am',
+    chipDescription: 'March 20',
+  },
+  {label: 'Spa', value: 'spa', description: 'Our team can assist with bookings'},
 ]
 
-export const GUEST_ACTIVITY_OPTIONS = [
-  {label: 'Pickleball tournament (sunrise / downriver style) on March 19', value: 'pickleball'},
-  {label: 'Golf - Full round', value: 'golf_full'},
-  {label: 'Golf - 9 holes', value: 'golf_9'},
-  {label: 'Golf - Drive, Chip, and Putt contest', value: 'golf_drive_chip_putt'},
-  {label: 'Tennis', value: 'tennis'},
-  {label: 'March 19 morning yoga', value: 'yoga_march_19'},
-  {label: 'March 19 morning bootcamp', value: 'bootcamp_march_19'},
-  {label: 'March 20 morning yoga', value: 'yoga_march_20'},
-  {label: 'March 20 morning bootcamp', value: 'bootcamp_march_20'},
-  {label: 'My guest will be at the spa :)', value: 'spa'},
-]
+export const GUEST_ACTIVITY_OPTIONS: ActivityOption[] = [...ACTIVITY_OPTIONS]
 
 // Label mappings derived from options
 export const ACCOMMODATION_LABELS: Record<string, string> = {
@@ -58,40 +96,38 @@ export const DINNER_LABELS: Record<string, string> = {
   march_19: 'March 19',
 }
 
-export const ACTIVITY_LABELS: Record<string, string> = {
-  pickleball: 'Pickleball',
-  golf_full: 'Golf - Full round',
-  golf_9: 'Golf - 9 holes',
-  golf_drive_chip_putt: 'Golf - Drive, Chip, Putt',
-  tennis: 'Tennis',
-  yoga_march_19: 'Yoga (March 19)',
-  bootcamp_march_19: 'Bootcamp (March 19)',
-  yoga_march_20: 'Yoga (March 20)',
-  bootcamp_march_20: 'Bootcamp (March 20)',
-  spa: 'Spa',
-}
+// Derive ACTIVITY_LABELS from ACTIVITY_OPTIONS
+export const ACTIVITY_LABELS: Record<string, string> = Object.fromEntries(
+  ACTIVITY_OPTIONS.map((opt) => [
+    opt.value,
+    opt.description
+      ? `${opt.label} ${opt.chipDescription ? `(${opt.chipDescription})` : ''}`
+      : opt.label,
+  ]),
+)
 
 const ACCOMMODATION_COLORS: Record<string, string> = {
-  march_18: 'bg-fuchsia-100 text-fuchsia-800',
-  march_19: 'bg-blue-100 text-blue-800',
+  march_18: 'bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200',
+  march_19: 'bg-blue-100 text-blue-800 border-blue-200',
 }
 
 const DINNER_COLORS: Record<string, string> = {
-  march_18: 'bg-fuchsia-100 text-fuchsia-800',
-  march_19: 'bg-blue-100 text-blue-800',
+  march_18: 'bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200',
+  march_19: 'bg-blue-100 text-blue-800 border-blue-200',
 }
 
 const ACTIVITY_COLORS: Record<string, string> = {
-  pickleball: 'bg-lime-100 text-lime-800',
-  golf_full: 'bg-emerald-100 text-emerald-800',
-  golf_9: 'bg-emerald-100 text-emerald-800',
-  golf_drive_chip_putt: 'bg-emerald-100 text-emerald-800',
-  tennis: 'bg-yellow-100 text-yellow-800',
-  yoga_march_19: 'bg-violet-100 text-violet-800',
-  bootcamp_march_19: 'bg-cyan-100 text-cyan-800',
-  yoga_march_20: 'bg-violet-100 text-violet-800',
-  bootcamp_march_20: 'bg-cyan-100 text-cyan-800',
-  spa: 'bg-pink-100 text-pink-800',
+  golf_9_march_18: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  golf_9_march_19: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  golf_full: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  golf_challenge: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  tennis: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  pickleball: 'bg-lime-100 text-lime-800 border-lime-200',
+  yoga_march_19: 'bg-violet-100 text-violet-800 border-violet-200',
+  yoga_march_20: 'bg-violet-100 text-violet-800 border-violet-200',
+  bootcamp_march_19: 'bg-cyan-100 text-cyan-800 border-cyan-200',
+  bootcamp_march_20: 'bg-cyan-100 text-cyan-800 border-cyan-200',
+  spa: 'bg-pink-100 text-pink-800 border-pink-200',
 }
 
 // String formatters for CSV export
@@ -118,7 +154,7 @@ export function formatAccommodations(values: string[] | null | undefined): React
       {values.map((v) => (
         <li
           key={v}
-          className={`block px-2 py-0.5 text-xs rounded-full ${ACCOMMODATION_COLORS[v] || 'bg-gray-100 text-gray-800'}`}
+          className={`block px-2 py-0.5 text-xs rounded-full border-1 ${ACCOMMODATION_COLORS[v] || 'bg-gray-100 text-gray-800'}`}
         >
           {ACCOMMODATION_LABELS[v] || v}
         </li>
@@ -134,7 +170,7 @@ export function formatDinnerAttendance(values: string[] | null | undefined): Rea
       {values.map((v) => (
         <li
           key={v}
-          className={`block px-2 py-0.5 text-xs rounded-full ${DINNER_COLORS[v] || 'bg-gray-100 text-gray-800'}`}
+          className={`block px-2 py-0.5 text-xs rounded-full border-1 ${DINNER_COLORS[v] || 'bg-gray-100 text-gray-800'}`}
         >
           {DINNER_LABELS[v] || v}
         </li>
@@ -147,14 +183,20 @@ export function formatActivities(values: string[] | null | undefined): React.Rea
   if (!values || values.length === 0) return '-'
   return (
     <ul className="flex flex-col gap-1">
-      {values.map((v) => (
-        <li
-          key={v}
-          className={`block px-2 py-0.5 text-xs rounded-full ${ACTIVITY_COLORS[v] || 'bg-gray-100 text-gray-800'}`}
-        >
-          {ACTIVITY_LABELS[v] || v}
-        </li>
-      ))}
+      {values
+        .sort((a, b) => {
+          const labelA = ACTIVITY_LABELS[a] || a
+          const labelB = ACTIVITY_LABELS[b] || b
+          return labelA.localeCompare(labelB)
+        })
+        .map((v) => (
+          <li
+            key={v}
+            className={`block px-2 py-0.5 text-xs rounded-full border-1 ${ACTIVITY_COLORS[v] || 'bg-gray-100 text-gray-800'}`}
+          >
+            {ACTIVITY_LABELS[v] || v}
+          </li>
+        ))}
     </ul>
   )
 }

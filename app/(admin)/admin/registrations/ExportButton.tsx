@@ -5,6 +5,7 @@ import {
   formatDinnerAttendanceAsString,
   formatActivitiesAsString,
 } from '@/lib/utils/formatRegistrationFields'
+import {getEditRegistrationUrl, getEditActivitiesUrl} from '@/lib/utils/editUrls'
 import {getFieldMetadata} from '@/lib/utils/registrationFields'
 import type {Registration} from '@/lib/types/registration'
 
@@ -41,9 +42,6 @@ export default function ExportButton({registrations}: {registrations: Registrati
       return String(value)
     }
 
-    // Get the base URL for edit links
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
-
     // Create CSV rows dynamically from field metadata
     const rows = registrations.map((reg) => {
       const row: string[] = [new Date(reg.created_at).toLocaleString()]
@@ -55,8 +53,8 @@ export default function ExportButton({registrations}: {registrations: Registrati
       })
 
       // Add edit links
-      row.push(`${baseUrl}/edit-registration/${reg.edit_token}`)
-      row.push(`${baseUrl}/edit-registration/${reg.edit_token}/activities`)
+      row.push(getEditRegistrationUrl(reg.edit_token))
+      row.push(getEditActivitiesUrl(reg.edit_token))
 
       return row
     })

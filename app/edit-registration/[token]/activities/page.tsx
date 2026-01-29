@@ -4,7 +4,11 @@ import {useState, useEffect} from 'react'
 import {useParams} from 'next/navigation'
 import Link from 'next/link'
 import NexusLogo from '@/app/components/NexusLogo'
-import {ACTIVITY_OPTIONS, GUEST_ACTIVITY_OPTIONS} from '@/lib/utils/formatRegistrationFields'
+import {
+  ACTIVITY_OPTIONS,
+  GUEST_ACTIVITY_OPTIONS,
+  type ActivityOption,
+} from '@/lib/utils/formatRegistrationFields'
 
 type PageState = 'loading' | 'editing' | 'saving' | 'success' | 'error'
 
@@ -17,11 +21,6 @@ interface RegistrationData {
   guest_email: string | null
   activities: string[] | null
   guest_activities: string[] | null
-}
-
-interface ActivityOption {
-  label: string
-  value: string
 }
 
 function LoadingSpinner() {
@@ -49,14 +48,14 @@ function ActivityCheckboxList({
   idPrefix: string
 }) {
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-3">
       {options.map((option, idx) => {
         const isChecked = selectedValues.includes(option.value)
         const checkboxId = `${idPrefix}_${idx}`
 
         return (
           <div key={idx} className="flex items-start">
-            <div className="flex items-center h-5">
+            <div className="flex items-center h-5 mt-0.5">
               <input
                 type="checkbox"
                 id={checkboxId}
@@ -66,8 +65,13 @@ function ActivityCheckboxList({
                 className="h-4 w-4 rounded border-2 border-gray-300 text-blue-600 transition-all duration-300 ease-out focus:ring-2 focus:ring-blue-100 focus:border-blue-600 hover:border-gray-400 cursor-pointer"
               />
             </div>
-            <label htmlFor={checkboxId} className="ml-3 text-sm text-gray-700 cursor-pointer">
-              {option.label}
+            <label htmlFor={checkboxId} className="ml-3 cursor-pointer flex flex-col gap-1">
+              <span className="text-sm text-slate-700 font-semibold">{option.label}</span>
+              {option.description && (
+                <span className="block text-xs font-medium text-slate-500 max-w-md">
+                  {option.description}
+                </span>
+              )}
             </label>
           </div>
         )
@@ -134,7 +138,7 @@ export default function EditActivitiesPage() {
     setPageState('saving')
 
     try {
-      const response = await fetch(`/api/registration/${registrationData.id}/activities`, {
+      const response = await fetch(`/api/registration/by-token/${token}/activities`, {
         method: 'PATCH',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -195,12 +199,16 @@ export default function EditActivitiesPage() {
             </div>
 
             <h1 className="text-xl font-bold text-gray-900 mb-2 text-center">
-              Welcome {registrationData?.first_name} {registrationData?.last_name}!
+              Hi {registrationData?.first_name} {registrationData?.last_name}, which activities
+              would you like to join for the retreat?
             </h1>
-            <h2 className="text-md font-bold text-gray-900 mb-2 text-center">
-              Which activities would you like to join for the retreat?
-            </h2>
-            <p className="text-gray-500 text-center mb-8 text-sm">{registrationData?.email}</p>
+            <p className="text-nexus-navy text-center mb-8 text-xs">
+              Please contact us at{' '}
+              <a href="mailto:info@nexus-retreat.com" className="underline">
+                info@nexus-retreat.com
+              </a>{' '}
+              if you have any questions or need assistance.
+            </p>
 
             <form onSubmit={handleSave}>
               {/* Attendee Activities */}
@@ -290,7 +298,7 @@ export default function EditActivitiesPage() {
             clipRule="evenodd"
           />
         </svg>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Activities Updated!</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">You're all set!</h1>
         <p className="text-gray-600 mb-6">Your activity selections have been saved.</p>
         <div className="space-y-3">
           <button
