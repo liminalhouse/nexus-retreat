@@ -66,9 +66,10 @@ export const settings = defineType({
       group: 'seo',
       options: {
         hotspot: true,
-        aiAssist: {
-          imageDescriptionField: 'alt',
-        },
+        // TODO: Do we need Assist?
+        // aiAssist: {
+        //   imageDescriptionField: 'alt',
+        // },
       },
       fields: [
         defineField({
