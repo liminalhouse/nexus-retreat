@@ -1,10 +1,11 @@
 'use client'
 
 import {
-  formatAccommodations,
-  formatDinnerAttendance,
-  formatActivities,
+  formatAccommodationsAsString,
+  formatDinnerAttendanceAsString,
+  formatActivitiesAsString,
 } from '@/lib/utils/formatRegistrationFields'
+import {getEditRegistrationUrl, getEditActivitiesUrl} from '@/lib/utils/editUrls'
 import {getFieldMetadata} from '@/lib/utils/registrationFields'
 import type {Registration} from '@/lib/types/registration'
 
@@ -19,7 +20,12 @@ export default function ExportButton({registrations}: {registrations: Registrati
     const fieldMetadata = getFieldMetadata()
 
     // Create CSV headers dynamically from form config
-    const headers = ['Registration Date', ...fieldMetadata.map((field) => field.label)]
+    const headers = [
+      'Registration Date',
+      ...fieldMetadata.map((field) => field.label),
+      'Edit Registration Link',
+      'Activities Form Link',
+    ]
 
     // Helper to format field value
     const formatValue = (fieldName: string, value: any): string => {
@@ -27,9 +33,9 @@ export default function ExportButton({registrations}: {registrations: Registrati
 
       // Handle array fields (accommodations, dinners, activities)
       if (Array.isArray(value)) {
-        if (fieldName.includes('accommodations')) return formatAccommodations(value)
-        if (fieldName.includes('dinner')) return formatDinnerAttendance(value)
-        if (fieldName.includes('activities')) return formatActivities(value)
+        if (fieldName.includes('accommodations')) return formatAccommodationsAsString(value)
+        if (fieldName.includes('dinner')) return formatDinnerAttendanceAsString(value)
+        if (fieldName.includes('activities')) return formatActivitiesAsString(value)
         return value.join(', ')
       }
 
@@ -45,6 +51,10 @@ export default function ExportButton({registrations}: {registrations: Registrati
         const value = (reg as any)[field.name]
         row.push(formatValue(field.name, value))
       })
+
+      // Add edit links
+      row.push(getEditRegistrationUrl(reg.edit_token))
+      row.push(getEditActivitiesUrl(reg.edit_token))
 
       return row
     })

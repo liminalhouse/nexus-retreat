@@ -56,6 +56,7 @@ export default async function AdminRegistrations() {
       guest_dinner_attendance: reg.guestDinnerAttendance,
       guest_activities: reg.guestActivities,
       admin_notes: reg.adminNotes,
+      edit_token: reg.editToken,
     }))
   } catch (err) {
     console.error('Error fetching registrations:', err)

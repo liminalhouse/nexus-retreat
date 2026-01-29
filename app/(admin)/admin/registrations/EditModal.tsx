@@ -3,16 +3,38 @@
 import {useState} from 'react'
 import Avatar from '@/app/components/Avatar'
 import {
-  formatAccommodations,
-  formatDinnerAttendance,
-  formatActivities,
   ACCOMMODATION_OPTIONS,
   DINNER_OPTIONS,
   ACTIVITY_OPTIONS,
 } from '@/lib/utils/formatRegistrationFields'
+import {getEditRegistrationUrl, getEditActivitiesUrl} from '@/lib/utils/editUrls'
 import {JACKET_SIZE_OPTIONS} from '@/app/(main)/register/formConfig'
 import type {Registration} from '@/lib/types/registration'
 import {useToast} from '@/app/components/Toast/ToastContext'
+
+function EditLinkRow({url, onCopy}: {url: string; onCopy: () => void}) {
+  return (
+    <div className="flex items-center gap-2">
+      <input
+        type="text"
+        readOnly
+        value={url}
+        className="flex-1 text-xs px-2 py-1 bg-white border border-gray-300 rounded"
+      />
+      <button onClick={onCopy} className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">
+        Copy
+      </button>
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="px-2 py-1 text-xs bg-nexus-navy text-white hover:bg-nexus-navy-dark rounded"
+      >
+        Open
+      </a>
+    </div>
+  )
+}
 
 export default function EditModal({
   registration,
@@ -214,7 +236,7 @@ export default function EditModal({
 
   const inputClass =
     'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent'
-  const labelClass = 'block text-sm font-medium text-gray-700 mb-1'
+  const labelClass = 'block text-sm font-medium text-gray-700 mt-1 mb-2'
 
   return (
     <div
@@ -603,25 +625,30 @@ export default function EditModal({
                   ))}
                 </div>
               </div>
-              {/* TODO: Hide activities */}
-              {/* <div className="col-span-2">
+              {/* Activities */}
+              <div className="col-span-2">
                 <label className={labelClass}>Activities</label>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {ACTIVITY_OPTIONS.map((option) => (
-                    <label key={option.value} className="flex items-center">
+                    <label key={option.value} className="flex items-start">
                       <input
                         type="checkbox"
                         checked={(formData.activities || []).includes(option.value)}
                         onChange={(e) =>
                           handleCheckboxChange('activities', option.value, e.target.checked)
                         }
-                        className="mr-2"
+                        className="mr-2 mt-1"
                       />
-                      <span className="text-sm">{option.label}</span>
+                      <span>
+                        <span className="text-sm">{option.label}</span>
+                        {option.description && (
+                          <span className="block text-xs text-gray-500">{option.description}</span>
+                        )}
+                      </span>
                     </label>
                   ))}
                 </div>
-              </div> */}
+              </div>
             </div>
           </div>
 
@@ -701,25 +728,30 @@ export default function EditModal({
                   ))}
                 </div>
               </div>
-              {/* TODO: Hide activities */}
-              {/* <div className="col-span-2">
+              {/* Guest Activities */}
+              <div className="col-span-2">
                 <label className={labelClass}>Guest Activities</label>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {ACTIVITY_OPTIONS.map((option) => (
-                    <label key={option.value} className="flex items-center">
+                    <label key={option.value} className="flex items-start">
                       <input
                         type="checkbox"
                         checked={(formData.guest_activities || []).includes(option.value)}
                         onChange={(e) =>
                           handleCheckboxChange('guest_activities', option.value, e.target.checked)
                         }
-                        className="mr-2"
+                        className="mr-2 mt-1"
                       />
-                      <span className="text-sm">{option.label}</span>
+                      <span>
+                        <span className="text-sm">{option.label}</span>
+                        {option.description && (
+                          <span className="block text-xs text-gray-500">{option.description}</span>
+                        )}
+                      </span>
                     </label>
                   ))}
                 </div>
-              </div> */}
+              </div>
             </div>
           </div>
           {isAdminView && (
@@ -750,6 +782,29 @@ export default function EditModal({
             <p className="text-sm text-gray-600">
               <strong>Submitted:</strong> {new Date(formData.created_at).toLocaleString()}
             </p>
+            {isAdminView && formData.edit_token && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-700 mb-2">Edit full registration:</p>
+                  <EditLinkRow
+                    url={getEditRegistrationUrl(formData.edit_token)}
+                    onCopy={() => {
+                      navigator.clipboard.writeText(getEditRegistrationUrl(formData.edit_token))
+                      showToast('Full edit link copied!', 'success')
+                    }}
+                  />
+
+                  <p className="text-sm font-medium text-gray-700 mb-2">Activities form:</p>
+                  <EditLinkRow
+                    url={getEditActivitiesUrl(formData.edit_token)}
+                    onCopy={() => {
+                      navigator.clipboard.writeText(getEditActivitiesUrl(formData.edit_token))
+                      showToast('Activities edit link copied!', 'success')
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Delete */}
