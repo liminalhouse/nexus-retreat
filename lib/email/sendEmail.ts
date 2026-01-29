@@ -1,6 +1,28 @@
 import {Resend} from 'resend'
 import {client} from '@/sanity/lib/client'
 import {toPlainText} from '@portabletext/react'
+import type {PortableTextBlock} from '@portabletext/types'
+import {getEditRegistrationUrl, getEditActivitiesUrl} from '@/lib/utils/editUrls'
+import {ACTIVITY_OPTIONS} from '@/lib/utils/formatRegistrationFields'
+
+// Create a map for quick lookup of activity options by value
+const ACTIVITY_OPTIONS_MAP = new Map(ACTIVITY_OPTIONS.map((opt) => [opt.value, opt]))
+
+/**
+ * Format an activity value to HTML with label and description
+ */
+function formatActivityForEmail(value: string): string {
+  const option = ACTIVITY_OPTIONS_MAP.get(value)
+  if (!option) {
+    // Fallback for unknown values
+    return value.replace(/_/g, ' ')
+  }
+
+  if (option.description) {
+    return `<strong>${option.label}</strong><br/><span style="color: #6b7280; font-size: 13px;">${option.description}</span>`
+  }
+  return `<strong>${option.label}</strong>`
+}
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -14,8 +36,8 @@ type EmailTemplate = {
     }
     alt?: string
   }
-  bodyIntro: any[]
-  bodyOutro: any[]
+  bodyIntro: PortableTextBlock[]
+  bodyOutro: PortableTextBlock[]
   signature: string
 }
 
@@ -57,6 +79,15 @@ type RegistrationData = {
 }
 
 const resendEmailFrom = process.env.RESEND_FROM_EMAIL || 'noreply@noreply.nexus-retreat.com'
+const defaultCcEmail = process.env.RESEND_CC_EMAIL || 'info@nexus-retreat.com'
+
+interface EmailPayload {
+  from: string
+  to: string
+  subject: string
+  html: string
+  cc?: string[]
+}
 
 async function getEmailTemplate(type: string): Promise<EmailTemplate | null> {
   const query = `*[_type == "emailTemplate" && type == $type && isActive == true][0] {
@@ -157,7 +188,7 @@ function formatRegistrationDetails(data: RegistrationData): string {
 
   const activitiesHtml =
     data.activities && data.activities.length > 0
-      ? `<ul style="margin: 4px 0; padding-left: 20px;">${data.activities.map((a) => `<li>${a.replace(/_/g, ' ')}</li>`).join('')}</ul>`
+      ? `<ul style="margin: 4px 0; padding-left: 20px; list-style: none;">${data.activities.map((a) => `<li style="margin-bottom: 8px;">${formatActivityForEmail(a)}</li>`).join('')}</ul>`
       : '<strong>-</strong>'
 
   sections.push(`
@@ -184,7 +215,7 @@ function formatRegistrationDetails(data: RegistrationData): string {
 
   const guestActivitiesHtml =
     data.guest_activities && data.guest_activities.length > 0
-      ? `<ul style="margin: 4px 0; padding-left: 20px;">${data.guest_activities.map((a) => `<li>${a.replace(/_/g, ' ')}</li>`).join('')}</ul>`
+      ? `<ul style="margin: 4px 0; padding-left: 20px; list-style: none;">${data.guest_activities.map((a) => `<li style="margin-bottom: 8px;">${formatActivityForEmail(a)}</li>`).join('')}</ul>`
       : '<strong>-</strong>'
 
   sections.push(`
@@ -228,7 +259,7 @@ export async function sendActivitySelectionEmail(data: RegistrationData) {
     const bodyOutroText = template.bodyOutro ? toPlainText(template.bodyOutro) : ''
 
     // Generate edit activities link using edit token
-    const editActivitiesLink = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'}/edit-registration/${data.editToken}/activities`
+    const editActivitiesLink = getEditActivitiesUrl(data.editToken || '')
 
     const editActivitiesLinkHtml = `<div style="margin: 32px 0; text-align: center;">
            <a href="${editActivitiesLink}" style="display: inline-block; padding: 14px 32px; background-color: #0369a1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
@@ -267,17 +298,17 @@ export async function sendActivitySelectionEmail(data: RegistrationData) {
       </html>
     `
 
-    // Build CC list: guest, assistant, and info@nexus-retreat.com
-    const cc: string[] = ['info@nexus-retreat.com']
+    // Build CC list: guest, assistant
+    const cc: string[] = []
     if (data.assistant_email && data.assistant_email !== data.email) {
       cc.push(data.assistant_email)
     }
-    if (data.guest_email && data.guest_email !== data.email && data.guest_email !== 'info@nexus-retreat.com') {
+    if (data.guest_email && data.guest_email !== data.email) {
       cc.push(data.guest_email)
     }
 
     // Send email using Resend
-    const emailData: any = {
+    const emailData: EmailPayload = {
       from: `Nexus Retreat <${resendEmailFrom}>`,
       to: data.email,
       subject,
@@ -297,182 +328,6 @@ export async function sendActivitySelectionEmail(data: RegistrationData) {
     return {success: true, data: response}
   } catch (error) {
     console.error('Error sending activity selection email:', error)
-    return {success: false, error}
-  }
-}
-
-type CustomEmailRegistration = {
-  firstName: string
-  lastName: string
-  email: string
-  mobilePhone: string
-  title?: string | null
-  organization?: string | null
-  addressLine1: string
-  addressLine2?: string | null
-  city: string
-  state: string
-  zip: string
-  country: string
-  emergencyContactName: string
-  emergencyContactRelation?: string | null
-  emergencyContactEmail: string
-  emergencyContactPhone: string
-  assistantName?: string | null
-  assistantTitle?: string | null
-  assistantEmail?: string | null
-  assistantPhone?: string | null
-  guestName?: string | null
-  guestRelation?: string | null
-  guestEmail?: string | null
-  dietaryRestrictions?: string | null
-  jacketSize?: string | null
-  accommodations?: string[] | null
-  dinnerAttendance?: string[] | null
-  activities?: string[] | null
-  guestDietaryRestrictions?: string | null
-  guestJacketSize?: string | null
-  guestAccommodations?: string[] | null
-  guestDinnerAttendance?: string[] | null
-  guestActivities?: string[] | null
-  editToken: string
-}
-
-// Helper to format array values for display
-function formatArrayValue(arr: string[] | null | undefined): string {
-  if (!arr || arr.length === 0) return ''
-  return arr.map((item) => item.replace(/_/g, ' ')).join(', ')
-}
-
-export async function sendCustomEmail(data: {
-  to: string
-  subject: string
-  body: string // HTML from Tiptap, supports {{variables}}
-  headerImageUrl?: string
-  cc?: string[]
-  registration: CustomEmailRegistration
-}) {
-  try {
-    const reg = data.registration
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'
-
-    // Build variables object with all registration fields
-    const variables: Record<string, string> = {
-      // Basic Info
-      firstName: reg.firstName,
-      lastName: reg.lastName,
-      fullName: `${reg.firstName} ${reg.lastName}`,
-      email: reg.email,
-      mobilePhone: reg.mobilePhone,
-      title: reg.title || '',
-      organization: reg.organization || '',
-
-      // Address
-      addressLine1: reg.addressLine1,
-      addressLine2: reg.addressLine2 || '',
-      city: reg.city,
-      state: reg.state,
-      zip: reg.zip,
-      country: reg.country,
-
-      // Emergency Contact
-      emergencyContactName: reg.emergencyContactName,
-      emergencyContactRelation: reg.emergencyContactRelation || '',
-      emergencyContactEmail: reg.emergencyContactEmail,
-      emergencyContactPhone: reg.emergencyContactPhone,
-
-      // Executive Assistant
-      assistantName: reg.assistantName || '',
-      assistantTitle: reg.assistantTitle || '',
-      assistantEmail: reg.assistantEmail || '',
-      assistantPhone: reg.assistantPhone || '',
-
-      // Guest
-      guestName: reg.guestName || '',
-      guestRelation: reg.guestRelation || '',
-      guestEmail: reg.guestEmail || '',
-
-      // Event Details
-      dietaryRestrictions: reg.dietaryRestrictions || '',
-      jacketSize: reg.jacketSize || '',
-      accommodations: formatArrayValue(reg.accommodations),
-      dinnerAttendance: formatArrayValue(reg.dinnerAttendance),
-      activities: formatArrayValue(reg.activities),
-
-      // Guest Event Details
-      guestDietaryRestrictions: reg.guestDietaryRestrictions || '',
-      guestJacketSize: reg.guestJacketSize || '',
-      guestAccommodations: formatArrayValue(reg.guestAccommodations),
-      guestDinnerAttendance: formatArrayValue(reg.guestDinnerAttendance),
-      guestActivities: formatArrayValue(reg.guestActivities),
-
-      // Links
-      editLink: `${baseUrl}/edit-registration/${reg.editToken}`,
-      activitiesLink: `${baseUrl}/edit-registration/${reg.editToken}/activities`,
-    }
-
-    const subject = replaceVariables(data.subject, variables)
-    const bodyContent = replaceVariables(data.body, variables)
-
-    // Generate header image HTML if provided
-    const headerImageHtml = data.headerImageUrl
-      ? `<div style="margin-bottom: 24px; text-align: center;">
-           <img src="${data.headerImageUrl}" alt="Email header" style="max-width: 100%; height: auto; border-radius: 8px;" />
-         </div>`
-      : ''
-
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #111827; }
-            a { color: #0369a1; }
-            ul, ol { padding-left: 20px; margin: 12px 0; }
-            li { margin: 4px 0; }
-            p { margin: 12px 0; }
-          </style>
-        </head>
-        <body style="max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background-color: #ffffff; padding: 32px; border-radius: 8px;">
-            ${headerImageHtml}
-            ${bodyContent}
-          </div>
-        </body>
-      </html>
-    `
-
-    const emailData: {
-      from: string
-      to: string
-      subject: string
-      html: string
-      cc?: string[]
-    } = {
-      from: `Nexus Retreat <${resendEmailFrom}>`,
-      to: data.to,
-      subject,
-      html,
-    }
-
-    if (data.cc && data.cc.length > 0) {
-      emailData.cc = data.cc
-    }
-
-    console.log('Sending custom email via Resend...', {
-      from: emailData.from,
-      to: emailData.to,
-      cc: emailData.cc,
-      subject: emailData.subject,
-    })
-
-    const response = await resend.emails.send(emailData)
-
-    return {success: true, data: response}
-  } catch (error) {
-    console.error('Error sending custom email:', error)
     return {success: false, error}
   }
 }
@@ -572,15 +427,12 @@ export async function sendRegistrationConfirmation(data: RegistrationData) {
     }
 
     // Send email using Resend
-    const emailData: any = {
+    const emailData: EmailPayload = {
       from: `Nexus Retreat <${resendEmailFrom}>`,
       to: data.email,
       subject,
       html,
-    }
-
-    if (cc.length > 0) {
-      emailData.cc = cc
+      cc: cc.length > 0 ? cc : undefined,
     }
 
     // Use editToken as idempotency key to prevent duplicate emails
@@ -604,6 +456,123 @@ export async function sendRegistrationConfirmation(data: RegistrationData) {
     return {success: true, data: response}
   } catch (error) {
     console.error('Error sending registration confirmation email:', error)
+    return {success: false, error}
+  }
+}
+
+export async function sendActivityUpdateConfirmation(data: RegistrationData) {
+  try {
+    // Fetch template from Sanity
+    const template = await getEmailTemplate('activity_update_confirmation')
+
+    if (!template) {
+      console.error('Activity update confirmation email template not found in Sanity')
+      throw new Error(
+        'Activity update confirmation email template not found in Sanity. Please create an active email template with type "activity_update_confirmation".',
+      )
+    }
+
+    // Replace variables in template
+    const variables = {
+      firstName: data.first_name,
+      lastName: data.last_name,
+      fullName: `${data.first_name} ${data.last_name}`,
+    }
+
+    const subject = replaceVariables(template.subject, variables)
+    const greeting = replaceVariables(template.greeting, variables)
+
+    // Convert portable text to plain text for intro and outro
+    const bodyIntroText = template.bodyIntro ? toPlainText(template.bodyIntro) : ''
+    const bodyOutroText = template.bodyOutro ? toPlainText(template.bodyOutro) : ''
+
+    // Build email HTML with full registration details
+    const registrationDetails = formatRegistrationDetails(data)
+
+    // Generate edit link if editToken is present
+    const editLink = data.editToken ? getEditRegistrationUrl(data.editToken) : ''
+
+    const editLinkHtml = editLink
+      ? `<div style="margin: 32px 0; padding: 24px; background-color: #f0f9ff; border-radius: 8px; border-left: 4px solid #0369a1;">
+           <h3 style="font-size: 16px; font-weight: 600; color: #0369a1; margin: 0 0 12px 0;">Need to Make Changes?</h3>
+           <p style="font-size: 14px; color: #374151; margin: 0 0 16px 0;">
+             If you need to update your registration information, you can use the link below:
+           </p>
+           <a href="${editLink}" style="display: inline-block; padding: 12px 24px; background-color: #0369a1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
+             Edit My Registration
+           </a>
+           <p style="font-size: 12px; color: #6b7280; margin: 16px 0 0 0;">
+             This link is unique to your registration and can be used at any time.
+           </p>
+         </div>`
+      : ''
+
+    // Generate header image HTML if present
+    const headerImageHtml = template.headerImage?.asset?.url
+      ? `<div style="margin-bottom: 24px; text-align: center;">
+           <img src="${template.headerImage.asset.url}" alt="${template.headerImage.alt || 'Email header'}" style="max-width: 100%; height: auto; border-radius: 8px;" />
+         </div>`
+      : ''
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #111827; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #ffffff; padding: 32px; border-radius: 8px;">
+            ${headerImageHtml}
+            <p style="font-size: 16px; margin-bottom: 16px; white-space: pre-line;">${greeting}</p>
+
+            ${bodyIntroText ? `<p style="font-size: 14px; color: #374151; margin-bottom: 24px; white-space: pre-line;">${bodyIntroText}</p>` : ''}
+
+            <div style="border-top: 2px solid #e5e7eb; padding-top: 24px;">
+              <h2 style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 16px;">Your Updated Registration Details</h2>
+              ${registrationDetails}
+            </div>
+
+            ${editLinkHtml}
+
+            ${bodyOutroText ? `<p style="font-size: 14px; color: #374151; margin-top: 24px; white-space: pre-line;">${bodyOutroText}</p>` : ''}
+
+            ${template.signature ? `<p style="font-size: 14px; color: #374151; margin-top: 24px; white-space: pre-line;">${template.signature}</p>` : ''}
+          </div>
+        </body>
+      </html>
+    `
+
+    // Build CC list (exclude the primary email to avoid duplicates)
+    const cc: string[] = []
+    if (data.assistant_email && data.assistant_email !== data.email) {
+      cc.push(data.assistant_email)
+    }
+    if (data.guest_email && data.guest_email !== data.email) {
+      cc.push(data.guest_email)
+    }
+
+    // Send email using Resend
+    const emailData: EmailPayload = {
+      from: `Nexus Retreat <${resendEmailFrom}>`,
+      to: data.email,
+      subject,
+      html,
+      cc: cc.length > 0 ? cc : undefined,
+    }
+
+    console.log('Sending activity update confirmation email via Resend...', {
+      from: emailData.from,
+      to: emailData.to,
+      cc: emailData.cc,
+      subject: emailData.subject,
+    })
+
+    const response = await resend.emails.send(emailData)
+
+    return {success: true, data: response}
+  } catch (error) {
+    console.error('Error sending activity update confirmation email:', error)
     return {success: false, error}
   }
 }

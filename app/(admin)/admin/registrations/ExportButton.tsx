@@ -5,6 +5,7 @@ import {
   formatDinnerAttendanceAsString,
   formatActivitiesAsString,
 } from '@/lib/utils/formatRegistrationFields'
+import {getEditRegistrationUrl, getEditActivitiesUrl} from '@/lib/utils/editUrls'
 import {getFieldMetadata} from '@/lib/utils/registrationFields'
 import type {Registration} from '@/lib/types/registration'
 
@@ -19,7 +20,12 @@ export default function ExportButton({registrations}: {registrations: Registrati
     const fieldMetadata = getFieldMetadata()
 
     // Create CSV headers dynamically from form config
-    const headers = ['Registration Date', ...fieldMetadata.map((field) => field.label)]
+    const headers = [
+      'Registration Date',
+      ...fieldMetadata.map((field) => field.label),
+      'Edit Registration Link',
+      'Activities Form Link',
+    ]
 
     // Helper to format field value
     const formatValue = (fieldName: string, value: any): string => {
@@ -45,6 +51,10 @@ export default function ExportButton({registrations}: {registrations: Registrati
         const value = (reg as any)[field.name]
         row.push(formatValue(field.name, value))
       })
+
+      // Add edit links
+      row.push(getEditRegistrationUrl(reg.edit_token))
+      row.push(getEditActivitiesUrl(reg.edit_token))
 
       return row
     })
