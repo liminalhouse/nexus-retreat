@@ -1,6 +1,7 @@
 import {Resend} from 'resend'
 import {client} from '@/sanity/lib/client'
 import {toPlainText} from '@portabletext/react'
+import type {PortableTextBlock} from '@portabletext/types'
 import {getEditRegistrationUrl, getEditActivitiesUrl} from '@/lib/utils/editUrls'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -15,8 +16,8 @@ type EmailTemplate = {
     }
     alt?: string
   }
-  bodyIntro: any[]
-  bodyOutro: any[]
+  bodyIntro: PortableTextBlock[]
+  bodyOutro: PortableTextBlock[]
   signature: string
 }
 

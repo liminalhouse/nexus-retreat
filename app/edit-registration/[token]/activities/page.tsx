@@ -49,12 +49,12 @@ function ActivityCheckboxList({
 }) {
   return (
     <div className="flex flex-col gap-3">
-      {options.map((option, idx) => {
+      {options.map((option) => {
         const isChecked = selectedValues.includes(option.value)
-        const checkboxId = `${idPrefix}_${idx}`
+        const checkboxId = `${idPrefix}_${option.value}`
 
         return (
-          <div key={idx} className="flex items-start">
+          <div key={option.value} className="flex items-start">
             <div className="flex items-center h-5 mt-0.5">
               <input
                 type="checkbox"

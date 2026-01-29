@@ -83,7 +83,8 @@ export const ACTIVITY_OPTIONS: ActivityOption[] = [
   {label: 'Spa', value: 'spa', description: 'Our team can assist with bookings'},
 ]
 
-export const GUEST_ACTIVITY_OPTIONS: ActivityOption[] = [...ACTIVITY_OPTIONS]
+// Guest activity options are the same as attendee options
+export const GUEST_ACTIVITY_OPTIONS = ACTIVITY_OPTIONS
 
 // Label mappings derived from options
 export const ACCOMMODATION_LABELS: Record<string, string> = {
