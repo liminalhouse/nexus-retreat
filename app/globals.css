@@ -164,3 +164,7 @@ button {
 .animate-slide-in-right {
   animation: slideInRight 0.3s ease-out forwards;
 }
+
+#sanity {
+  height: 100%;
+}

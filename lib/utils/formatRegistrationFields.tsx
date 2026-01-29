@@ -46,7 +46,7 @@ export const ACTIVITY_OPTIONS: ActivityOption[] = [
     label: 'Golf Challenge',
     value: 'golf_challenge',
     description:
-      'March 19, 3-5pm: 3-hole Invictus challenge on the driving range with Prince Harry. Cocktails, camaraderie, charity, and a competition!',
+      'March 19, 3-5pm: 3-hole Invictus challenge on the driving range with Prince Harry — cocktails, camaraderie, charity, and a competition!',
     chipDescription: 'March 19',
   },
   {label: 'Tennis', value: 'tennis', description: 'Court booking available'},
