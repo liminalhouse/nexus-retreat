@@ -9,7 +9,7 @@ export default async function AdminLayout({children}: {children: React.ReactNode
 
   return (
     <ToastProvider>
-      <header className="bg-white border-b border-gray-200 shadow-sm">
+      <header className="bg-white border-b border-gray-200 shadow-sm z-[101]">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link href="/admin" className="text-xl font-bold text-gray-900">
@@ -21,7 +21,7 @@ export default async function AdminLayout({children}: {children: React.ReactNode
           </div>
         </div>
       </header>
-      {children}
+      <main className="min-h-screen max-h-[200vh]">{children}</main>
       <ToastContainer />
     </ToastProvider>
   )
