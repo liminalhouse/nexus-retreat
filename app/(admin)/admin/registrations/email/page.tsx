@@ -16,16 +16,8 @@ export default async function EmailRegistrantsPage() {
       .from(registrationsTable)
       .orderBy(desc(registrationsTable.createdAt))
 
-    // Map camelCase fields to snake_case for compatibility
-    registrations = results.map((reg) => ({
-      id: reg.id,
-      email: reg.email,
-      first_name: reg.firstName,
-      last_name: reg.lastName,
-      profile_picture: reg.profilePicture,
-      assistant_email: reg.assistantEmail,
-      guest_email: reg.guestEmail,
-    }))
+    // Pass all registration data for preview
+    registrations = results
   } catch (err) {
     console.error('Error fetching registrations:', err)
     error = err instanceof Error ? err : new Error('Failed to fetch registrations')

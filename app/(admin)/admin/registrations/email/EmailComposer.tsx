@@ -2,6 +2,7 @@
 
 import {useState, useEffect, useMemo} from 'react'
 import RichTextEditor from './RichTextEditor'
+import type {Registration} from '@/lib/db/schema'
 
 type CCOptions = {
   assistants: boolean
@@ -44,18 +45,57 @@ const NEXUS_COLORS = {
   },
 }
 
+// Replace template variables with actual registration data
+function replaceVariables(text: string, registration: Registration | null): string {
+  if (!registration) return text
+
+  const variables: Record<string, string> = {
+    firstName: registration.firstName,
+    lastName: registration.lastName,
+    fullName: `${registration.firstName} ${registration.lastName}`,
+    email: registration.email,
+    mobilePhone: registration.mobilePhone || '',
+    title: registration.title || '',
+    organization: registration.organization || '',
+    city: registration.city || '',
+    state: registration.state || '',
+    guestName: registration.guestName || '',
+    addressLine1: registration.addressLine1 || '',
+    addressLine2: registration.addressLine2 || '',
+    zip: registration.zip || '',
+    country: registration.country || '',
+    emergencyContactName: registration.emergencyContactName || '',
+    emergencyContactPhone: registration.emergencyContactPhone || '',
+    emergencyContactEmail: registration.emergencyContactEmail || '',
+    assistantName: registration.assistantName || '',
+    assistantEmail: registration.assistantEmail || '',
+    dietaryRestrictions: registration.dietaryRestrictions || '',
+    jacketSize: registration.jacketSize || '',
+  }
+
+  return text.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+    return variables[key] !== undefined ? variables[key] : match
+  })
+}
+
 function EmailPreview({
   body,
   headerImageUrl,
   subject,
+  registration,
 }: {
   body: string
   headerImageUrl?: string
   subject: string
+  registration: Registration | null
 }) {
+  // Replace variables with actual data for preview
+  const processedBody = useMemo(() => replaceVariables(body, registration), [body, registration])
+  const processedSubject = useMemo(() => replaceVariables(subject, registration), [subject, registration])
+
   // Style the body content with proper typography (matching server-side)
   const styledBody = useMemo(() => {
-    return body
+    return processedBody
       .replace(
         /<p>/g,
         `<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; color: ${NEXUS_COLORS.gray[600]}; margin: 0 0 16px 0; line-height: 1.7;">`,
@@ -87,7 +127,7 @@ function EmailPreview({
         /<blockquote>/g,
         `<blockquote style="margin: 16px 0; padding: 16px 20px; background: ${NEXUS_COLORS.beige}; border-left: 4px solid ${NEXUS_COLORS.coral}; border-radius: 0 8px 8px 0;">`,
       )
-  }, [body])
+  }, [processedBody])
 
   return (
     <div className="bg-[#faf5f1] p-6 rounded-lg min-h-[500px]">
@@ -132,7 +172,7 @@ function EmailPreview({
                 margin: '4px 0 0 0',
               }}
             >
-              {subject || 'No subject'}
+              {processedSubject || 'No subject'}
             </p>
           </div>
 
@@ -140,7 +180,7 @@ function EmailPreview({
 
           {/* Body content */}
           <div className="px-10 pb-8">
-            {body ? (
+            {processedBody ? (
               <div dangerouslySetInnerHTML={{__html: styledBody}} />
             ) : (
               <p
@@ -200,6 +240,7 @@ export default function EmailComposer({
   onSend,
   sendResults,
   onClearResults,
+  previewRegistration,
 }: {
   subject: string
   setSubject: (subject: string) => void
@@ -219,6 +260,7 @@ export default function EmailComposer({
     results: SendResult[]
   } | null
   onClearResults: () => void
+  previewRegistration: Registration | null
 }) {
   const [templates, setTemplates] = useState<EmailTemplate[]>([])
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('')
@@ -408,7 +450,25 @@ export default function EmailComposer({
       {/* Preview Tab */}
       {activeTab === 'preview' && (
         <div className="p-4">
-          <EmailPreview body={body} headerImageUrl={headerImageUrl} subject={subject} />
+          {/* Preview info banner */}
+          {previewRegistration && (
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <span className="font-medium">Preview for:</span> {previewRegistration.firstName} {previewRegistration.lastName} ({previewRegistration.email})
+              </p>
+              <p className="text-xs text-blue-600 mt-1">
+                Variables like {`{{firstName}}`} are replaced with this recipient&apos;s data
+              </p>
+            </div>
+          )}
+          {!previewRegistration && selectedCount > 0 && (
+            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-sm text-amber-800">
+                Select a recipient to see variable replacements in the preview
+              </p>
+            </div>
+          )}
+          <EmailPreview body={body} headerImageUrl={headerImageUrl} subject={subject} registration={previewRegistration} />
 
           {/* Send Button in Preview */}
           <div className="pt-4 mt-4 border-t border-gray-200">

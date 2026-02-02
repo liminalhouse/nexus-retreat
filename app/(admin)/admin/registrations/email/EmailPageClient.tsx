@@ -5,16 +5,7 @@ import RecipientList from './RecipientList'
 import EmailComposer from './EmailComposer'
 import Outbox from './Outbox'
 import {PaperAirplaneIcon, PencilSquareIcon} from '@heroicons/react/24/outline'
-
-type RegistrationForEmail = {
-  id: string
-  email: string
-  first_name: string
-  last_name: string
-  profile_picture: string | null
-  assistant_email: string | null
-  guest_email: string | null
-}
+import type {Registration} from '@/lib/db/schema'
 
 type CCOptions = {
   assistants: boolean
@@ -30,7 +21,7 @@ type SendResult = {
 
 type Tab = 'compose' | 'outbox'
 
-export default function EmailPageClient({registrations}: {registrations: RegistrationForEmail[]}) {
+export default function EmailPageClient({registrations}: {registrations: Registration[]}) {
   const [activeTab, setActiveTab] = useState<Tab>('compose')
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [subject, setSubject] = useState('')
@@ -187,6 +178,11 @@ export default function EmailPageClient({registrations}: {registrations: Registr
               onSend={handleSend}
               sendResults={sendResults}
               onClearResults={() => setSendResults(null)}
+              previewRegistration={
+                selectedIds.size > 0
+                  ? registrations.find((r) => selectedIds.has(r.id)) || null
+                  : null
+              }
             />
           </div>
         </div>

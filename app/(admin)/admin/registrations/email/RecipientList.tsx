@@ -2,16 +2,7 @@
 
 import {useState, useMemo} from 'react'
 import Avatar from '@/app/components/Avatar'
-
-type RegistrationForEmail = {
-  id: string
-  email: string
-  first_name: string
-  last_name: string
-  profile_picture: string | null
-  assistant_email: string | null
-  guest_email: string | null
-}
+import type {Registration} from '@/lib/db/schema'
 
 export default function RecipientList({
   registrations,
@@ -19,7 +10,7 @@ export default function RecipientList({
   onSelectAll,
   onSelectOne,
 }: {
-  registrations: RegistrationForEmail[]
+  registrations: Registration[]
   selectedIds: Set<string>
   onSelectAll: (checked: boolean) => void
   onSelectOne: (id: string, checked: boolean) => void
@@ -33,8 +24,8 @@ export default function RecipientList({
     const query = searchQuery.toLowerCase()
     return registrations.filter(
       (r) =>
-        r.first_name.toLowerCase().includes(query) ||
-        r.last_name.toLowerCase().includes(query) ||
+        r.firstName.toLowerCase().includes(query) ||
+        r.lastName.toLowerCase().includes(query) ||
         r.email.toLowerCase().includes(query),
     )
   }, [registrations, searchQuery])
@@ -126,14 +117,14 @@ export default function RecipientList({
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <Avatar
-                  src={registration.profile_picture}
-                  firstName={registration.first_name}
-                  lastName={registration.last_name}
+                  src={registration.profilePicture}
+                  firstName={registration.firstName}
+                  lastName={registration.lastName}
                   size="sm"
                 />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-gray-900 truncate">
-                    {registration.first_name} {registration.last_name}
+                    {registration.firstName} {registration.lastName}
                   </p>
                   <p className="text-xs text-gray-500 truncate">
                     {registration.email}
