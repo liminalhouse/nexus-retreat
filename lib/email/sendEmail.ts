@@ -107,6 +107,29 @@ function formatActivityForEmail(value: string): string {
 }
 
 // ============================================================================
+// Nexus Brand Colors
+// ============================================================================
+
+const NEXUS_COLORS = {
+  navy: '#3d4663',
+  navyDark: '#1c2544',
+  coral: '#f49898',
+  coralLight: '#f5a8a8',
+  beige: '#faf5f1',
+  seafoam: '#bed1bf',
+  white: '#ffffff',
+  gray: {
+    50: '#f9fafb',
+    100: '#f3f4f6',
+    200: '#e5e7eb',
+    300: '#d1d5db',
+    400: '#9ca3af',
+    500: '#6b7280',
+    600: '#4b5563',
+  },
+}
+
+// ============================================================================
 // Shared Email Builder
 // ============================================================================
 
@@ -114,48 +137,51 @@ function buildEmailHtml(options: BuildEmailOptions): string {
   const {headerImageUrl, headerImageAlt, sections, signature} = options
 
   const headerImageHtml = headerImageUrl
-    ? `<div style="margin-bottom: 24px; text-align: center;">
-         <img src="${headerImageUrl}" alt="${headerImageAlt || 'Email header'}" style="max-width: 100%; height: auto; border-radius: 8px;" />
-       </div>`
+    ? `<tr>
+         <td style="padding: 0;">
+           <img src="${headerImageUrl}" alt="${headerImageAlt || 'Nexus Retreat'}" style="width: 100%; height: auto; display: block;" />
+         </td>
+       </tr>`
     : ''
 
   const sectionsHtml = sections
     .map((section) => {
       switch (section.type) {
         case 'greeting':
-          return `<p style="font-size: 16px; margin-bottom: 16px; white-space: pre-line;">${section.content}</p>`
+          return `<p style="font-family: Georgia, 'Times New Roman', serif; font-size: 20px; color: ${NEXUS_COLORS.navy}; margin: 0 0 20px 0; line-height: 1.5;">${section.content}</p>`
 
         case 'text':
           return section.content
-            ? `<p style="font-size: 14px; color: #374151; margin-bottom: 24px; white-space: pre-line;">${section.content}</p>`
+            ? `<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; color: ${NEXUS_COLORS.gray[600]}; margin: 0 0 20px 0; line-height: 1.7;">${section.content}</p>`
             : ''
 
         case 'button':
-          return `<div style="margin: 32px 0; text-align: center;">
-             <a href="${section.buttonUrl}" style="display: inline-block; padding: 14px 32px; background-color: #0369a1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
-               ${section.buttonText}
-             </a>
-           </div>`
+          return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 32px auto;">
+             <tr>
+               <td style="background: ${NEXUS_COLORS.coral}; border-radius: 8px;">
+                 <a href="${section.buttonUrl}" style="display: inline-block; padding: 16px 36px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; font-weight: 600; color: ${NEXUS_COLORS.navyDark}; text-decoration: none;">
+                   ${section.buttonText}
+                 </a>
+               </td>
+             </tr>
+           </table>`
 
         case 'registrationDetails':
-          return `<div style="border-top: 2px solid #e5e7eb; padding-top: 24px;">
-             <h2 style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 16px;">${section.title || 'Your Registration Details'}</h2>
+          return `<div style="border-top: 2px solid ${NEXUS_COLORS.seafoam}; padding-top: 28px; margin-top: 28px;">
+             <h2 style="font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 0 0 20px 0;">${section.title || 'Your Registration Details'}</h2>
              ${section.content}
            </div>`
 
         case 'editLink':
           return section.buttonUrl
-            ? `<div style="margin: 32px 0; padding: 24px; background-color: #f0f9ff; border-radius: 8px; border-left: 4px solid #0369a1;">
-               <h3 style="font-size: 16px; font-weight: 600; color: #0369a1; margin: 0 0 12px 0;">Need to Make Changes?</h3>
-               <p style="font-size: 14px; color: #374151; margin: 0 0 16px 0;">
-                 If you need to update your registration information, you can use the link below:
+            ? `<div style="margin: 32px 0; padding: 24px; background-color: ${NEXUS_COLORS.beige}; border-radius: 12px; border-left: 4px solid ${NEXUS_COLORS.coral};">
+               <h3 style="font-family: Georgia, 'Times New Roman', serif; font-size: 17px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 0 0 12px 0;">Need to Make Changes?</h3>
+               <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; color: ${NEXUS_COLORS.gray[600]}; margin: 0 0 16px 0; line-height: 1.6;">
+                 You can update your registration information anytime using the link below.
                </p>
-               <a href="${section.buttonUrl}" style="display: inline-block; padding: 12px 24px; background-color: #0369a1; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
+               <a href="${section.buttonUrl}" style="display: inline-block; padding: 12px 24px; background-color: ${NEXUS_COLORS.navy}; color: ${NEXUS_COLORS.white}; text-decoration: none; border-radius: 6px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 600; font-size: 14px;">
                  Edit My Registration
                </a>
-               <p style="font-size: 12px; color: #6b7280; margin: 16px 0 0 0;">
-                 This link is unique to your registration and can be used at any time.
-               </p>
              </div>`
             : ''
 
@@ -169,22 +195,67 @@ function buildEmailHtml(options: BuildEmailOptions): string {
     .join('\n')
 
   const signatureHtml = signature
-    ? `<p style="font-size: 14px; color: #374151; margin-top: 24px; white-space: pre-line;">${signature}</p>`
+    ? `<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; color: ${NEXUS_COLORS.gray[500]}; margin: 28px 0 0 0; padding-top: 20px; border-top: 1px solid ${NEXUS_COLORS.gray[200]}; line-height: 1.6;">${signature}</p>`
     : ''
 
   return `
     <!DOCTYPE html>
-    <html>
+    <html lang="en">
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Nexus Retreat</title>
+        <!--[if mso]>
+        <noscript>
+          <xml>
+            <o:OfficeDocumentSettings>
+              <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+          </xml>
+        </noscript>
+        <![endif]-->
       </head>
-      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #111827; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="background-color: #ffffff; padding: 32px; border-radius: 8px;">
-          ${headerImageHtml}
-          ${sectionsHtml}
-          ${signatureHtml}
-        </div>
+      <body style="margin: 0; padding: 0; background-color: ${NEXUS_COLORS.beige}; -webkit-font-smoothing: antialiased;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: ${NEXUS_COLORS.beige};">
+          <tr>
+            <td style="padding: 40px 20px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: 0 auto; max-width: 600px;">
+                <!-- Logo/Header Section -->
+                <tr>
+                  <td style="text-align: center; padding-bottom: 24px;">
+                    <span style="font-family: Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 600; color: ${NEXUS_COLORS.navy}; letter-spacing: -0.5px;">Nexus Retreat</span>
+                  </td>
+                </tr>
+                <!-- Main Content Card -->
+                <tr>
+                  <td>
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: ${NEXUS_COLORS.white}; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);">
+                      ${headerImageHtml}
+                      <tr>
+                        <td style="padding: 40px 40px 32px 40px;">
+                          ${sectionsHtml}
+                          ${signatureHtml}
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <!-- Footer -->
+                <tr>
+                  <td style="text-align: center; padding-top: 32px;">
+                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; color: ${NEXUS_COLORS.gray[400]}; margin: 0 0 8px 0;">
+                      Nexus Retreat · Boca Raton, Florida
+                    </p>
+                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; color: ${NEXUS_COLORS.gray[400]}; margin: 0;">
+                      Questions? Contact us at <a href="mailto:info@nexus-retreat.com" style="color: ${NEXUS_COLORS.coral}; text-decoration: none;">info@nexus-retreat.com</a>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
       </body>
     </html>
   `
@@ -223,116 +294,150 @@ function replaceVariables(text: string, data: Record<string, string>): string {
 function formatRegistrationDetails(data: RegistrationData): string {
   const sections: string[] = []
 
+  const sectionStyle = `background-color: ${NEXUS_COLORS.beige}; border-radius: 12px; padding: 20px; margin-bottom: 16px;`
+  const labelStyle = `font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: ${NEXUS_COLORS.gray[400]}; margin: 0;`
+  const valueStyle = `font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; color: ${NEXUS_COLORS.navy}; margin: 4px 0 16px 0; font-weight: 500;`
+  const headingStyle = `font-family: Georgia, 'Times New Roman', serif; font-size: 17px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 28px 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid ${NEXUS_COLORS.seafoam};`
+
   // Personal Information
   sections.push(`
-    <h3 style="font-size: 16px; font-weight: 600; color: #374151; margin-top: 24px; margin-bottom: 12px;">Personal Information</h3>
-    <div style="background-color: #f9fafb; border-radius: 8px; padding: 16px;">
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">First Name:</span> <strong>${data.first_name || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Last Name:</span> <strong>${data.last_name || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Email:</span> <strong>${data.email || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Phone:</span> <strong>${data.mobile_phone || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Title:</span> <strong>${data.title || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Organization:</span> <strong>${data.organization || '-'}</strong></p>
+    <h3 style="${headingStyle}">Personal Information</h3>
+    <div style="${sectionStyle}">
+      <p style="${labelStyle}">Name</p>
+      <p style="${valueStyle}">${data.first_name || ''} ${data.last_name || ''}</p>
+      <p style="${labelStyle}">Email</p>
+      <p style="${valueStyle}">${data.email || '-'}</p>
+      <p style="${labelStyle}">Phone</p>
+      <p style="${valueStyle}">${data.mobile_phone || '-'}</p>
+      <p style="${labelStyle}">Title & Organization</p>
+      <p style="${valueStyle}; margin-bottom: 0;">${data.title || '-'}${data.organization ? ` at ${data.organization}` : ''}</p>
     </div>
   `)
 
   // Address
+  const addressParts = [
+    data.address_line_1,
+    data.address_line_2,
+    [data.city, data.state, data.zip].filter(Boolean).join(', '),
+    data.country,
+  ].filter(Boolean)
+
   sections.push(`
-    <h3 style="font-size: 16px; font-weight: 600; color: #374151; margin-top: 24px; margin-bottom: 12px;">Address</h3>
-    <div style="background-color: #f9fafb; border-radius: 8px; padding: 16px;">
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Street:</span> <strong>${data.address_line_1 ? `${data.address_line_1}${data.address_line_2 ? `, ${data.address_line_2}` : ''}` : '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">City:</span> <strong>${data.city || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">State:</span> <strong>${data.state || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Zip Code:</span> <strong>${data.zip || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Country:</span> <strong>${data.country || '-'}</strong></p>
+    <h3 style="${headingStyle}">Address</h3>
+    <div style="${sectionStyle}">
+      <p style="${valueStyle}; margin: 0; line-height: 1.6;">${addressParts.length > 0 ? addressParts.join('<br>') : '-'}</p>
     </div>
   `)
 
   // Emergency Contact
   sections.push(`
-    <h3 style="font-size: 16px; font-weight: 600; color: #374151; margin-top: 24px; margin-bottom: 12px;">Emergency Contact</h3>
-    <div style="background-color: #f9fafb; border-radius: 8px; padding: 16px;">
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Name:</span> <strong>${data.emergency_contact_name || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Relation:</span> <strong>${data.emergency_contact_relation || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Phone:</span> <strong>${data.emergency_contact_phone || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Email:</span> <strong>${data.emergency_contact_email || '-'}</strong></p>
+    <h3 style="${headingStyle}">Emergency Contact</h3>
+    <div style="${sectionStyle}">
+      <p style="${labelStyle}">Name & Relationship</p>
+      <p style="${valueStyle}">${data.emergency_contact_name || '-'}${data.emergency_contact_relation ? ` (${data.emergency_contact_relation})` : ''}</p>
+      <p style="${labelStyle}">Phone</p>
+      <p style="${valueStyle}">${data.emergency_contact_phone || '-'}</p>
+      <p style="${labelStyle}">Email</p>
+      <p style="${valueStyle}; margin-bottom: 0;">${data.emergency_contact_email || '-'}</p>
     </div>
   `)
 
   // Executive Assistant
-  sections.push(`
-    <h3 style="font-size: 16px; font-weight: 600; color: #374151; margin-top: 24px; margin-bottom: 12px;">Executive Assistant</h3>
-    <div style="background-color: #f9fafb; border-radius: 8px; padding: 16px;">
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Name:</span> <strong>${data.assistant_name || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Title:</span> <strong>${data.assistant_title || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Email:</span> <strong>${data.assistant_email || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Phone:</span> <strong>${data.assistant_phone || '-'}</strong></p>
-    </div>
-  `)
+  if (data.assistant_name || data.assistant_email) {
+    sections.push(`
+      <h3 style="${headingStyle}">Executive Assistant</h3>
+      <div style="${sectionStyle}">
+        <p style="${labelStyle}">Name</p>
+        <p style="${valueStyle}">${data.assistant_name || '-'}${data.assistant_title ? `, ${data.assistant_title}` : ''}</p>
+        <p style="${labelStyle}">Email</p>
+        <p style="${valueStyle}">${data.assistant_email || '-'}</p>
+        <p style="${labelStyle}">Phone</p>
+        <p style="${valueStyle}; margin-bottom: 0;">${data.assistant_phone || '-'}</p>
+      </div>
+    `)
+  }
 
   // Guest Information
-  sections.push(`
-    <h3 style="font-size: 16px; font-weight: 600; color: #374151; margin-top: 24px; margin-bottom: 12px;">Guest Information</h3>
-    <div style="background-color: #f9fafb; border-radius: 8px; padding: 16px;">
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Guest Name:</span> <strong>${data.guest_name || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Relation:</span> <strong>${data.guest_relation || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Guest Email:</span> <strong>${data.guest_email || '-'}</strong></p>
-    </div>
-  `)
+  if (data.guest_name || data.guest_email) {
+    sections.push(`
+      <h3 style="${headingStyle}">Guest Information</h3>
+      <div style="${sectionStyle}">
+        <p style="${labelStyle}">Guest Name</p>
+        <p style="${valueStyle}">${data.guest_name || '-'}${data.guest_relation ? ` (${data.guest_relation})` : ''}</p>
+        <p style="${labelStyle}">Guest Email</p>
+        <p style="${valueStyle}; margin-bottom: 0;">${data.guest_email || '-'}</p>
+      </div>
+    `)
+  }
 
   // Event Details
+  const listStyle = `margin: 4px 0 0 0; padding-left: 0; list-style: none;`
+  const listItemStyle = `font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; color: ${NEXUS_COLORS.navy}; padding: 8px 12px; background: ${NEXUS_COLORS.white}; border-radius: 6px; margin-bottom: 6px;`
+
   const accommodationsHtml =
     data.accommodations && data.accommodations.length > 0
-      ? `<ul style="margin: 4px 0; padding-left: 20px;">${data.accommodations.map((acc) => `<li>${acc.replace('_', ' ')}</li>`).join('')}</ul>`
-      : '<strong>-</strong>'
+      ? `<ul style="${listStyle}">${data.accommodations.map((acc) => `<li style="${listItemStyle}">${acc.replace('_', ' ')}</li>`).join('')}</ul>`
+      : `<p style="${valueStyle}">-</p>`
 
   const dinnersHtml =
     data.dinner_attendance && data.dinner_attendance.length > 0
-      ? `<ul style="margin: 4px 0; padding-left: 20px;">${data.dinner_attendance.map((d) => `<li>${d.replace('_', ' ')}</li>`).join('')}</ul>`
-      : '<strong>-</strong>'
+      ? `<ul style="${listStyle}">${data.dinner_attendance.map((d) => `<li style="${listItemStyle}">${d.replace('_', ' ')}</li>`).join('')}</ul>`
+      : `<p style="${valueStyle}">-</p>`
 
   const activitiesHtml =
     data.activities && data.activities.length > 0
-      ? `<ul style="margin: 4px 0; padding-left: 20px; list-style: none;">${data.activities.map((a) => `<li style="margin-bottom: 8px;">${formatActivityForEmail(a)}</li>`).join('')}</ul>`
-      : '<strong>-</strong>'
+      ? `<ul style="${listStyle}">${data.activities.map((a) => `<li style="${listItemStyle}">${formatActivityForEmail(a)}</li>`).join('')}</ul>`
+      : `<p style="${valueStyle}">-</p>`
 
   sections.push(`
-    <h3 style="font-size: 16px; font-weight: 600; color: #374151; margin-top: 24px; margin-bottom: 12px;">Event Details</h3>
-    <div style="background-color: #f9fafb; border-radius: 8px; padding: 16px;">
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Dietary Restrictions:</span> <strong>${data.dietary_restrictions || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Jacket Size:</span> <strong>${data.jacket_size || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Accommodations:</span> ${accommodationsHtml}</p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Dinner Attendance:</span> ${dinnersHtml}</p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Activities:</span> ${activitiesHtml}</p>
+    <h3 style="${headingStyle}">Event Preferences</h3>
+    <div style="${sectionStyle}">
+      <p style="${labelStyle}">Dietary Restrictions</p>
+      <p style="${valueStyle}">${data.dietary_restrictions || 'None specified'}</p>
+      <p style="${labelStyle}">Jacket Size</p>
+      <p style="${valueStyle}">${data.jacket_size || '-'}</p>
+      <p style="${labelStyle}">Accommodations</p>
+      ${accommodationsHtml}
+      <p style="${labelStyle}; margin-top: 16px;">Dinner Attendance</p>
+      ${dinnersHtml}
+      <p style="${labelStyle}; margin-top: 16px;">Activities</p>
+      ${activitiesHtml}
     </div>
   `)
 
   // Guest Event Details
-  const guestAccommodationsHtml =
-    data.guest_accommodations && data.guest_accommodations.length > 0
-      ? `<ul style="margin: 4px 0; padding-left: 20px;">${data.guest_accommodations.map((acc) => `<li>${acc.replace('_', ' ')}</li>`).join('')}</ul>`
-      : '<strong>-</strong>'
+  if (data.guest_name) {
+    const guestAccommodationsHtml =
+      data.guest_accommodations && data.guest_accommodations.length > 0
+        ? `<ul style="${listStyle}">${data.guest_accommodations.map((acc) => `<li style="${listItemStyle}">${acc.replace('_', ' ')}</li>`).join('')}</ul>`
+        : `<p style="${valueStyle}">-</p>`
 
-  const guestDinnersHtml =
-    data.guest_dinner_attendance && data.guest_dinner_attendance.length > 0
-      ? `<ul style="margin: 4px 0; padding-left: 20px;">${data.guest_dinner_attendance.map((d) => `<li>${d.replace('_', ' ')}</li>`).join('')}</ul>`
-      : '<strong>-</strong>'
+    const guestDinnersHtml =
+      data.guest_dinner_attendance && data.guest_dinner_attendance.length > 0
+        ? `<ul style="${listStyle}">${data.guest_dinner_attendance.map((d) => `<li style="${listItemStyle}">${d.replace('_', ' ')}</li>`).join('')}</ul>`
+        : `<p style="${valueStyle}">-</p>`
 
-  const guestActivitiesHtml =
-    data.guest_activities && data.guest_activities.length > 0
-      ? `<ul style="margin: 4px 0; padding-left: 20px; list-style: none;">${data.guest_activities.map((a) => `<li style="margin-bottom: 8px;">${formatActivityForEmail(a)}</li>`).join('')}</ul>`
-      : '<strong>-</strong>'
+    const guestActivitiesHtml =
+      data.guest_activities && data.guest_activities.length > 0
+        ? `<ul style="${listStyle}">${data.guest_activities.map((a) => `<li style="${listItemStyle}">${formatActivityForEmail(a)}</li>`).join('')}</ul>`
+        : `<p style="${valueStyle}">-</p>`
 
-  sections.push(`
-    <h3 style="font-size: 16px; font-weight: 600; color: #374151; margin-top: 24px; margin-bottom: 12px;">Guest Event Details</h3>
-    <div style="background-color: #f9fafb; border-radius: 8px; padding: 16px;">
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Guest Dietary Restrictions:</span> <strong>${data.guest_dietary_restrictions || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Guest Jacket Size:</span> <strong>${data.guest_jacket_size || '-'}</strong></p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Guest Accommodations:</span> ${guestAccommodationsHtml}</p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Guest Dinner Attendance:</span> ${guestDinnersHtml}</p>
-      <p style="margin: 8px 0;"><span style="color: #6b7280;">Guest Activities:</span> ${guestActivitiesHtml}</p>
-    </div>
-  `)
+    sections.push(`
+      <h3 style="${headingStyle}">Guest Event Preferences</h3>
+      <div style="${sectionStyle}">
+        <p style="${labelStyle}">Guest Dietary Restrictions</p>
+        <p style="${valueStyle}">${data.guest_dietary_restrictions || 'None specified'}</p>
+        <p style="${labelStyle}">Guest Jacket Size</p>
+        <p style="${valueStyle}">${data.guest_jacket_size || '-'}</p>
+        <p style="${labelStyle}">Guest Accommodations</p>
+        ${guestAccommodationsHtml}
+        <p style="${labelStyle}; margin-top: 16px;">Guest Dinner Attendance</p>
+        ${guestDinnersHtml}
+        <p style="${labelStyle}; margin-top: 16px;">Guest Activities</p>
+        ${guestActivitiesHtml}
+      </div>
+    `)
+  }
 
   return sections.join('')
 }
@@ -599,10 +704,7 @@ export async function sendCustomEmail(params: CustomEmailParams) {
     const processedSubject = replaceVariables(subject, variables)
     const processedBody = replaceVariables(body, variables)
 
-    const html = buildEmailHtml({
-      headerImageUrl,
-      sections: [{type: 'custom', content: `<div style="white-space: pre-line;">${processedBody}</div>`}],
-    })
+    const html = buildCustomEmailHtml({body: processedBody, headerImageUrl})
 
     return sendEmail({
       from: `Nexus Retreat <${resendEmailFrom}>`,
@@ -615,4 +717,102 @@ export async function sendCustomEmail(params: CustomEmailParams) {
     console.error('Error sending custom email:', error)
     return {success: false, error}
   }
+}
+
+// ============================================================================
+// Custom Email HTML Builder (for admin bulk emails)
+// ============================================================================
+
+function buildCustomEmailHtml(options: {body: string; headerImageUrl?: string}): string {
+  const {body, headerImageUrl} = options
+
+  const headerImageHtml = headerImageUrl
+    ? `<tr>
+         <td style="padding: 0;">
+           <img src="${headerImageUrl}" alt="Nexus Retreat" style="width: 100%; height: auto; display: block;" />
+         </td>
+       </tr>`
+    : ''
+
+  // Style the body content with proper typography
+  const styledBody = body
+    .replace(/<p>/g, `<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; color: ${NEXUS_COLORS.gray[600]}; margin: 0 0 16px 0; line-height: 1.7;">`)
+    .replace(/<h1>/g, `<h1 style="font-family: Georgia, 'Times New Roman', serif; font-size: 26px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 0 0 20px 0; line-height: 1.3;">`)
+    .replace(/<h2>/g, `<h2 style="font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 24px 0 16px 0; line-height: 1.3;">`)
+    .replace(/<h3>/g, `<h3 style="font-family: Georgia, 'Times New Roman', serif; font-size: 18px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 20px 0 12px 0; line-height: 1.3;">`)
+    .replace(/<strong>/g, `<strong style="color: ${NEXUS_COLORS.navy}; font-weight: 600;">`)
+    .replace(/<a /g, `<a style="color: ${NEXUS_COLORS.coral}; text-decoration: underline;" `)
+    .replace(/<ul>/g, `<ul style="margin: 0 0 16px 0; padding-left: 24px; color: ${NEXUS_COLORS.gray[600]};">`)
+    .replace(/<ol>/g, `<ol style="margin: 0 0 16px 0; padding-left: 24px; color: ${NEXUS_COLORS.gray[600]};">`)
+    .replace(/<li>/g, `<li style="margin-bottom: 8px; line-height: 1.6;">`)
+    .replace(/<blockquote>/g, `<blockquote style="margin: 16px 0; padding: 16px 20px; background: ${NEXUS_COLORS.beige}; border-left: 4px solid ${NEXUS_COLORS.coral}; border-radius: 0 8px 8px 0;">`)
+
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Nexus Retreat</title>
+        <!--[if mso]>
+        <noscript>
+          <xml>
+            <o:OfficeDocumentSettings>
+              <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+          </xml>
+        </noscript>
+        <![endif]-->
+      </head>
+      <body style="margin: 0; padding: 0; background-color: ${NEXUS_COLORS.beige}; -webkit-font-smoothing: antialiased;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: ${NEXUS_COLORS.beige};">
+          <tr>
+            <td style="padding: 40px 20px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: 0 auto; max-width: 600px;">
+                <!-- Logo/Header Section -->
+                <tr>
+                  <td style="text-align: center; padding-bottom: 24px;">
+                    <span style="font-family: Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 600; color: ${NEXUS_COLORS.navy}; letter-spacing: -0.5px;">Nexus Retreat</span>
+                  </td>
+                </tr>
+                <!-- Main Content Card -->
+                <tr>
+                  <td>
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: ${NEXUS_COLORS.white}; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);">
+                      ${headerImageHtml}
+                      <tr>
+                        <td style="padding: 40px 40px 32px 40px;">
+                          ${styledBody}
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <!-- Footer -->
+                <tr>
+                  <td style="text-align: center; padding-top: 32px;">
+                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; color: ${NEXUS_COLORS.gray[400]}; margin: 0 0 8px 0;">
+                      Nexus Retreat · Boca Raton, Florida
+                    </p>
+                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; color: ${NEXUS_COLORS.gray[400]}; margin: 0;">
+                      Questions? Contact us at <a href="mailto:info@nexus-retreat.com" style="color: ${NEXUS_COLORS.coral}; text-decoration: none;">info@nexus-retreat.com</a>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+  `
+}
+
+// ============================================================================
+// Preview HTML Generator (for admin UI)
+// ============================================================================
+
+export function generateEmailPreviewHtml(body: string, headerImageUrl?: string): string {
+  return buildCustomEmailHtml({body, headerImageUrl})
 }
