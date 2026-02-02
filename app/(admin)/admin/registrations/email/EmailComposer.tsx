@@ -44,20 +44,49 @@ const NEXUS_COLORS = {
   },
 }
 
-function EmailPreview({body, headerImageUrl, subject}: {body: string; headerImageUrl?: string; subject: string}) {
+function EmailPreview({
+  body,
+  headerImageUrl,
+  subject,
+}: {
+  body: string
+  headerImageUrl?: string
+  subject: string
+}) {
   // Style the body content with proper typography (matching server-side)
   const styledBody = useMemo(() => {
     return body
-      .replace(/<p>/g, `<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; color: ${NEXUS_COLORS.gray[600]}; margin: 0 0 16px 0; line-height: 1.7;">`)
-      .replace(/<h1>/g, `<h1 style="font-family: Georgia, 'Times New Roman', serif; font-size: 26px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 0 0 20px 0; line-height: 1.3;">`)
-      .replace(/<h2>/g, `<h2 style="font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 24px 0 16px 0; line-height: 1.3;">`)
-      .replace(/<h3>/g, `<h3 style="font-family: Georgia, 'Times New Roman', serif; font-size: 18px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 20px 0 12px 0; line-height: 1.3;">`)
+      .replace(
+        /<p>/g,
+        `<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; color: ${NEXUS_COLORS.gray[600]}; margin: 0 0 16px 0; line-height: 1.7;">`,
+      )
+      .replace(
+        /<h1>/g,
+        `<h1 style="font-family: Georgia, 'Times New Roman', serif; font-size: 26px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 0 0 20px 0; line-height: 1.3;">`,
+      )
+      .replace(
+        /<h2>/g,
+        `<h2 style="font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 24px 0 16px 0; line-height: 1.3;">`,
+      )
+      .replace(
+        /<h3>/g,
+        `<h3 style="font-family: Georgia, 'Times New Roman', serif; font-size: 18px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 20px 0 12px 0; line-height: 1.3;">`,
+      )
       .replace(/<strong>/g, `<strong style="color: ${NEXUS_COLORS.navy}; font-weight: 600;">`)
       .replace(/<a /g, `<a style="color: ${NEXUS_COLORS.coral}; text-decoration: underline;" `)
-      .replace(/<ul>/g, `<ul style="margin: 0 0 16px 0; padding-left: 24px; color: ${NEXUS_COLORS.gray[600]};">`)
-      .replace(/<ol>/g, `<ol style="margin: 0 0 16px 0; padding-left: 24px; color: ${NEXUS_COLORS.gray[600]};">`)
+      .replace(
+        /<ul>/g,
+        `<ul style="margin: 0 0 16px 0; padding-left: 24px; color: ${NEXUS_COLORS.gray[600]};">`,
+      )
+      .replace(
+        /<ol>/g,
+        `<ol style="margin: 0 0 16px 0; padding-left: 24px; color: ${NEXUS_COLORS.gray[600]};">`,
+      )
       .replace(/<li>/g, `<li style="margin-bottom: 8px; line-height: 1.6;">`)
-      .replace(/<blockquote>/g, `<blockquote style="margin: 16px 0; padding: 16px 20px; background: ${NEXUS_COLORS.beige}; border-left: 4px solid ${NEXUS_COLORS.coral}; border-radius: 0 8px 8px 0;">`)
+      .replace(
+        /<blockquote>/g,
+        `<blockquote style="margin: 16px 0; padding: 16px 20px; background: ${NEXUS_COLORS.beige}; border-left: 4px solid ${NEXUS_COLORS.coral}; border-radius: 0 8px 8px 0;">`,
+      )
   }, [body])
 
   return (
@@ -97,18 +126,6 @@ function EmailPreview({body, headerImageUrl, subject}: {body: string; headerImag
             <p
               style={{
                 fontFamily: "Georgia, 'Times New Roman', serif",
-                fontSize: '12px',
-                color: NEXUS_COLORS.gray[400],
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                margin: 0,
-              }}
-            >
-              Subject
-            </p>
-            <p
-              style={{
-                fontFamily: "Georgia, 'Times New Roman', serif",
                 fontSize: '20px',
                 fontWeight: 600,
                 color: NEXUS_COLORS.navy,
@@ -119,10 +136,7 @@ function EmailPreview({body, headerImageUrl, subject}: {body: string; headerImag
             </p>
           </div>
 
-          <div
-            className="h-px mx-10 my-4"
-            style={{backgroundColor: NEXUS_COLORS.seafoam}}
-          />
+          <div className="h-px mx-10 my-4" style={{backgroundColor: NEXUS_COLORS.seafoam}} />
 
           {/* Body content */}
           <div className="px-10 pb-8">
@@ -343,14 +357,17 @@ export default function EmailComposer({
           <button
             onClick={() => setActiveTab('compose')}
             className={`flex-1 px-4 py-3 text-sm font-medium transition-colors relative ${
-              activeTab === 'compose'
-                ? 'text-nexus-navy'
-                : 'text-gray-500 hover:text-gray-700'
+              activeTab === 'compose' ? 'text-nexus-navy' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             <span className="flex items-center justify-center gap-2">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
               </svg>
               Compose
             </span>
@@ -361,15 +378,23 @@ export default function EmailComposer({
           <button
             onClick={() => setActiveTab('preview')}
             className={`flex-1 px-4 py-3 text-sm font-medium transition-colors relative ${
-              activeTab === 'preview'
-                ? 'text-nexus-navy'
-                : 'text-gray-500 hover:text-gray-700'
+              activeTab === 'preview' ? 'text-nexus-navy' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             <span className="flex items-center justify-center gap-2">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
               </svg>
               Preview
             </span>
@@ -391,14 +416,27 @@ export default function EmailComposer({
               onClick={onSend}
               disabled={!canSend}
               className={`w-full py-3 px-4 rounded-md text-white font-medium ${
-                canSend ? 'bg-nexus-coral hover:bg-nexus-coral-light text-nexus-navy-dark' : 'bg-gray-300 cursor-not-allowed'
+                canSend
+                  ? 'bg-nexus-coral hover:bg-nexus-coral-light text-nexus-navy-dark'
+                  : 'bg-gray-300 cursor-not-allowed'
               }`}
             >
               {isSending ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
                   </svg>
                   Sending...
                 </span>
@@ -412,132 +450,191 @@ export default function EmailComposer({
 
       {/* Compose Tab */}
       {activeTab === 'compose' && (
-      <div className="p-4 space-y-4">
-        {/* Send Results */}
-        {sendResults && (
-          <div
-            className={`p-4 rounded-md ${
-              sendResults.failCount === 0
-                ? 'bg-green-50 border border-green-200'
-                : sendResults.successCount === 0
-                  ? 'bg-red-50 border border-red-200'
-                  : 'bg-yellow-50 border border-yellow-200'
-            }`}
-          >
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="font-medium">
-                  {sendResults.failCount === 0
-                    ? 'All emails sent successfully!'
-                    : sendResults.successCount === 0
-                      ? 'Failed to send emails'
-                      : 'Some emails failed to send'}
-                </p>
-                <p className="text-sm mt-1">
-                  {sendResults.successCount} of {sendResults.total} emails sent successfully
-                </p>
-                {sendResults.failCount > 0 && (
-                  <ul className="mt-2 text-sm">
-                    {sendResults.results
-                      .filter((r) => !r.success)
-                      .map((r, i) => (
-                        <li key={i} className="text-red-600">
-                          {r.email}: {r.error}
-                        </li>
-                      ))}
-                  </ul>
-                )}
+        <div className="p-4 space-y-4">
+          {/* Send Results */}
+          {sendResults && (
+            <div
+              className={`p-4 rounded-md ${
+                sendResults.failCount === 0
+                  ? 'bg-green-50 border border-green-200'
+                  : sendResults.successCount === 0
+                    ? 'bg-red-50 border border-red-200'
+                    : 'bg-yellow-50 border border-yellow-200'
+              }`}
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="font-medium">
+                    {sendResults.failCount === 0
+                      ? 'All emails sent successfully!'
+                      : sendResults.successCount === 0
+                        ? 'Failed to send emails'
+                        : 'Some emails failed to send'}
+                  </p>
+                  <p className="text-sm mt-1">
+                    {sendResults.successCount} of {sendResults.total} emails sent successfully
+                  </p>
+                  {sendResults.failCount > 0 && (
+                    <ul className="mt-2 text-sm">
+                      {sendResults.results
+                        .filter((r) => !r.success)
+                        .map((r, i) => (
+                          <li key={i} className="text-red-600">
+                            {r.email}: {r.error}
+                          </li>
+                        ))}
+                    </ul>
+                  )}
+                </div>
+                <button onClick={onClearResults} className="text-gray-400 hover:text-gray-600">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
               </div>
-              <button onClick={onClearResults} className="text-gray-400 hover:text-gray-600">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+            </div>
+          )}
+
+          {/* Template Selector */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Load Template</label>
+            <select
+              value={selectedTemplateId}
+              onChange={(e) => handleTemplateChange(e.target.value)}
+              disabled={loadingTemplates}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">
+                {loadingTemplates ? 'Loading templates...' : 'Select a template (optional)'}
+              </option>
+              {templates.map((template) => (
+                <option key={template._id} value={template._id}>
+                  {template.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Header Image */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-medium text-gray-700">Header Image</label>
+              <button
+                type="button"
+                onClick={() => setShowHeaderImage(!showHeaderImage)}
+                className="text-xs text-blue-600 hover:text-blue-700"
+              >
+                {showHeaderImage ? 'Hide' : 'Add header image'}
               </button>
             </div>
-          </div>
-        )}
-
-        {/* Template Selector */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Load Template</label>
-          <select
-            value={selectedTemplateId}
-            onChange={(e) => handleTemplateChange(e.target.value)}
-            disabled={loadingTemplates}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">
-              {loadingTemplates ? 'Loading templates...' : 'Select a template (optional)'}
-            </option>
-            {templates.map((template) => (
-              <option key={template._id} value={template._id}>
-                {template.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Header Image */}
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <label className="block text-sm font-medium text-gray-700">Header Image</label>
-            <button
-              type="button"
-              onClick={() => setShowHeaderImage(!showHeaderImage)}
-              className="text-xs text-blue-600 hover:text-blue-700"
-            >
-              {showHeaderImage ? 'Hide' : 'Add header image'}
-            </button>
-          </div>
-          {showHeaderImage && (
-            <div className="space-y-3">
-              {/* Upload Area */}
-              <div
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                className={`relative border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
-                  isDragging
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-300 hover:border-gray-400'
-                } ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
-              >
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileInputChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  disabled={isUploading}
-                />
-                <div className="space-y-1">
-                  {isUploading ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
+            {showHeaderImage && (
+              <div className="space-y-3">
+                {/* Upload Area */}
+                <div
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  className={`relative border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
+                    isDragging
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-300 hover:border-gray-400'
+                  } ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileInputChange}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    disabled={isUploading}
+                  />
+                  <div className="space-y-1">
+                    {isUploading ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <svg
+                          className="animate-spin h-5 w-5 text-blue-600"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                        <span className="text-sm text-gray-600">Uploading...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <svg
+                          className="mx-auto h-8 w-8 text-gray-400"
+                          fill="none"
+                          viewBox="0 0 24 24"
                           stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
-                      <span className="text-sm text-gray-600">Uploading...</span>
-                    </div>
-                  ) : (
-                    <>
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                        <p className="text-sm text-gray-600">
+                          Drop an image here or <span className="text-blue-600">browse</span>
+                        </p>
+                        <p className="text-xs text-gray-500">PNG, JPG up to 5MB</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Or divider */}
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 border-t border-gray-200" />
+                  <span className="text-xs text-gray-400">or enter URL</span>
+                  <div className="flex-1 border-t border-gray-200" />
+                </div>
+
+                {/* URL Input */}
+                <input
+                  type="url"
+                  value={headerImageUrl}
+                  onChange={(e) => handleHeaderImageChange(e.target.value)}
+                  placeholder="https://example.com/image.jpg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                />
+
+                {/* Upload Error */}
+                {uploadError && <p className="text-xs text-red-500">{uploadError}</p>}
+
+                {/* Preview */}
+                {headerImageUrl && !imageError && (
+                  <div className="relative border border-gray-200 rounded-md overflow-hidden bg-gray-50">
+                    <img
+                      src={headerImageUrl}
+                      alt="Header preview"
+                      className="w-full h-32 object-cover"
+                      onError={() => setImageError(true)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setHeaderImageUrl('')}
+                      className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-sm hover:bg-gray-100"
+                    >
                       <svg
-                        className="mx-auto h-8 w-8 text-gray-400"
+                        className="h-4 w-4 text-gray-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -545,168 +642,115 @@ export default function EmailComposer({
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
                         />
                       </svg>
-                      <p className="text-sm text-gray-600">
-                        Drop an image here or <span className="text-blue-600">browse</span>
-                      </p>
-                      <p className="text-xs text-gray-500">PNG, JPG up to 5MB</p>
-                    </>
-                  )}
-                </div>
+                    </button>
+                  </div>
+                )}
+                {imageError && (
+                  <p className="text-xs text-red-500">
+                    Failed to load image. Please check the URL.
+                  </p>
+                )}
               </div>
+            )}
+          </div>
 
-              {/* Or divider */}
-              <div className="flex items-center gap-3">
-                <div className="flex-1 border-t border-gray-200" />
-                <span className="text-xs text-gray-400">or enter URL</span>
-                <div className="flex-1 border-t border-gray-200" />
-              </div>
+          {/* Subject */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+            <input
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Email subject..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
 
-              {/* URL Input */}
-              <input
-                type="url"
-                value={headerImageUrl}
-                onChange={(e) => handleHeaderImageChange(e.target.value)}
-                placeholder="https://example.com/image.jpg"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
-              />
+          {/* Body */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Body</label>
+            <RichTextEditor content={body} onChange={setBody} />
+            <p className="mt-2 text-xs text-gray-500">
+              Type <code className="bg-gray-100 px-1 rounded">@</code> to see all available
+              variables, or click the <code className="bg-gray-100 px-1 rounded">{'{{}}'}</code>{' '}
+              button in the toolbar
+            </p>
+          </div>
 
-              {/* Upload Error */}
-              {uploadError && (
-                <p className="text-xs text-red-500">{uploadError}</p>
-              )}
-
-              {/* Preview */}
-              {headerImageUrl && !imageError && (
-                <div className="relative border border-gray-200 rounded-md overflow-hidden bg-gray-50">
-                  <img
-                    src={headerImageUrl}
-                    alt="Header preview"
-                    className="w-full h-32 object-cover"
-                    onError={() => setImageError(true)}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setHeaderImageUrl('')}
-                    className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-sm hover:bg-gray-100"
-                  >
-                    <svg
-                      className="h-4 w-4 text-gray-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              )}
-              {imageError && (
-                <p className="text-xs text-red-500">Failed to load image. Please check the URL.</p>
-              )}
+          {/* CC Options */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">CC Options</label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={ccOptions.assistants}
+                  onChange={(e) => setCcOptions({...ccOptions, assistants: e.target.checked})}
+                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">CC Executive Assistants</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={ccOptions.guests}
+                  onChange={(e) => setCcOptions({...ccOptions, guests: e.target.checked})}
+                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">CC Guests</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={ccOptions.infoEmail}
+                  onChange={(e) => setCcOptions({...ccOptions, infoEmail: e.target.checked})}
+                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">CC info@nexus-retreat.com</span>
+              </label>
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* Subject */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-          <input
-            type="text"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            placeholder="Email subject..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-
-        {/* Body */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Body</label>
-          <RichTextEditor content={body} onChange={setBody} />
-          <p className="mt-2 text-xs text-gray-500">
-            Type <code className="bg-gray-100 px-1 rounded">@</code> to see all available
-            variables, or click the <code className="bg-gray-100 px-1 rounded">{'{{}}'}</code>{' '}
-            button in the toolbar
-          </p>
-        </div>
-
-        {/* CC Options */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">CC Options</label>
-          <div className="space-y-2">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={ccOptions.assistants}
-                onChange={(e) => setCcOptions({...ccOptions, assistants: e.target.checked})}
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm text-gray-700">CC Executive Assistants</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={ccOptions.guests}
-                onChange={(e) => setCcOptions({...ccOptions, guests: e.target.checked})}
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm text-gray-700">CC Guests</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={ccOptions.infoEmail}
-                onChange={(e) => setCcOptions({...ccOptions, infoEmail: e.target.checked})}
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm text-gray-700">CC info@nexus-retreat.com</span>
-            </label>
+          {/* Send Button */}
+          <div className="pt-4">
+            <button
+              onClick={onSend}
+              disabled={!canSend}
+              className={`w-full py-3 px-4 rounded-md font-medium ${
+                canSend
+                  ? 'bg-nexus-coral hover:bg-nexus-coral-light text-nexus-navy-dark'
+                  : 'bg-gray-300 text-white cursor-not-allowed'
+              }`}
+            >
+              {isSending ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Sending...
+                </span>
+              ) : (
+                `Send to ${selectedCount} Recipient${selectedCount !== 1 ? 's' : ''}`
+              )}
+            </button>
           </div>
         </div>
-
-        {/* Send Button */}
-        <div className="pt-4">
-          <button
-            onClick={onSend}
-            disabled={!canSend}
-            className={`w-full py-3 px-4 rounded-md font-medium ${
-              canSend ? 'bg-nexus-coral hover:bg-nexus-coral-light text-nexus-navy-dark' : 'bg-gray-300 text-white cursor-not-allowed'
-            }`}
-          >
-            {isSending ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Sending...
-              </span>
-            ) : (
-              `Send to ${selectedCount} Recipient${selectedCount !== 1 ? 's' : ''}`
-            )}
-          </button>
-        </div>
-      </div>
       )}
     </div>
   )
