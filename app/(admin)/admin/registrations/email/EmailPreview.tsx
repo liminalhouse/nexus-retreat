@@ -1,0 +1,158 @@
+'use client'
+
+import {useMemo} from 'react'
+import type {Registration} from '@/lib/db/schema'
+import {EMAIL_COLORS, EMAIL_FONTS, applyEmailStyles, replaceEmailVariables} from '@/lib/email/emailStyles'
+
+type EmailPreviewProps = {
+  subject: string
+  body: string
+  headerImageUrl?: string
+  registration: Registration | null
+}
+
+// Build variables map from registration data
+function buildVariablesMap(registration: Registration | null): Record<string, string> {
+  if (!registration) return {}
+
+  return {
+    firstName: registration.firstName,
+    lastName: registration.lastName,
+    fullName: `${registration.firstName} ${registration.lastName}`,
+    email: registration.email,
+    mobilePhone: registration.mobilePhone || '',
+    title: registration.title || '',
+    organization: registration.organization || '',
+    city: registration.city || '',
+    state: registration.state || '',
+    guestName: registration.guestName || '',
+    addressLine1: registration.addressLine1 || '',
+    addressLine2: registration.addressLine2 || '',
+    zip: registration.zip || '',
+    country: registration.country || '',
+    emergencyContactName: registration.emergencyContactName || '',
+    emergencyContactPhone: registration.emergencyContactPhone || '',
+    emergencyContactEmail: registration.emergencyContactEmail || '',
+    assistantName: registration.assistantName || '',
+    assistantEmail: registration.assistantEmail || '',
+    dietaryRestrictions: registration.dietaryRestrictions || '',
+    jacketSize: registration.jacketSize || '',
+  }
+}
+
+export default function EmailPreview({subject, body, headerImageUrl, registration}: EmailPreviewProps) {
+  const variables = useMemo(() => buildVariablesMap(registration), [registration])
+
+  const processedSubject = useMemo(
+    () => replaceEmailVariables(subject, variables),
+    [subject, variables]
+  )
+
+  const processedBody = useMemo(
+    () => replaceEmailVariables(body, variables),
+    [body, variables]
+  )
+
+  const styledBody = useMemo(
+    () => applyEmailStyles(processedBody),
+    [processedBody]
+  )
+
+  return (
+    <div className="bg-nexus-beige p-6 rounded-lg min-h-[500px]">
+      <div className="max-w-[600px] mx-auto">
+        {/* Logo */}
+        <div className="text-center pb-6">
+          <span
+            style={{
+              fontFamily: EMAIL_FONTS.serif,
+              fontSize: '28px',
+              fontWeight: 600,
+              color: EMAIL_COLORS.navy,
+              letterSpacing: '-0.5px',
+            }}
+          >
+            Nexus Retreat
+          </span>
+        </div>
+
+        {/* Main Card */}
+        <div
+          className="rounded-2xl overflow-hidden"
+          style={{
+            backgroundColor: EMAIL_COLORS.white,
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+          }}
+        >
+          {headerImageUrl && (
+            <img src={headerImageUrl} alt="Email header" className="w-full h-auto" />
+          )}
+
+          {/* Subject */}
+          <div className="px-10 pt-8 pb-2">
+            <p
+              style={{
+                fontFamily: EMAIL_FONTS.serif,
+                fontSize: '20px',
+                fontWeight: 600,
+                color: EMAIL_COLORS.navy,
+                margin: '4px 0 0 0',
+              }}
+            >
+              {processedSubject || 'No subject'}
+            </p>
+          </div>
+
+          {/* Divider */}
+          <div
+            className="h-px mx-10 my-4"
+            style={{backgroundColor: EMAIL_COLORS.seafoam}}
+          />
+
+          {/* Body */}
+          <div className="px-10 pb-8">
+            {processedBody ? (
+              <div dangerouslySetInnerHTML={{__html: styledBody}} />
+            ) : (
+              <p
+                style={{
+                  fontFamily: EMAIL_FONTS.sans,
+                  fontSize: '15px',
+                  color: EMAIL_COLORS.gray[400],
+                  fontStyle: 'italic',
+                }}
+              >
+                Email body will appear here...
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center pt-8">
+          <p
+            style={{
+              fontFamily: EMAIL_FONTS.sans,
+              fontSize: '13px',
+              color: EMAIL_COLORS.gray[400],
+              margin: '0 0 8px 0',
+            }}
+          >
+            Nexus Retreat · Boca Raton, Florida
+          </p>
+          <p
+            style={{
+              fontFamily: EMAIL_FONTS.sans,
+              fontSize: '12px',
+              color: EMAIL_COLORS.gray[400],
+              margin: 0,
+            }}
+          >
+            Questions? Contact us at{' '}
+            <span style={{color: EMAIL_COLORS.coral}}>info@nexus-retreat.com</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
