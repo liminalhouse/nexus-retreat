@@ -699,6 +699,9 @@ export async function sendCustomEmail(params: CustomEmailParams) {
       city: registration.city || '',
       state: registration.state || '',
       guestName: registration.guestName || '',
+      // Generate edit links from token
+      editLink: registration.editToken ? getEditRegistrationUrl(registration.editToken) : '',
+      activitiesLink: registration.editToken ? getEditActivitiesUrl(registration.editToken) : '',
     }
 
     const processedSubject = replaceVariables(subject, variables)

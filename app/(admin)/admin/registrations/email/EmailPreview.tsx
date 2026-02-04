@@ -2,7 +2,12 @@
 
 import {useMemo} from 'react'
 import type {Registration} from '@/lib/db/schema'
-import {EMAIL_COLORS, EMAIL_FONTS, applyEmailStyles, replaceEmailVariables} from '@/lib/email/emailStyles'
+import {
+  EMAIL_COLORS,
+  EMAIL_FONTS,
+  applyEmailStyles,
+  replaceEmailVariables,
+} from '@/lib/email/emailStyles'
 
 type EmailPreviewProps = {
   subject: string
@@ -11,11 +16,26 @@ type EmailPreviewProps = {
   registration: Registration | null
 }
 
+// Helper to format array fields as comma-separated strings
+function formatArray(arr: string[] | null | undefined): string {
+  if (!arr || arr.length === 0) return ''
+  return arr.join(', ')
+}
+
 // Build variables map from registration data
 function buildVariablesMap(registration: Registration | null): Record<string, string> {
-  if (!registration) return {}
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
+
+  // Always provide link placeholders so they render as valid links
+  if (!registration) {
+    return {
+      editLink: '#',
+      activitiesLink: '#',
+    }
+  }
 
   return {
+    // Basic Info
     firstName: registration.firstName,
     lastName: registration.lastName,
     fullName: `${registration.firstName} ${registration.lastName}`,
@@ -23,40 +43,68 @@ function buildVariablesMap(registration: Registration | null): Record<string, st
     mobilePhone: registration.mobilePhone || '',
     title: registration.title || '',
     organization: registration.organization || '',
-    city: registration.city || '',
-    state: registration.state || '',
-    guestName: registration.guestName || '',
+
+    // Address
     addressLine1: registration.addressLine1 || '',
     addressLine2: registration.addressLine2 || '',
+    city: registration.city || '',
+    state: registration.state || '',
     zip: registration.zip || '',
     country: registration.country || '',
+
+    // Emergency Contact
     emergencyContactName: registration.emergencyContactName || '',
-    emergencyContactPhone: registration.emergencyContactPhone || '',
+    emergencyContactRelation: registration.emergencyContactRelation || '',
     emergencyContactEmail: registration.emergencyContactEmail || '',
+    emergencyContactPhone: registration.emergencyContactPhone || '',
+
+    // Executive Assistant
     assistantName: registration.assistantName || '',
+    assistantTitle: registration.assistantTitle || '',
     assistantEmail: registration.assistantEmail || '',
+    assistantPhone: registration.assistantPhone || '',
+
+    // Guest
+    guestName: registration.guestName || '',
+    guestRelation: registration.guestRelation || '',
+    guestEmail: registration.guestEmail || '',
+
+    // Event Details
     dietaryRestrictions: registration.dietaryRestrictions || '',
     jacketSize: registration.jacketSize || '',
+    accommodations: formatArray(registration.accommodations),
+    dinnerAttendance: formatArray(registration.dinnerAttendance),
+    activities: formatArray(registration.activities),
+
+    // Guest Event Details
+    guestDietaryRestrictions: registration.guestDietaryRestrictions || '',
+    guestJacketSize: registration.guestJacketSize || '',
+    guestAccommodations: formatArray(registration.guestAccommodations),
+    guestDinnerAttendance: formatArray(registration.guestDinnerAttendance),
+    guestActivities: formatArray(registration.guestActivities),
+
+    // Links
+    editLink: `${baseUrl}/edit-registration/${registration.editToken}`,
+    activitiesLink: `${baseUrl}/edit-registration/${registration.editToken}/activities`,
   }
 }
 
-export default function EmailPreview({subject, body, headerImageUrl, registration}: EmailPreviewProps) {
+export default function EmailPreview({
+  subject,
+  body,
+  headerImageUrl,
+  registration,
+}: EmailPreviewProps) {
   const variables = useMemo(() => buildVariablesMap(registration), [registration])
 
   const processedSubject = useMemo(
     () => replaceEmailVariables(subject, variables),
-    [subject, variables]
+    [subject, variables],
   )
 
-  const processedBody = useMemo(
-    () => replaceEmailVariables(body, variables),
-    [body, variables]
-  )
+  const processedBody = useMemo(() => replaceEmailVariables(body, variables), [body, variables])
 
-  const styledBody = useMemo(
-    () => applyEmailStyles(processedBody),
-    [processedBody]
-  )
+  const styledBody = useMemo(() => applyEmailStyles(processedBody), [processedBody])
 
   return (
     <div className="bg-nexus-beige p-6 rounded-lg min-h-[500px]">
@@ -104,10 +152,7 @@ export default function EmailPreview({subject, body, headerImageUrl, registratio
           </div>
 
           {/* Divider */}
-          <div
-            className="h-px mx-10 my-4"
-            style={{backgroundColor: EMAIL_COLORS.seafoam}}
-          />
+          <div className="h-px mx-10 my-4" style={{backgroundColor: EMAIL_COLORS.seafoam}} />
 
           {/* Body */}
           <div className="px-10 pb-8">

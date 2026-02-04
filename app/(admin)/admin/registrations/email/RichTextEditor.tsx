@@ -84,8 +84,8 @@ const VARIABLE_CATEGORIES = [
   {
     category: 'Links',
     variables: [
-      {key: 'editLink', label: 'Edit Registration Link'},
-      {key: 'activitiesLink', label: 'Edit Activities Link'},
+      {key: 'editLink', label: 'Edit Registration Link', linkText: 'Edit your registration'},
+      {key: 'activitiesLink', label: 'Edit Activities Link', linkText: 'Update your activities'},
     ],
   },
 ]
@@ -99,6 +99,7 @@ type VariableItem = {
   key: string
   label: string
   category: string
+  linkText?: string
 }
 
 // Suggestion list component
@@ -179,9 +180,16 @@ const SuggestionList = forwardRef<SuggestionListRef, SuggestionListProps>(
                 }`}
                 onClick={() => selectItem(globalIndex)}
               >
-                <span>{item.label}</span>
+                <span className="flex items-center gap-1.5">
+                  {item.linkText && (
+                    <svg className="w-3.5 h-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                  )}
+                  {item.label}
+                </span>
                 <code className="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
-                  {`{{${item.key}}}`}
+                  {item.linkText ? 'clickable link' : `{{${item.key}}}`}
                 </code>
               </button>
             ))}
@@ -205,11 +213,15 @@ const VariableSuggestion = Extension.create({
         char: '@',
         items: ({query}: {query: string}) => {
           const lowerQuery = query.toLowerCase()
+          if (!lowerQuery) {
+            // Show all variables when no query
+            return ALL_VARIABLES
+          }
           return ALL_VARIABLES.filter(
             (item) =>
               item.label.toLowerCase().includes(lowerQuery) ||
               item.key.toLowerCase().includes(lowerQuery),
-          ).slice(0, 15)
+          )
         },
         render: () => {
           let component: ReactRenderer<SuggestionListRef> | null = null
@@ -265,13 +277,23 @@ const VariableSuggestion = Extension.create({
           }
         },
         command: ({editor, range, props}: {editor: any; range: any; props: VariableItem}) => {
-          // Delete the @query and insert the full variable syntax
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .insertContent(`{{${props.key}}}`)
-            .run()
+          // Delete the @query and insert the variable
+          if (props.linkText) {
+            // For link variables, insert as a clickable link
+            editor
+              .chain()
+              .focus()
+              .deleteRange(range)
+              .insertContent(`<a href="{{${props.key}}}">${props.linkText}</a>`)
+              .run()
+          } else {
+            editor
+              .chain()
+              .focus()
+              .deleteRange(range)
+              .insertContent(`{{${props.key}}}`)
+              .run()
+          }
         },
       }),
     ]
@@ -330,9 +352,16 @@ function VariablePickerDropdown({
                   onClose()
                 }}
               >
-                <span>{variable.label}</span>
+                <span className="flex items-center gap-1.5">
+                  {'linkText' in variable && variable.linkText && (
+                    <svg className="w-3.5 h-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                  )}
+                  {variable.label}
+                </span>
                 <code className="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
-                  {`{{${variable.key}}}`}
+                  {'linkText' in variable && variable.linkText ? 'clickable link' : `{{${variable.key}}}`}
                 </code>
               </button>
             ))}
@@ -411,7 +440,12 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
 
   const insertVariable = (variable: VariableItem) => {
     if (!editor) return
-    editor.chain().focus().insertContent(`{{${variable.key}}}`).run()
+    if (variable.linkText) {
+      // For link variables, insert as a clickable link
+      editor.chain().focus().insertContent(`<a href="{{${variable.key}}}">${variable.linkText}</a>`).run()
+    } else {
+      editor.chain().focus().insertContent(`{{${variable.key}}}`).run()
+    }
   }
 
   if (!editor) {
