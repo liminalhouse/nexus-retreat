@@ -15,9 +15,11 @@ import ResolvedLink from '@/app/components/ResolvedLink'
 export default function CustomPortableText({
   className,
   value,
+  disableLinks = false,
 }: {
   className?: string
   value: PortableTextBlock[]
+  disableLinks?: boolean
 }) {
   const components: PortableTextComponents = {
     block: {
@@ -87,6 +89,9 @@ export default function CustomPortableText({
     },
     marks: {
       link: ({children, value: link}) => {
+        if (disableLinks) {
+          return <span>{children}</span>
+        }
         return <ResolvedLink link={link}>{children}</ResolvedLink>
       },
     },
