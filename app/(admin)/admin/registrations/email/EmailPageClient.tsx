@@ -2,16 +2,11 @@
 
 import {useState} from 'react'
 import RecipientList from './RecipientList'
-import EmailComposer from './EmailComposer'
+import EmailComposer, {RecipientFields} from './EmailComposer'
 import Outbox from './Outbox'
 import {PaperAirplaneIcon, PencilSquareIcon} from '@heroicons/react/24/outline'
 import type {Registration} from '@/lib/db/schema'
-
-type CCOptions = {
-  assistants: boolean
-  guests: boolean
-  infoEmail: boolean
-}
+import type {EmailRecipient, PredefinedRecipient} from './EmailRecipientField'
 
 type SendResult = {
   email: string
@@ -27,10 +22,10 @@ export default function EmailPageClient({registrations}: {registrations: Registr
   const [subject, setSubject] = useState('')
   const [body, setBody] = useState('')
   const [headerImageUrl, setHeaderImageUrl] = useState('')
-  const [ccOptions, setCcOptions] = useState<CCOptions>({
-    assistants: false,
-    guests: false,
-    infoEmail: true,
+  const [recipientFields, setRecipientFields] = useState<RecipientFields>({
+    to: [{type: 'predefined', value: 'registrants', label: 'Registrants'}],
+    cc: [{type: 'predefined', value: 'info_email', label: 'info@nexus-retreat.com'}],
+    bcc: [],
   })
   const [isSending, setIsSending] = useState(false)
   const [sendResults, setSendResults] = useState<{
@@ -40,8 +35,22 @@ export default function EmailPageClient({registrations}: {registrations: Registr
     results: SendResult[]
   } | null>(null)
 
+  // Helper to extract predefined recipient types from a field
+  const getPredefinedTypes = (recipients: EmailRecipient[]): PredefinedRecipient[] => {
+    return recipients
+      .filter((r): r is EmailRecipient & {type: 'predefined'} => r.type === 'predefined')
+      .map((r) => r.value)
+  }
+
+  // Helper to extract custom emails from a field
+  const getCustomEmails = (recipients: EmailRecipient[]): string[] => {
+    return recipients
+      .filter((r): r is EmailRecipient & {type: 'custom'} => r.type === 'custom')
+      .map((r) => r.value)
+  }
+
   const handleSend = async () => {
-    if (selectedIds.size === 0 || !subject.trim() || !body.trim()) {
+    if (recipientFields.to.length === 0 || !subject.trim() || !body.trim()) {
       return
     }
 
@@ -59,7 +68,20 @@ export default function EmailPageClient({registrations}: {registrations: Registr
           subject,
           body,
           headerImageUrl: headerImageUrl.trim() || undefined,
-          ccOptions,
+          recipientFields: {
+            to: {
+              predefined: getPredefinedTypes(recipientFields.to),
+              custom: getCustomEmails(recipientFields.to),
+            },
+            cc: {
+              predefined: getPredefinedTypes(recipientFields.cc),
+              custom: getCustomEmails(recipientFields.cc),
+            },
+            bcc: {
+              predefined: getPredefinedTypes(recipientFields.bcc),
+              custom: getCustomEmails(recipientFields.bcc),
+            },
+          },
         }),
       })
 
@@ -76,7 +98,7 @@ export default function EmailPageClient({registrations}: {registrations: Registr
         setSendResults({
           total: 0,
           successCount: 0,
-          failCount: selectedIds.size,
+          failCount: 1,
           results: [{email: 'N/A', success: false, error: data.error}],
         })
       }
@@ -84,7 +106,7 @@ export default function EmailPageClient({registrations}: {registrations: Registr
       setSendResults({
         total: 0,
         successCount: 0,
-        failCount: selectedIds.size,
+        failCount: 1,
         results: [
           {
             email: 'N/A',
@@ -171,8 +193,8 @@ export default function EmailPageClient({registrations}: {registrations: Registr
               setBody={setBody}
               headerImageUrl={headerImageUrl}
               setHeaderImageUrl={setHeaderImageUrl}
-              ccOptions={ccOptions}
-              setCcOptions={setCcOptions}
+              recipientFields={recipientFields}
+              setRecipientFields={setRecipientFields}
               selectedCount={selectedIds.size}
               isSending={isSending}
               onSend={handleSend}

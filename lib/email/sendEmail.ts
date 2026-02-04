@@ -71,6 +71,7 @@ interface EmailPayload {
   subject: string
   html: string
   cc?: string[]
+  bcc?: string[]
 }
 
 interface EmailSection {
@@ -477,6 +478,7 @@ async function sendEmail(
       from: payload.from,
       to: payload.to,
       cc: payload.cc,
+      bcc: payload.bcc,
       subject: payload.subject,
       idempotencyKey: options?.idempotencyKey,
     })
@@ -681,28 +683,31 @@ type CustomEmailParams = {
   body: string
   headerImageUrl?: string
   cc?: string[]
-  registration: CustomEmailRegistration
+  bcc?: string[]
+  registration?: CustomEmailRegistration
 }
 
 export async function sendCustomEmail(params: CustomEmailParams) {
   try {
-    const {to, subject, body, headerImageUrl, cc, registration} = params
+    const {to, subject, body, headerImageUrl, cc, bcc, registration} = params
 
-    const variables: Record<string, string> = {
-      firstName: registration.firstName,
-      lastName: registration.lastName,
-      fullName: `${registration.firstName} ${registration.lastName}`,
-      email: registration.email,
-      mobilePhone: registration.mobilePhone || '',
-      title: registration.title || '',
-      organization: registration.organization || '',
-      city: registration.city || '',
-      state: registration.state || '',
-      guestName: registration.guestName || '',
-      // Generate edit links from token
-      editLink: registration.editToken ? getEditRegistrationUrl(registration.editToken) : '',
-      activitiesLink: registration.editToken ? getEditActivitiesUrl(registration.editToken) : '',
-    }
+    // Build variables from registration if provided, otherwise use empty strings
+    const variables: Record<string, string> = registration
+      ? {
+          firstName: registration.firstName,
+          lastName: registration.lastName,
+          fullName: `${registration.firstName} ${registration.lastName}`,
+          email: registration.email,
+          mobilePhone: registration.mobilePhone || '',
+          title: registration.title || '',
+          organization: registration.organization || '',
+          city: registration.city || '',
+          state: registration.state || '',
+          guestName: registration.guestName || '',
+          editLink: registration.editToken ? getEditRegistrationUrl(registration.editToken) : '',
+          activitiesLink: registration.editToken ? getEditActivitiesUrl(registration.editToken) : '',
+        }
+      : {}
 
     const processedSubject = replaceVariables(subject, variables)
     const processedBody = replaceVariables(body, variables)
@@ -715,6 +720,7 @@ export async function sendCustomEmail(params: CustomEmailParams) {
       subject: processedSubject,
       html,
       cc,
+      bcc,
     })
   } catch (error) {
     console.error('Error sending custom email:', error)

@@ -4,15 +4,16 @@ import {useState, useEffect} from 'react'
 import type {Registration} from '@/lib/db/schema'
 import RichTextEditor from './RichTextEditor'
 import EmailPreview from './EmailPreview'
+import EmailRecipientField, {EmailRecipient, PredefinedRecipient} from './EmailRecipientField'
 
 // ============================================================================
 // Types
 // ============================================================================
 
-type CCOptions = {
-  assistants: boolean
-  guests: boolean
-  infoEmail: boolean
+export type RecipientFields = {
+  to: EmailRecipient[]
+  cc: EmailRecipient[]
+  bcc: EmailRecipient[]
 }
 
 type SendResult = {
@@ -48,8 +49,8 @@ type EmailComposerProps = {
   setBody: (body: string) => void
   headerImageUrl: string
   setHeaderImageUrl: (url: string) => void
-  ccOptions: CCOptions
-  setCcOptions: (options: CCOptions) => void
+  recipientFields: RecipientFields
+  setRecipientFields: (fields: RecipientFields) => void
   selectedCount: number
   isSending: boolean
   onSend: () => void
@@ -415,6 +416,14 @@ function ImageIcon() {
 // Main Component
 // ============================================================================
 
+// Available predefined recipient options
+const PREDEFINED_RECIPIENTS: {value: PredefinedRecipient; label: string; description?: string}[] = [
+  {value: 'registrants', label: 'Registrants', description: 'Selected registrants from the list'},
+  {value: 'executive_assistants', label: 'Executive Assistants', description: 'Assistants of selected registrants'},
+  {value: 'guests', label: 'Guests', description: 'Guests of selected registrants'},
+  {value: 'info_email', label: 'info@nexus-retreat.com', description: 'Nexus Retreat info email'},
+]
+
 export default function EmailComposer({
   subject,
   setSubject,
@@ -422,8 +431,8 @@ export default function EmailComposer({
   setBody,
   headerImageUrl,
   setHeaderImageUrl,
-  ccOptions,
-  setCcOptions,
+  recipientFields,
+  setRecipientFields,
   selectedCount,
   isSending,
   onSend,
@@ -438,7 +447,9 @@ export default function EmailComposer({
   const [imageError, setImageError] = useState(false)
   const [activeTab, setActiveTab] = useState<Tab>('compose')
 
-  const canSend = selectedCount > 0 && !!subject.trim() && !!body.trim() && !isSending
+  // Check if at least one TO recipient is present
+  const hasToRecipients = recipientFields.to.length > 0
+  const canSend = hasToRecipients && !!subject.trim() && !!body.trim() && !isSending
 
   // Fetch templates on mount
   useEffect(() => {
@@ -577,26 +588,29 @@ export default function EmailComposer({
             </p>
           </div>
 
-          {/* CC Options */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">CC Options</label>
-            <div className="space-y-2">
-              {[
-                {key: 'assistants', label: 'CC Executive Assistants'},
-                {key: 'guests', label: 'CC Guests'},
-                {key: 'infoEmail', label: 'CC info@nexus-retreat.com'},
-              ].map(({key, label}) => (
-                <label key={key} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={ccOptions[key as keyof CCOptions]}
-                    onChange={(e) => setCcOptions({...ccOptions, [key]: e.target.checked})}
-                    className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
-                  <span className="text-sm text-gray-700">{label}</span>
-                </label>
-              ))}
-            </div>
+          {/* Recipients */}
+          <div className="space-y-3">
+            <EmailRecipientField
+              label="To"
+              recipients={recipientFields.to}
+              onChange={(to) => setRecipientFields({...recipientFields, to})}
+              placeholder="Add recipients..."
+              availablePredefined={PREDEFINED_RECIPIENTS}
+            />
+            <EmailRecipientField
+              label="CC"
+              recipients={recipientFields.cc}
+              onChange={(cc) => setRecipientFields({...recipientFields, cc})}
+              placeholder="Add CC recipients..."
+              availablePredefined={PREDEFINED_RECIPIENTS}
+            />
+            <EmailRecipientField
+              label="BCC"
+              recipients={recipientFields.bcc}
+              onChange={(bcc) => setRecipientFields({...recipientFields, bcc})}
+              placeholder="Add BCC recipients..."
+              availablePredefined={PREDEFINED_RECIPIENTS}
+            />
           </div>
 
           {/* Send Button */}
