@@ -438,7 +438,7 @@ export default function EmailComposer({
   const [imageError, setImageError] = useState(false)
   const [activeTab, setActiveTab] = useState<Tab>('compose')
 
-  const canSend = selectedCount > 0 && subject.trim() && body.trim() && !isSending
+  const canSend = selectedCount > 0 && !!subject.trim() && !!body.trim() && !isSending
 
   // Fetch templates on mount
   useEffect(() => {
