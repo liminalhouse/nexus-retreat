@@ -82,23 +82,23 @@ export default function RecipientList({
     )
   }, [registrations, searchQuery])
 
+  const selectableRegistrations = useMemo(
+    () => filteredRegistrations.filter((r) => !unsubscribedSet.has(r.email.toLowerCase())),
+    [filteredRegistrations, unsubscribedSet],
+  )
+
   const allFilteredSelected =
-    filteredRegistrations.length > 0 && filteredRegistrations.every((r) => selectedIds.has(r.id))
+    selectableRegistrations.length > 0 && selectableRegistrations.every((r) => selectedIds.has(r.id))
 
   const handleSelectAllFiltered = (checked: boolean) => {
     if (checked) {
-      // Add all filtered registrations to selection
-      const newIds = new Set(selectedIds)
-      filteredRegistrations.forEach((r) => newIds.add(r.id))
-      // Need to update the parent state with these
-      filteredRegistrations.forEach((r) => {
+      selectableRegistrations.forEach((r) => {
         if (!selectedIds.has(r.id)) {
           onSelectOne(r.id, true)
         }
       })
     } else {
-      // Remove all filtered registrations from selection
-      filteredRegistrations.forEach((r) => {
+      selectableRegistrations.forEach((r) => {
         if (selectedIds.has(r.id)) {
           onSelectOne(r.id, false)
         }
