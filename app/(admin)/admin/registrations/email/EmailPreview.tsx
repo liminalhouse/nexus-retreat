@@ -169,11 +169,26 @@ export default function EmailPreview({
               fontFamily: EMAIL_FONTS.sans,
               fontSize: '12px',
               color: EMAIL_COLORS.gray[400],
-              margin: 0,
+              margin: '0 0 8px 0',
             }}
           >
             Questions? Contact us at{' '}
             <span style={{color: EMAIL_COLORS.coral}}>info@nexus-retreat.com</span>
+          </p>
+          <p
+            style={{
+              fontFamily: EMAIL_FONTS.sans,
+              fontSize: '11px',
+              color: EMAIL_COLORS.gray[400],
+              margin: 0,
+            }}
+          >
+            <a
+              href="/unsubscribe"
+              style={{color: EMAIL_COLORS.gray[400], textDecoration: 'underline'}}
+            >
+              Click here to unsubscribe
+            </a>
           </p>
         </div>
       </div>

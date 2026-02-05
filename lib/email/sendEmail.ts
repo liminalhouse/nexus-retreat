@@ -259,7 +259,7 @@ function buildEmailHtml(options: BuildEmailOptions): string {
                       Questions? Contact us at <a href="mailto:info@nexus-retreat.com" style="color: ${NEXUS_COLORS.coral}; text-decoration: none;">info@nexus-retreat.com</a>
                     </p>
                     <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; color: ${NEXUS_COLORS.gray[400]}; margin: 0;">
-                      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'}/unsubscribe" style="color: ${NEXUS_COLORS.gray[400]}; text-decoration: underline;">Unsubscribe</a>
+                      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'}/unsubscribe" style="color: ${NEXUS_COLORS.gray[400]}; text-decoration: underline;">Click here to unsubscribe</a>
                     </p>
                   </td>
                 </tr>
@@ -826,7 +826,7 @@ function buildCustomEmailHtml(options: {heading?: string; body: string; headerIm
                       Questions? Contact us at <a href="mailto:info@nexus-retreat.com" style="color: ${NEXUS_COLORS.coral}; text-decoration: none;">info@nexus-retreat.com</a>
                     </p>
                     <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; color: ${NEXUS_COLORS.gray[400]}; margin: 0;">
-                      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'}/unsubscribe" style="color: ${NEXUS_COLORS.gray[400]}; text-decoration: underline;">Unsubscribe</a>
+                      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'}/unsubscribe" style="color: ${NEXUS_COLORS.gray[400]}; text-decoration: underline;">Click here to unsubscribe</a>
                     </p>
                   </td>
                 </tr>
