@@ -1,8 +1,8 @@
 import {NextRequest, NextResponse} from 'next/server'
 import {db} from '@/lib/db'
-import {registrations, Registration} from '@/lib/db/schema'
+import {registrations, Registration, emailUnsubscribes} from '@/lib/db/schema'
 import {sendCustomEmail} from '@/lib/email/sendEmail'
-import {inArray} from 'drizzle-orm'
+import {inArray, eq} from 'drizzle-orm'
 
 type PredefinedRecipient = 'registrants' | 'executive_assistants' | 'guests' | 'info_email'
 
@@ -50,6 +50,30 @@ function resolveEmails(
 
   // Remove duplicates and filter empty
   return [...new Set(emails.filter(Boolean))]
+}
+
+// Check if an email address is unsubscribed
+async function isUnsubscribed(email: string): Promise<boolean> {
+  const result = await db
+    .select({id: emailUnsubscribes.id})
+    .from(emailUnsubscribes)
+    .where(eq(emailUnsubscribes.email, email.toLowerCase().trim()))
+    .limit(1)
+  return result.length > 0
+}
+
+// Filter out unsubscribed emails from an array
+async function filterUnsubscribed(emails: string[]): Promise<{allowed: string[]; blocked: string[]}> {
+  const allowed: string[] = []
+  const blocked: string[] = []
+  for (const email of emails) {
+    if (await isUnsubscribed(email)) {
+      blocked.push(email)
+    } else {
+      allowed.push(email)
+    }
+  }
+  return {allowed, blocked}
 }
 
 // Check if email is needed based on recipient fields (has registrant-dependent types)
@@ -134,22 +158,32 @@ export async function POST(request: NextRequest) {
         const ccEmails = resolveEmails(recipientFields.cc.predefined, recipientFields.cc.custom, registration)
         const bccEmails = resolveEmails(recipientFields.bcc.predefined, recipientFields.bcc.custom, registration)
 
-        // Skip if no TO recipients
-        if (toEmails.length === 0) {
+        // Filter out unsubscribed emails
+        const {allowed: allowedTo, blocked: blockedTo} = await filterUnsubscribed(toEmails)
+        const {allowed: allowedCc} = await filterUnsubscribed(ccEmails)
+        const {allowed: allowedBcc} = await filterUnsubscribed(bccEmails)
+
+        // Log skipped unsubscribed TO recipients
+        for (const blocked of blockedTo) {
+          results.push({email: blocked, success: true, error: 'Skipped — unsubscribed'})
+        }
+
+        // Skip if no TO recipients after filtering
+        if (allowedTo.length === 0) {
           continue
         }
 
         // Remove duplicates across fields
-        const filteredCc = ccEmails.filter((e) => !toEmails.includes(e))
-        const filteredBcc = bccEmails.filter((e) => !toEmails.includes(e) && !filteredCc.includes(e))
+        const filteredCc = allowedCc.filter((e) => !allowedTo.includes(e))
+        const filteredBcc = allowedBcc.filter((e) => !allowedTo.includes(e) && !filteredCc.includes(e))
 
         const result = await sendCustomEmail({
-          to: toEmails[0], // Primary recipient
+          to: allowedTo[0], // Primary recipient
           heading,
           subject,
           body: emailBody,
           headerImageUrl,
-          cc: [...toEmails.slice(1), ...filteredCc].length > 0 ? [...toEmails.slice(1), ...filteredCc] : undefined,
+          cc: [...allowedTo.slice(1), ...filteredCc].length > 0 ? [...allowedTo.slice(1), ...filteredCc] : undefined,
           bcc: filteredBcc.length > 0 ? filteredBcc : undefined,
           registration: {
             firstName: registration.firstName,
@@ -166,7 +200,7 @@ export async function POST(request: NextRequest) {
         })
 
         results.push({
-          email: toEmails.join(', '),
+          email: allowedTo.join(', '),
           success: result.success,
           error: result.success ? undefined : String(result.error),
         })
@@ -179,28 +213,37 @@ export async function POST(request: NextRequest) {
       const ccEmails = resolveEmails(recipientFields.cc.predefined, recipientFields.cc.custom, null)
       const bccEmails = resolveEmails(recipientFields.bcc.predefined, recipientFields.bcc.custom, null)
 
-      if (toEmails.length === 0) {
+      // Filter out unsubscribed emails
+      const {allowed: allowedTo, blocked: blockedTo} = await filterUnsubscribed(toEmails)
+      const {allowed: allowedCc} = await filterUnsubscribed(ccEmails)
+      const {allowed: allowedBcc} = await filterUnsubscribed(bccEmails)
+
+      for (const blocked of blockedTo) {
+        results.push({email: blocked, success: true, error: 'Skipped — unsubscribed'})
+      }
+
+      if (allowedTo.length === 0) {
         return NextResponse.json(
-          {success: false, error: 'No valid TO recipients'},
+          {success: false, error: 'No valid TO recipients (all unsubscribed)'},
           {status: 400},
         )
       }
 
-      const filteredCc = ccEmails.filter((e) => !toEmails.includes(e))
-      const filteredBcc = bccEmails.filter((e) => !toEmails.includes(e) && !filteredCc.includes(e))
+      const filteredCc = allowedCc.filter((e) => !allowedTo.includes(e))
+      const filteredBcc = allowedBcc.filter((e) => !allowedTo.includes(e) && !filteredCc.includes(e))
 
       const result = await sendCustomEmail({
-        to: toEmails[0],
+        to: allowedTo[0],
         heading,
         subject,
         body: emailBody,
         headerImageUrl,
-        cc: [...toEmails.slice(1), ...filteredCc].length > 0 ? [...toEmails.slice(1), ...filteredCc] : undefined,
+        cc: [...allowedTo.slice(1), ...filteredCc].length > 0 ? [...allowedTo.slice(1), ...filteredCc] : undefined,
         bcc: filteredBcc.length > 0 ? filteredBcc : undefined,
       })
 
       results.push({
-        email: toEmails.join(', '),
+        email: allowedTo.join(', '),
         success: result.success,
         error: result.success ? undefined : String(result.error),
       })

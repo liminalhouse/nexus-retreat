@@ -91,3 +91,14 @@ export const emailTemplates = pgTable('email_templates', {
 
 export type EmailTemplate = typeof emailTemplates.$inferSelect
 export type NewEmailTemplate = typeof emailTemplates.$inferInsert
+
+// Email Unsubscribes table
+export const emailUnsubscribes = pgTable('email_unsubscribes', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  email: text('email').notNull().unique(),
+  registrationId: uuid('registration_id').references(() => registrations.id),
+})
+
+export type EmailUnsubscribe = typeof emailUnsubscribes.$inferSelect
+export type NewEmailUnsubscribe = typeof emailUnsubscribes.$inferInsert

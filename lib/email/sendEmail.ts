@@ -207,6 +207,13 @@ function buildEmailHtml(options: BuildEmailOptions): string {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Nexus Retreat</title>
+        <style>
+          a {
+            color: ${NEXUS_COLORS.coral} !important;
+            font-weight: bold !important;
+            text-decoration: underline !important;
+          }
+        </style>
         <!--[if mso]>
         <noscript>
           <xml>
@@ -248,8 +255,11 @@ function buildEmailHtml(options: BuildEmailOptions): string {
                     <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; color: ${NEXUS_COLORS.gray[400]}; margin: 0 0 8px 0;">
                       Nexus Retreat · Boca Raton, Florida
                     </p>
-                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; color: ${NEXUS_COLORS.gray[400]}; margin: 0;">
+                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; color: ${NEXUS_COLORS.gray[400]}; margin: 0 0 8px 0;">
                       Questions? Contact us at <a href="mailto:info@nexus-retreat.com" style="color: ${NEXUS_COLORS.coral}; text-decoration: none;">info@nexus-retreat.com</a>
+                    </p>
+                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; color: ${NEXUS_COLORS.gray[400]}; margin: 0;">
+                      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'}/unsubscribe" style="color: ${NEXUS_COLORS.gray[400]}; text-decoration: underline;">Unsubscribe</a>
                     </p>
                   </td>
                 </tr>
@@ -751,7 +761,7 @@ function buildCustomEmailHtml(options: {heading?: string; body: string; headerIm
     .replace(/<h2>/g, `<h2 style="font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 24px 0 16px 0; line-height: 1.3;">`)
     .replace(/<h3>/g, `<h3 style="font-family: Georgia, 'Times New Roman', serif; font-size: 18px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 20px 0 12px 0; line-height: 1.3;">`)
     .replace(/<strong>/g, `<strong style="color: ${NEXUS_COLORS.navy}; font-weight: 600;">`)
-    .replace(/<a /g, `<a style="color: ${NEXUS_COLORS.coral}; text-decoration: underline;" `)
+    .replace(/<a /g, `<a style="color: ${NEXUS_COLORS.coral}; font-weight: bold; text-decoration: underline;" `)
     .replace(/<ul>/g, `<ul style="margin: 0 0 16px 0; padding-left: 24px; color: ${NEXUS_COLORS.gray[600]};">`)
     .replace(/<ol>/g, `<ol style="margin: 0 0 16px 0; padding-left: 24px; color: ${NEXUS_COLORS.gray[600]};">`)
     .replace(/<li>/g, `<li style="margin-bottom: 8px; line-height: 1.6;">`)
@@ -765,6 +775,13 @@ function buildCustomEmailHtml(options: {heading?: string; body: string; headerIm
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Nexus Retreat</title>
+        <style>
+          a {
+            color: ${NEXUS_COLORS.coral} !important;
+            font-weight: bold !important;
+            text-decoration: underline !important;
+          }
+        </style>
         <!--[if mso]>
         <noscript>
           <xml>
@@ -805,8 +822,11 @@ function buildCustomEmailHtml(options: {heading?: string; body: string; headerIm
                     <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; color: ${NEXUS_COLORS.gray[400]}; margin: 0 0 8px 0;">
                       Nexus Retreat · Boca Raton, Florida
                     </p>
-                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; color: ${NEXUS_COLORS.gray[400]}; margin: 0;">
+                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; color: ${NEXUS_COLORS.gray[400]}; margin: 0 0 8px 0;">
                       Questions? Contact us at <a href="mailto:info@nexus-retreat.com" style="color: ${NEXUS_COLORS.coral}; text-decoration: none;">info@nexus-retreat.com</a>
+                    </p>
+                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; color: ${NEXUS_COLORS.gray[400]}; margin: 0;">
+                      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'}/unsubscribe" style="color: ${NEXUS_COLORS.gray[400]}; text-decoration: underline;">Unsubscribe</a>
                     </p>
                   </td>
                 </tr>

@@ -32,7 +32,7 @@ export const BODY_STYLE_REPLACEMENTS: [RegExp, string][] = [
   [/<h2>/g, `<h2 style="font-family: ${EMAIL_FONTS.serif}; font-size: 22px; font-weight: 600; color: ${EMAIL_COLORS.navy}; margin: 24px 0 16px 0; line-height: 1.3;">`],
   [/<h3>/g, `<h3 style="font-family: ${EMAIL_FONTS.serif}; font-size: 18px; font-weight: 600; color: ${EMAIL_COLORS.navy}; margin: 20px 0 12px 0; line-height: 1.3;">`],
   [/<strong>/g, `<strong style="color: ${EMAIL_COLORS.navy}; font-weight: 600;">`],
-  [/<a /g, `<a style="color: ${EMAIL_COLORS.coral}; text-decoration: underline;" `],
+  [/<a /g, `<a style="color: ${EMAIL_COLORS.coral}; font-weight: bold; text-decoration: underline;" `],
   [/<ul>/g, `<ul style="margin: 0 0 16px 0; padding-left: 24px; color: ${EMAIL_COLORS.gray[600]};">`],
   [/<ol>/g, `<ol style="margin: 0 0 16px 0; padding-left: 24px; color: ${EMAIL_COLORS.gray[600]};">`],
   [/<li>/g, `<li style="margin-bottom: 8px; line-height: 1.6;">`],
@@ -46,6 +46,17 @@ export function applyEmailStyles(html: string): string {
     html
   )
 }
+
+// CSS style block for email <head> to catch auto-linked URLs by email clients
+export const EMAIL_LINK_STYLE_BLOCK = `
+  <style>
+    a {
+      color: ${EMAIL_COLORS.coral} !important;
+      font-weight: bold !important;
+      text-decoration: underline !important;
+    }
+  </style>
+`
 
 // Replace template variables with registration data
 export function replaceEmailVariables(
