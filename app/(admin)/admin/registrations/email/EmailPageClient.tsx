@@ -66,6 +66,7 @@ export default function EmailPageClient({registrations}: {registrations: Registr
         },
         body: JSON.stringify({
           registrationIds: Array.from(selectedIds),
+          heading: heading.trim() || undefined,
           subject,
           body,
           headerImageUrl: headerImageUrl.trim() || undefined,

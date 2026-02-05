@@ -68,12 +68,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const {
       registrationIds,
+      heading,
       subject,
       body: emailBody,
       headerImageUrl,
       recipientFields,
     }: {
       registrationIds: string[]
+      heading?: string
       subject: string
       body: string
       headerImageUrl?: string
@@ -143,6 +145,7 @@ export async function POST(request: NextRequest) {
 
         const result = await sendCustomEmail({
           to: toEmails[0], // Primary recipient
+          heading,
           subject,
           body: emailBody,
           headerImageUrl,
@@ -188,6 +191,7 @@ export async function POST(request: NextRequest) {
 
       const result = await sendCustomEmail({
         to: toEmails[0],
+        heading,
         subject,
         body: emailBody,
         headerImageUrl,

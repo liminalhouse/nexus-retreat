@@ -679,6 +679,7 @@ type CustomEmailRegistration = {
 
 type CustomEmailParams = {
   to: string
+  heading?: string
   subject: string
   body: string
   headerImageUrl?: string
@@ -689,7 +690,7 @@ type CustomEmailParams = {
 
 export async function sendCustomEmail(params: CustomEmailParams) {
   try {
-    const {to, subject, body, headerImageUrl, cc, bcc, registration} = params
+    const {to, heading, subject, body, headerImageUrl, cc, bcc, registration} = params
 
     // Build variables from registration if provided, otherwise use empty strings
     const variables: Record<string, string> = registration
@@ -712,7 +713,7 @@ export async function sendCustomEmail(params: CustomEmailParams) {
     const processedSubject = replaceVariables(subject, variables)
     const processedBody = replaceVariables(body, variables)
 
-    const html = buildCustomEmailHtml({body: processedBody, headerImageUrl})
+    const html = buildCustomEmailHtml({heading, body: processedBody, headerImageUrl})
 
     return sendEmail({
       from: `Nexus Retreat <${resendEmailFrom}>`,
@@ -732,8 +733,8 @@ export async function sendCustomEmail(params: CustomEmailParams) {
 // Custom Email HTML Builder (for admin bulk emails)
 // ============================================================================
 
-function buildCustomEmailHtml(options: {body: string; headerImageUrl?: string}): string {
-  const {body, headerImageUrl} = options
+function buildCustomEmailHtml(options: {heading?: string; body: string; headerImageUrl?: string}): string {
+  const {heading, body, headerImageUrl} = options
 
   const headerImageHtml = headerImageUrl
     ? `<tr>
@@ -779,12 +780,12 @@ function buildCustomEmailHtml(options: {body: string; headerImageUrl?: string}):
           <tr>
             <td style="padding: 40px 20px;">
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: 0 auto; max-width: 600px;">
-                <!-- Logo/Header Section -->
+                ${heading ? `<!-- Logo/Header Section -->
                 <tr>
                   <td style="text-align: center; padding-bottom: 24px;">
-                    <span style="font-family: Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 600; color: ${NEXUS_COLORS.navy}; letter-spacing: -0.5px;">Nexus Retreat</span>
+                    <span style="font-family: Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 600; color: ${NEXUS_COLORS.navy}; letter-spacing: -0.5px;">${heading}</span>
                   </td>
-                </tr>
+                </tr>` : ''}
                 <!-- Main Content Card -->
                 <tr>
                   <td>
@@ -822,6 +823,6 @@ function buildCustomEmailHtml(options: {body: string; headerImageUrl?: string}):
 // Preview HTML Generator (for admin UI)
 // ============================================================================
 
-export function generateEmailPreviewHtml(body: string, headerImageUrl?: string): string {
-  return buildCustomEmailHtml({body, headerImageUrl})
+export function generateEmailPreviewHtml(body: string, heading?: string, headerImageUrl?: string): string {
+  return buildCustomEmailHtml({heading, body, headerImageUrl})
 }
