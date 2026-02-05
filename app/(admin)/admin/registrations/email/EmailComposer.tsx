@@ -522,6 +522,31 @@ export default function EmailComposer({
         <div className="p-4 space-y-4">
           {sendResults && <SendResultsBanner results={sendResults} onClear={onClearResults} />}
 
+          {/* Recipients */}
+          <div className="space-y-3">
+            <EmailRecipientField
+              label="To"
+              recipients={recipientFields.to}
+              onChange={(to) => setRecipientFields({...recipientFields, to})}
+              placeholder="Add recipients..."
+              availablePredefined={PREDEFINED_RECIPIENTS}
+            />
+            <EmailRecipientField
+              label="CC"
+              recipients={recipientFields.cc}
+              onChange={(cc) => setRecipientFields({...recipientFields, cc})}
+              placeholder="Add CC recipients..."
+              availablePredefined={PREDEFINED_RECIPIENTS}
+            />
+            <EmailRecipientField
+              label="BCC"
+              recipients={recipientFields.bcc}
+              onChange={(bcc) => setRecipientFields({...recipientFields, bcc})}
+              placeholder="Add BCC recipients..."
+              availablePredefined={PREDEFINED_RECIPIENTS}
+            />
+          </div>
+
           {/* Template Selector */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Load Template</label>
@@ -586,31 +611,6 @@ export default function EmailComposer({
               or click the <code className="bg-gray-100 px-1 rounded">{'{{}}'}</code> button in the
               toolbar
             </p>
-          </div>
-
-          {/* Recipients */}
-          <div className="space-y-3">
-            <EmailRecipientField
-              label="To"
-              recipients={recipientFields.to}
-              onChange={(to) => setRecipientFields({...recipientFields, to})}
-              placeholder="Add recipients..."
-              availablePredefined={PREDEFINED_RECIPIENTS}
-            />
-            <EmailRecipientField
-              label="CC"
-              recipients={recipientFields.cc}
-              onChange={(cc) => setRecipientFields({...recipientFields, cc})}
-              placeholder="Add CC recipients..."
-              availablePredefined={PREDEFINED_RECIPIENTS}
-            />
-            <EmailRecipientField
-              label="BCC"
-              recipients={recipientFields.bcc}
-              onChange={(bcc) => setRecipientFields({...recipientFields, bcc})}
-              placeholder="Add BCC recipients..."
-              availablePredefined={PREDEFINED_RECIPIENTS}
-            />
           </div>
 
           {/* Send Button */}

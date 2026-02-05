@@ -66,20 +66,22 @@ export default async function SessionPage({params}: Props) {
     <div className="bg-nexus-beige min-h-screen">
       <div className="container mx-auto px-6 py-12 md:py-16">
         {/* Back Link */}
-        <Link
-          href="/schedule"
-          className="inline-flex items-center gap-2 text-nexus-navy hover:text-nexus-coral transition-colors mb-8"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          <span className="font-medium">Back to Sessions</span>
-        </Link>
+        {process.env.NEXT_PUBLIC_SESSIONS_LIVE === 'true' && (
+          <Link
+            href="/schedule"
+            className="inline-flex items-center gap-2 text-nexus-navy hover:text-nexus-coral transition-colors mb-8"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            <span className="font-medium">Back to Sessions</span>
+          </Link>
+        )}
 
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
           {/* Main Content */}

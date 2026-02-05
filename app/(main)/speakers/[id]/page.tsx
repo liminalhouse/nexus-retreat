@@ -1,14 +1,15 @@
 import type {Metadata} from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
 import {sanityFetch} from '@/sanity/lib/live'
 import {speakerByIdQuery} from '@/sanity/lib/queries'
-import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
+import {cleanSlug} from '@/sanity/lib/utils'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
 import {SessionTagsGroup} from '@/app/components/SessionTags'
 import SessionPlaceholder from '@/app/components/SessionPlaceholder'
+import SanityImageClient from '@/app/components/SanityImageClient'
+import {cookies} from 'next/headers'
 
 type Props = {
   params: Promise<{id: string}>
@@ -55,13 +56,12 @@ export default async function SpeakerPage({params}: Props) {
     params: {id},
   })
 
+  const cookieStore = await cookies()
+  const sanityToken = cookieStore.get('sanity-token')?.value
+
   if (!speaker) {
     notFound()
   }
-
-  const photoUrl = speaker.profilePicture
-    ? urlForImage(speaker.profilePicture)?.width(400).height(400).fit('crop').url()
-    : null
 
   return (
     <div className="bg-nexus-beige min-h-screen">
@@ -86,14 +86,17 @@ export default async function SpeakerPage({params}: Props) {
           <div className="flex flex-col md:flex-row gap-8 mb-12">
             {/* Photo */}
             <div className="flex-shrink-0">
-              {photoUrl ? (
-                <Image
-                  src={photoUrl}
+              {speaker?.profilePicture?.asset?._id ? (
+                <SanityImageClient
+                  id={speaker.profilePicture.asset._id}
                   alt={`${speaker.firstName} ${speaker.lastName}`}
                   width={200}
                   height={200}
+                  mode="cover"
+                  hotspot={speaker.profilePicture.hotspot}
+                  crop={speaker.profilePicture.crop}
+                  preview={speaker.profilePicture.asset.metadata?.lqip}
                   className="rounded-2xl object-cover"
-                  priority
                 />
               ) : (
                 <div className="w-[200px] h-[200px] rounded-2xl bg-gray-100 flex items-center justify-center">
@@ -122,84 +125,88 @@ export default async function SpeakerPage({params}: Props) {
           </div>
 
           {/* Sessions */}
-          {speaker.sessions && speaker.sessions.length > 0 && (
-            <div className="border-t border-gray-200 pt-8">
-              <h2 className="text-2xl font-semibold text-nexus-navy font-serif mb-6">Sessions</h2>
-              <div className="space-y-4">
-                {speaker.sessions.map((session) => {
-                  const sessionPhotoUrl = session.photo
-                    ? urlForImage(session.photo)?.width(200).height(120).fit('crop').url()
-                    : null
-                  const sessionSlug = cleanSlug(session.id?.current) || session._id
+          {/* TODO: Remove once sessions launch */}
+          {process.env.NEXT_PUBLIC_SESSIONS_LIVE === 'true' &&
+            !!speaker.sessions &&
+            speaker.sessions.length > 0 && (
+              <div className="border-t border-gray-200 pt-8">
+                <h2 className="text-2xl font-semibold text-nexus-navy font-serif mb-6">Sessions</h2>
+                <div className="space-y-4">
+                  {speaker.sessions.map((session) => {
+                    const sessionSlug = cleanSlug(session.id?.current) || session._id
 
-                  return (
-                    <Link
-                      key={session._id}
-                      href={`/schedule/${sessionSlug}`}
-                      className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-xl border border-gray-100 hover:shadow-md hover:border-nexus-coral/30 transition-all"
-                    >
-                      <div className="relative w-full sm:w-40 h-32 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden">
-                        {sessionPhotoUrl ? (
-                          <Image
-                            src={sessionPhotoUrl}
-                            alt={session.title || 'Session photo'}
-                            fill
-                            className="object-cover"
-                            sizes="160px"
-                          />
-                        ) : (
-                          <SessionPlaceholder
-                            tag={session.sessionTags?.[0]}
-                            sessionType={session.sessionType?.[0]}
-                            className="w-full h-full"
-                          />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        {/* Session Type & Tags */}
-                        <div className="mb-2">
-                          <SessionTagsGroup
-                            types={session.sessionType}
-                            tags={session.sessionTags}
-                          />
-                        </div>
-
-                        <h3 className="text-lg font-semibold text-nexus-navy mb-1">
-                          {session.title}
-                        </h3>
-
-                        <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
-                          {session.startTime && <span>{formatDate(session.startTime)}</span>}
-                          {session.startTime && session.endTime && (
-                            <span>
-                              {formatTime(session.startTime)} - {formatTime(session.endTime)}
-                            </span>
+                    return (
+                      <Link
+                        key={session._id}
+                        href={`/schedule/${sessionSlug}`}
+                        className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-xl border border-gray-100 hover:shadow-md hover:border-nexus-coral/30 transition-all"
+                      >
+                        <div className="relative w-full sm:w-40 h-32 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                          {session.photo?.asset?._id ? (
+                            <SanityImageClient
+                              id={session.photo.asset._id}
+                              alt={session.title || 'Session photo'}
+                              width={160}
+                              height={96}
+                              mode="cover"
+                              hotspot={session.photo.hotspot}
+                              crop={session.photo.crop}
+                              preview={session.photo.asset.metadata?.lqip}
+                              className="object-cover w-full h-full"
+                            />
+                          ) : (
+                            <SessionPlaceholder
+                              tag={session.sessionTags?.[0]}
+                              sessionType={session.sessionType?.[0]}
+                              className="w-full h-full"
+                            />
                           )}
-                          {session.location && <span>{session.location}</span>}
                         </div>
-                      </div>
+                        <div className="flex-1 min-w-0">
+                          {/* Session Type & Tags */}
+                          <div className="mb-2">
+                            <SessionTagsGroup
+                              types={session.sessionType}
+                              tags={session.sessionTags}
+                            />
+                          </div>
 
-                      <div className="hidden sm:flex items-center">
-                        <svg
-                          className="w-5 h-5 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 5l7 7-7 7"
-                          />
-                        </svg>
-                      </div>
-                    </Link>
-                  )
-                })}
+                          <h3 className="text-lg font-semibold text-nexus-navy mb-1">
+                            {session.title}
+                          </h3>
+
+                          <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
+                            {session.startTime && <span>{formatDate(session.startTime)}</span>}
+                            {session.startTime && session.endTime && (
+                              <span>
+                                {formatTime(session.startTime)} - {formatTime(session.endTime)}
+                              </span>
+                            )}
+                            {session.location && <span>{session.location}</span>}
+                          </div>
+                        </div>
+
+                        <div className="hidden sm:flex items-center">
+                          <svg
+                            className="w-5 h-5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
+                        </div>
+                      </Link>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
     </div>

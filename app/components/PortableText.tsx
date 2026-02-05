@@ -9,15 +9,19 @@
  */
 
 import {PortableText, type PortableTextComponents, type PortableTextBlock} from 'next-sanity'
+import Image from 'next/image'
 
 import ResolvedLink from '@/app/components/ResolvedLink'
+import {urlForImage} from '@/sanity/lib/utils'
 
 export default function CustomPortableText({
   className,
   value,
+  disableLinks = false,
 }: {
   className?: string
   value: PortableTextBlock[]
+  disableLinks?: boolean
 }) {
   const components: PortableTextComponents = {
     block: {
@@ -87,7 +91,36 @@ export default function CustomPortableText({
     },
     marks: {
       link: ({children, value: link}) => {
+        if (disableLinks) {
+          return <span>{children}</span>
+        }
         return <ResolvedLink link={link}>{children}</ResolvedLink>
+      },
+    },
+    types: {
+      image: ({value}) => {
+        const imageUrl = urlForImage(value)?.width(1000).quality(100).url()
+        if (!imageUrl) return null
+
+        return (
+          <figure className="mt-[2px] mb-[2px]">
+            <div className="relative overflow-hidden rounded-xl">
+              <Image
+                src={imageUrl}
+                alt={value.alt || ''}
+                width={800}
+                height={600}
+                className="w-full h-auto object-cover rounded-xl"
+                sizes="(max-width: 768px) 100vw, 800px"
+              />
+            </div>
+            {value.caption && (
+              <figcaption className="mt-2 text-center text-sm text-gray-500 italic">
+                {value.caption}
+              </figcaption>
+            )}
+          </figure>
+        )
       },
     },
   }
