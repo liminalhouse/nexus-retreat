@@ -439,7 +439,9 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        heading: false,
+        heading: {
+          levels: [1, 2],
+        },
         codeBlock: false,
         code: false,
         blockquote: false,
@@ -544,6 +546,24 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
           title="Italic"
         >
           <ItalicIcon className="w-4 h-4" />
+        </ToolbarButton>
+
+        <div className="w-px bg-gray-300 mx-1" />
+
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleHeading({level: 1}).run()}
+          isActive={editor.isActive('heading', {level: 1})}
+          title="Heading 1"
+        >
+          <span className="text-xs font-bold">H1</span>
+        </ToolbarButton>
+
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleHeading({level: 2}).run()}
+          isActive={editor.isActive('heading', {level: 2})}
+          title="Heading 2"
+        >
+          <span className="text-xs font-bold">H2</span>
         </ToolbarButton>
 
         <div className="w-px bg-gray-300 mx-1" />

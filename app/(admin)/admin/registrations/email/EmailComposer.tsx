@@ -593,7 +593,6 @@ export default function EmailComposer({
           <PreviewInfoBanner registration={previewRegistration} />
           <EmailPreview
             heading={heading}
-            subject={subject}
             body={body}
             headerImageUrl={headerImageUrl}
             registration={previewRegistration}
@@ -816,9 +815,9 @@ export default function EmailComposer({
             <label className="block text-sm font-medium text-gray-700 mb-1">Body</label>
             <RichTextEditor content={body} onChange={setBody} />
             <p className="mt-2 text-xs text-gray-500">
-              Type <code className="bg-gray-100 px-1 rounded">@</code> to see all available
-              variables, or click the <code className="bg-gray-100 px-1 rounded">{'{{}}'}</code>{' '}
-              button in the toolbar
+              Type <code className="bg-gray-100 px-1 rounded">{'{{'}</code> to insert variables, or
+              click the <code className="bg-gray-100 px-1 rounded">{'{{}}'}</code> button in the
+              toolbar
             </p>
           </div>
 

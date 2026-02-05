@@ -10,7 +10,6 @@ import {
 } from '@/lib/email/emailStyles'
 
 type EmailPreviewProps = {
-  subject: string
   body: string
   heading?: string
   headerImageUrl?: string
@@ -91,18 +90,12 @@ function buildVariablesMap(registration: Registration | null): Record<string, st
 }
 
 export default function EmailPreview({
-  subject,
   body,
   heading,
   headerImageUrl,
   registration,
 }: EmailPreviewProps) {
   const variables = useMemo(() => buildVariablesMap(registration), [registration])
-
-  const processedSubject = useMemo(
-    () => replaceEmailVariables(subject, variables),
-    [subject, variables],
-  )
 
   const processedBody = useMemo(() => replaceEmailVariables(body, variables), [body, variables])
 
@@ -140,26 +133,8 @@ export default function EmailPreview({
             <img src={headerImageUrl} alt="Email header" className="w-full h-auto" />
           )}
 
-          {/* Subject */}
-          <div className="px-10 pt-8 pb-2">
-            <p
-              style={{
-                fontFamily: EMAIL_FONTS.serif,
-                fontSize: '20px',
-                fontWeight: 600,
-                color: EMAIL_COLORS.navy,
-                margin: '4px 0 0 0',
-              }}
-            >
-              {processedSubject || 'No subject'}
-            </p>
-          </div>
-
-          {/* Divider */}
-          <div className="h-px mx-10 my-4" style={{backgroundColor: EMAIL_COLORS.seafoam}} />
-
           {/* Body */}
-          <div className="px-10 pb-8">
+          <div className="px-10 py-8">
             {processedBody ? (
               <div dangerouslySetInnerHTML={{__html: styledBody}} />
             ) : (
