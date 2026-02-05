@@ -9,6 +9,7 @@ import {type PortableTextBlock} from 'next-sanity'
 import {SessionTagsGroup} from '@/app/components/SessionTags'
 import SessionPlaceholder from '@/app/components/SessionPlaceholder'
 import SanityImageClient from '@/app/components/SanityImageClient'
+import {cookies} from 'next/headers'
 
 type Props = {
   params: Promise<{id: string}>
@@ -54,6 +55,9 @@ export default async function SpeakerPage({params}: Props) {
     query: speakerByIdQuery,
     params: {id},
   })
+
+  const cookieStore = await cookies()
+  const sanityToken = cookieStore.get('sanity-token')?.value
 
   if (!speaker) {
     notFound()
@@ -121,7 +125,8 @@ export default async function SpeakerPage({params}: Props) {
           </div>
 
           {/* Sessions */}
-          {speaker.sessions && speaker.sessions.length > 0 && (
+          {/* TODO: Remove once sessions launch */}
+          {!!sanityToken && !!speaker.sessions && speaker.sessions.length > 0 && (
             <div className="border-t border-gray-200 pt-8">
               <h2 className="text-2xl font-semibold text-nexus-navy font-serif mb-6">Sessions</h2>
               <div className="space-y-4">
