@@ -3,15 +3,25 @@ import {Resend} from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+// Helper to delay between requests (Resend allows 2 req/sec)
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 export async function GET() {
   try {
     // Fetch emails with higher limit (max is typically 100 per page)
     const allEmails: any[] = []
     let hasMore = true
     let cursor: string | undefined
+    let isFirstRequest = true
 
     // Fetch up to 500 emails (5 pages of 100)
     while (hasMore && allEmails.length < 500) {
+      // Add delay between requests to respect Resend's rate limit (2 req/sec)
+      if (!isFirstRequest) {
+        await delay(600)
+      }
+      isFirstRequest = false
+
       const response = await resend.emails.list({
         limit: 100,
         ...(cursor ? {starting_after: cursor} : {}),

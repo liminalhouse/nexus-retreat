@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useRef, useCallback} from 'react'
 import {format} from 'date-fns'
 
 type ResendEmail = {
@@ -26,9 +26,15 @@ export default function Outbox() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const hasFetchedRef = useRef(false)
+  const isFetchingRef = useRef(false)
 
   useEffect(() => {
-    fetchEmails()
+    // Only fetch once on mount, prevent duplicate calls
+    if (!hasFetchedRef.current && !isFetchingRef.current) {
+      hasFetchedRef.current = true
+      fetchEmails()
+    }
   }, [])
 
   // Fetch full email details when expanded
@@ -36,9 +42,13 @@ export default function Outbox() {
     if (expandedId && !emailDetails[expandedId]) {
       fetchEmailDetails(expandedId)
     }
-  }, [expandedId])
+  }, [expandedId, emailDetails])
 
-  const fetchEmails = async () => {
+  const fetchEmails = async (isManualRefresh = false) => {
+    // Prevent concurrent fetches
+    if (isFetchingRef.current) return
+    isFetchingRef.current = true
+
     setLoading(true)
     setError(null)
     try {
@@ -54,6 +64,11 @@ export default function Outbox() {
       setError(err instanceof Error ? err.message : 'Failed to fetch emails')
     } finally {
       setLoading(false)
+      isFetchingRef.current = false
+      // Allow manual refresh after this fetch completes
+      if (isManualRefresh) {
+        hasFetchedRef.current = true
+      }
     }
   }
 
@@ -134,7 +149,7 @@ export default function Outbox() {
           <p className="text-gray-900 font-medium mb-2">Failed to load emails</p>
           <p className="text-gray-500 text-sm mb-4">{error}</p>
           <button
-            onClick={fetchEmails}
+            onClick={() => fetchEmails(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
             Try Again
@@ -176,7 +191,7 @@ export default function Outbox() {
           <p className="text-sm text-gray-500">{emails.length} emails</p>
         </div>
         <button
-          onClick={fetchEmails}
+          onClick={() => fetchEmails(true)}
           className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
           title="Refresh"
         >
