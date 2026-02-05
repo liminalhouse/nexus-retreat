@@ -738,8 +738,8 @@ function buildCustomEmailHtml(options: {heading?: string; body: string; headerIm
 
   const headerImageHtml = headerImageUrl
     ? `<tr>
-         <td style="padding: 0;">
-           <img src="${headerImageUrl}" alt="Nexus Retreat" style="width: 100%; height: auto; display: block;" />
+         <td style="padding: 0; line-height: 0; font-size: 0;">
+           <img src="${headerImageUrl}" alt="Nexus Retreat" style="width: 100%; height: auto; display: block; border-radius: 16px 16px 0 0;" />
          </td>
        </tr>`
     : ''
@@ -789,10 +789,10 @@ function buildCustomEmailHtml(options: {heading?: string; body: string; headerIm
                 <!-- Main Content Card -->
                 <tr>
                   <td>
-                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: ${NEXUS_COLORS.white}; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: ${NEXUS_COLORS.white}; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);">
                       ${headerImageHtml}
                       <tr>
-                        <td style="padding: 40px 40px 32px 40px;">
+                        <td style="padding: ${headerImageUrl ? '32px' : '40px'} 40px 32px 40px;">
                           ${styledBody}
                         </td>
                       </tr>

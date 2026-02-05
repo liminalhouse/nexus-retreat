@@ -22,7 +22,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const {name, heading, subject, body} = await request.json()
+    const {name, heading, headerImageUrl, subject, body} = await request.json()
 
     if (!name?.trim() || !subject?.trim() || !body?.trim()) {
       return NextResponse.json(
@@ -36,6 +36,7 @@ export async function POST(request: Request) {
       .values({
         name: name.trim(),
         heading: heading?.trim() || null,
+        headerImageUrl: headerImageUrl?.trim() || null,
         subject: subject.trim(),
         body: body.trim(),
       })

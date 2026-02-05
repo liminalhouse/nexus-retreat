@@ -6,7 +6,7 @@ import {eq} from 'drizzle-orm'
 export async function PUT(request: Request, {params}: {params: Promise<{id: string}>}) {
   try {
     const {id} = await params
-    const {name, heading, subject, body} = await request.json()
+    const {name, heading, headerImageUrl, subject, body} = await request.json()
 
     if (!name?.trim() || !subject?.trim() || !body?.trim()) {
       return NextResponse.json(
@@ -20,6 +20,7 @@ export async function PUT(request: Request, {params}: {params: Promise<{id: stri
       .set({
         name: name.trim(),
         heading: heading?.trim() || null,
+        headerImageUrl: headerImageUrl?.trim() || null,
         subject: subject.trim(),
         body: body.trim(),
         updatedAt: new Date(),

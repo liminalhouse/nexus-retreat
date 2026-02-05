@@ -33,6 +33,7 @@ type EmailTemplate = {
   id: string
   name: string
   heading: string | null
+  headerImageUrl: string | null
   subject: string
   body: string
   createdAt: string
@@ -485,6 +486,7 @@ export default function EmailComposer({
     const template = templates.find((t) => t.id === templateId)
     if (template) {
       setHeading(template.heading || '')
+      setHeaderImageUrl(template.headerImageUrl || '')
       setSubject(template.subject)
       setBody(template.body)
     }
@@ -501,6 +503,7 @@ export default function EmailComposer({
         body: JSON.stringify({
           name: newTemplateName.trim(),
           heading: heading.trim() || null,
+          headerImageUrl: headerImageUrl.trim() || null,
           subject: subject.trim(),
           body: body.trim(),
         }),
@@ -533,6 +536,7 @@ export default function EmailComposer({
         body: JSON.stringify({
           name: template.name,
           heading: heading.trim() || null,
+          headerImageUrl: headerImageUrl.trim() || null,
           subject: subject.trim(),
           body: body.trim(),
         }),

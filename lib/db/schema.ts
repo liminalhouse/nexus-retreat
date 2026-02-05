@@ -84,6 +84,7 @@ export const emailTemplates = pgTable('email_templates', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   name: text('name').notNull(),
   heading: text('heading'),
+  headerImageUrl: text('header_image_url'),
   subject: text('subject').notNull(),
   body: text('body').notNull(),
 })

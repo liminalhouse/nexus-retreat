@@ -3,6 +3,54 @@
 import {useState, useMemo} from 'react'
 import Avatar from '@/app/components/Avatar'
 import type {Registration} from '@/lib/db/schema'
+import type {Registration as SnakeCaseRegistration} from '@/lib/types/registration'
+import {ArrowUpRightIcon} from '@heroicons/react/24/outline'
+import EditModal from '../EditModal'
+
+// Helper to convert camelCase registration to snake_case for EditModal
+function toSnakeCase(reg: Registration): SnakeCaseRegistration {
+  return {
+    id: reg.id,
+    created_at: reg.createdAt.toString(),
+    updated_at: reg.updatedAt.toString(),
+    edit_token: reg.editToken,
+    email: reg.email,
+    first_name: reg.firstName,
+    last_name: reg.lastName,
+    profile_picture: reg.profilePicture,
+    title: reg.title,
+    organization: reg.organization,
+    mobile_phone: reg.mobilePhone,
+    address_line_1: reg.addressLine1,
+    address_line_2: reg.addressLine2,
+    city: reg.city,
+    state: reg.state,
+    zip: reg.zip,
+    country: reg.country,
+    emergency_contact_name: reg.emergencyContactName,
+    emergency_contact_relation: reg.emergencyContactRelation,
+    emergency_contact_email: reg.emergencyContactEmail,
+    emergency_contact_phone: reg.emergencyContactPhone,
+    assistant_name: reg.assistantName,
+    assistant_title: reg.assistantTitle,
+    assistant_email: reg.assistantEmail,
+    assistant_phone: reg.assistantPhone,
+    guest_name: reg.guestName,
+    guest_relation: reg.guestRelation,
+    guest_email: reg.guestEmail,
+    dietary_restrictions: reg.dietaryRestrictions,
+    jacket_size: reg.jacketSize,
+    accommodations: reg.accommodations,
+    dinner_attendance: reg.dinnerAttendance,
+    activities: reg.activities,
+    guest_dietary_restrictions: reg.guestDietaryRestrictions,
+    guest_jacket_size: reg.guestJacketSize,
+    guest_accommodations: reg.guestAccommodations,
+    guest_dinner_attendance: reg.guestDinnerAttendance,
+    guest_activities: reg.guestActivities,
+    admin_notes: reg.adminNotes,
+  }
+}
 
 export default function RecipientList({
   registrations,
@@ -16,6 +64,7 @@ export default function RecipientList({
   onSelectOne: (id: string, checked: boolean) => void
 }) {
   const [searchQuery, setSearchQuery] = useState('')
+  const [viewingRegistration, setViewingRegistration] = useState<Registration | null>(null)
 
   const filteredRegistrations = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -31,8 +80,7 @@ export default function RecipientList({
   }, [registrations, searchQuery])
 
   const allFilteredSelected =
-    filteredRegistrations.length > 0 &&
-    filteredRegistrations.every((r) => selectedIds.has(r.id))
+    filteredRegistrations.length > 0 && filteredRegistrations.every((r) => selectedIds.has(r.id))
 
   const handleSelectAllFiltered = (checked: boolean) => {
     if (checked) {
@@ -103,9 +151,7 @@ export default function RecipientList({
               <li
                 key={registration.id}
                 className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer"
-                onClick={() =>
-                  onSelectOne(registration.id, !selectedIds.has(registration.id))
-                }
+                onClick={() => onSelectOne(registration.id, !selectedIds.has(registration.id))}
               >
                 <input
                   type="checkbox"
@@ -126,15 +172,33 @@ export default function RecipientList({
                   <p className="text-sm font-medium text-gray-900 truncate">
                     {registration.firstName} {registration.lastName}
                   </p>
-                  <p className="text-xs text-gray-500 truncate">
-                    {registration.email}
-                  </p>
+                  <p className="text-xs text-gray-500 truncate">{registration.email}</p>
                 </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setViewingRegistration(registration)
+                  }}
+                  className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                  title="View full info"
+                >
+                  <ArrowUpRightIcon className="w-4 h-4" />
+                </button>
               </li>
             ))}
           </ul>
         )}
       </div>
+
+      {/* Registration Details Modal */}
+      {viewingRegistration && (
+        <EditModal
+          registration={toSnakeCase(viewingRegistration)}
+          onClose={() => setViewingRegistration(null)}
+          readOnly={true}
+          isAdminView={true}
+        />
+      )}
     </div>
   )
 }

@@ -43,6 +43,13 @@
       "when": 1764619290850,
       "tag": "0005_unique_ezekiel",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1770331499443,
+      "tag": "0006_add_header_image_to_templates",
+      "breakpoints": true
     }
   ]
 }
