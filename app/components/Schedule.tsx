@@ -28,7 +28,7 @@ const Schedule: React.FC<ScheduleProps> = ({block}) => {
             : 'md:grid-cols-2 lg:grid-cols-5'
 
   return (
-    <div className="relative overflow-hidden bg-nexus-coral-light/20">
+    <div className="relative overflow-hidden bg-nexus-seafoam/40">
       <div
         className="absolute inset-0"
         style={{
@@ -92,10 +92,10 @@ const Schedule: React.FC<ScheduleProps> = ({block}) => {
           {days.map((day, index) => (
             <div
               key={day._key || index}
-              className="group relative bg-white/80 backdrop-blur-sm rounded-xl shadow-md overflow-hidden border border-nexus-coral/20"
+              className="group relative bg-white/80 backdrop-blur-sm rounded-xl shadow-md overflow-hidden border border-nexus-seafoam/20"
             >
               {/* Decorative corner accent */}
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-nexus-coral/10 to-transparent rounded-bl-full"></div>
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-nexus-seafoam/10 to-transparent rounded-bl-full"></div>
 
               {/* Day header */}
               <div className="relative bg-gradient-to-br from-nexus-navy via-nexus-navy-dark to-nexus-navy px-6 py-8">
@@ -118,7 +118,7 @@ const Schedule: React.FC<ScheduleProps> = ({block}) => {
               </div>
 
               {/* Bottom decorative accent */}
-              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-nexus-coral/30 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-nexus-seafoam/30 to-transparent"></div>
             </div>
           ))}
         </div>

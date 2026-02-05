@@ -13,11 +13,38 @@
  */
 
 // Source: schema.json
+export type Step1 = {
+  title?: string
+  fieldGroups?: Array<
+    {
+      _key: string
+    } & FieldGroup
+  >
+}
+
+export type Step2 = {
+  title?: string
+  fieldGroups?: Array<
+    {
+      _key: string
+    } & FieldGroup
+  >
+}
+
+export type Step3 = {
+  title?: string
+  fieldGroups?: Array<
+    {
+      _key: string
+    } & FieldGroup
+  >
+}
+
 export type Schedule = {
   _type: 'schedule'
   heading?: string
   topText?: BlockContent
-  days?: Array<
+  days: Array<
     {
       _key: string
     } & ScheduleDay
@@ -27,8 +54,8 @@ export type Schedule = {
 
 export type ScheduleDay = {
   _type: 'scheduleDay'
-  dayTitle?: string
-  items?: Array<string>
+  dayTitle: string
+  items: Array<string>
 }
 
 export type Form = {
@@ -36,41 +63,20 @@ export type Form = {
   title?: string
   subtitle?: string
   description?: string
-  numberOfSteps?: 1 | 2 | 3
-  step1?: {
-    title?: string
-    fieldGroups?: Array<
-      {
-        _key: string
-      } & FieldGroup
-    >
-  }
-  step2?: {
-    title?: string
-    fieldGroups?: Array<
-      {
-        _key: string
-      } & FieldGroup
-    >
-  }
-  step3?: {
-    title?: string
-    fieldGroups?: Array<
-      {
-        _key: string
-      } & FieldGroup
-    >
-  }
+  numberOfSteps: 1 | 2 | 3
+  step1?: Step1
+  step2?: Step2
+  step3?: Step3
   submitButtonText?: string
   nextButtonText?: string
   backButtonText?: string
   successMessage?: string
-  submitEndpoint?: string
+  submitEndpoint: string
 }
 
 export type FormField = {
   _type: 'formField'
-  fieldType?:
+  fieldType:
     | 'text'
     | 'email'
     | 'tel'
@@ -80,13 +86,13 @@ export type FormField = {
     | 'checkboxGroup'
     | 'radio'
   label?: string
-  name?: string
+  name: string
   placeholder?: string
   helperText?: string
   required?: boolean
   options?: Array<{
-    label?: string
-    value?: string
+    label: string
+    value: string
     _key: string
   }>
 }
@@ -95,7 +101,7 @@ export type FieldGroup = {
   _type: 'fieldGroup'
   groupTitle?: string
   groupDescription?: string
-  fields?: Array<
+  fields: Array<
     {
       _key: string
     } & FormField
@@ -132,7 +138,7 @@ export type FormBuilder = {
 
 export type Faq = {
   _type: 'faq'
-  faqBuilder?: Array<
+  faqBuilder: Array<
     {
       _key: string
     } & FaqItem
@@ -141,8 +147,15 @@ export type Faq = {
 
 export type FaqItem = {
   _type: 'faqItem'
-  question?: string
-  answer?: BlockContent
+  question: string
+  answer: BlockContent
+}
+
+export type SanityImageAssetReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
 }
 
 export type Hero = {
@@ -153,12 +166,7 @@ export type Hero = {
   ctaText?: string
   ctaLink?: string
   backgroundImage?: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
+    asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
@@ -166,22 +174,24 @@ export type Hero = {
   }
 }
 
+export type PageReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'page'
+}
+
 export type Link = {
   _type: 'link'
   linkType?: 'href' | 'page'
   href?: string
-  page?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'page'
-  }
+  page?: PageReference
   openInNewTab?: boolean
 }
 
 export type CallToAction = {
   _type: 'callToAction'
-  heading?: string
+  heading: string
   text?: string
   buttonText?: string
   link?: Link
@@ -192,34 +202,49 @@ export type InfoSection = {
   heading?: string
   subheading?: string
   content?: BlockContent
+  styleType?: 'beige' | 'white' | 'seafoam' | 'coral' | 'navy'
 }
 
-export type BlockContent = Array<{
-  children?: Array<{
-    marks?: Array<string>
-    text?: string
-    _type: 'span'
-    _key: string
-  }>
-  style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
-  listItem?: 'bullet' | 'number'
-  markDefs?: Array<{
-    linkType?: 'href' | 'page'
-    href?: string
-    page?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'page'
+export type BlockContent = Array<
+  | {
+      children?: Array<{
+        marks?: Array<string>
+        text?: string
+        _type: 'span'
+        _key: string
+      }>
+      style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
+      listItem?: 'bullet' | 'number'
+      markDefs?: Array<{
+        linkType?: 'href' | 'page'
+        href?: string
+        page?: PageReference
+        openInNewTab?: boolean
+        _type: 'link'
+        _key: string
+      }>
+      level?: number
+      _type: 'block'
+      _key: string
     }
-    openInNewTab?: boolean
-    _type: 'link'
-    _key: string
-  }>
-  level?: number
-  _type: 'block'
-  _key: string
-}>
+  | {
+      asset?: SanityImageAssetReference
+      media?: unknown
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      alt?: string
+      caption?: string
+      _type: 'image'
+      _key: string
+    }
+>
+
+export type SpeakerReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'speaker'
+}
 
 export type Session = {
   _id: string
@@ -227,8 +252,8 @@ export type Session = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  id?: Slug
-  title?: string
+  id: Slug
+  title: string
   description?: Array<{
     children?: Array<{
       marks?: Array<string>
@@ -247,25 +272,18 @@ export type Session = {
     _type: 'block'
     _key: string
   }>
-  startTime?: string
-  endTime?: string
-  speakers?: Array<{
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    _key: string
-    [internalGroqTypeReferenceTo]?: 'speaker'
-  }>
+  startTime: string
+  endTime: string
+  speakers?: Array<
+    {
+      _key: string
+    } & SpeakerReference
+  >
   sessionType?: Array<string>
   sessionTags?: Array<string>
   location?: string
   photo?: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
+    asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
@@ -276,23 +294,23 @@ export type Session = {
 
 export type SanityImageCrop = {
   _type: 'sanity.imageCrop'
-  top?: number
-  bottom?: number
-  left?: number
-  right?: number
+  top: number
+  bottom: number
+  left: number
+  right: number
 }
 
 export type SanityImageHotspot = {
   _type: 'sanity.imageHotspot'
-  x?: number
-  y?: number
-  height?: number
-  width?: number
+  x: number
+  y: number
+  height: number
+  width: number
 }
 
 export type Slug = {
   _type: 'slug'
-  current?: string
+  current: string
   source?: string
 }
 
@@ -302,9 +320,9 @@ export type Speaker = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  firstName?: string
-  lastName?: string
-  id?: Slug
+  firstName: string
+  lastName: string
+  id: Slug
   title?: string
   bio?: Array<{
     children?: Array<{
@@ -325,12 +343,7 @@ export type Speaker = {
     _key: string
   }>
   profilePicture?: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
+    asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
@@ -344,23 +357,18 @@ export type EmailTemplate = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  name?: string
-  type?: 'registration_confirmation'
-  subject?: string
+  name: string
+  type: 'registration_confirmation' | 'activity_selection' | 'activity_update_confirmation'
+  subject: string
   headerImage?: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
+    asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
     alt?: string
     _type: 'image'
   }
-  greeting?: string
+  greeting: string
   bodyIntro?: Array<{
     children?: Array<{
       marks?: Array<string>
@@ -407,7 +415,7 @@ export type Page = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  name?: string
+  name: string
   heading?: string
   description?: BlockContent
   slug?: Slug
@@ -440,14 +448,14 @@ export type RegistrationForm = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  title?: string
+  title: string
   subtitle?: string
   description?: string
-  submitButtonText?: string
-  nextButtonText?: string
-  backButtonText?: string
-  successMessage?: string
-  step1Title?: string
+  submitButtonText: string
+  nextButtonText: string
+  backButtonText: string
+  successMessage: string
+  step1Title: string
   email?: {
     label?: string
     placeholder?: string
@@ -517,7 +525,7 @@ export type RegistrationForm = {
       hidden?: boolean
     }
   }
-  step2Title?: string
+  step2Title: string
   emergencyContact?: {
     sectionTitle?: string
     sectionDescription?: string
@@ -585,7 +593,7 @@ export type RegistrationForm = {
       hidden?: boolean
     }
   }
-  step3Title?: string
+  step3Title: string
   attendeeDetails?: {
     sectionTitle?: string
     dietaryRestrictions?: {
@@ -651,8 +659,8 @@ export type Settings = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  registrationIsLive?: boolean
-  title?: string
+  registrationIsLive: boolean
+  title: string
   description?: Array<{
     children?: Array<{
       marks?: Array<string>
@@ -668,12 +676,7 @@ export type Settings = {
     _key: string
   }>
   ogImage?: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
+    asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
@@ -682,8 +685,8 @@ export type Settings = {
     _type: 'image'
   }
   navLinks?: Array<{
-    label?: string
-    href?: string
+    label: string
+    href: string
     highlighted?: boolean
     _type: 'navLink'
     _key: string
@@ -691,146 +694,11 @@ export type Settings = {
   footerTagline?: string
   footerEmail?: string
   footerQuickLinks?: Array<{
-    label?: string
-    href?: string
+    label: string
+    href: string
     _key: string
   }>
   footerCopyright?: string
-}
-
-export type SanityAssistInstructionTask = {
-  _type: 'sanity.assist.instructionTask'
-  path?: string
-  instructionKey?: string
-  started?: string
-  updated?: string
-  info?: string
-}
-
-export type SanityAssistTaskStatus = {
-  _type: 'sanity.assist.task.status'
-  tasks?: Array<
-    {
-      _key: string
-    } & SanityAssistInstructionTask
-  >
-}
-
-export type SanityAssistSchemaTypeAnnotations = {
-  _type: 'sanity.assist.schemaType.annotations'
-  title?: string
-  fields?: Array<
-    {
-      _key: string
-    } & SanityAssistSchemaTypeField
-  >
-}
-
-export type SanityAssistOutputType = {
-  _type: 'sanity.assist.output.type'
-  type?: string
-}
-
-export type SanityAssistOutputField = {
-  _type: 'sanity.assist.output.field'
-  path?: string
-}
-
-export type SanityAssistInstructionContext = {
-  _type: 'sanity.assist.instruction.context'
-  reference?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'assist.instruction.context'
-  }
-}
-
-export type AssistInstructionContext = {
-  _id: string
-  _type: 'assist.instruction.context'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title?: string
-  context?: Array<{
-    children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'normal'
-    listItem?: never
-    markDefs?: null
-    level?: number
-    _type: 'block'
-    _key: string
-  }>
-}
-
-export type SanityAssistInstructionUserInput = {
-  _type: 'sanity.assist.instruction.userInput'
-  message?: string
-  description?: string
-}
-
-export type SanityAssistInstructionPrompt = Array<{
-  children?: Array<
-    | {
-        marks?: Array<string>
-        text?: string
-        _type: 'span'
-        _key: string
-      }
-    | ({
-        _key: string
-      } & SanityAssistInstructionFieldRef)
-    | ({
-        _key: string
-      } & SanityAssistInstructionContext)
-    | ({
-        _key: string
-      } & SanityAssistInstructionUserInput)
-  >
-  style?: 'normal'
-  listItem?: never
-  markDefs?: null
-  level?: number
-  _type: 'block'
-  _key: string
-}>
-
-export type SanityAssistInstructionFieldRef = {
-  _type: 'sanity.assist.instruction.fieldRef'
-  path?: string
-}
-
-export type SanityAssistInstruction = {
-  _type: 'sanity.assist.instruction'
-  prompt?: SanityAssistInstructionPrompt
-  icon?: string
-  title?: string
-  userId?: string
-  createdById?: string
-  output?: Array<
-    | ({
-        _key: string
-      } & SanityAssistOutputField)
-    | ({
-        _key: string
-      } & SanityAssistOutputType)
-  >
-}
-
-export type SanityAssistSchemaTypeField = {
-  _type: 'sanity.assist.schemaType.field'
-  path?: string
-  instructions?: Array<
-    {
-      _key: string
-    } & SanityAssistInstruction
-  >
 }
 
 export type SanityImagePaletteSwatch = {
@@ -854,9 +722,9 @@ export type SanityImagePalette = {
 
 export type SanityImageDimensions = {
   _type: 'sanity.imageDimensions'
-  height?: number
-  width?: number
-  aspectRatio?: number
+  height: number
+  width: number
+  aspectRatio: number
 }
 
 export type SanityImageMetadata = {
@@ -866,6 +734,7 @@ export type SanityImageMetadata = {
   palette?: SanityImagePalette
   lqip?: string
   blurHash?: string
+  thumbHash?: string
   hasAlpha?: boolean
   isOpaque?: boolean
 }
@@ -930,6 +799,9 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
+  | Step1
+  | Step2
+  | Step3
   | Schedule
   | ScheduleDay
   | Form
@@ -938,11 +810,14 @@ export type AllSanitySchemaTypes =
   | FormBuilder
   | Faq
   | FaqItem
+  | SanityImageAssetReference
   | Hero
+  | PageReference
   | Link
   | CallToAction
   | InfoSection
   | BlockContent
+  | SpeakerReference
   | Session
   | SanityImageCrop
   | SanityImageHotspot
@@ -952,18 +827,6 @@ export type AllSanitySchemaTypes =
   | Page
   | RegistrationForm
   | Settings
-  | SanityAssistInstructionTask
-  | SanityAssistTaskStatus
-  | SanityAssistSchemaTypeAnnotations
-  | SanityAssistOutputType
-  | SanityAssistOutputField
-  | SanityAssistInstructionContext
-  | AssistInstructionContext
-  | SanityAssistInstructionUserInput
-  | SanityAssistInstructionPrompt
-  | SanityAssistInstructionFieldRef
-  | SanityAssistInstruction
-  | SanityAssistSchemaTypeField
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
@@ -985,8 +848,8 @@ type ArrayOf<T> = Array<
 // Variable: settingsQuery
 // Query: *[_type == "settings"][0]{  registrationIsLive,  title,  description,  ogImage,  navLinks[]{    label,    href,    highlighted  },  footerTagline,  footerEmail,  footerQuickLinks[]{    label,    href  },  footerCopyright}
 export type SettingsQueryResult = {
-  registrationIsLive: boolean | null
-  title: string | null
+  registrationIsLive: boolean
+  title: string
   description: Array<{
     children?: Array<{
       marks?: Array<string>
@@ -1002,12 +865,7 @@ export type SettingsQueryResult = {
     _key: string
   }> | null
   ogImage: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
+    asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
@@ -1016,15 +874,15 @@ export type SettingsQueryResult = {
     _type: 'image'
   } | null
   navLinks: Array<{
-    label: string | null
-    href: string | null
+    label: string
+    href: string
     highlighted: boolean | null
   }> | null
   footerTagline: string | null
   footerEmail: string | null
   footerQuickLinks: Array<{
-    label: string | null
-    href: string | null
+    label: string
+    href: string
   }> | null
   footerCopyright: string | null
 } | null
@@ -1035,7 +893,7 @@ export type SettingsQueryResult = {
 export type GetPageQueryResult = {
   _id: string
   _type: 'page'
-  name: string | null
+  name: string
   slug: Slug | null
   bgColor: 'beige' | 'blueGradient' | 'navy' | 'white' | null
   heading: string | null
@@ -1044,7 +902,7 @@ export type GetPageQueryResult = {
     | {
         _key: string
         _type: 'callToAction'
-        heading?: string
+        heading: string
         text?: string
         buttonText?: string
         link: {
@@ -1058,7 +916,7 @@ export type GetPageQueryResult = {
     | {
         _key: string
         _type: 'faq'
-        faqBuilder?: Array<
+        faqBuilder: Array<
           {
             _key: string
           } & FaqItem
@@ -1070,7 +928,7 @@ export type GetPageQueryResult = {
         title: string | null
         subtitle: string | null
         description: string | null
-        numberOfSteps: 1 | 2 | 3 | null
+        numberOfSteps: 1 | 2 | 3
         step1: {
           title: string | null
           fieldGroups: Array<{
@@ -1086,17 +944,16 @@ export type GetPageQueryResult = {
                 | 'tel'
                 | 'text'
                 | 'textarea'
-                | null
               label: string | null
-              name: string | null
+              name: string
               placeholder: string | null
               helperText: string | null
               required: boolean | null
               options: Array<{
-                label: string | null
-                value: string | null
+                label: string
+                value: string
               }> | null
-            }> | null
+            }>
           }> | null
         } | null
         step2: {
@@ -1114,17 +971,16 @@ export type GetPageQueryResult = {
                 | 'tel'
                 | 'text'
                 | 'textarea'
-                | null
               label: string | null
-              name: string | null
+              name: string
               placeholder: string | null
               helperText: string | null
               required: boolean | null
               options: Array<{
-                label: string | null
-                value: string | null
+                label: string
+                value: string
               }> | null
-            }> | null
+            }>
           }> | null
         } | null
         step3: {
@@ -1142,60 +998,67 @@ export type GetPageQueryResult = {
                 | 'tel'
                 | 'text'
                 | 'textarea'
-                | null
               label: string | null
-              name: string | null
+              name: string
               placeholder: string | null
               helperText: string | null
               required: boolean | null
               options: Array<{
-                label: string | null
-                value: string | null
+                label: string
+                value: string
               }> | null
-            }> | null
+            }>
           }> | null
         } | null
         submitButtonText: string | null
         nextButtonText: string | null
         backButtonText: string | null
         successMessage: string | null
-        submitEndpoint: string | null
+        submitEndpoint: string
       }
     | {
         _key: string
         _type: 'hero'
-        description: Array<{
-          children?: Array<{
-            marks?: Array<string>
-            text?: string
-            _type: 'span'
-            _key: string
-          }>
-          style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
-          listItem?: 'bullet' | 'number'
-          markDefs: Array<{
-            linkType?: 'href' | 'page'
-            href?: string
-            page: string | null
-            openInNewTab?: boolean
-            _type: 'link'
-            _key: string
-          }> | null
-          level?: number
-          _type: 'block'
-          _key: string
-        }> | null
+        description: Array<
+          | {
+              children?: Array<{
+                marks?: Array<string>
+                text?: string
+                _type: 'span'
+                _key: string
+              }>
+              style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+              listItem?: 'bullet' | 'number'
+              markDefs: Array<{
+                linkType?: 'href' | 'page'
+                href?: string
+                page: string | null
+                openInNewTab?: boolean
+                _type: 'link'
+                _key: string
+              }> | null
+              level?: number
+              _type: 'block'
+              _key: string
+            }
+          | {
+              asset?: SanityImageAssetReference
+              media?: unknown
+              hotspot?: SanityImageHotspot
+              crop?: SanityImageCrop
+              alt?: string
+              caption?: string
+              _type: 'image'
+              _key: string
+              markDefs: null
+            }
+        > | null
         eventDate: string | null
         eventLocation: string | null
         ctaText: string | null
         ctaLink: string | null
         backgroundImage: {
-          asset?: {
-            _ref: string
-            _type: 'reference'
-            _weak?: boolean
-            [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-          }
+          asset?: SanityImageAssetReference
           media?: unknown
           hotspot?: SanityImageHotspot
           crop?: SanityImageCrop
@@ -1207,34 +1070,48 @@ export type GetPageQueryResult = {
         _type: 'infoSection'
         heading?: string
         subheading?: string
-        content: Array<{
-          children?: Array<{
-            marks?: Array<string>
-            text?: string
-            _type: 'span'
-            _key: string
-          }>
-          style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
-          listItem?: 'bullet' | 'number'
-          markDefs: Array<{
-            linkType?: 'href' | 'page'
-            href?: string
-            page: string | null
-            openInNewTab?: boolean
-            _type: 'link'
-            _key: string
-          }> | null
-          level?: number
-          _type: 'block'
-          _key: string
-        }> | null
+        content: Array<
+          | {
+              children?: Array<{
+                marks?: Array<string>
+                text?: string
+                _type: 'span'
+                _key: string
+              }>
+              style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+              listItem?: 'bullet' | 'number'
+              markDefs: Array<{
+                linkType?: 'href' | 'page'
+                href?: string
+                page: string | null
+                openInNewTab?: boolean
+                _type: 'link'
+                _key: string
+              }> | null
+              level?: number
+              _type: 'block'
+              _key: string
+            }
+          | {
+              asset?: SanityImageAssetReference
+              media?: unknown
+              hotspot?: SanityImageHotspot
+              crop?: SanityImageCrop
+              alt?: string
+              caption?: string
+              _type: 'image'
+              _key: string
+              markDefs: null
+            }
+        > | null
+        styleType?: 'beige' | 'coral' | 'navy' | 'seafoam' | 'white'
       }
     | {
         _key: string
         _type: 'schedule'
         heading?: string
         topText?: BlockContent
-        days?: Array<
+        days: Array<
           {
             _key: string
           } & ScheduleDay
@@ -1248,7 +1125,7 @@ export type GetPageQueryResult = {
 // Variable: sitemapData
 // Query: *[_type == "page" && defined(slug.current)] | order(_type asc) {    "slug": slug.current,    _type,    _updatedAt,  }
 export type SitemapDataResult = Array<{
-  slug: string | null
+  slug: string
   _type: 'page'
   _updatedAt: string
 }>
@@ -1257,7 +1134,7 @@ export type SitemapDataResult = Array<{
 // Variable: pagesSlugs
 // Query: *[_type == "page" && defined(slug.current)]  {"slug": slug.current}
 export type PagesSlugsResult = Array<{
-  slug: string | null
+  slug: string
 }>
 
 // Source: sanity/lib/queries.ts
@@ -1265,8 +1142,8 @@ export type PagesSlugsResult = Array<{
 // Query: *[_type == "session"] | order(startTime asc) {    _id,    id,    title,    description,    startTime,    endTime,    location,    sessionType,    sessionTags,    photo,    "speakers": speakers[]->{      _id,      id,      firstName,      lastName,      title,      profilePicture    }  }
 export type SessionsQueryResult = Array<{
   _id: string
-  id: Slug | null
-  title: string | null
+  id: Slug
+  title: string
   description: Array<{
     children?: Array<{
       marks?: Array<string>
@@ -1285,18 +1162,13 @@ export type SessionsQueryResult = Array<{
     _type: 'block'
     _key: string
   }> | null
-  startTime: string | null
-  endTime: string | null
+  startTime: string
+  endTime: string
   location: string | null
   sessionType: Array<string> | null
   sessionTags: Array<string> | null
   photo: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
+    asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
@@ -1305,17 +1177,12 @@ export type SessionsQueryResult = Array<{
   } | null
   speakers: Array<{
     _id: string
-    id: Slug | null
-    firstName: string | null
-    lastName: string | null
+    id: Slug
+    firstName: string
+    lastName: string
     title: string | null
     profilePicture: {
-      asset?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-      }
+      asset?: SanityImageAssetReference
       media?: unknown
       hotspot?: SanityImageHotspot
       crop?: SanityImageCrop
@@ -1329,8 +1196,8 @@ export type SessionsQueryResult = Array<{
 // Query: *[_type == "session" && id.current == $id][0]{    _id,    id,    title,    description,    startTime,    endTime,    location,    sessionType,    sessionTags,    photo,    "speakers": speakers[]->{      _id,      id,      firstName,      lastName,      title,      bio,      profilePicture {        asset->{          _id,          url,          metadata {            lqip,            dimensions {              width,              height            }          }        }      }    }  }
 export type SessionByIdQueryResult = {
   _id: string
-  id: Slug | null
-  title: string | null
+  id: Slug
+  title: string
   description: Array<{
     children?: Array<{
       marks?: Array<string>
@@ -1349,18 +1216,13 @@ export type SessionByIdQueryResult = {
     _type: 'block'
     _key: string
   }> | null
-  startTime: string | null
-  endTime: string | null
+  startTime: string
+  endTime: string
   location: string | null
   sessionType: Array<string> | null
   sessionTags: Array<string> | null
   photo: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
+    asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
@@ -1369,9 +1231,9 @@ export type SessionByIdQueryResult = {
   } | null
   speakers: Array<{
     _id: string
-    id: Slug | null
-    firstName: string | null
-    lastName: string | null
+    id: Slug
+    firstName: string
+    lastName: string
     title: string | null
     bio: Array<{
       children?: Array<{
@@ -1398,8 +1260,8 @@ export type SessionByIdQueryResult = {
         metadata: {
           lqip: string | null
           dimensions: {
-            width: number | null
-            height: number | null
+            width: number
+            height: number
           } | null
         } | null
       } | null
@@ -1412,9 +1274,9 @@ export type SessionByIdQueryResult = {
 // Query: *[_type == "speaker"] | order(lastName asc) {    _id,    id,    firstName,    lastName,    title,    bio,    profilePicture  }
 export type SpeakersQueryResult = Array<{
   _id: string
-  id: Slug | null
-  firstName: string | null
-  lastName: string | null
+  id: Slug
+  firstName: string
+  lastName: string
   title: string | null
   bio: Array<{
     children?: Array<{
@@ -1435,12 +1297,7 @@ export type SpeakersQueryResult = Array<{
     _key: string
   }> | null
   profilePicture: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
+    asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
@@ -1453,9 +1310,9 @@ export type SpeakersQueryResult = Array<{
 // Query: *[_type == "speaker" && id.current == $id][0]{    _id,    id,    firstName,    lastName,    title,    bio,    profilePicture {      asset->{        _id,        url,        metadata {          lqip,          dimensions {            width,            height          }        }      },      hotspot,      crop    },    "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {      _id,      id,      title,      startTime,      endTime,      location,      sessionType,      sessionTags,      photo {        asset->{          _id,          url,          metadata {            lqip,            dimensions {              width,              height            }          }        },        hotspot,        crop      }    }  }
 export type SpeakerByIdQueryResult = {
   _id: string
-  id: Slug | null
-  firstName: string | null
-  lastName: string | null
+  id: Slug
+  firstName: string
+  lastName: string
   title: string | null
   bio: Array<{
     children?: Array<{
@@ -1482,8 +1339,8 @@ export type SpeakerByIdQueryResult = {
       metadata: {
         lqip: string | null
         dimensions: {
-          width: number | null
-          height: number | null
+          width: number
+          height: number
         } | null
       } | null
     } | null
@@ -1492,10 +1349,10 @@ export type SpeakerByIdQueryResult = {
   } | null
   sessions: Array<{
     _id: string
-    id: Slug | null
-    title: string | null
-    startTime: string | null
-    endTime: string | null
+    id: Slug
+    title: string
+    startTime: string
+    endTime: string
     location: string | null
     sessionType: Array<string> | null
     sessionTags: Array<string> | null
@@ -1506,8 +1363,8 @@ export type SpeakerByIdQueryResult = {
         metadata: {
           lqip: string | null
           dimensions: {
-            width: number | null
-            height: number | null
+            width: number
+            height: number
           } | null
         } | null
       } | null
@@ -1521,16 +1378,16 @@ export type SpeakerByIdQueryResult = {
 // Variable: registrationFormContentQuery
 // Query: *[_type == "registrationForm" && _id == "registrationFormContent"][0]{    title,    subtitle,    description,    submitButtonText,    nextButtonText,    backButtonText,    successMessage,    step1Title,    step2Title,    step3Title,    email,    firstName,    lastName,    jobTitle,    organization,    mobilePhone,    address,    emergencyContact,    assistant,    guest,    attendeeDetails,    guestEventDetails  }
 export type RegistrationFormContentQueryResult = {
-  title: string | null
+  title: string
   subtitle: string | null
   description: string | null
-  submitButtonText: string | null
-  nextButtonText: string | null
-  backButtonText: string | null
-  successMessage: string | null
-  step1Title: string | null
-  step2Title: string | null
-  step3Title: string | null
+  submitButtonText: string
+  nextButtonText: string
+  backButtonText: string
+  successMessage: string
+  step1Title: string
+  step2Title: string
+  step3Title: string
   email: {
     label?: string
     placeholder?: string
