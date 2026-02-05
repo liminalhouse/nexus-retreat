@@ -19,6 +19,7 @@ type Tab = 'compose' | 'outbox'
 export default function EmailPageClient({registrations}: {registrations: Registration[]}) {
   const [activeTab, setActiveTab] = useState<Tab>('compose')
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [heading, setHeading] = useState('')
   const [subject, setSubject] = useState('')
   const [body, setBody] = useState('')
   const [headerImageUrl, setHeaderImageUrl] = useState('')
@@ -187,6 +188,8 @@ export default function EmailPageClient({registrations}: {registrations: Registr
           {/* Right Panel - Email Composer (60%) */}
           <div className="lg:col-span-3">
             <EmailComposer
+              heading={heading}
+              setHeading={setHeading}
               subject={subject}
               setSubject={setSubject}
               body={body}

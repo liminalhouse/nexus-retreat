@@ -3,12 +3,23 @@
 import {useEditor, EditorContent, ReactRenderer} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
+import BulletList from '@tiptap/extension-bullet-list'
+import OrderedList from '@tiptap/extension-ordered-list'
+import ListItem from '@tiptap/extension-list-item'
 import {Extension} from '@tiptap/core'
 import Suggestion, {SuggestionProps, SuggestionKeyDownProps} from '@tiptap/suggestion'
 import {useCallback, useEffect, useState, forwardRef, useImperativeHandle} from 'react'
 import {createPortal} from 'react-dom'
 import tippy, {Instance as TippyInstance} from 'tippy.js'
 import 'tippy.js/dist/tippy.css'
+import {
+  BoldIcon,
+  ItalicIcon,
+  LinkIcon,
+  LinkSlashIcon,
+  ListBulletIcon,
+  NumberedListIcon,
+} from '@heroicons/react/24/outline'
 
 // All available registration variables organized by category
 const VARIABLE_CATEGORIES = [
@@ -181,11 +192,7 @@ const SuggestionList = forwardRef<SuggestionListRef, SuggestionListProps>(
                 onClick={() => selectItem(globalIndex)}
               >
                 <span className="flex items-center gap-1.5">
-                  {item.linkText && (
-                    <svg className="w-3.5 h-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
-                  )}
+                  {item.linkText && <LinkIcon className="w-3.5 h-3.5 text-blue-500" />}
                   {item.label}
                 </span>
                 <code className="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
@@ -287,12 +294,7 @@ const VariableSuggestion = Extension.create({
               .insertContent(`<a href="{{${props.key}}}">${props.linkText}</a>`)
               .run()
           } else {
-            editor
-              .chain()
-              .focus()
-              .deleteRange(range)
-              .insertContent(`{{${props.key}}}`)
-              .run()
+            editor.chain().focus().deleteRange(range).insertContent(`{{${props.key}}}`).run()
           }
         },
       }),
@@ -322,9 +324,11 @@ function VariablePickerDropdown({
   useEffect(() => {
     if (isOpen && anchorRef.current) {
       const rect = anchorRef.current.getBoundingClientRect()
+      // getBoundingClientRect returns viewport-relative coords,
+      // which is what we need for position: fixed
       setPosition({
-        top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
+        top: rect.bottom + 4,
+        left: rect.left,
       })
     }
   }, [isOpen, anchorRef])
@@ -354,14 +358,14 @@ function VariablePickerDropdown({
               >
                 <span className="flex items-center gap-1.5">
                   {'linkText' in variable && variable.linkText && (
-                    <svg className="w-3.5 h-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
+                    <LinkIcon className="w-3.5 h-3.5 text-blue-500" />
                   )}
                   {variable.label}
                 </span>
                 <code className="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
-                  {'linkText' in variable && variable.linkText ? 'clickable link' : `{{${variable.key}}}`}
+                  {'linkText' in variable && variable.linkText
+                    ? 'clickable link'
+                    : `{{${variable.key}}}`}
                 </code>
               </button>
             ))}
@@ -392,7 +396,23 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
         code: false,
         blockquote: false,
         horizontalRule: false,
+        // Disable built-in list extensions so we can add them without input rules
+        bulletList: false,
+        orderedList: false,
+        listItem: false,
       }),
+      // Add list extensions without input rules (so "- " doesn't auto-convert to bullet)
+      BulletList.extend({
+        addInputRules() {
+          return []
+        },
+      }),
+      OrderedList.extend({
+        addInputRules() {
+          return []
+        },
+      }),
+      ListItem,
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
@@ -442,7 +462,11 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
     if (!editor) return
     if (variable.linkText) {
       // For link variables, insert as a clickable link
-      editor.chain().focus().insertContent(`<a href="{{${variable.key}}}">${variable.linkText}</a>`).run()
+      editor
+        .chain()
+        .focus()
+        .insertContent(`<a href="{{${variable.key}}}">${variable.linkText}</a>`)
+        .run()
     } else {
       editor.chain().focus().insertContent(`{{${variable.key}}}`).run()
     }
@@ -463,20 +487,7 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
           isActive={editor.isActive('bold')}
           title="Bold"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2.5}
-              d="M6 4h8a4 4 0 014 4 4 4 0 01-4 4H6z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2.5}
-              d="M6 12h9a4 4 0 014 4 4 4 0 01-4 4H6z"
-            />
-          </svg>
+          <BoldIcon className="w-4 h-4" />
         </ToolbarButton>
 
         <ToolbarButton
@@ -484,27 +495,13 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
           isActive={editor.isActive('italic')}
           title="Italic"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 4h4m-2 0l-4 16m0 0h4"
-            />
-          </svg>
+          <ItalicIcon className="w-4 h-4" />
         </ToolbarButton>
 
         <div className="w-px bg-gray-300 mx-1" />
 
         <ToolbarButton onClick={setLink} isActive={editor.isActive('link')} title="Link">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-            />
-          </svg>
+          <LinkIcon className="w-4 h-4" />
         </ToolbarButton>
 
         {editor.isActive('link') && (
@@ -513,14 +510,7 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
             isActive={false}
             title="Remove Link"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
-              />
-            </svg>
+            <LinkSlashIcon className="w-4 h-4" />
           </ToolbarButton>
         )}
 
@@ -531,17 +521,7 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
           isActive={editor.isActive('bulletList')}
           title="Bullet List"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-            <circle cx="2" cy="6" r="1" fill="currentColor" />
-            <circle cx="2" cy="12" r="1" fill="currentColor" />
-            <circle cx="2" cy="18" r="1" fill="currentColor" />
-          </svg>
+          <ListBulletIcon className="w-4 h-4" />
         </ToolbarButton>
 
         <ToolbarButton
@@ -549,23 +529,7 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
           isActive={editor.isActive('orderedList')}
           title="Numbered List"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M7 6h13M7 12h13M7 18h13"
-            />
-            <text x="1" y="8" fontSize="8" fill="currentColor">
-              1
-            </text>
-            <text x="1" y="14" fontSize="8" fill="currentColor">
-              2
-            </text>
-            <text x="1" y="20" fontSize="8" fill="currentColor">
-              3
-            </text>
-          </svg>
+          <NumberedListIcon className="w-4 h-4" />
         </ToolbarButton>
 
         <div className="w-px bg-gray-300 mx-1" />

@@ -76,3 +76,17 @@ export const registrations = pgTable('registrations', {
 
 export type Registration = typeof registrations.$inferSelect
 export type NewRegistration = typeof registrations.$inferInsert
+
+// Email Templates table
+export const emailTemplates = pgTable('email_templates', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  name: text('name').notNull(),
+  heading: text('heading'),
+  subject: text('subject').notNull(),
+  body: text('body').notNull(),
+})
+
+export type EmailTemplate = typeof emailTemplates.$inferSelect
+export type NewEmailTemplate = typeof emailTemplates.$inferInsert

@@ -12,6 +12,7 @@ import {
 type EmailPreviewProps = {
   subject: string
   body: string
+  heading?: string
   headerImageUrl?: string
   registration: Registration | null
 }
@@ -92,6 +93,7 @@ function buildVariablesMap(registration: Registration | null): Record<string, st
 export default function EmailPreview({
   subject,
   body,
+  heading,
   headerImageUrl,
   registration,
 }: EmailPreviewProps) {
@@ -109,20 +111,22 @@ export default function EmailPreview({
   return (
     <div className="bg-nexus-beige p-6 rounded-lg min-h-[500px]">
       <div className="max-w-[600px] mx-auto">
-        {/* Logo */}
-        <div className="text-center pb-6">
-          <span
-            style={{
-              fontFamily: EMAIL_FONTS.serif,
-              fontSize: '28px',
-              fontWeight: 600,
-              color: EMAIL_COLORS.navy,
-              letterSpacing: '-0.5px',
-            }}
-          >
-            Nexus Retreat
-          </span>
-        </div>
+        {/* Logo/Heading */}
+        {heading && (
+          <div className="text-center pb-6">
+            <span
+              style={{
+                fontFamily: EMAIL_FONTS.serif,
+                fontSize: '28px',
+                fontWeight: 600,
+                color: EMAIL_COLORS.navy,
+                letterSpacing: '-0.5px',
+              }}
+            >
+              {heading}
+            </span>
+          </div>
+        )}
 
         {/* Main Card */}
         <div

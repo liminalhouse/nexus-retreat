@@ -30,19 +30,20 @@ type SendResults = {
 }
 
 type EmailTemplate = {
-  _id: string
+  id: string
   name: string
-  type: string
+  heading: string | null
   subject: string
-  greeting: string
-  bodyIntroText: string
-  bodyOutroText: string
-  signature: string | null
+  body: string
+  createdAt: string
+  updatedAt: string
 }
 
 type Tab = 'compose' | 'preview'
 
 type EmailComposerProps = {
+  heading: string
+  setHeading: (heading: string) => void
   subject: string
   setSubject: (subject: string) => void
   body: string
@@ -160,19 +161,9 @@ function PreviewInfoBanner({registration}: {registration: Registration | null}) 
   )
 }
 
-function SendResultsBanner({
-  results,
-  onClear,
-}: {
-  results: SendResults
-  onClear: () => void
-}) {
+function SendResultsBanner({results, onClear}: {results: SendResults; onClear: () => void}) {
   const variant =
-    results.failCount === 0
-      ? 'success'
-      : results.successCount === 0
-        ? 'error'
-        : 'warning'
+    results.failCount === 0 ? 'success' : results.successCount === 0 ? 'error' : 'warning'
 
   const styles = {
     success: 'bg-green-50 border-green-200',
@@ -380,7 +371,12 @@ function ComposeIcon() {
 function PreviewIcon() {
   return (
     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+      />
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -401,7 +397,12 @@ function CloseIcon({className = 'h-5 w-5'}: {className?: string}) {
 
 function ImageIcon() {
   return (
-    <svg className="mx-auto h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg
+      className="mx-auto h-8 w-8 text-gray-400"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -419,12 +420,18 @@ function ImageIcon() {
 // Available predefined recipient options
 const PREDEFINED_RECIPIENTS: {value: PredefinedRecipient; label: string; description?: string}[] = [
   {value: 'registrants', label: 'Registrants', description: 'Selected registrants from the list'},
-  {value: 'executive_assistants', label: 'Executive Assistants', description: 'Assistants of selected registrants'},
+  {
+    value: 'executive_assistants',
+    label: 'Executive Assistants',
+    description: 'Assistants of selected registrants',
+  },
   {value: 'guests', label: 'Guests', description: 'Guests of selected registrants'},
   {value: 'info_email', label: 'info@nexus-retreat.com', description: 'Nexus Retreat info email'},
 ]
 
 export default function EmailComposer({
+  heading,
+  setHeading,
   subject,
   setSubject,
   body,
@@ -443,6 +450,9 @@ export default function EmailComposer({
   const [templates, setTemplates] = useState<EmailTemplate[]>([])
   const [selectedTemplateId, setSelectedTemplateId] = useState('')
   const [loadingTemplates, setLoadingTemplates] = useState(true)
+  const [savingTemplate, setSavingTemplate] = useState(false)
+  const [showSaveDialog, setShowSaveDialog] = useState(false)
+  const [newTemplateName, setNewTemplateName] = useState('')
   const [showHeaderImage, setShowHeaderImage] = useState(false)
   const [imageError, setImageError] = useState(false)
   const [activeTab, setActiveTab] = useState<Tab>('compose')
@@ -452,18 +462,19 @@ export default function EmailComposer({
   const canSend = hasToRecipients && !!subject.trim() && !!body.trim() && !isSending
 
   // Fetch templates on mount
-  useEffect(() => {
-    async function fetchTemplates() {
-      try {
-        const response = await fetch('/api/email-templates')
-        const data = await response.json()
-        setTemplates(data.templates || [])
-      } catch (error) {
-        console.error('Error fetching templates:', error)
-      } finally {
-        setLoadingTemplates(false)
-      }
+  const fetchTemplates = async () => {
+    try {
+      const response = await fetch('/api/email-templates')
+      const data = await response.json()
+      setTemplates(data.templates || [])
+    } catch (error) {
+      console.error('Error fetching templates:', error)
+    } finally {
+      setLoadingTemplates(false)
     }
+  }
+
+  useEffect(() => {
     fetchTemplates()
   }, [])
 
@@ -471,13 +482,88 @@ export default function EmailComposer({
     setSelectedTemplateId(templateId)
     if (!templateId) return
 
-    const template = templates.find((t) => t._id === templateId)
+    const template = templates.find((t) => t.id === templateId)
     if (template) {
+      setHeading(template.heading || '')
       setSubject(template.subject)
-      const parts = [template.greeting, template.bodyIntroText, template.bodyOutroText, template.signature]
-        .filter(Boolean)
-        .map((text) => `<p>${text}</p>`)
-      setBody(parts.join(''))
+      setBody(template.body)
+    }
+  }
+
+  const handleSaveTemplate = async () => {
+    if (!newTemplateName.trim() || !subject.trim() || !body.trim()) return
+
+    setSavingTemplate(true)
+    try {
+      const response = await fetch('/api/email-templates', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          name: newTemplateName.trim(),
+          heading: heading.trim() || null,
+          subject: subject.trim(),
+          body: body.trim(),
+        }),
+      })
+      const data = await response.json()
+      if (data.success) {
+        await fetchTemplates()
+        setShowSaveDialog(false)
+        setNewTemplateName('')
+        setSelectedTemplateId(data.template.id)
+      }
+    } catch (error) {
+      console.error('Error saving template:', error)
+    } finally {
+      setSavingTemplate(false)
+    }
+  }
+
+  const handleUpdateTemplate = async () => {
+    if (!selectedTemplateId || !subject.trim() || !body.trim()) return
+
+    const template = templates.find((t) => t.id === selectedTemplateId)
+    if (!template) return
+
+    setSavingTemplate(true)
+    try {
+      const response = await fetch(`/api/email-templates/${selectedTemplateId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          name: template.name,
+          heading: heading.trim() || null,
+          subject: subject.trim(),
+          body: body.trim(),
+        }),
+      })
+      const data = await response.json()
+      if (data.success) {
+        await fetchTemplates()
+      }
+    } catch (error) {
+      console.error('Error updating template:', error)
+    } finally {
+      setSavingTemplate(false)
+    }
+  }
+
+  const handleDeleteTemplate = async (templateId: string) => {
+    if (!confirm('Are you sure you want to delete this template?')) return
+
+    try {
+      const response = await fetch(`/api/email-templates/${templateId}`, {
+        method: 'DELETE',
+      })
+      const data = await response.json()
+      if (data.success) {
+        if (selectedTemplateId === templateId) {
+          setSelectedTemplateId('')
+        }
+        await fetchTemplates()
+      }
+    } catch (error) {
+      console.error('Error deleting template:', error)
     }
   }
 
@@ -506,13 +592,19 @@ export default function EmailComposer({
         <div className="p-4">
           <PreviewInfoBanner registration={previewRegistration} />
           <EmailPreview
+            heading={heading}
             subject={subject}
             body={body}
             headerImageUrl={headerImageUrl}
             registration={previewRegistration}
           />
           <div className="pt-4 mt-4 border-t border-gray-200">
-            <SendButton canSend={canSend} isSending={isSending} selectedCount={selectedCount} onClick={onSend} />
+            <SendButton
+              canSend={canSend}
+              isSending={isSending}
+              selectedCount={selectedCount}
+              onClick={onSend}
+            />
           </div>
         </div>
       )}
@@ -548,45 +640,98 @@ export default function EmailComposer({
           </div>
 
           {/* Template Selector */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Load Template</label>
-            <select
-              value={selectedTemplateId}
-              onChange={(e) => handleTemplateChange(e.target.value)}
-              disabled={loadingTemplates}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">
-                {loadingTemplates ? 'Loading templates...' : 'Select a template (optional)'}
-              </option>
-              {templates.map((template) => (
-                <option key={template._id} value={template._id}>
-                  {template.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Header Image */}
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-medium text-gray-700">Header Image</label>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-gray-700">Templates</label>
               <button
                 type="button"
-                onClick={() => setShowHeaderImage(!showHeaderImage)}
-                className="text-xs text-blue-600 hover:text-blue-700"
+                onClick={() => setShowSaveDialog(true)}
+                disabled={!subject.trim() || !body.trim()}
+                className="text-xs text-blue-600 hover:text-blue-700 disabled:text-gray-400 disabled:cursor-not-allowed"
               >
-                {showHeaderImage ? 'Hide' : 'Add header image'}
+                Save as new template
               </button>
             </div>
-            {showHeaderImage && (
-              <ImageUploader
-                headerImageUrl={headerImageUrl}
-                onUrlChange={setHeaderImageUrl}
-                onClear={() => setHeaderImageUrl('')}
-                imageError={imageError}
-                setImageError={setImageError}
-              />
+
+            <div className="flex gap-2">
+              <select
+                value={selectedTemplateId}
+                onChange={(e) => handleTemplateChange(e.target.value)}
+                disabled={loadingTemplates}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">
+                  {loadingTemplates ? 'Loading templates...' : 'Select a template (optional)'}
+                </option>
+                {templates.map((template) => (
+                  <option key={template.id} value={template.id}>
+                    {template.name}
+                  </option>
+                ))}
+              </select>
+
+              {selectedTemplateId && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleUpdateTemplate}
+                    disabled={savingTemplate || !subject.trim() || !body.trim()}
+                    className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md disabled:opacity-50"
+                    title="Update template"
+                  >
+                    {savingTemplate ? '...' : 'Update'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteTemplate(selectedTemplateId)}
+                    className="px-3 py-2 text-sm bg-red-50 hover:bg-red-100 text-red-600 rounded-md"
+                    title="Delete template"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Save Template Dialog */}
+            {showSaveDialog && (
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-md space-y-2">
+                <input
+                  type="text"
+                  value={newTemplateName}
+                  onChange={(e) => setNewTemplateName(e.target.value)}
+                  placeholder="Template name..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+                  autoFocus
+                />
+                <div className="flex gap-2 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowSaveDialog(false)
+                      setNewTemplateName('')
+                    }}
+                    className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveTemplate}
+                    disabled={savingTemplate || !newTemplateName.trim()}
+                    className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {savingTemplate ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              </div>
             )}
           </div>
 
@@ -602,20 +747,89 @@ export default function EmailComposer({
             />
           </div>
 
+          {/* Header Image */}
+          <div>
+            <div className="flex items-center justify-between mb-1 bg-gray-50 p-2 rounded-md">
+              <label className="block text-sm font-medium text-gray-700">
+                Header Image (optional)
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowHeaderImage(!showHeaderImage)}
+                className="text-xs text-blue-600 hover:text-blue-700"
+              >
+                {showHeaderImage
+                  ? 'Hide uploader'
+                  : headerImageUrl
+                    ? 'Change image'
+                    : 'Add header image'}
+              </button>
+            </div>
+            {showHeaderImage && (
+              <ImageUploader
+                headerImageUrl={headerImageUrl}
+                onUrlChange={setHeaderImageUrl}
+                onClear={() => setHeaderImageUrl('')}
+                imageError={imageError}
+                setImageError={setImageError}
+              />
+            )}
+            {/* Show preview when uploader is hidden but image exists */}
+            {!showHeaderImage && headerImageUrl && !imageError && (
+              <div className="relative border border-gray-200 rounded-md overflow-hidden bg-gray-50">
+                <img
+                  src={headerImageUrl}
+                  alt="Header preview"
+                  className="w-full h-32 object-cover"
+                  onError={() => setImageError(true)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setHeaderImageUrl('')}
+                  className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-sm hover:bg-gray-100"
+                >
+                  <CloseIcon className="h-4 w-4 text-gray-500" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Heading */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Heading <span className="font-normal text-gray-400">(optional)</span>
+            </label>
+            <input
+              type="text"
+              value={heading}
+              onChange={(e) => setHeading(e.target.value)}
+              placeholder=""
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Optional - displays at the top of the email
+            </p>
+          </div>
+
           {/* Body */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Body</label>
             <RichTextEditor content={body} onChange={setBody} />
             <p className="mt-2 text-xs text-gray-500">
-              Type <code className="bg-gray-100 px-1 rounded">@</code> to see all available variables,
-              or click the <code className="bg-gray-100 px-1 rounded">{'{{}}'}</code> button in the
-              toolbar
+              Type <code className="bg-gray-100 px-1 rounded">@</code> to see all available
+              variables, or click the <code className="bg-gray-100 px-1 rounded">{'{{}}'}</code>{' '}
+              button in the toolbar
             </p>
           </div>
 
           {/* Send Button */}
           <div className="pt-4">
-            <SendButton canSend={canSend} isSending={isSending} selectedCount={selectedCount} onClick={onSend} />
+            <SendButton
+              canSend={canSend}
+              isSending={isSending}
+              selectedCount={selectedCount}
+              onClick={onSend}
+            />
           </div>
         </div>
       )}

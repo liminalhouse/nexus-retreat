@@ -1,49 +1,52 @@
 import {NextResponse} from 'next/server'
-import {client} from '@/sanity/lib/client'
-import {toPlainText} from '@portabletext/react'
+import {db} from '@/lib/db'
+import {emailTemplates} from '@/lib/db/schema'
+import {desc} from 'drizzle-orm'
 
 export async function GET() {
   try {
-    const query = `*[_type == "emailTemplate" && isActive == true] | order(name asc) {
-      _id,
-      name,
-      type,
-      subject,
-      greeting,
-      bodyIntro,
-      bodyOutro,
-      signature
-    }`
+    const templates = await db
+      .select()
+      .from(emailTemplates)
+      .orderBy(desc(emailTemplates.updatedAt))
 
-    const templates = await client.fetch(query)
-
-    // Convert portable text to HTML for bodyIntro and bodyOutro
-    const processedTemplates = templates.map(
-      (template: {
-        _id: string
-        name: string
-        type: string
-        subject: string
-        greeting: string
-        bodyIntro: any[] | null
-        bodyOutro: any[] | null
-        signature: string | null
-      }) => ({
-        ...template,
-        bodyIntroText: template.bodyIntro ? toPlainText(template.bodyIntro) : '',
-        bodyOutroText: template.bodyOutro ? toPlainText(template.bodyOutro) : '',
-      }),
-    )
-
-    return NextResponse.json({templates: processedTemplates})
+    return NextResponse.json({success: true, templates})
   } catch (error) {
     console.error('Error fetching email templates:', error)
     return NextResponse.json(
-      {
-        error: 'Failed to fetch email templates',
-        templates: [],
-      },
-      {status: 500},
+      {success: false, error: 'Failed to fetch email templates', templates: []},
+      {status: 500}
+    )
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const {name, heading, subject, body} = await request.json()
+
+    if (!name?.trim() || !subject?.trim() || !body?.trim()) {
+      return NextResponse.json(
+        {success: false, error: 'Name, subject, and body are required'},
+        {status: 400}
+      )
+    }
+
+    const [template] = await db
+      .insert(emailTemplates)
+      .values({
+        name: name.trim(),
+        heading: heading?.trim() || null,
+        subject: subject.trim(),
+        body: body.trim(),
+      })
+      .returning()
+
+    return NextResponse.json({success: true, template})
+  } catch (error) {
+    console.error('Error creating email template:', error)
+    return NextResponse.json(
+      {success: false, error: 'Failed to create email template'},
+      {status: 500}
     )
   }
 }
