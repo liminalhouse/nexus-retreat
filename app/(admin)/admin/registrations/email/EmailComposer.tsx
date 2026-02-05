@@ -480,6 +480,9 @@ export default function EmailComposer({
   }, [])
 
   const handleTemplateChange = (templateId: string) => {
+    // Don't reload if selecting the same template (prevents accidental overwrites)
+    if (templateId === selectedTemplateId) return
+
     setSelectedTemplateId(templateId)
     if (!templateId) return
 
