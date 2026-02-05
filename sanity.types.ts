@@ -1326,7 +1326,7 @@ export type SessionsQueryResult = Array<{
 
 // Source: sanity/lib/queries.ts
 // Variable: sessionByIdQuery
-// Query: *[_type == "session" && id.current == $id][0]{    _id,    id,    title,    description,    startTime,    endTime,    location,    sessionType,    sessionTags,    photo,    "speakers": speakers[]->{      _id,      id,      firstName,      lastName,      title,      bio,      profilePicture    }  }
+// Query: *[_type == "session" && id.current == $id][0]{    _id,    id,    title,    description,    startTime,    endTime,    location,    sessionType,    sessionTags,    photo,    "speakers": speakers[]->{      _id,      id,      firstName,      lastName,      title,      bio,      profilePicture {        asset->{          _id,          url,          metadata {            lqip,            dimensions {              width,              height            }          }        }      }    }  }
 export type SessionByIdQueryResult = {
   _id: string
   id: Slug | null
@@ -1392,16 +1392,17 @@ export type SessionByIdQueryResult = {
       _key: string
     }> | null
     profilePicture: {
-      asset?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-      }
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      _type: 'image'
+      asset: {
+        _id: string
+        url: string | null
+        metadata: {
+          lqip: string | null
+          dimensions: {
+            width: number | null
+            height: number | null
+          } | null
+        } | null
+      } | null
     } | null
   }> | null
 } | null
@@ -1449,7 +1450,7 @@ export type SpeakersQueryResult = Array<{
 
 // Source: sanity/lib/queries.ts
 // Variable: speakerByIdQuery
-// Query: *[_type == "speaker" && id.current == $id][0]{    _id,    id,    firstName,    lastName,    title,    bio,    profilePicture,    "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {      _id,      id,      title,      startTime,      endTime,      location,      sessionType,      sessionTags,      photo    }  }
+// Query: *[_type == "speaker" && id.current == $id][0]{    _id,    id,    firstName,    lastName,    title,    bio,    profilePicture {      asset->{        _id,        url,        metadata {          lqip,          dimensions {            width,            height          }        }      },      hotspot,      crop    },    "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {      _id,      id,      title,      startTime,      endTime,      location,      sessionType,      sessionTags,      photo {        asset->{          _id,          url,          metadata {            lqip,            dimensions {              width,              height            }          }        },        hotspot,        crop      }    }  }
 export type SpeakerByIdQueryResult = {
   _id: string
   id: Slug | null
@@ -1475,16 +1476,19 @@ export type SpeakerByIdQueryResult = {
     _key: string
   }> | null
   profilePicture: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: 'image'
+    asset: {
+      _id: string
+      url: string | null
+      metadata: {
+        lqip: string | null
+        dimensions: {
+          width: number | null
+          height: number | null
+        } | null
+      } | null
+    } | null
+    hotspot: SanityImageHotspot | null
+    crop: SanityImageCrop | null
   } | null
   sessions: Array<{
     _id: string
@@ -1496,17 +1500,19 @@ export type SpeakerByIdQueryResult = {
     sessionType: Array<string> | null
     sessionTags: Array<string> | null
     photo: {
-      asset?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-      }
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      alt?: string
-      _type: 'image'
+      asset: {
+        _id: string
+        url: string | null
+        metadata: {
+          lqip: string | null
+          dimensions: {
+            width: number | null
+            height: number | null
+          } | null
+        } | null
+      } | null
+      hotspot: SanityImageHotspot | null
+      crop: SanityImageCrop | null
     } | null
   }>
 } | null
@@ -1724,9 +1730,9 @@ declare module '@sanity/client' {
     '\n  *[_type == "page" && defined(slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
     '\n  *[_type == "session"] | order(startTime asc) {\n    _id,\n    id,\n    title,\n    description,\n    startTime,\n    endTime,\n    location,\n    sessionType,\n    sessionTags,\n    photo,\n    "speakers": speakers[]->{\n      _id,\n      id,\n      firstName,\n      lastName,\n      title,\n      profilePicture\n    }\n  }\n': SessionsQueryResult
-    '\n  *[_type == "session" && id.current == $id][0]{\n    _id,\n    id,\n    title,\n    description,\n    startTime,\n    endTime,\n    location,\n    sessionType,\n    sessionTags,\n    photo,\n    "speakers": speakers[]->{\n      _id,\n      id,\n      firstName,\n      lastName,\n      title,\n      bio,\n      profilePicture\n    }\n  }\n': SessionByIdQueryResult
+    '\n  *[_type == "session" && id.current == $id][0]{\n    _id,\n    id,\n    title,\n    description,\n    startTime,\n    endTime,\n    location,\n    sessionType,\n    sessionTags,\n    photo,\n    "speakers": speakers[]->{\n      _id,\n      id,\n      firstName,\n      lastName,\n      title,\n      bio,\n      profilePicture {\n        asset->{\n          _id,\n          url,\n          metadata {\n            lqip,\n            dimensions {\n              width,\n              height\n            }\n          }\n        }\n      }\n    }\n  }\n': SessionByIdQueryResult
     '\n  *[_type == "speaker"] | order(lastName asc) {\n    _id,\n    id,\n    firstName,\n    lastName,\n    title,\n    bio,\n    profilePicture\n  }\n': SpeakersQueryResult
-    '\n  *[_type == "speaker" && id.current == $id][0]{\n    _id,\n    id,\n    firstName,\n    lastName,\n    title,\n    bio,\n    profilePicture,\n    "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {\n      _id,\n      id,\n      title,\n      startTime,\n      endTime,\n      location,\n      sessionType,\n      sessionTags,\n      photo\n    }\n  }\n': SpeakerByIdQueryResult
+    '\n  *[_type == "speaker" && id.current == $id][0]{\n    _id,\n    id,\n    firstName,\n    lastName,\n    title,\n    bio,\n    profilePicture {\n      asset->{\n        _id,\n        url,\n        metadata {\n          lqip,\n          dimensions {\n            width,\n            height\n          }\n        }\n      },\n      hotspot,\n      crop\n    },\n    "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {\n      _id,\n      id,\n      title,\n      startTime,\n      endTime,\n      location,\n      sessionType,\n      sessionTags,\n      photo {\n        asset->{\n          _id,\n          url,\n          metadata {\n            lqip,\n            dimensions {\n              width,\n              height\n            }\n          }\n        },\n        hotspot,\n        crop\n      }\n    }\n  }\n': SpeakerByIdQueryResult
     '\n  *[_type == "registrationForm" && _id == "registrationFormContent"][0]{\n    title,\n    subtitle,\n    description,\n    submitButtonText,\n    nextButtonText,\n    backButtonText,\n    successMessage,\n    step1Title,\n    step2Title,\n    step3Title,\n    email,\n    firstName,\n    lastName,\n    jobTitle,\n    organization,\n    mobilePhone,\n    address,\n    emergencyContact,\n    assistant,\n    guest,\n    attendeeDetails,\n    guestEventDetails\n  }\n': RegistrationFormContentQueryResult
   }
 }

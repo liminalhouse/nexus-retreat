@@ -62,7 +62,7 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
         {/* Bio preview */}
         {speaker.bio && (
           <div className="text-gray-600 text-sm leading-relaxed line-clamp-6 mt-2 text-left">
-            <CustomPortableText value={speaker.bio as PortableTextBlock[]} />
+            <CustomPortableText value={speaker.bio as PortableTextBlock[]} disableLinks />
           </div>
         )}
 

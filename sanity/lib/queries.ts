@@ -202,7 +202,19 @@ export const sessionByIdQuery = defineQuery(`
       lastName,
       title,
       bio,
-      profilePicture
+      profilePicture {
+        asset->{
+          _id,
+          url,
+          metadata {
+            lqip,
+            dimensions {
+              width,
+              height
+            }
+          }
+        }
+      }
     }
   }
 `)
@@ -227,7 +239,21 @@ export const speakerByIdQuery = defineQuery(`
     lastName,
     title,
     bio,
-    profilePicture,
+    profilePicture {
+      asset->{
+        _id,
+        url,
+        metadata {
+          lqip,
+          dimensions {
+            width,
+            height
+          }
+        }
+      },
+      hotspot,
+      crop
+    },
     "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {
       _id,
       id,
@@ -237,7 +263,21 @@ export const speakerByIdQuery = defineQuery(`
       location,
       sessionType,
       sessionTags,
-      photo
+      photo {
+        asset->{
+          _id,
+          url,
+          metadata {
+            lqip,
+            dimensions {
+              width,
+              height
+            }
+          }
+        },
+        hotspot,
+        crop
+      }
     }
   }
 `)
