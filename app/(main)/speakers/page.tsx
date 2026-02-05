@@ -56,7 +56,9 @@ function SpeakerCard({speaker}: {speaker: Speaker}) {
 
         {/* Title */}
         {speaker.title && (
-          <p className="text-xs text-nexus-navy font-semibold mt-0.5 mb-2 line-clamp-1 text-center md:text-left">{speaker.title}</p>
+          <p className="text-xs text-nexus-navy font-semibold mt-0.5 mb-2 line-clamp-1 text-center md:text-left">
+            {speaker.title}
+          </p>
         )}
 
         {/* Bio preview */}
@@ -81,20 +83,22 @@ export default async function SpeakersPage() {
     <div className="bg-nexus-beige min-h-screen">
       <div className="container mx-auto px-6 py-16 md:py-24">
         {/* Back Link */}
-        <Link
-          href="/schedule"
-          className="inline-flex items-center gap-2 text-nexus-navy hover:text-nexus-coral transition-colors mb-8"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          <span className="font-medium">Back to Sessions</span>
-        </Link>
+        {process.env.NEXT_PUBLIC_SESSIONS_LIVE === 'true' && (
+          <Link
+            href="/schedule"
+            className="inline-flex items-center gap-2 text-nexus-navy hover:text-nexus-coral transition-colors mb-8"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            <span className="font-medium">Back to Sessions</span>
+          </Link>
+        )}
 
         {/* Header */}
         <div className="text-center mb-12 md:mb-16">
