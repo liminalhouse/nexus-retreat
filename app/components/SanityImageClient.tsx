@@ -9,8 +9,8 @@ type SanityImageClientProps = {
   width: number
   height: number
   mode?: 'cover' | 'contain'
-  hotspot?: {x: number; y: number} | null
-  crop?: {top: number; bottom: number; left: number; right: number} | null
+  hotspot?: {x?: number; y?: number} | null
+  crop?: {top?: number; bottom?: number; left?: number; right?: number} | null
   preview?: string | null
   className?: string
 }
@@ -26,8 +26,20 @@ export default function SanityImageClient({
   preview,
   className,
 }: SanityImageClientProps) {
-  // Default to center if no hotspot is defined
-  const resolvedHotspot = hotspot ?? {x: 0.5, y: 0.5}
+  // Default to center if no hotspot or if x/y are undefined
+  const resolvedHotspot = {
+    x: hotspot?.x ?? 0.5,
+    y: hotspot?.y ?? 0.5,
+  }
+
+  // Only pass crop if all values are defined
+  const resolvedCrop =
+    crop?.top !== undefined &&
+    crop?.bottom !== undefined &&
+    crop?.left !== undefined &&
+    crop?.right !== undefined
+      ? {top: crop.top, bottom: crop.bottom, left: crop.left, right: crop.right}
+      : undefined
 
   return (
     <SanityImage
@@ -39,7 +51,7 @@ export default function SanityImageClient({
       height={height}
       mode={mode}
       hotspot={resolvedHotspot}
-      crop={crop ?? undefined}
+      crop={resolvedCrop}
       preview={preview ?? undefined}
       className={className}
     />
