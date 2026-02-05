@@ -20,11 +20,13 @@ type SendResult = {
   email: string
   success: boolean
   error?: string
+  skipped?: boolean
 }
 
 type SendResults = {
   total: number
   successCount: number
+  skippedCount: number
   failCount: number
   results: SendResult[]
 }
@@ -163,21 +165,33 @@ function PreviewInfoBanner({registration}: {registration: Registration | null}) 
 }
 
 function SendResultsBanner({results, onClear}: {results: SendResults; onClear: () => void}) {
+  const hasFailures = results.failCount > 0
+  const hasSkipped = results.skippedCount > 0
+  const hasSuccess = results.successCount > 0
+
   const variant =
-    results.failCount === 0 ? 'success' : results.successCount === 0 ? 'error' : 'warning'
+    hasFailures ? (hasSuccess ? 'warning' : 'error')
+    : hasSkipped ? (hasSuccess ? 'warning' : 'skipped')
+    : 'success'
 
   const styles = {
     success: 'bg-green-50 border-green-200',
     error: 'bg-red-50 border-red-200',
     warning: 'bg-yellow-50 border-yellow-200',
+    skipped: 'bg-yellow-50 border-yellow-200',
   }
 
   const message =
-    results.failCount === 0
+    !hasFailures && !hasSkipped
       ? 'All emails sent successfully!'
-      : results.successCount === 0
-        ? 'Failed to send emails'
-        : 'Some emails failed to send'
+      : !hasSuccess && !hasFailures && hasSkipped
+        ? 'No emails sent — all recipients are unsubscribed'
+        : hasFailures && !hasSuccess
+          ? 'Failed to send emails'
+          : 'Some emails were not sent'
+
+  const skippedResults = results.results.filter((r) => r.skipped)
+  const failedResults = results.results.filter((r) => !r.success && !r.skipped)
 
   return (
     <div className={`p-4 rounded-md border ${styles[variant]}`}>
@@ -187,16 +201,33 @@ function SendResultsBanner({results, onClear}: {results: SendResults; onClear: (
           <p className="text-sm mt-1">
             {results.successCount} of {results.total} emails sent successfully
           </p>
-          {results.failCount > 0 && (
-            <ul className="mt-2 text-sm">
-              {results.results
-                .filter((r) => !r.success)
-                .map((r, i) => (
+          {hasSkipped && (
+            <div className="mt-2">
+              <p className="text-sm font-medium text-yellow-800">
+                Skipped ({results.skippedCount} unsubscribed):
+              </p>
+              <ul className="mt-1 text-sm">
+                {skippedResults.map((r, i) => (
+                  <li key={i} className="text-yellow-700">
+                    {r.email}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {hasFailures && (
+            <div className="mt-2">
+              <p className="text-sm font-medium text-red-800">
+                Failed ({results.failCount}):
+              </p>
+              <ul className="mt-1 text-sm">
+                {failedResults.map((r, i) => (
                   <li key={i} className="text-red-600">
                     {r.email}: {r.error}
                   </li>
                 ))}
-            </ul>
+              </ul>
+            </div>
           )}
         </div>
         <button onClick={onClear} className="text-gray-400 hover:text-gray-600">

@@ -1,5 +1,5 @@
 import {db} from '@/lib/db'
-import {registrations as registrationsTable} from '@/lib/db/schema'
+import {registrations as registrationsTable, emailUnsubscribes} from '@/lib/db/schema'
 import {desc} from 'drizzle-orm'
 import Link from 'next/link'
 import EmailPageClient from './EmailPageClient'
@@ -8,16 +8,23 @@ export const dynamic = 'force-dynamic'
 
 export default async function EmailRegistrantsPage() {
   let registrations: any[] = []
+  let unsubscribedEmails: string[] = []
   let error: Error | null = null
 
   try {
-    const results = await db
-      .select()
-      .from(registrationsTable)
-      .orderBy(desc(registrationsTable.createdAt))
+    const [results, unsubscribes] = await Promise.all([
+      db
+        .select()
+        .from(registrationsTable)
+        .orderBy(desc(registrationsTable.createdAt)),
+      db
+        .select({email: emailUnsubscribes.email})
+        .from(emailUnsubscribes),
+    ])
 
     // Pass all registration data for preview
     registrations = results
+    unsubscribedEmails = unsubscribes.map((u) => u.email)
   } catch (err) {
     console.error('Error fetching registrations:', err)
     error = err instanceof Error ? err : new Error('Failed to fetch registrations')
@@ -47,7 +54,7 @@ export default async function EmailRegistrantsPage() {
       )}
 
       {registrations && registrations.length > 0 ? (
-        <EmailPageClient registrations={registrations} />
+        <EmailPageClient registrations={registrations} unsubscribedEmails={unsubscribedEmails} />
       ) : (
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-12 text-center">
           <p className="text-gray-600 text-lg">No registrations found</p>

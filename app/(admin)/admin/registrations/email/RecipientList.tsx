@@ -57,12 +57,15 @@ export default function RecipientList({
   selectedIds,
   onSelectAll,
   onSelectOne,
+  unsubscribedEmails = [],
 }: {
   registrations: Registration[]
   selectedIds: Set<string>
   onSelectAll: (checked: boolean) => void
   onSelectOne: (id: string, checked: boolean) => void
+  unsubscribedEmails?: string[]
 }) {
+  const unsubscribedSet = useMemo(() => new Set(unsubscribedEmails), [unsubscribedEmails])
   const [searchQuery, setSearchQuery] = useState('')
   const [viewingRegistration, setViewingRegistration] = useState<Registration | null>(null)
 
@@ -147,45 +150,66 @@ export default function RecipientList({
           </div>
         ) : (
           <ul className="divide-y divide-gray-100">
-            {filteredRegistrations.map((registration) => (
-              <li
-                key={registration.id}
-                className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer"
-                onClick={() => onSelectOne(registration.id, !selectedIds.has(registration.id))}
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedIds.has(registration.id)}
-                  onChange={(e) => {
-                    e.stopPropagation()
-                    onSelectOne(registration.id, e.target.checked)
+            {filteredRegistrations.map((registration) => {
+              const isUnsubscribed = unsubscribedSet.has(registration.email.toLowerCase())
+              return (
+                <li
+                  key={registration.id}
+                  className={`flex items-center gap-3 p-3 ${
+                    isUnsubscribed
+                      ? 'opacity-50 cursor-default'
+                      : 'hover:bg-gray-50 cursor-pointer'
+                  }`}
+                  onClick={() => {
+                    if (!isUnsubscribed) {
+                      onSelectOne(registration.id, !selectedIds.has(registration.id))
+                    }
                   }}
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <Avatar
-                  src={registration.profilePicture}
-                  firstName={registration.firstName}
-                  lastName={registration.lastName}
-                  size="sm"
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {registration.firstName} {registration.lastName}
-                  </p>
-                  <p className="text-xs text-gray-500 truncate">{registration.email}</p>
-                </div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setViewingRegistration(registration)
-                  }}
-                  className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
-                  title="View full info"
                 >
-                  <ArrowUpRightIcon className="w-4 h-4" />
-                </button>
-              </li>
-            ))}
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(registration.id)}
+                    disabled={isUnsubscribed}
+                    onChange={(e) => {
+                      e.stopPropagation()
+                      if (!isUnsubscribed) {
+                        onSelectOne(registration.id, e.target.checked)
+                      }
+                    }}
+                    className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 disabled:opacity-50"
+                  />
+                  <Avatar
+                    src={registration.profilePicture}
+                    firstName={registration.firstName}
+                    lastName={registration.lastName}
+                    size="sm"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {registration.firstName} {registration.lastName}
+                      </p>
+                      {isUnsubscribed && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-200 text-gray-600 shrink-0">
+                          Unsubscribed
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 truncate">{registration.email}</p>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setViewingRegistration(registration)
+                    }}
+                    className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                    title="View full info"
+                  >
+                    <ArrowUpRightIcon className="w-4 h-4" />
+                  </button>
+                </li>
+              )
+            })}
           </ul>
         )}
       </div>

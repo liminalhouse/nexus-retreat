@@ -12,11 +12,12 @@ type SendResult = {
   email: string
   success: boolean
   error?: string
+  skipped?: boolean
 }
 
 type Tab = 'compose' | 'outbox'
 
-export default function EmailPageClient({registrations}: {registrations: Registration[]}) {
+export default function EmailPageClient({registrations, unsubscribedEmails}: {registrations: Registration[]; unsubscribedEmails: string[]}) {
   const [activeTab, setActiveTab] = useState<Tab>('compose')
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [heading, setHeading] = useState('')
@@ -32,6 +33,7 @@ export default function EmailPageClient({registrations}: {registrations: Registr
   const [sendResults, setSendResults] = useState<{
     total: number
     successCount: number
+    skippedCount: number
     failCount: number
     results: SendResult[]
   } | null>(null)
@@ -93,6 +95,7 @@ export default function EmailPageClient({registrations}: {registrations: Registr
         setSendResults({
           total: data.total,
           successCount: data.successCount,
+          skippedCount: data.skippedCount || 0,
           failCount: data.failCount,
           results: data.results,
         })
@@ -100,6 +103,7 @@ export default function EmailPageClient({registrations}: {registrations: Registr
         setSendResults({
           total: 0,
           successCount: 0,
+          skippedCount: 0,
           failCount: 1,
           results: [{email: 'N/A', success: false, error: data.error}],
         })
@@ -108,6 +112,7 @@ export default function EmailPageClient({registrations}: {registrations: Registr
       setSendResults({
         total: 0,
         successCount: 0,
+        skippedCount: 0,
         failCount: 1,
         results: [
           {
@@ -183,6 +188,7 @@ export default function EmailPageClient({registrations}: {registrations: Registr
               selectedIds={selectedIds}
               onSelectAll={handleSelectAll}
               onSelectOne={handleSelectOne}
+              unsubscribedEmails={unsubscribedEmails}
             />
           </div>
 

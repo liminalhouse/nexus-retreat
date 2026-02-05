@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const results: {email: string; success: boolean; error?: string}[] = []
+    const results: {email: string; success: boolean; error?: string; skipped?: boolean}[] = []
 
     // Rate limit: 600ms between emails to stay under Resend's 2 req/sec limit
     const DELAY_MS = 600
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
 
         // Log skipped unsubscribed TO recipients
         for (const blocked of blockedTo) {
-          results.push({email: blocked, success: true, error: 'Skipped — unsubscribed'})
+          results.push({email: blocked, success: false, skipped: true, error: 'Unsubscribed'})
         }
 
         // Skip if no TO recipients after filtering
@@ -250,13 +250,15 @@ export async function POST(request: NextRequest) {
     }
 
     const successCount = results.filter((r) => r.success).length
-    const failCount = results.filter((r) => !r.success).length
+    const skippedCount = results.filter((r) => r.skipped).length
+    const failCount = results.filter((r) => !r.success && !r.skipped).length
 
     return NextResponse.json(
       {
         success: true,
         total: results.length,
         successCount,
+        skippedCount,
         failCount,
         results,
       },
