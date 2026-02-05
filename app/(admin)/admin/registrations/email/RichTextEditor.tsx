@@ -209,7 +209,7 @@ const SuggestionList = forwardRef<SuggestionListRef, SuggestionListProps>(
 
 SuggestionList.displayName = 'SuggestionList'
 
-// Create the variable suggestion extension - using @ as trigger to avoid re-triggering issues
+// Create the variable suggestion extension - using {{ as trigger to match variable syntax
 const VariableSuggestion = Extension.create({
   name: 'variableSuggestion',
 
@@ -217,7 +217,55 @@ const VariableSuggestion = Extension.create({
     return [
       Suggestion({
         editor: this.editor,
-        char: '@',
+        char: '{{',
+        allowSpaces: false,
+        findSuggestionMatch: (config) => {
+          const {$position} = config
+          // Get text from start of current text block to cursor
+          const textBefore = $position.parent.textBetween(
+            0,
+            $position.parentOffset,
+            undefined,
+            '\ufffc',
+          )
+
+          // Find the last {{ that isn't closed
+          let lastOpenIndex = -1
+          let searchFrom = 0
+          while (true) {
+            const openIdx = textBefore.indexOf('{{', searchFrom)
+            if (openIdx === -1) break
+            // Check if this {{ has a matching }}
+            const closeIdx = textBefore.indexOf('}}', openIdx + 2)
+            if (closeIdx === -1) {
+              // This {{ is unclosed - it's our trigger
+              lastOpenIndex = openIdx
+              break
+            }
+            // This {{ is closed, keep searching
+            searchFrom = closeIdx + 2
+          }
+
+          if (lastOpenIndex === -1) {
+            return null
+          }
+
+          // Calculate the absolute position
+          const from = $position.start() + lastOpenIndex
+          const to = $position.pos
+          const query = textBefore.slice(lastOpenIndex + 2)
+
+          // Don't match if query contains } (malformed)
+          if (query.includes('}')) {
+            return null
+          }
+
+          return {
+            range: {from, to},
+            query,
+            text: textBefore.slice(lastOpenIndex),
+          }
+        },
         items: ({query}: {query: string}) => {
           const lowerQuery = query.toLowerCase()
           if (!lowerQuery) {
@@ -284,7 +332,7 @@ const VariableSuggestion = Extension.create({
           }
         },
         command: ({editor, range, props}: {editor: any; range: any; props: VariableItem}) => {
-          // Delete the @query and insert the variable
+          // Delete the {{query and insert the variable
           if (props.linkText) {
             // For link variables, insert as a clickable link
             editor
@@ -539,7 +587,7 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
           <ToolbarButton
             onClick={() => setShowVariablePanel(!showVariablePanel)}
             isActive={showVariablePanel}
-            title="Insert Variable (or type @ in editor)"
+            title="Insert Variable (or type {{ in editor)"
           >
             <span className="text-xs font-mono font-bold">{'{{}}'}</span>
           </ToolbarButton>
