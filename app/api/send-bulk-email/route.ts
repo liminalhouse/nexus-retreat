@@ -199,6 +199,12 @@ export async function POST(request: NextRequest) {
             city: registration.city,
             state: registration.state,
             guestName: registration.guestName,
+            // If assistants are in the TO field and this registrant has no assistant,
+            // fall back to the registrant's name for assistant name variables
+            assistantName: registration.assistantName
+              || (recipientFields.to.predefined.includes('executive_assistants')
+                ? `${registration.firstName} ${registration.lastName}`
+                : null),
             editToken: registration.editToken,
           },
         })
