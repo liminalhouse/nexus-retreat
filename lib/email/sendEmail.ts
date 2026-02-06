@@ -4,6 +4,8 @@ import {toPlainText} from '@portabletext/react'
 import type {PortableTextBlock} from '@portabletext/types'
 import {getEditRegistrationUrl, getEditActivitiesUrl} from '@/lib/utils/editUrls'
 import {ACTIVITY_OPTIONS} from '@/lib/utils/formatRegistrationFields'
+import {EMAIL_COLORS, replaceEmailVariables} from '@/lib/email/emailStyles'
+import {buildCustomEmailHtml, buildEmailWrapper} from '@/lib/email/buildCustomEmailHtml'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const resendEmailFrom = process.env.RESEND_FROM_EMAIL || 'noreply@noreply.nexus-retreat.com'
@@ -107,28 +109,8 @@ function formatActivityForEmail(value: string): string {
   return `<strong>${option.label}</strong>`
 }
 
-// ============================================================================
-// Nexus Brand Colors
-// ============================================================================
-
-const NEXUS_COLORS = {
-  navy: '#3d4663',
-  navyDark: '#1c2544',
-  coral: '#f49898',
-  coralLight: '#f5a8a8',
-  beige: '#faf5f1',
-  seafoam: '#bed1bf',
-  white: '#ffffff',
-  gray: {
-    50: '#f9fafb',
-    100: '#f3f4f6',
-    200: '#e5e7eb',
-    300: '#d1d5db',
-    400: '#9ca3af',
-    500: '#6b7280',
-    600: '#4b5563',
-  },
-}
+// Use EMAIL_COLORS from emailStyles.ts (aliased for brevity in this file)
+const NEXUS_COLORS = EMAIL_COLORS
 
 // ============================================================================
 // Shared Email Builder
@@ -199,77 +181,11 @@ function buildEmailHtml(options: BuildEmailOptions): string {
     ? `<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; color: ${NEXUS_COLORS.gray[500]}; margin: 28px 0 0 0; padding-top: 20px; border-top: 1px solid ${NEXUS_COLORS.gray[200]}; line-height: 1.6;">${signature}</p>`
     : ''
 
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Nexus Retreat</title>
-        <style>
-          a {
-            color: ${NEXUS_COLORS.coral} !important;
-            font-weight: bold !important;
-            text-decoration: underline !important;
-          }
-        </style>
-        <!--[if mso]>
-        <noscript>
-          <xml>
-            <o:OfficeDocumentSettings>
-              <o:PixelsPerInch>96</o:PixelsPerInch>
-            </o:OfficeDocumentSettings>
-          </xml>
-        </noscript>
-        <![endif]-->
-      </head>
-      <body style="margin: 0; padding: 0; background-color: ${NEXUS_COLORS.beige}; -webkit-font-smoothing: antialiased;">
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: ${NEXUS_COLORS.beige};">
-          <tr>
-            <td style="padding: 40px 20px;">
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: 0 auto; max-width: 600px;">
-                <!-- Logo/Header Section -->
-                <tr>
-                  <td style="text-align: center; padding-bottom: 24px;">
-                    <span style="font-family: Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 600; color: ${NEXUS_COLORS.navy}; letter-spacing: -0.5px;">Nexus Retreat</span>
-                  </td>
-                </tr>
-                <!-- Main Content Card -->
-                <tr>
-                  <td>
-                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: ${NEXUS_COLORS.white}; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);">
-                      ${headerImageHtml}
-                      <tr>
-                        <td style="padding: 40px 40px 32px 40px;">
-                          ${sectionsHtml}
-                          ${signatureHtml}
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-                <!-- Footer -->
-                <tr>
-                  <td style="text-align: center; padding-top: 32px;">
-                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; color: ${NEXUS_COLORS.gray[400]}; margin: 0 0 8px 0;">
-                      Nexus Retreat · Boca Raton, Florida
-                    </p>
-                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; color: ${NEXUS_COLORS.gray[400]}; margin: 0 0 8px 0;">
-                      Questions? Contact us at <a href="mailto:info@nexus-retreat.com" style="color: ${NEXUS_COLORS.coral}; text-decoration: none;">info@nexus-retreat.com</a>
-                    </p>
-                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; color: ${NEXUS_COLORS.gray[400]}; margin: 0;">
-                      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'}/unsubscribe" style="color: ${NEXUS_COLORS.gray[400]}; text-decoration: underline;">Click here to unsubscribe</a>
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-    </html>
-  `
+  return buildEmailWrapper({
+    heading: 'Nexus Retreat',
+    headerImageHtml,
+    innerContent: `${sectionsHtml}${signatureHtml}`,
+  })
 }
 
 // ============================================================================
@@ -296,11 +212,8 @@ async function getEmailTemplate(type: string): Promise<EmailTemplate | null> {
   return template
 }
 
-function replaceVariables(text: string, data: Record<string, string>): string {
-  return text.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-    return data[key] || match
-  })
-}
+// Use shared replaceEmailVariables from emailStyles.ts
+const replaceVariables = replaceEmailVariables
 
 function formatRegistrationDetails(data: RegistrationData): string {
   const sections: string[] = []
@@ -464,11 +377,7 @@ function buildCcList(
   if (data.assistant_email && data.assistant_email !== data.email) {
     cc.push(data.assistant_email)
   }
-  if (
-    data.guest_email &&
-    data.guest_email !== data.email &&
-    data.guest_email !== defaultCcEmail
-  ) {
+  if (data.guest_email && data.guest_email !== data.email && data.guest_email !== defaultCcEmail) {
     cc.push(data.guest_email)
   }
   return cc
@@ -720,7 +629,9 @@ export async function sendCustomEmail(params: CustomEmailParams) {
           assistantFirstName: registration.assistantName?.split(' ')[0] || '',
           assistantLastName: registration.assistantName?.split(' ').slice(1).join(' ') || '',
           editLink: registration.editToken ? getEditRegistrationUrl(registration.editToken) : '',
-          activitiesLink: registration.editToken ? getEditActivitiesUrl(registration.editToken) : '',
+          activitiesLink: registration.editToken
+            ? getEditActivitiesUrl(registration.editToken)
+            : '',
         }
       : {}
 
@@ -743,110 +654,4 @@ export async function sendCustomEmail(params: CustomEmailParams) {
   }
 }
 
-// ============================================================================
-// Custom Email HTML Builder (for admin bulk emails)
-// ============================================================================
-
-function buildCustomEmailHtml(options: {heading?: string; body: string; headerImageUrl?: string}): string {
-  const {heading, body, headerImageUrl} = options
-
-  const headerImageHtml = headerImageUrl
-    ? `<tr>
-         <td style="padding: 0; line-height: 0; font-size: 0;">
-           <img src="${headerImageUrl}" alt="Nexus Retreat" style="width: 100%; height: auto; display: block; border-radius: 16px 16px 0 0;" />
-         </td>
-       </tr>`
-    : ''
-
-  // Style the body content with proper typography
-  const styledBody = body
-    .replace(/<p>/g, `<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; color: ${NEXUS_COLORS.gray[600]}; margin: 0 0 16px 0; line-height: 1.7;">`)
-    .replace(/<h1>/g, `<h1 style="font-family: Georgia, 'Times New Roman', serif; font-size: 26px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 0 0 20px 0; line-height: 1.3;">`)
-    .replace(/<h2>/g, `<h2 style="font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 24px 0 16px 0; line-height: 1.3;">`)
-    .replace(/<h3>/g, `<h3 style="font-family: Georgia, 'Times New Roman', serif; font-size: 18px; font-weight: 600; color: ${NEXUS_COLORS.navy}; margin: 20px 0 12px 0; line-height: 1.3;">`)
-    .replace(/<strong>/g, `<strong style="color: ${NEXUS_COLORS.navy}; font-weight: 600;">`)
-    .replace(/<a /g, `<a style="color: ${NEXUS_COLORS.coral}; font-weight: bold; text-decoration: underline;" `)
-    .replace(/<ul>/g, `<ul style="margin: 0 0 16px 0; padding-left: 24px; color: ${NEXUS_COLORS.gray[600]};">`)
-    .replace(/<ol>/g, `<ol style="margin: 0 0 16px 0; padding-left: 24px; color: ${NEXUS_COLORS.gray[600]};">`)
-    .replace(/<li>/g, `<li style="margin-bottom: 8px; line-height: 1.6;">`)
-    .replace(/<blockquote>/g, `<blockquote style="margin: 16px 0; padding: 16px 20px; background: ${NEXUS_COLORS.beige}; border-left: 4px solid ${NEXUS_COLORS.coral}; border-radius: 0 8px 8px 0;">`)
-
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Nexus Retreat</title>
-        <style>
-          a {
-            color: ${NEXUS_COLORS.coral} !important;
-            font-weight: bold !important;
-            text-decoration: underline !important;
-          }
-        </style>
-        <!--[if mso]>
-        <noscript>
-          <xml>
-            <o:OfficeDocumentSettings>
-              <o:PixelsPerInch>96</o:PixelsPerInch>
-            </o:OfficeDocumentSettings>
-          </xml>
-        </noscript>
-        <![endif]-->
-      </head>
-      <body style="margin: 0; padding: 0; background-color: ${NEXUS_COLORS.beige}; -webkit-font-smoothing: antialiased;">
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: ${NEXUS_COLORS.beige};">
-          <tr>
-            <td style="padding: 40px 20px;">
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: 0 auto; max-width: 600px;">
-                ${heading ? `<!-- Logo/Header Section -->
-                <tr>
-                  <td style="text-align: center; padding-bottom: 24px;">
-                    <span style="font-family: Georgia, 'Times New Roman', serif; font-size: 28px; font-weight: 600; color: ${NEXUS_COLORS.navy}; letter-spacing: -0.5px;">${heading}</span>
-                  </td>
-                </tr>` : ''}
-                <!-- Main Content Card -->
-                <tr>
-                  <td>
-                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: ${NEXUS_COLORS.white}; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);">
-                      ${headerImageHtml}
-                      <tr>
-                        <td style="padding: ${headerImageUrl ? '32px' : '40px'} 40px 32px 40px;">
-                          ${styledBody}
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-                <!-- Footer -->
-                <tr>
-                  <td style="text-align: center; padding-top: 32px;">
-                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; color: ${NEXUS_COLORS.gray[400]}; margin: 0 0 8px 0;">
-                      Nexus Retreat · Boca Raton, Florida
-                    </p>
-                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; color: ${NEXUS_COLORS.gray[400]}; margin: 0 0 8px 0;">
-                      Questions? Contact us at <a href="mailto:info@nexus-retreat.com" style="color: ${NEXUS_COLORS.coral}; text-decoration: none;">info@nexus-retreat.com</a>
-                    </p>
-                    <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; color: ${NEXUS_COLORS.gray[400]}; margin: 0;">
-                      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'}/unsubscribe" style="color: ${NEXUS_COLORS.gray[400]}; text-decoration: underline;">Click here to unsubscribe</a>
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-    </html>
-  `
-}
-
-// ============================================================================
-// Preview HTML Generator (for admin UI)
-// ============================================================================
-
-export function generateEmailPreviewHtml(body: string, heading?: string, headerImageUrl?: string): string {
-  return buildCustomEmailHtml({heading, body, headerImageUrl})
-}
+// buildCustomEmailHtml is imported from lib/email/buildCustomEmailHtml.ts

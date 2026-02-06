@@ -84,8 +84,8 @@ export const ACTIVITY_OPTIONS: ActivityOption[] = [
     label: 'Tour a Gulfstream jet displayed at Signature Aviation',
     value: 'gulfstream_tour',
     description:
-      'March 19, 9am-4pm:  We can arrange your car, which will be added to your hotel folio.',
-    chipDescription: 'March 19',
+      'March 18, 9am-4pm:  We can arrange your car, which will be added to your hotel folio.',
+    chipDescription: 'March 18',
   },
   {label: 'Spa', value: 'spa', description: 'Our team can assist with bookings'},
 ]

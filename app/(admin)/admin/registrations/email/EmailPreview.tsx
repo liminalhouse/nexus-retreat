@@ -2,12 +2,8 @@
 
 import {useMemo} from 'react'
 import type {Registration} from '@/lib/db/schema'
-import {
-  EMAIL_COLORS,
-  EMAIL_FONTS,
-  applyEmailStyles,
-  replaceEmailVariables,
-} from '@/lib/email/emailStyles'
+import {EMAIL_COLORS, EMAIL_FONTS, replaceEmailVariables} from '@/lib/email/emailStyles'
+import {buildCustomEmailHtml} from '@/lib/email/buildCustomEmailHtml'
 
 type EmailPreviewProps = {
   body: string
@@ -105,102 +101,35 @@ export default function EmailPreview({
   assistantFallbackToRegistrant = false,
 }: EmailPreviewProps) {
   const variables = useMemo(() => buildVariablesMap(registration, assistantFallbackToRegistrant), [registration, assistantFallbackToRegistrant])
-
   const processedBody = useMemo(() => replaceEmailVariables(body, variables), [body, variables])
 
-  const styledBody = useMemo(() => applyEmailStyles(processedBody), [processedBody])
+  // Build the exact same HTML that gets sent
+  const html = useMemo(() => {
+    if (!processedBody) return null
+    return buildCustomEmailHtml({heading, body: processedBody, headerImageUrl})
+  }, [processedBody, heading, headerImageUrl])
 
-  return (
-    <div className="bg-nexus-beige p-6 rounded-lg min-h-[500px]">
-      <div className="max-w-[600px] mx-auto">
-        {/* Logo/Heading */}
-        {heading && (
-          <div className="text-center pb-6">
-            <span
-              style={{
-                fontFamily: EMAIL_FONTS.serif,
-                fontSize: '28px',
-                fontWeight: 600,
-                color: EMAIL_COLORS.navy,
-                letterSpacing: '-0.5px',
-              }}
-            >
-              {heading}
-            </span>
-          </div>
-        )}
-
-        {/* Main Card */}
-        <div
-          className="rounded-2xl overflow-hidden"
+  if (!html) {
+    return (
+      <div className="bg-nexus-beige p-6 rounded-lg min-h-[500px] flex items-center justify-center">
+        <p
           style={{
-            backgroundColor: EMAIL_COLORS.white,
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+            fontFamily: EMAIL_FONTS.sans,
+            fontSize: '15px',
+            color: EMAIL_COLORS.gray[400],
+            fontStyle: 'italic',
           }}
         >
-          {headerImageUrl && (
-            <img src={headerImageUrl} alt="Email header" className="w-full h-auto" />
-          )}
-
-          {/* Body */}
-          <div className="px-10 py-8">
-            {processedBody ? (
-              <div dangerouslySetInnerHTML={{__html: styledBody}} />
-            ) : (
-              <p
-                style={{
-                  fontFamily: EMAIL_FONTS.sans,
-                  fontSize: '15px',
-                  color: EMAIL_COLORS.gray[400],
-                  fontStyle: 'italic',
-                }}
-              >
-                Email body will appear here...
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center pt-8">
-          <p
-            style={{
-              fontFamily: EMAIL_FONTS.sans,
-              fontSize: '13px',
-              color: EMAIL_COLORS.gray[400],
-              margin: '0 0 8px 0',
-            }}
-          >
-            Nexus Retreat · Boca Raton, Florida
-          </p>
-          <p
-            style={{
-              fontFamily: EMAIL_FONTS.sans,
-              fontSize: '12px',
-              color: EMAIL_COLORS.gray[400],
-              margin: '0 0 8px 0',
-            }}
-          >
-            Questions? Contact us at{' '}
-            <span style={{color: EMAIL_COLORS.coral}}>info@nexus-retreat.com</span>
-          </p>
-          <p
-            style={{
-              fontFamily: EMAIL_FONTS.sans,
-              fontSize: '11px',
-              color: EMAIL_COLORS.gray[400],
-              margin: 0,
-            }}
-          >
-            <a
-              href="/unsubscribe"
-              style={{color: EMAIL_COLORS.gray[400], textDecoration: 'underline'}}
-            >
-              Click here to unsubscribe
-            </a>
-          </p>
-        </div>
+          Email body will appear here...
+        </p>
       </div>
-    </div>
+    )
+  }
+
+  return (
+    <div
+      className="rounded-lg overflow-hidden min-h-[500px]"
+      dangerouslySetInnerHTML={{__html: html}}
+    />
   )
 }
