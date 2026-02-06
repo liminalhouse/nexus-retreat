@@ -59,7 +59,7 @@ export const BODY_STYLE_REPLACEMENTS: [RegExp, string][] = [
   [/<li>/g, `<li style="margin-bottom: 8px; line-height: 1.6;">`],
   [
     /<blockquote>/g,
-    `<blockquote style="margin: 16px 0; padding: 16px 20px; background: ${EMAIL_COLORS.beige}; border-left: 4px solid ${EMAIL_COLORS.coral}; border-radius: 0 8px 8px 0;">`,
+    `<blockquote style="margin: 16px 0; padding: 16px 20px; background: ${EMAIL_COLORS.beige}; border-left: 4px solid ${EMAIL_COLORS.coralLight}; border-radius: 0 8px 8px 0;">`,
   ],
 ]
 

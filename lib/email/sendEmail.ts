@@ -142,7 +142,7 @@ function buildEmailHtml(options: BuildEmailOptions): string {
           return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 32px auto;">
              <tr>
                <td style="background: ${NEXUS_COLORS.coral}; border-radius: 8px;">
-                 <a href="${section.buttonUrl}" style="display: inline-block; padding: 16px 36px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; font-weight: 600; color: ${NEXUS_COLORS.navyDark}; text-decoration: none;">
+                 <a class="btn" href="${section.buttonUrl}" style="display: inline-block; padding: 16px 36px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; font-weight: 600; color: ${NEXUS_COLORS.navyDark}; text-decoration: none;">
                    ${section.buttonText}
                  </a>
                </td>
@@ -162,7 +162,7 @@ function buildEmailHtml(options: BuildEmailOptions): string {
                <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; color: ${NEXUS_COLORS.gray[600]}; margin: 0 0 16px 0; line-height: 1.6;">
                  You can update your registration information anytime using the link below.
                </p>
-               <a href="${section.buttonUrl}" style="display: inline-block; padding: 12px 24px; background-color: ${NEXUS_COLORS.navy}; color: ${NEXUS_COLORS.white}; text-decoration: none; border-radius: 6px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 600; font-size: 14px;">
+               <a class="btn" href="${section.buttonUrl}" style="display: inline-block; padding: 12px 24px; background-color: ${NEXUS_COLORS.navy}; color: ${NEXUS_COLORS.white}; text-decoration: none; border-radius: 6px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 600; font-size: 14px;">
                  Edit My Registration
                </a>
              </div>`

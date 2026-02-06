@@ -22,9 +22,14 @@ export function buildEmailWrapper(options: {
         <title>Nexus Retreat</title>
         <style>
           a {
-            color: ${EMAIL_COLORS.coral};
-            font-weight: bold;
-            text-decoration: underline;
+            color: ${EMAIL_COLORS.coral} !important;
+            font-weight: bold !important;
+            text-decoration: underline !important;
+          }
+          a.btn {
+            color: inherit !important;
+            font-weight: inherit !important;
+            text-decoration: none !important;
           }
           a.unsubscribe {
             color: ${EMAIL_COLORS.gray[400]} !important;
