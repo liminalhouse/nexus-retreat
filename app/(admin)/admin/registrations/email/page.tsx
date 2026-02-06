@@ -12,22 +12,22 @@ export default async function EmailRegistrantsPage() {
   let error: Error | null = null
 
   try {
-    const [results, unsubscribes] = await Promise.all([
-      db
-        .select()
-        .from(registrationsTable)
-        .orderBy(desc(registrationsTable.createdAt)),
-      db
-        .select({email: emailUnsubscribes.email})
-        .from(emailUnsubscribes),
-    ])
-
-    // Pass all registration data for preview
-    registrations = results
-    unsubscribedEmails = unsubscribes.map((u) => u.email)
+    registrations = await db
+      .select()
+      .from(registrationsTable)
+      .orderBy(desc(registrationsTable.createdAt))
   } catch (err) {
     console.error('Error fetching registrations:', err)
     error = err instanceof Error ? err : new Error('Failed to fetch registrations')
+  }
+
+  try {
+    const unsubscribes = await db
+      .select({email: emailUnsubscribes.email})
+      .from(emailUnsubscribes)
+    unsubscribedEmails = unsubscribes.map((u) => u.email)
+  } catch (err) {
+    console.error('Error fetching unsubscribes (table may not exist yet):', err)
   }
 
   return (

@@ -59,6 +59,8 @@ const VARIABLE_CATEGORIES = [
     category: 'Executive Assistant',
     variables: [
       {key: 'assistantName', label: 'Assistant Name'},
+      {key: 'assistantFirstName', label: 'Assistant First Name'},
+      {key: 'assistantLastName', label: 'Assistant Last Name'},
       {key: 'assistantTitle', label: 'Assistant Title'},
       {key: 'assistantEmail', label: 'Assistant Email'},
       {key: 'assistantPhone', label: 'Assistant Phone'},

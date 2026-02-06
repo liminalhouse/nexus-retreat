@@ -513,7 +513,20 @@ export default function EmailComposer({
 
   // Check if at least one TO recipient is present
   const hasToRecipients = recipientFields.to.length > 0
-  const canSend = hasToRecipients && !!subject.trim() && !!body.trim() && !isSending
+
+  // Compute actual recipient count for button text
+  const registrantDependentTypes = ['registrants', 'executive_assistants', 'guests']
+  const hasRegistrantTypes = recipientFields.to.some(
+    (r) => r.type === 'predefined' && registrantDependentTypes.includes(r.value)
+  ) || recipientFields.cc.some(
+    (r) => r.type === 'predefined' && registrantDependentTypes.includes(r.value)
+  ) || recipientFields.bcc.some(
+    (r) => r.type === 'predefined' && registrantDependentTypes.includes(r.value)
+  )
+  const customToCount = recipientFields.to.filter((r) => r.type === 'custom').length
+  const recipientCount = hasRegistrantTypes ? selectedCount + customToCount : customToCount
+
+  const canSend = hasToRecipients && !!subject.trim() && !!body.trim() && !isSending && recipientCount > 0
 
   // Fetch templates on mount
   const fetchTemplates = async () => {
@@ -656,12 +669,15 @@ export default function EmailComposer({
             body={body}
             headerImageUrl={headerImageUrl}
             registration={previewRegistration}
+            assistantFallbackToRegistrant={recipientFields.to.some(
+              (r) => r.type === 'predefined' && r.value === 'executive_assistants'
+            )}
           />
           <div className="pt-4 mt-4 border-t border-gray-200">
             <SendButton
               canSend={canSend}
               isSending={isSending}
-              selectedCount={selectedCount}
+              selectedCount={recipientCount}
               onClick={onSend}
             />
           </div>
@@ -886,7 +902,7 @@ export default function EmailComposer({
             <SendButton
               canSend={canSend}
               isSending={isSending}
-              selectedCount={selectedCount}
+              selectedCount={recipientCount}
               onClick={onSend}
             />
           </div>
