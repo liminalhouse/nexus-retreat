@@ -41,11 +41,13 @@ export default function EditModal({
   onClose,
   onSave,
   isAdminView = false,
+  readOnly = false,
 }: {
   registration: Registration
   onClose: () => void
   onSave?: (updatedRegistration: Registration) => void
   isAdminView?: boolean
+  readOnly?: boolean
 }) {
   const {showToast} = useToast()
   const [formData, setFormData] = useState<Registration>(registration)
@@ -234,13 +236,14 @@ export default function EditModal({
     }
   }
 
-  const inputClass =
-    'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent'
+  const inputClass = readOnly
+    ? 'w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 cursor-default'
+    : 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent'
   const labelClass = 'block text-sm font-medium text-gray-700 mt-1 mb-2'
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[105]"
       onClick={onClose}
     >
       <div
@@ -248,7 +251,9 @@ export default function EditModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
-          <h2 className="text-2xl font-bold">Edit Registration</h2>
+          <h2 className="text-2xl font-bold">
+            {readOnly ? 'View Registration (not editable)' : 'Edit Registration'}
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
@@ -295,31 +300,33 @@ export default function EditModal({
                 lastName={formData.last_name}
                 size="lg"
               />
-              <div className="flex-1">
-                <label className={labelClass}>Profile Picture</label>
-                <div className="flex items-center gap-3">
-                  <label className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer text-sm font-medium text-gray-700">
-                    {isUploading ? 'Uploading...' : 'Choose File'}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                      disabled={isUploading}
-                    />
-                  </label>
-                  {formData.profile_picture && (
-                    <button
-                      onClick={() => handleChange('profile_picture', null)}
-                      className="text-sm text-red-600 hover:text-red-700"
-                      disabled={isUploading}
-                    >
-                      Remove
-                    </button>
-                  )}
+              {!readOnly && (
+                <div className="flex-1">
+                  <label className={labelClass}>Profile Picture</label>
+                  <div className="flex items-center gap-3">
+                    <label className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer text-sm font-medium text-gray-700">
+                      {isUploading ? 'Uploading...' : 'Choose File'}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                        disabled={isUploading}
+                      />
+                    </label>
+                    {formData.profile_picture && (
+                      <button
+                        onClick={() => handleChange('profile_picture', null)}
+                        className="text-sm text-red-600 hover:text-red-700"
+                        disabled={isUploading}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Max 5MB, JPG, PNG, or GIF</p>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Max 5MB, JPG, PNG, or GIF</p>
-              </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -330,6 +337,7 @@ export default function EditModal({
                   value={formData.first_name || ''}
                   onChange={(e) => handleChange('first_name', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -339,6 +347,7 @@ export default function EditModal({
                   value={formData.last_name || ''}
                   onChange={(e) => handleChange('last_name', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -348,6 +357,7 @@ export default function EditModal({
                   value={formData.email}
                   onChange={(e) => handleChange('email', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -357,6 +367,7 @@ export default function EditModal({
                   value={formData.mobile_phone || ''}
                   onChange={(e) => handleChange('mobile_phone', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -366,6 +377,7 @@ export default function EditModal({
                   value={formData.title || ''}
                   onChange={(e) => handleChange('title', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -375,6 +387,7 @@ export default function EditModal({
                   value={formData.organization || ''}
                   onChange={(e) => handleChange('organization', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
             </div>
@@ -391,6 +404,7 @@ export default function EditModal({
                   value={formData.address_line_1 || ''}
                   onChange={(e) => handleChange('address_line_1', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div className="col-span-2">
@@ -400,6 +414,7 @@ export default function EditModal({
                   value={formData.address_line_2 || ''}
                   onChange={(e) => handleChange('address_line_2', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -409,6 +424,7 @@ export default function EditModal({
                   value={formData.city || ''}
                   onChange={(e) => handleChange('city', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -418,6 +434,7 @@ export default function EditModal({
                   value={formData.state || ''}
                   onChange={(e) => handleChange('state', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -427,6 +444,7 @@ export default function EditModal({
                   value={formData.zip || ''}
                   onChange={(e) => handleChange('zip', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -436,6 +454,7 @@ export default function EditModal({
                   value={formData.country || ''}
                   onChange={(e) => handleChange('country', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
             </div>
@@ -452,6 +471,7 @@ export default function EditModal({
                   value={formData.emergency_contact_name || ''}
                   onChange={(e) => handleChange('emergency_contact_name', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -461,6 +481,7 @@ export default function EditModal({
                   value={formData.emergency_contact_relation || ''}
                   onChange={(e) => handleChange('emergency_contact_relation', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -470,6 +491,7 @@ export default function EditModal({
                   value={formData.emergency_contact_email || ''}
                   onChange={(e) => handleChange('emergency_contact_email', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -479,6 +501,7 @@ export default function EditModal({
                   value={formData.emergency_contact_phone || ''}
                   onChange={(e) => handleChange('emergency_contact_phone', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
             </div>
@@ -495,6 +518,7 @@ export default function EditModal({
                   value={formData.assistant_name || ''}
                   onChange={(e) => handleChange('assistant_name', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -504,6 +528,7 @@ export default function EditModal({
                   value={formData.assistant_title || ''}
                   onChange={(e) => handleChange('assistant_title', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -513,6 +538,7 @@ export default function EditModal({
                   value={formData.assistant_email || ''}
                   onChange={(e) => handleChange('assistant_email', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -522,6 +548,7 @@ export default function EditModal({
                   value={formData.assistant_phone || ''}
                   onChange={(e) => handleChange('assistant_phone', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
             </div>
@@ -538,6 +565,7 @@ export default function EditModal({
                   value={formData.guest_name || ''}
                   onChange={(e) => handleChange('guest_name', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -547,6 +575,7 @@ export default function EditModal({
                   value={formData.guest_relation || ''}
                   onChange={(e) => handleChange('guest_relation', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -556,6 +585,7 @@ export default function EditModal({
                   value={formData.guest_email || ''}
                   onChange={(e) => handleChange('guest_email', e.target.value)}
                   className={inputClass}
+                  readOnly={readOnly}
                 />
               </div>
             </div>
@@ -572,6 +602,7 @@ export default function EditModal({
                   onChange={(e) => handleChange('dietary_restrictions', e.target.value)}
                   className={inputClass}
                   rows={2}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -580,6 +611,7 @@ export default function EditModal({
                   value={formData.jacket_size || ''}
                   onChange={(e) => handleChange('jacket_size', e.target.value)}
                   className={inputClass}
+                  disabled={readOnly}
                 >
                   <option value="">Select size...</option>
                   {JACKET_SIZE_OPTIONS.map((option) => (
@@ -601,6 +633,7 @@ export default function EditModal({
                           handleCheckboxChange('accommodations', option.value, e.target.checked)
                         }
                         className="mr-2"
+                        disabled={readOnly}
                       />
                       <span className="text-sm">{option.label}</span>
                     </label>
@@ -619,6 +652,7 @@ export default function EditModal({
                           handleCheckboxChange('dinner_attendance', option.value, e.target.checked)
                         }
                         className="mr-2"
+                        disabled={readOnly}
                       />
                       <span className="text-sm">{option.label}</span>
                     </label>
@@ -638,6 +672,7 @@ export default function EditModal({
                           handleCheckboxChange('activities', option.value, e.target.checked)
                         }
                         className="mr-2 mt-1"
+                        disabled={readOnly}
                       />
                       <span>
                         <span className="text-sm">{option.label}</span>
@@ -663,6 +698,7 @@ export default function EditModal({
                   onChange={(e) => handleChange('guest_dietary_restrictions', e.target.value)}
                   className={inputClass}
                   rows={2}
+                  readOnly={readOnly}
                 />
               </div>
               <div>
@@ -671,6 +707,7 @@ export default function EditModal({
                   value={formData.guest_jacket_size || ''}
                   onChange={(e) => handleChange('guest_jacket_size', e.target.value)}
                   className={inputClass}
+                  disabled={readOnly}
                 >
                   <option value="">Select size...</option>
                   {JACKET_SIZE_OPTIONS.map((option) => (
@@ -696,6 +733,7 @@ export default function EditModal({
                           )
                         }
                         className="mr-2"
+                        disabled={readOnly}
                       />
                       <span className="text-sm">
                         {option.label.replace('I will use my', 'Guest will use')}
@@ -720,6 +758,7 @@ export default function EditModal({
                           )
                         }
                         className="mr-2"
+                        disabled={readOnly}
                       />
                       <span className="text-sm">
                         {option.label.replace('I will attend', 'Guest will attend')}
@@ -741,6 +780,7 @@ export default function EditModal({
                           handleCheckboxChange('guest_activities', option.value, e.target.checked)
                         }
                         className="mr-2 mt-1"
+                        disabled={readOnly}
                       />
                       <span>
                         <span className="text-sm">{option.label}</span>
@@ -765,9 +805,10 @@ export default function EditModal({
                   <textarea
                     value={formData.admin_notes || ''}
                     onChange={(e) => handleChange('admin_notes', e.target.value)}
-                    className={`${inputClass} bg-yellow-50`}
+                    className={`${inputClass} ${readOnly ? '' : 'bg-yellow-50'}`}
                     rows={4}
                     placeholder="Add any internal notes or comments about this registration..."
+                    readOnly={readOnly}
                   />
                 </div>
               </div>
@@ -808,38 +849,51 @@ export default function EditModal({
           </div>
 
           {/* Delete */}
-          <div>
-            {isAdminView && (
-              <button
-                onClick={handleDelete}
-                className="flex items-center text-red-600 rounded-lg hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isSaving || isDeleting}
-              >
-                <span className="mr-2">⨉</span>
-                Delete Registrant
-              </button>
-            )}
-          </div>
+          {!readOnly && (
+            <div>
+              {isAdminView && (
+                <button
+                  onClick={handleDelete}
+                  className="flex items-center text-red-600 rounded-lg hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isSaving || isDeleting}
+                >
+                  <span className="mr-2">⨉</span>
+                  Delete Registrant
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="p-6 border-t border-gray-200 flex justify-between sticky bottom-0 bg-white">
           <div></div>
           <div className="flex gap-3">
-            <button
-              onClick={onClose}
-              className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-              disabled={isSaving || isDeleting}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              className="px-6 py-2 bg-nexus-navy text-white rounded-lg not-disabled:hover:bg-nexus-navy-dark disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isSaving || isDeleting || !hasChanges()}
-              title={!hasChanges() ? 'No changes to save' : ''}
-            >
-              {isSaving ? 'Saving...' : 'Save Changes'}
-            </button>
+            {readOnly ? (
+              <button
+                onClick={onClose}
+                className="px-6 py-2 bg-nexus-navy text-white rounded-lg hover:bg-nexus-navy-dark"
+              >
+                Close
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={onClose}
+                  className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  disabled={isSaving || isDeleting}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="px-6 py-2 bg-nexus-navy text-white rounded-lg not-disabled:hover:bg-nexus-navy-dark disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isSaving || isDeleting || !hasChanges()}
+                  title={!hasChanges() ? 'No changes to save' : ''}
+                >
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -847,7 +901,7 @@ export default function EditModal({
       {/* Confirmation Modal */}
       {showConfirmation && (
         <div
-          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-[110]"
           onClick={() => setShowConfirmation(false)}
         >
           <div
@@ -883,7 +937,7 @@ export default function EditModal({
       {/* Delete Confirmation Modal */}
       {showDeleteConfirmation && (
         <div
-          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-[110]"
           onClick={() => setShowDeleteConfirmation(false)}
         >
           <div

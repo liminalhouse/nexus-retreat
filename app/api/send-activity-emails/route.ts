@@ -30,42 +30,39 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Send emails in parallel batches to avoid overwhelming the email service
-    const BATCH_SIZE = 10
+    // Send emails sequentially with delay to respect Resend's 2 req/sec rate limit
+    const DELAY_MS = 600 // 600ms between emails = ~1.6 req/sec (safe margin)
     const results: {email: string; success: boolean; error?: string}[] = []
 
-    for (let i = 0; i < allRegistrations.length; i += BATCH_SIZE) {
-      const batch = allRegistrations.slice(i, i + BATCH_SIZE)
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-      const batchResults = await Promise.allSettled(
-        batch.map(async (registration) => {
-          const emailData = {
-            first_name: registration.firstName,
-            last_name: registration.lastName,
-            email: registration.email,
-            editToken: registration.editToken,
-            assistant_email: registration.assistantEmail || undefined,
-            guest_email: registration.guestEmail || undefined,
-          }
-          return {email: registration.email, result: await sendActivitySelectionEmail(emailData)}
-        }),
-      )
-
-      for (const outcome of batchResults) {
-        if (outcome.status === 'fulfilled') {
-          results.push({
-            email: outcome.value.email,
-            success: outcome.value.result.success,
-            error: outcome.value.result.success ? undefined : String(outcome.value.result.error),
-          })
-        } else {
-          results.push({
-            email: 'unknown',
-            success: false,
-            error: outcome.reason?.message || 'Unknown error',
-          })
-        }
+    for (const registration of allRegistrations) {
+      const emailData = {
+        first_name: registration.firstName,
+        last_name: registration.lastName,
+        email: registration.email,
+        editToken: registration.editToken,
+        assistant_email: registration.assistantEmail || undefined,
+        guest_email: registration.guestEmail || undefined,
       }
+
+      try {
+        const result = await sendActivitySelectionEmail(emailData)
+        results.push({
+          email: registration.email,
+          success: result.success,
+          error: result.success ? undefined : String(result.error),
+        })
+      } catch (err) {
+        results.push({
+          email: registration.email,
+          success: false,
+          error: err instanceof Error ? err.message : 'Unknown error',
+        })
+      }
+
+      // Wait before sending next email to respect rate limit
+      await delay(DELAY_MS)
     }
 
     const successCount = results.filter((r) => r.success).length
