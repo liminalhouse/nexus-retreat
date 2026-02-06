@@ -35,12 +35,8 @@ export function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Protect /schedule and /speakers routes - require Sanity authentication (admin only)
-  if (
-    process.env.VERCEL_ENV === 'production' &&
-    (request.nextUrl.pathname.startsWith('/schedule') ||
-    request.nextUrl.pathname.startsWith('/speakers'))
-  ) {
+  // Protect /schedule and routes - require Sanity authentication (admin only)
+  if (process.env.VERCEL_ENV === 'production' && request.nextUrl.pathname.startsWith('/schedule')) {
     if (!sanityToken?.value) {
       const loginUrl = new URL('/admin/login', request.url)
       loginUrl.searchParams.set('from', request.nextUrl.pathname)

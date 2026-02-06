@@ -27,6 +27,11 @@
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/postcss": "^4.1.12",
     "@tailwindcss/typography": "^0.5.16",
+    "@tiptap/extension-link": "^3.18.0",
+    "@tiptap/pm": "^3.18.0",
+    "@tiptap/react": "^3.18.0",
+    "@tiptap/starter-kit": "^3.18.0",
+    "@tiptap/suggestion": "^3.18.0",
     "@vercel/blob": "^2.0.0",
     "@vercel/speed-insights": "^1.2.0",
     "autoprefixer": "^10.4.21",
@@ -41,10 +46,12 @@
     "react-dom": "^19.1.1",
     "resend": "^6.5.0",
     "sanity": "^5.6.0",
+    "sanity-image": "^1.0.0",
     "sanity-plugin-asset-source-unsplash": "^7.0.2",
     "sonner": "^2.0.7",
     "styled-components": "^6.1.19",
-    "tailwindcss": "^4.1.12"
+    "tailwindcss": "^4.1.12",
+    "tippy.js": "^6.3.7"
   },
   "overrides": {
     "glob": "^10.5.0",

@@ -77,5 +77,27 @@ export const blockContent = defineType({
         ],
       },
     }),
+    defineArrayMember({
+      name: 'image',
+      type: 'image',
+      title: 'Image',
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt Text',
+          type: 'string',
+          description: 'Alternative text for accessibility',
+        }),
+        defineField({
+          name: 'caption',
+          title: 'Caption',
+          type: 'string',
+          description: 'Optional caption to display below the image',
+        }),
+      ],
+    }),
   ],
 })
