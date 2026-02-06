@@ -18,7 +18,7 @@ export function buildFormConfig(sanityContent: any): FormConfig {
       nextButtonText: 'NEXT',
       backButtonText: '← BACK',
       successMessage:
-        'Thank you for registering! We look forward to seeing you at the retreat. If you need any help, email us at nexus-retreat@gmail.com.',
+        'Thank you for registering! We look forward to seeing you at the retreat. If you need any help, email us at info@nexus-retreat.com.',
     }
   }
 
@@ -180,7 +180,8 @@ export function buildFormConfig(sanityContent: any): FormConfig {
   if (sanityContent.guestEventDetails) {
     // Update guest details section title and hidden state
     const guestDetailsGroupIndex = config.step3?.fieldGroups?.findIndex(
-      (g) => g.showIfFieldHasValue && g.fields?.some((f) => f.name === 'guest_dietary_restrictions'),
+      (g) =>
+        g.showIfFieldHasValue && g.fields?.some((f) => f.name === 'guest_dietary_restrictions'),
     )
     if (guestDetailsGroupIndex !== undefined && guestDetailsGroupIndex >= 0) {
       const guestGroup = config.step3?.fieldGroups?.[guestDetailsGroupIndex]

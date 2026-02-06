@@ -8,7 +8,7 @@ interface FormFieldRendererProps {
   field: FormField | undefined
   value: any
   onChange: (value: any) => void
-  onBlur: () => void
+  onBlur: (value?: any) => void
   error?: string
 }
 
@@ -57,7 +57,7 @@ export default function FormFieldRenderer({
           name={name}
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
-          onBlur={onBlur}
+          onBlur={(e) => onBlur(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault()
@@ -209,7 +209,7 @@ export default function FormFieldRenderer({
 
             return (
               <div key={idx} className="flex items-start">
-                <div className="flex items-center h-5">
+                <div className="flex items-center h-5 mt-0.5">
                   <input
                     type="checkbox"
                     id={checkboxId}
@@ -218,8 +218,13 @@ export default function FormFieldRenderer({
                     className="h-4 w-4 rounded border-2 border-gray-300 text-blue-600 transition-all duration-300 ease-out focus:ring-2 focus:ring-blue-100 focus:border-blue-600 hover:border-gray-400 cursor-pointer"
                   />
                 </div>
-                <label htmlFor={checkboxId} className="ml-3 text-sm text-gray-700 cursor-pointer">
-                  {option?.label || option?.value}
+                <label htmlFor={checkboxId} className="ml-3 cursor-pointer flex flex-col gap-1">
+                  <span className="text-sm text-gray-700 font-semibold">{option?.label || option?.value}</span>
+                  {option?.description && (
+                    <span className="block text-xs font-medium text-gray-500 max-w-md">
+                      {option.description}
+                    </span>
+                  )}
                 </label>
               </div>
             )

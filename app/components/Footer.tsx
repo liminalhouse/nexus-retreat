@@ -9,7 +9,7 @@ export default async function Footer() {
   })
 
   const tagline = settings?.footerTagline || 'George Pyne • Jay Penske'
-  const email = settings?.footerEmail || 'nexus-retreat@gmail.com'
+  const email = settings?.footerEmail || 'info@nexus-retreat.com'
   const quickLinks = settings?.footerQuickLinks || []
   const copyright =
     settings?.footerCopyright ||

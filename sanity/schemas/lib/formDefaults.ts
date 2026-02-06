@@ -12,7 +12,7 @@ export const FORM_DEFAULTS = {
   nextButtonText: 'NEXT',
   backButtonText: '← BACK',
   successMessage:
-    'Thank you for registering! We look forward to seeing you at the retreat. If you need any help, email us at nexus-retreat@gmail.com.',
+    'Thank you for registering! We look forward to seeing you at the retreat. If you need any help, email us at info@nexus-retreat.com.',
 
   // Step Titles
   step1Title: 'Personal Details',
