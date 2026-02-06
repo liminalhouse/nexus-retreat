@@ -5,7 +5,7 @@ import NexusLogo from '@/app/components/NexusLogo'
 import Avatar from '@/app/components/Avatar'
 import FormStepRenderer from './FormStepRenderer'
 import type {FormConfig} from './types'
-import {ExclamationCircleIcon} from '@heroicons/react/24/outline'
+import ExistingRegistrationNotice from './ExistingRegistrationNotice'
 
 interface FormProps {
   config: FormConfig
@@ -768,19 +768,10 @@ export default function Form({config, showLogo = true, showProgress = true}: For
               fieldNotices={{
                 ...(existingRegistration?.editToken && {
                   email: (
-                    <div className="mt-2 p-4 bg-red-50 border border-red-200 rounded-lg">
-                      <p className="text-sm text-red-800 flex items-center">
-                        <ExclamationCircleIcon className="inline h-5 w-5 mr-1" />
-                        This email is already registered. You can&nbsp;
-                        <a
-                          href={`/edit-registration/${existingRegistration.editToken}`}
-                          className="font-semibold underline hover:text-red-900"
-                        >
-                          update your existing registration here
-                        </a>
-                        .
-                      </p>
-                    </div>
+                    <ExistingRegistrationNotice
+                      editToken={existingRegistration.editToken}
+                      className="mt-2"
+                    />
                   ),
                 }),
               }}
@@ -826,6 +817,14 @@ export default function Form({config, showLogo = true, showProgress = true}: For
                 </div>
               </div>
             </div>
+          )}
+
+          {/* Existing registration warning on last step */}
+          {currentStep === totalSteps - 1 && existingRegistration?.editToken && (
+            <ExistingRegistrationNotice
+              editToken={existingRegistration.editToken}
+              className="mt-6"
+            />
           )}
 
           {/* Navigation Buttons */}

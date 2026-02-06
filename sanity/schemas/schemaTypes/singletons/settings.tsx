@@ -152,7 +152,7 @@ export const settings = defineType({
       name: 'footerEmail',
       title: 'Contact Email',
       type: 'string',
-      initialValue: 'nexus-retreat@gmail.com',
+      initialValue: 'info@nexus-retreat.com',
       validation: (rule) => rule.email(),
       group: 'footer',
     }),
