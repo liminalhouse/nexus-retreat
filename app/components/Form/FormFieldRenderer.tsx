@@ -8,7 +8,7 @@ interface FormFieldRendererProps {
   field: FormField | undefined
   value: any
   onChange: (value: any) => void
-  onBlur: () => void
+  onBlur: (value?: any) => void
   error?: string
 }
 
@@ -57,7 +57,7 @@ export default function FormFieldRenderer({
           name={name}
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
-          onBlur={onBlur}
+          onBlur={(e) => onBlur(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault()

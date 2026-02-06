@@ -1,5 +1,6 @@
 'use client'
 
+import type {ReactNode} from 'react'
 import FormFieldRenderer from './FormFieldRenderer'
 import type {FormStep} from './types'
 
@@ -7,8 +8,9 @@ interface FormStepRendererProps {
   step: FormStep
   formData: Record<string, any>
   onFieldChange: (name: string, value: any) => void
-  onFieldBlur: (name: string) => void
+  onFieldBlur: (name: string, value: any) => void
   fieldErrors?: Record<string, string>
+  fieldNotices?: Record<string, ReactNode>
 }
 
 export default function FormStepRenderer({
@@ -17,6 +19,7 @@ export default function FormStepRenderer({
   onFieldChange,
   onFieldBlur,
   fieldErrors = {},
+  fieldNotices = {},
 }: FormStepRendererProps) {
   const fieldGroups = step?.fieldGroups || []
 
@@ -70,12 +73,13 @@ export default function FormStepRenderer({
                         field={field}
                         value={formData[fieldName]}
                         onChange={(value) => onFieldChange(fieldName, value)}
-                        onBlur={() => onFieldBlur(fieldName)}
+                        onBlur={(val) => onFieldBlur(fieldName, val)}
                         error={fieldErrors[fieldName]}
                       />
                       {hasError && (
                         <p className="mt-1 text-sm text-red-600">{fieldErrors[fieldName]}</p>
                       )}
+                      {fieldNotices[fieldName]}
                     </div>
                   )
                 })}

@@ -5,6 +5,7 @@ import NexusLogo from '@/app/components/NexusLogo'
 import Avatar from '@/app/components/Avatar'
 import FormStepRenderer from './FormStepRenderer'
 import type {FormConfig} from './types'
+import {ExclamationCircleIcon} from '@heroicons/react/24/outline'
 
 interface FormProps {
   config: FormConfig
@@ -22,6 +23,7 @@ export default function Form({config, showLogo = true, showProgress = true}: For
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({})
   const [allStepErrors, setAllStepErrors] = useState<Record<string, string>>({})
   const [serverError, setServerError] = useState<string | null>(null)
+  const [existingRegistration, setExistingRegistration] = useState<{editToken: string} | null>(null)
 
   // Get the number of steps from config (default to 1)
   const numberOfSteps = config.numberOfSteps || 1
@@ -205,6 +207,11 @@ export default function Form({config, showLogo = true, showProgress = true}: For
       setServerError(null)
     }
 
+    // Clear existing registration message when email changes
+    if (name === 'email' && existingRegistration) {
+      setExistingRegistration(null)
+    }
+
     // Clear error for this field when user starts typing
     if (fieldErrors[name]) {
       setFieldErrors((prev) => {
@@ -224,7 +231,7 @@ export default function Form({config, showLogo = true, showProgress = true}: For
     }
   }
 
-  const handleFieldBlur = (name: string) => {
+  const handleFieldBlur = async (name: string) => {
     setTouchedFields((prev) => ({...prev, [name]: true}))
 
     const error = validateField(name)
@@ -236,6 +243,25 @@ export default function Form({config, showLogo = true, showProgress = true}: For
         delete newErrors[name]
         return newErrors
       })
+    }
+
+    // Check if email is already registered
+    if (name === 'email' && !error && formData.email) {
+      try {
+        const res = await fetch('/api/registration/check-email', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({email: formData.email}),
+        })
+        const data = await res.json()
+        if (data.exists) {
+          setExistingRegistration({editToken: data.editToken})
+        } else {
+          setExistingRegistration(null)
+        }
+      } catch {
+        setExistingRegistration(null)
+      }
     }
   }
 
@@ -739,6 +765,25 @@ export default function Form({config, showLogo = true, showProgress = true}: For
               onFieldChange={handleFieldChange}
               onFieldBlur={handleFieldBlur}
               fieldErrors={fieldErrors}
+              fieldNotices={{
+                ...(existingRegistration?.editToken && {
+                  email: (
+                    <div className="mt-2 p-4 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-sm text-red-800 flex items-center">
+                        <ExclamationCircleIcon className="inline h-5 w-5 mr-1" />
+                        This email is already registered. You can&nbsp;
+                        <a
+                          href={`/edit-registration/${existingRegistration.editToken}`}
+                          className="font-semibold underline hover:text-red-900"
+                        >
+                          update your existing registration here
+                        </a>
+                        .
+                      </p>
+                    </div>
+                  ),
+                }),
+              }}
             />
           )}
 
