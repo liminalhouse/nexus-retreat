@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, useEffect, useCallback} from 'react'
+import {useState, useEffect, useCallback, useRef} from 'react'
 import NexusLogo from '@/app/components/NexusLogo'
 import Avatar from '@/app/components/Avatar'
 import FormStepRenderer from './FormStepRenderer'
@@ -24,6 +24,7 @@ export default function Form({config, showLogo = true, showProgress = true}: For
   const [allStepErrors, setAllStepErrors] = useState<Record<string, string>>({})
   const [serverError, setServerError] = useState<string | null>(null)
   const [existingRegistration, setExistingRegistration] = useState<{editToken: string} | null>(null)
+  const emailCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Get the number of steps from config (default to 1)
   const numberOfSteps = config.numberOfSteps || 1
@@ -170,6 +171,43 @@ export default function Form({config, showLogo = true, showProgress = true}: For
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStep, totalSteps]) // Only depend on step changes, not validateAllSteps function
 
+  // Debounced email duplicate check — fires while the user types so the
+  // result is ready by the time they move to the next field.
+  const emailValue = formData.email as string | undefined
+  useEffect(() => {
+    if (emailCheckTimer.current) clearTimeout(emailCheckTimer.current)
+
+    if (!emailValue) {
+      setExistingRegistration(null)
+      return
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(emailValue)) return
+
+    emailCheckTimer.current = setTimeout(async () => {
+      try {
+        const res = await fetch('/api/registration/check-email', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({email: emailValue}),
+        })
+        const data = await res.json()
+        if (data.exists) {
+          setExistingRegistration({editToken: data.editToken})
+        } else {
+          setExistingRegistration(null)
+        }
+      } catch {
+        setExistingRegistration(null)
+      }
+    }, 500)
+
+    return () => {
+      if (emailCheckTimer.current) clearTimeout(emailCheckTimer.current)
+    }
+  }, [emailValue])
+
   const handleNext = (e?: React.MouseEvent<HTMLButtonElement>) => {
     e?.preventDefault()
 
@@ -207,11 +245,6 @@ export default function Form({config, showLogo = true, showProgress = true}: For
       setServerError(null)
     }
 
-    // Clear existing registration message when email changes
-    if (name === 'email' && existingRegistration) {
-      setExistingRegistration(null)
-    }
-
     // Clear error for this field when user starts typing
     if (fieldErrors[name]) {
       setFieldErrors((prev) => {
@@ -231,7 +264,7 @@ export default function Form({config, showLogo = true, showProgress = true}: For
     }
   }
 
-  const handleFieldBlur = async (name: string) => {
+  const handleFieldBlur = (name: string) => {
     setTouchedFields((prev) => ({...prev, [name]: true}))
 
     const error = validateField(name)
@@ -243,25 +276,6 @@ export default function Form({config, showLogo = true, showProgress = true}: For
         delete newErrors[name]
         return newErrors
       })
-    }
-
-    // Check if email is already registered
-    if (name === 'email' && !error && formData.email) {
-      try {
-        const res = await fetch('/api/registration/check-email', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({email: formData.email}),
-        })
-        const data = await res.json()
-        if (data.exists) {
-          setExistingRegistration({editToken: data.editToken})
-        } else {
-          setExistingRegistration(null)
-        }
-      } catch {
-        setExistingRegistration(null)
-      }
     }
   }
 
