@@ -130,8 +130,8 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: isDuplicateEmail
-            ? 'This email has already been registered. Please contact us at nexus.retreat.boca@gmail.com for assistance.'
-            : 'This information has already been registered. Please contact us at nexus.retreat.boca@gmail.com for assistance.',
+            ? 'This email has already been registered. Please contact us at info@nexus-retreat.com for assistance.'
+            : 'This information has already been registered. Please contact us at info@nexus-retreat.com for assistance.',
         },
         {status: 400},
       )

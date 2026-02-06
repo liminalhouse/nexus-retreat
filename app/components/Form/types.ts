@@ -5,6 +5,7 @@
 export interface FormFieldOption {
   label: string
   value: string
+  description?: string
 }
 
 export interface FormField {

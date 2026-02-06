@@ -7,8 +7,8 @@ import NexusLogo from '@/app/components/NexusLogo'
 import {
   ACTIVITY_OPTIONS,
   GUEST_ACTIVITY_OPTIONS,
-  type ActivityOption,
 } from '@/lib/utils/formatRegistrationFields'
+import ActivityCheckboxList from '@/app/components/Form/ActivityCheckboxList'
 
 type PageState = 'loading' | 'editing' | 'saving' | 'success' | 'error'
 
@@ -30,52 +30,6 @@ function LoadingSpinner() {
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
         <p className="text-white/80">Loading...</p>
       </div>
-    </div>
-  )
-}
-
-function ActivityCheckboxList({
-  options,
-  selectedValues,
-  onToggle,
-  disabled,
-  idPrefix,
-}: {
-  options: ActivityOption[]
-  selectedValues: string[]
-  onToggle: (value: string) => void
-  disabled: boolean
-  idPrefix: string
-}) {
-  return (
-    <div className="flex flex-col gap-3">
-      {options.map((option) => {
-        const isChecked = selectedValues.includes(option.value)
-        const checkboxId = `${idPrefix}_${option.value}`
-
-        return (
-          <div key={option.value} className="flex items-start">
-            <div className="flex items-center h-5 mt-0.5">
-              <input
-                type="checkbox"
-                id={checkboxId}
-                checked={isChecked}
-                onChange={() => onToggle(option.value)}
-                disabled={disabled}
-                className="h-4 w-4 rounded border-2 border-gray-300 text-blue-600 transition-all duration-300 ease-out focus:ring-2 focus:ring-blue-100 focus:border-blue-600 hover:border-gray-400 cursor-pointer"
-              />
-            </div>
-            <label htmlFor={checkboxId} className="ml-3 cursor-pointer flex flex-col gap-1">
-              <span className="text-sm text-slate-700 font-semibold">{option.label}</span>
-              {option.description && (
-                <span className="block text-xs font-medium text-slate-500 max-w-md">
-                  {option.description}
-                </span>
-              )}
-            </label>
-          </div>
-        )
-      })}
     </div>
   )
 }
