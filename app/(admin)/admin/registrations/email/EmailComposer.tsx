@@ -169,10 +169,15 @@ function SendResultsBanner({results, onClear}: {results: SendResults; onClear: (
   const hasSkipped = results.skippedCount > 0
   const hasSuccess = results.successCount > 0
 
-  const variant =
-    hasFailures ? (hasSuccess ? 'warning' : 'error')
-    : hasSkipped ? (hasSuccess ? 'warning' : 'skipped')
-    : 'success'
+  const variant = hasFailures
+    ? hasSuccess
+      ? 'warning'
+      : 'error'
+    : hasSkipped
+      ? hasSuccess
+        ? 'warning'
+        : 'skipped'
+      : 'success'
 
   const styles = {
     success: 'bg-green-50 border-green-200',
@@ -217,9 +222,7 @@ function SendResultsBanner({results, onClear}: {results: SendResults; onClear: (
           )}
           {hasFailures && (
             <div className="mt-2">
-              <p className="text-sm font-medium text-red-800">
-                Failed ({results.failCount}):
-              </p>
+              <p className="text-sm font-medium text-red-800">Failed ({results.failCount}):</p>
               <ul className="mt-1 text-sm">
                 {failedResults.map((r, i) => (
                   <li key={i} className="text-red-600">
@@ -449,8 +452,27 @@ function ImageIcon() {
 // Main Component
 // ============================================================================
 
-// Available predefined recipient options
-const PREDEFINED_RECIPIENTS: {value: PredefinedRecipient; label: string; description?: string}[] = [
+// Available predefined recipient options — TO has the registrant fallback for assistants
+const PREDEFINED_RECIPIENTS_TO: {
+  value: PredefinedRecipient
+  label: string
+  description?: string
+}[] = [
+  {value: 'registrants', label: 'Registrants', description: 'Selected registrants from the list'},
+  {
+    value: 'executive_assistants',
+    label: 'Executive Assistants (fallback: registrant)',
+    description: 'Assistants of selected registrants, falls back to registrant if no assistant',
+  },
+  {value: 'guests', label: 'Guests', description: 'Guests of selected registrants'},
+  {value: 'info_email', label: 'info@nexus-retreat.com', description: 'Nexus Retreat info email'},
+]
+
+const PREDEFINED_RECIPIENTS_CC_BCC: {
+  value: PredefinedRecipient
+  label: string
+  description?: string
+}[] = [
   {value: 'registrants', label: 'Registrants', description: 'Selected registrants from the list'},
   {
     value: 'executive_assistants',
@@ -658,21 +680,21 @@ export default function EmailComposer({
               recipients={recipientFields.to}
               onChange={(to) => setRecipientFields({...recipientFields, to})}
               placeholder="Add recipients..."
-              availablePredefined={PREDEFINED_RECIPIENTS}
+              availablePredefined={PREDEFINED_RECIPIENTS_TO}
             />
             <EmailRecipientField
               label="CC"
               recipients={recipientFields.cc}
               onChange={(cc) => setRecipientFields({...recipientFields, cc})}
               placeholder="Add CC recipients..."
-              availablePredefined={PREDEFINED_RECIPIENTS}
+              availablePredefined={PREDEFINED_RECIPIENTS_CC_BCC}
             />
             <EmailRecipientField
               label="BCC"
               recipients={recipientFields.bcc}
               onChange={(bcc) => setRecipientFields({...recipientFields, bcc})}
               placeholder="Add BCC recipients..."
-              availablePredefined={PREDEFINED_RECIPIENTS}
+              availablePredefined={PREDEFINED_RECIPIENTS_CC_BCC}
             />
           </div>
 

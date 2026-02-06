@@ -18,10 +18,12 @@ type RecipientFields = {
 }
 
 // Helper to resolve emails from predefined types for a specific registration
+// When field is 'to', executive_assistants falls back to the registrant's email
 function resolveEmails(
   predefined: PredefinedRecipient[],
   custom: string[],
-  registration: Registration | null
+  registration: Registration | null,
+  field: 'to' | 'cc' | 'bcc' = 'to'
 ): string[] {
   const emails: string[] = [...custom]
 
@@ -35,6 +37,8 @@ function resolveEmails(
       case 'executive_assistants':
         if (registration?.assistantEmail) {
           emails.push(registration.assistantEmail)
+        } else if (field === 'to' && registration?.email) {
+          emails.push(registration.email)
         }
         break
       case 'guests':
@@ -154,9 +158,9 @@ export async function POST(request: NextRequest) {
     if (needsRegistrations) {
       // Send one email per registration
       for (const registration of selectedRegistrations) {
-        const toEmails = resolveEmails(recipientFields.to.predefined, recipientFields.to.custom, registration)
-        const ccEmails = resolveEmails(recipientFields.cc.predefined, recipientFields.cc.custom, registration)
-        const bccEmails = resolveEmails(recipientFields.bcc.predefined, recipientFields.bcc.custom, registration)
+        const toEmails = resolveEmails(recipientFields.to.predefined, recipientFields.to.custom, registration, 'to')
+        const ccEmails = resolveEmails(recipientFields.cc.predefined, recipientFields.cc.custom, registration, 'cc')
+        const bccEmails = resolveEmails(recipientFields.bcc.predefined, recipientFields.bcc.custom, registration, 'bcc')
 
         // Filter out unsubscribed emails
         const {allowed: allowedTo, blocked: blockedTo} = await filterUnsubscribed(toEmails)
@@ -209,9 +213,9 @@ export async function POST(request: NextRequest) {
       }
     } else {
       // Send a single email with custom recipients only (no registration context)
-      const toEmails = resolveEmails(recipientFields.to.predefined, recipientFields.to.custom, null)
-      const ccEmails = resolveEmails(recipientFields.cc.predefined, recipientFields.cc.custom, null)
-      const bccEmails = resolveEmails(recipientFields.bcc.predefined, recipientFields.bcc.custom, null)
+      const toEmails = resolveEmails(recipientFields.to.predefined, recipientFields.to.custom, null, 'to')
+      const ccEmails = resolveEmails(recipientFields.cc.predefined, recipientFields.cc.custom, null, 'cc')
+      const bccEmails = resolveEmails(recipientFields.bcc.predefined, recipientFields.bcc.custom, null, 'bcc')
 
       // Filter out unsubscribed emails
       const {allowed: allowedTo, blocked: blockedTo} = await filterUnsubscribed(toEmails)
