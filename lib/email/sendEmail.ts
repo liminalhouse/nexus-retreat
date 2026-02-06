@@ -684,6 +684,7 @@ type CustomEmailRegistration = {
   city?: string | null
   state?: string | null
   guestName?: string | null
+  assistantName?: string | null
   editToken?: string | null
 }
 
@@ -715,6 +716,9 @@ export async function sendCustomEmail(params: CustomEmailParams) {
           city: registration.city || '',
           state: registration.state || '',
           guestName: registration.guestName || '',
+          assistantName: registration.assistantName || '',
+          assistantFirstName: registration.assistantName?.split(' ')[0] || '',
+          assistantLastName: registration.assistantName?.split(' ').slice(1).join(' ') || '',
           editLink: registration.editToken ? getEditRegistrationUrl(registration.editToken) : '',
           activitiesLink: registration.editToken ? getEditActivitiesUrl(registration.editToken) : '',
         }

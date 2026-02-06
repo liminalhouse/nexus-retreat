@@ -656,6 +656,9 @@ export default function EmailComposer({
             body={body}
             headerImageUrl={headerImageUrl}
             registration={previewRegistration}
+            assistantFallbackToRegistrant={recipientFields.to.some(
+              (r) => r.type === 'predefined' && r.value === 'executive_assistants'
+            )}
           />
           <div className="pt-4 mt-4 border-t border-gray-200">
             <SendButton

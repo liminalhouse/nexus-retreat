@@ -14,6 +14,7 @@ type EmailPreviewProps = {
   heading?: string
   headerImageUrl?: string
   registration: Registration | null
+  assistantFallbackToRegistrant?: boolean
 }
 
 // Helper to format array fields as comma-separated strings
@@ -23,7 +24,7 @@ function formatArray(arr: string[] | null | undefined): string {
 }
 
 // Build variables map from registration data
-function buildVariablesMap(registration: Registration | null): Record<string, string> {
+function buildVariablesMap(registration: Registration | null, assistantFallbackToRegistrant = false): Record<string, string> {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
 
   // Always provide link placeholders so they render as valid links
@@ -58,8 +59,15 @@ function buildVariablesMap(registration: Registration | null): Record<string, st
     emergencyContactEmail: registration.emergencyContactEmail || '',
     emergencyContactPhone: registration.emergencyContactPhone || '',
 
-    // Executive Assistant
-    assistantName: registration.assistantName || '',
+    // Executive Assistant — fall back to registrant name when assistant is in TO and no assistant exists
+    assistantName: registration.assistantName
+      || (assistantFallbackToRegistrant ? `${registration.firstName} ${registration.lastName}` : ''),
+    assistantFirstName: registration.assistantName
+      ? registration.assistantName.split(' ')[0]
+      : (assistantFallbackToRegistrant ? registration.firstName : ''),
+    assistantLastName: registration.assistantName
+      ? registration.assistantName.split(' ').slice(1).join(' ')
+      : (assistantFallbackToRegistrant ? registration.lastName : ''),
     assistantTitle: registration.assistantTitle || '',
     assistantEmail: registration.assistantEmail || '',
     assistantPhone: registration.assistantPhone || '',
@@ -94,8 +102,9 @@ export default function EmailPreview({
   heading,
   headerImageUrl,
   registration,
+  assistantFallbackToRegistrant = false,
 }: EmailPreviewProps) {
-  const variables = useMemo(() => buildVariablesMap(registration), [registration])
+  const variables = useMemo(() => buildVariablesMap(registration, assistantFallbackToRegistrant), [registration, assistantFallbackToRegistrant])
 
   const processedBody = useMemo(() => replaceEmailVariables(body, variables), [body, variables])
 
