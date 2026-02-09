@@ -46,7 +46,7 @@ export const ACTIVITY_OPTIONS: ActivityOption[] = [
     label: 'Golf Challenge',
     value: 'golf_challenge',
     description:
-      'March 19, 3-5pm: 3-hole Invictus challenge on the driving range with members of the Invictus Foundation — cocktails, camaraderie, charity, and a competition!',
+      'March 19, 3-5pm: Join Prince Harry, Duke of Sussex, and members of the Invictus Games Foundation in a 3-hole challenge. You are invited to share in the fun, competition, and cocktails as teams compete to be the champion. You will have an opportunity to learn more about Invictus, the importance of the work, and make a contribution. Do you have the skills to take on the Prince?',
     chipDescription: 'March 19',
   },
   {label: 'Tennis', value: 'tennis', description: 'Court booking available'},
@@ -80,13 +80,14 @@ export const ACTIVITY_OPTIONS: ActivityOption[] = [
     description: 'March 20, 6:30am',
     chipDescription: 'March 20',
   },
-  {
-    label: 'Tour a Gulfstream jet displayed at Signature Aviation',
-    value: 'gulfstream_tour',
-    description:
-      'March 18, 9am-4pm:  We can arrange your car, which will be added to your hotel folio.',
-    chipDescription: 'March 18',
-  },
+  // TODO: Comment back
+  // {
+  //   label: 'Tour a Gulfstream jet displayed at Signature Aviation',
+  //   value: 'gulfstream_tour',
+  //   description:
+  //     'March 18, 9am-4pm:  We can arrange your car, which will be added to your hotel folio.',
+  //   chipDescription: 'March 18',
+  // },
   {label: 'Spa', value: 'spa', description: 'Our team can assist with bookings'},
 ]
 
