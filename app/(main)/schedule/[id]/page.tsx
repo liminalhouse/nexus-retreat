@@ -205,7 +205,7 @@ export default async function SessionPage({params}: Props) {
                         href={`/speakers/${speakerSlug}`}
                         className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100 hover:shadow-md hover:border-nexus-coral/30 transition-all"
                       >
-                        {speakerPhotoUrl ? (
+                        {!!speakerPhotoUrl ? (
                           <Image
                             src={speakerPhotoUrl}
                             alt={`${speaker.firstName} ${speaker.lastName}`}

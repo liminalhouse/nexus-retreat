@@ -4,12 +4,13 @@ import {useState, useEffect} from 'react'
 import {useParams} from 'next/navigation'
 import Link from 'next/link'
 import NexusLogo from '@/app/components/NexusLogo'
+import {ACTIVITY_OPTIONS, GUEST_ACTIVITY_OPTIONS} from '@/lib/utils/formatRegistrationFields'
 import {
-  ACTIVITY_OPTIONS,
-  GUEST_ACTIVITY_OPTIONS,
-} from '@/lib/utils/formatRegistrationFields'
-import ActivityCheckboxList from '@/app/components/Form/ActivityCheckboxList'
-import {EditLoadingState, EditErrorState, EditSuccessState} from '@/app/components/EditRegistrationStates'
+  EditLoadingState,
+  EditErrorState,
+  EditSuccessState,
+} from '@/app/components/EditRegistrationStates'
+import CheckboxOptionList from '@/app/components/Form/CheckboxOptionList'
 
 type PageState = 'loading' | 'editing' | 'saving' | 'success' | 'error'
 
@@ -143,7 +144,7 @@ export default function EditActivitiesPage() {
                   These are optional activities available during the retreat. Please select any that
                   interest you.
                 </p>
-                <ActivityCheckboxList
+                <CheckboxOptionList
                   options={ACTIVITY_OPTIONS}
                   selectedValues={activities}
                   onToggle={handleActivityToggle}
@@ -167,7 +168,7 @@ export default function EditActivitiesPage() {
                     These are optional activities available during the retreat. Please select any
                     that interest your guest.
                   </p>
-                  <ActivityCheckboxList
+                  <CheckboxOptionList
                     options={GUEST_ACTIVITY_OPTIONS}
                     selectedValues={guestActivities}
                     onToggle={handleGuestActivityToggle}
