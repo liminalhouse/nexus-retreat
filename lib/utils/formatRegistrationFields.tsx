@@ -139,73 +139,55 @@ const ACTIVITY_COLORS: Record<string, string> = {
   spa: 'bg-pink-100 text-pink-800 border-pink-200',
 }
 
+// Private helpers to eliminate duplication across formatter functions
+function formatAsString(
+  values: string[] | null | undefined,
+  labels: Record<string, string>,
+): string {
+  if (!values || values.length === 0) return ''
+  return values.map((v) => labels[v] || v).join(', ')
+}
+
+function formatChipList(
+  values: string[] | null | undefined,
+  labels: Record<string, string>,
+  colors: Record<string, string>,
+  sort?: boolean,
+): React.ReactNode {
+  if (!values || values.length === 0) return '-'
+  const items = sort
+    ? [...values].sort((a, b) => (labels[a] || a).localeCompare(labels[b] || b))
+    : values
+  return (
+    <ul className="flex flex-col gap-1">
+      {items.map((v) => (
+        <li
+          key={v}
+          className={`block px-2 py-0.5 text-xs rounded-full border-1 ${colors[v] || 'bg-gray-100 text-gray-800'}`}
+        >
+          {labels[v] || v}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 // String formatters for CSV export
-export function formatAccommodationsAsString(values: string[] | null | undefined): string {
-  if (!values || values.length === 0) return ''
-  return values.map((v) => ACCOMMODATION_LABELS[v] || v).join(', ')
-}
+export const formatAccommodationsAsString = (values: string[] | null | undefined) =>
+  formatAsString(values, ACCOMMODATION_LABELS)
 
-export function formatDinnerAttendanceAsString(values: string[] | null | undefined): string {
-  if (!values || values.length === 0) return ''
-  return values.map((v) => DINNER_LABELS[v] || v).join(', ')
-}
+export const formatDinnerAttendanceAsString = (values: string[] | null | undefined) =>
+  formatAsString(values, DINNER_LABELS)
 
-export function formatActivitiesAsString(values: string[] | null | undefined): string {
-  if (!values || values.length === 0) return ''
-  return values.map((v) => ACTIVITY_LABELS[v] || v).join(', ')
-}
+export const formatActivitiesAsString = (values: string[] | null | undefined) =>
+  formatAsString(values, ACTIVITY_LABELS)
 
 // ReactNode formatters for display with colored chips
-export function formatAccommodations(values: string[] | null | undefined): React.ReactNode {
-  if (!values || values.length === 0) return '-'
-  return (
-    <ul className="flex flex-col gap-1">
-      {values.map((v) => (
-        <li
-          key={v}
-          className={`block px-2 py-0.5 text-xs rounded-full border-1 ${ACCOMMODATION_COLORS[v] || 'bg-gray-100 text-gray-800'}`}
-        >
-          {ACCOMMODATION_LABELS[v] || v}
-        </li>
-      ))}
-    </ul>
-  )
-}
+export const formatAccommodations = (values: string[] | null | undefined) =>
+  formatChipList(values, ACCOMMODATION_LABELS, ACCOMMODATION_COLORS)
 
-export function formatDinnerAttendance(values: string[] | null | undefined): React.ReactNode {
-  if (!values || values.length === 0) return '-'
-  return (
-    <ul className="flex flex-col gap-1">
-      {values.map((v) => (
-        <li
-          key={v}
-          className={`block px-2 py-0.5 text-xs rounded-full border-1 ${DINNER_COLORS[v] || 'bg-gray-100 text-gray-800'}`}
-        >
-          {DINNER_LABELS[v] || v}
-        </li>
-      ))}
-    </ul>
-  )
-}
+export const formatDinnerAttendance = (values: string[] | null | undefined) =>
+  formatChipList(values, DINNER_LABELS, DINNER_COLORS)
 
-export function formatActivities(values: string[] | null | undefined): React.ReactNode {
-  if (!values || values.length === 0) return '-'
-  return (
-    <ul className="flex flex-col gap-1">
-      {values
-        .sort((a, b) => {
-          const labelA = ACTIVITY_LABELS[a] || a
-          const labelB = ACTIVITY_LABELS[b] || b
-          return labelA.localeCompare(labelB)
-        })
-        .map((v) => (
-          <li
-            key={v}
-            className={`block px-2 py-0.5 text-xs rounded-full border-1 ${ACTIVITY_COLORS[v] || 'bg-gray-100 text-gray-800'}`}
-          >
-            {ACTIVITY_LABELS[v] || v}
-          </li>
-        ))}
-    </ul>
-  )
-}
+export const formatActivities = (values: string[] | null | undefined) =>
+  formatChipList(values, ACTIVITY_LABELS, ACTIVITY_COLORS, true)
