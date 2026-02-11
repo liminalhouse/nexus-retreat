@@ -43,7 +43,7 @@ export const BODY_STYLE_REPLACEMENTS: [RegExp, string][] = [
     /<h3>/g,
     `<h3 style="font-family: ${EMAIL_FONTS.serif}; font-size: 18px; font-weight: 600; color: ${EMAIL_COLORS.navy}; margin: 20px 0 12px 0; line-height: 1.3;">`,
   ],
-  [/<strong>/g, `<strong style="color: ${EMAIL_COLORS.navy}; font-weight: 600;">`],
+  [/<strong>/g, `<strong style="font-weight: 600;">`],
   [
     /<a /g,
     `<a style="color: ${EMAIL_COLORS.coral}; font-weight: bold; text-decoration: underline;" `,
@@ -74,6 +74,11 @@ export function applyEmailStyles(html: string): string {
 // CSS style block for email <head> to catch auto-linked URLs by email clients
 export const EMAIL_LINK_STYLE_BLOCK = `
   <style>
+    table a {
+      color: ${EMAIL_COLORS.coral} !important;
+      font-weight: bold !important;
+      text-decoration: underline !important;
+    }
   </style>
 `
 
