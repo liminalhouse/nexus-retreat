@@ -203,6 +203,7 @@ export const sessionByIdQuery = defineQuery(`
       title,
       bio,
       profilePicture {
+        ...,
         asset->{
           _id,
           url,
