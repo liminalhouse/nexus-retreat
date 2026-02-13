@@ -45,7 +45,7 @@ export const BODY_STYLE_REPLACEMENTS: [RegExp, string][] = [
   ],
   [/<strong>/g, `<strong style="font-weight: 600;">`],
   [
-    /<a /g,
+    /<a (?!class="btn")/g,
     `<a style="color: ${EMAIL_COLORS.coral}; font-weight: bold; text-decoration: underline;" `,
   ],
   [
@@ -63,11 +63,23 @@ export const BODY_STYLE_REPLACEMENTS: [RegExp, string][] = [
   ],
 ]
 
+// Convert CTA button markers into email-safe button HTML
+function convertCtaButtons(html: string): string {
+  // Use lookahead for data-cta so attribute order doesn't matter
+  return html.replace(
+    /<a\s(?=[^>]*data-cta="true")[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/g,
+    (_match, href, text) =>
+      `<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 24px 0;"><tr><td style="background: ${EMAIL_COLORS.coral}; border-radius: 8px;"><a class="btn" href="${href}" style="display: inline-block; padding: 16px 36px; font-family: ${EMAIL_FONTS.sans}; font-size: 15px; font-weight: 600; color: ${EMAIL_COLORS.navyDark}; text-decoration: none;">${text}</a></td></tr></table>`,
+  )
+}
+
 // Apply all style replacements to HTML content
 export function applyEmailStyles(html: string): string {
+  // Convert CTA buttons first, before generic <a> styling
+  const withCtas = convertCtaButtons(html)
   return BODY_STYLE_REPLACEMENTS.reduce(
     (content, [pattern, replacement]) => content.replace(pattern, replacement),
-    html,
+    withCtas,
   )
 }
 

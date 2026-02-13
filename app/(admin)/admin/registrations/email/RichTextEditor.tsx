@@ -1,6 +1,7 @@
 'use client'
 
 import {useEditor, EditorContent, ReactRenderer} from '@tiptap/react'
+import {BubbleMenu} from '@tiptap/react/menus'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import BulletList from '@tiptap/extension-bullet-list'
@@ -8,17 +9,19 @@ import OrderedList from '@tiptap/extension-ordered-list'
 import ListItem from '@tiptap/extension-list-item'
 import {Extension} from '@tiptap/core'
 import Suggestion, {SuggestionProps, SuggestionKeyDownProps} from '@tiptap/suggestion'
-import {useCallback, useEffect, useState, forwardRef, useImperativeHandle} from 'react'
+import {useEffect, useState, forwardRef, useImperativeHandle} from 'react'
 import {createPortal} from 'react-dom'
 import tippy, {Instance as TippyInstance} from 'tippy.js'
 import 'tippy.js/dist/tippy.css'
 import {
+  ArrowTopRightOnSquareIcon,
   BoldIcon,
   ItalicIcon,
   LinkIcon,
-  LinkSlashIcon,
   ListBulletIcon,
   NumberedListIcon,
+  PencilSquareIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline'
 
 // All available registration variables organized by category
@@ -101,6 +104,13 @@ const VARIABLE_CATEGORIES = [
       {key: 'activitiesLink', label: 'Edit Activities Link', linkText: 'Update your activities'},
     ],
   },
+  {
+    category: 'CTA Buttons',
+    variables: [
+      {key: 'editLink', label: 'Edit Registration Button', ctaText: 'Edit Your Registration'},
+      {key: 'activitiesLink', label: 'Edit Activities Button', ctaText: 'Update Your Activities'},
+    ],
+  },
 ]
 
 // Flatten variables for searching
@@ -113,6 +123,7 @@ type VariableItem = {
   label: string
   category: string
   linkText?: string
+  ctaText?: string
 }
 
 // Suggestion list component
@@ -198,7 +209,11 @@ const SuggestionList = forwardRef<SuggestionListRef, SuggestionListProps>(
                   {item.label}
                 </span>
                 <code className="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
-                  {item.linkText ? 'clickable link' : `{{${item.key}}}`}
+                  {item.ctaText !== undefined
+                    ? 'button'
+                    : item.linkText
+                      ? 'clickable link'
+                      : `{{${item.key}}}`}
                 </code>
               </button>
             ))}
@@ -334,21 +349,50 @@ const VariableSuggestion = Extension.create({
           }
         },
         command: ({editor, range, props}: {editor: any; range: any; props: VariableItem}) => {
-          // Delete the {{query and insert the variable
-          if (props.linkText) {
-            // For link variables, insert as a clickable link
-            editor
-              .chain()
-              .focus()
-              .deleteRange(range)
-              .insertContent(`<a href="{{${props.key}}}">${props.linkText}</a>`)
-              .run()
-          } else {
-            editor.chain().focus().deleteRange(range).insertContent(`{{${props.key}}}`).run()
-          }
+          editor.chain().focus().deleteRange(range).run()
+          insertVariableContent(editor, props)
         },
       }),
     ]
+  },
+})
+
+// Shared helper for inserting variable content into the editor
+function insertVariableContent(editor: any, variable: VariableItem) {
+  if (variable.ctaText !== undefined) {
+    const ctaLabel = variable.ctaText || 'Click Here'
+    const ctaUrl = variable.key === '__custom' ? '#' : `{{${variable.key}}}`
+    editor.commands.insertContent(`<a data-cta="true" href="${ctaUrl}">${ctaLabel}</a>`)
+  } else if (variable.linkText) {
+    editor.commands.insertContent(`<a href="{{${variable.key}}}">${variable.linkText}</a>`)
+  } else {
+    editor.commands.insertContent(`{{${variable.key}}}`)
+  }
+}
+
+// Insert a CTA button directly with given text and URL
+function insertCtaButton(editor: any, text: string, url: string) {
+  editor.chain().focus().run()
+  editor.commands.insertContent(`<a data-cta="true" href="${url}">${text}</a>`)
+}
+
+// Extend Link to preserve the data-cta attribute through parse/serialize
+const CtaLink = Link.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      'data-cta': {
+        default: null,
+        parseHTML: (element) => element.getAttribute('data-cta'),
+        renderHTML: (attributes) => {
+          if (!attributes['data-cta']) return {}
+          return {
+            'data-cta': attributes['data-cta'],
+            class: 'cta-button',
+          }
+        },
+      },
+    }
   },
 })
 
@@ -399,7 +443,7 @@ function VariablePickerDropdown({
             </div>
             {cat.variables.map((variable) => (
               <button
-                key={variable.key}
+                key={`${cat.category}-${variable.key}`}
                 className="w-full text-left px-3 py-2 text-sm flex items-center justify-between hover:bg-blue-50 text-gray-700"
                 onClick={() => {
                   onSelect({...variable, category: cat.category})
@@ -407,15 +451,17 @@ function VariablePickerDropdown({
                 }}
               >
                 <span className="flex items-center gap-1.5">
-                  {'linkText' in variable && variable.linkText && (
+                  {('linkText' in variable && variable.linkText) && (
                     <LinkIcon className="w-3.5 h-3.5 text-blue-500" />
                   )}
                   {variable.label}
                 </span>
                 <code className="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
-                  {'linkText' in variable && variable.linkText
-                    ? 'clickable link'
-                    : `{{${variable.key}}}`}
+                  {'ctaText' in variable && variable.ctaText !== undefined
+                    ? 'button'
+                    : 'linkText' in variable && variable.linkText
+                      ? 'clickable link'
+                      : `{{${variable.key}}}`}
                 </code>
               </button>
             ))}
@@ -427,10 +473,228 @@ function VariablePickerDropdown({
   )
 }
 
+function LinkBubble({editor}: {editor: any}) {
+  const [editing, setEditing] = useState(false)
+  const href = editor.getAttributes('link').href || ''
+  const isCta = editor.getAttributes('link')['data-cta'] === 'true'
+  const [url, setUrl] = useState(href)
+
+  useEffect(() => {
+    setUrl(href)
+    setEditing(false)
+  }, [href])
+
+  if (editing) {
+    return (
+      <div className="flex items-center bg-white border border-gray-200 rounded-lg shadow-lg px-2 py-1.5 gap-1.5">
+        <input
+          type="text"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && url.trim()) {
+              editor.chain().focus().extendMarkRange('link').setLink({href: url.trim()}).run()
+              setEditing(false)
+            }
+            if (e.key === 'Escape') setEditing(false)
+          }}
+          className="text-sm px-2 py-1 border border-gray-300 rounded w-[220px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+          autoFocus
+        />
+        <button
+          onClick={() => {
+            if (url.trim()) {
+              editor.chain().focus().extendMarkRange('link').setLink({href: url.trim()}).run()
+              setEditing(false)
+            }
+          }}
+          className="p-1 rounded hover:bg-gray-100 text-gray-600"
+          title="Save"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex items-center bg-white border border-gray-200 rounded-lg shadow-lg px-2.5 py-1.5 gap-1">
+      {isCta && (
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-white bg-pink-400 rounded px-1.5 py-0.5 mr-1">CTA</span>
+      )}
+      <span className="text-sm text-gray-600 max-w-[200px] truncate">{href}</span>
+      <button
+        onClick={() => setEditing(true)}
+        className="p-1 rounded hover:bg-gray-100 text-gray-500"
+        title="Edit URL"
+      >
+        <PencilSquareIcon className="w-3.5 h-3.5" />
+      </button>
+      {!href.startsWith('{{') && (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-1 rounded hover:bg-gray-100 text-gray-500"
+          title="Open link"
+        >
+          <ArrowTopRightOnSquareIcon className="w-3.5 h-3.5" />
+        </a>
+      )}
+      <button
+        onClick={() => editor.chain().focus().extendMarkRange('link').unsetLink().run()}
+        className="p-1 rounded hover:bg-gray-100 text-red-400"
+        title="Remove link"
+      >
+        <TrashIcon className="w-3.5 h-3.5" />
+      </button>
+    </div>
+  )
+}
+
+function LinkPopover({
+  onSubmit,
+  onClose,
+  anchorRef,
+}: {
+  onSubmit: (url: string) => void
+  onClose: () => void
+  anchorRef: React.RefObject<HTMLDivElement | null>
+}) {
+  const [position, setPosition] = useState({top: 0, left: 0})
+  const [url, setUrl] = useState('https://')
+
+  useEffect(() => {
+    if (anchorRef.current) {
+      const rect = anchorRef.current.getBoundingClientRect()
+      setPosition({top: rect.bottom + 4, left: rect.left})
+    }
+  }, [anchorRef])
+
+  return (
+    <div
+      className="fixed z-[9999] bg-white border border-gray-200 rounded-lg shadow-xl w-[300px]"
+      style={{top: position.top, left: position.left}}
+    >
+      <div className="p-3 space-y-2">
+        <input
+          type="text"
+          placeholder="https://..."
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') onSubmit(url.trim())
+            if (e.key === 'Escape') onClose()
+          }}
+          className="w-full text-sm px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+          autoFocus
+        />
+        <button
+          onClick={() => onSubmit(url.trim())}
+          disabled={!url.trim()}
+          className="w-full text-sm px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Add Link
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function CtaPopover({
+  onInsert,
+  onClose,
+  anchorRef,
+}: {
+  onInsert: (text: string, url: string) => void
+  onClose: () => void
+  anchorRef: React.RefObject<HTMLDivElement | null>
+}) {
+  const [position, setPosition] = useState({top: 0, left: 0})
+  const [ctaText, setCtaText] = useState('')
+  const [ctaUrl, setCtaUrl] = useState('')
+
+  useEffect(() => {
+    if (anchorRef.current) {
+      const rect = anchorRef.current.getBoundingClientRect()
+      setPosition({top: rect.bottom + 4, left: rect.left})
+    }
+  }, [anchorRef])
+
+  const handleInsert = () => {
+    if (!ctaText.trim() || !ctaUrl.trim()) return
+    onInsert(ctaText.trim(), ctaUrl.trim())
+  }
+
+  const handlePreset = (text: string, url: string) => {
+    onInsert(text, url)
+  }
+
+  return (
+    <div
+      className="fixed z-[9999] bg-white border border-gray-200 rounded-lg shadow-xl w-[320px]"
+      style={{top: position.top, left: position.left}}
+    >
+      <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 rounded-t-lg border-b border-gray-100">
+        Insert CTA Button
+      </div>
+      <div className="p-3 space-y-3">
+        <div className="flex gap-2">
+          <button
+            className="flex-1 text-xs px-3 py-1.5 rounded border border-gray-200 hover:bg-blue-50 hover:border-blue-200 text-gray-700"
+            onClick={() => handlePreset('Edit Your Registration', '{{editLink}}')}
+          >
+            Edit Registration
+          </button>
+          <button
+            className="flex-1 text-xs px-3 py-1.5 rounded border border-gray-200 hover:bg-blue-50 hover:border-blue-200 text-gray-700"
+            onClick={() => handlePreset('Update Your Activities', '{{activitiesLink}}')}
+          >
+            Edit Activities
+          </button>
+        </div>
+        <div className="border-t border-gray-100 pt-3 space-y-2">
+          <input
+            type="text"
+            placeholder="Button text"
+            value={ctaText}
+            onChange={(e) => setCtaText(e.target.value)}
+            className="w-full text-sm px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            autoFocus
+          />
+          <input
+            type="text"
+            placeholder="URL or {{editLink}}"
+            value={ctaUrl}
+            onChange={(e) => setCtaUrl(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleInsert()}
+            className="w-full text-sm px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <button
+            onClick={handleInsert}
+            disabled={!ctaText.trim() || !ctaUrl.trim()}
+            className="w-full text-sm px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Insert Button
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function RichTextEditor({content, onChange}: RichTextEditorProps) {
   const [showVariablePanel, setShowVariablePanel] = useState(false)
+  const [showCtaPanel, setShowCtaPanel] = useState(false)
+  const [showLinkPanel, setShowLinkPanel] = useState(false)
   const [mounted, setMounted] = useState(false)
   const variableButtonRef = useState<React.RefObject<HTMLDivElement | null>>(() => ({
+    current: null,
+  }))[0]
+  const ctaButtonRef = useState<React.RefObject<HTMLDivElement | null>>(() => ({
+    current: null,
+  }))[0]
+  const linkButtonRef = useState<React.RefObject<HTMLDivElement | null>>(() => ({
     current: null,
   }))[0]
 
@@ -465,7 +729,7 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
         },
       }),
       ListItem,
-      Link.configure({
+      CtaLink.configure({
         openOnClick: false,
         HTMLAttributes: {
           class: 'text-blue-600 underline',
@@ -492,36 +756,10 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
     }
   }, [content, editor])
 
-  const setLink = useCallback(() => {
-    if (!editor) return
-
-    const previousUrl = editor.getAttributes('link').href
-    const url = window.prompt('URL', previousUrl || 'https://')
-
-    if (url === null) {
-      return
-    }
-
-    if (url === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink().run()
-      return
-    }
-
-    editor.chain().focus().extendMarkRange('link').setLink({href: url}).run()
-  }, [editor])
-
   const insertVariable = (variable: VariableItem) => {
     if (!editor) return
-    if (variable.linkText) {
-      // For link variables, insert as a clickable link
-      editor
-        .chain()
-        .focus()
-        .insertContent(`<a href="{{${variable.key}}}">${variable.linkText}</a>`)
-        .run()
-    } else {
-      editor.chain().focus().insertContent(`{{${variable.key}}}`).run()
-    }
+    editor.chain().focus().run()
+    insertVariableContent(editor, variable)
   }
 
   if (!editor) {
@@ -532,6 +770,19 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
 
   return (
     <div className="border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
+      {/* CTA button styling in editor */}
+      <style>{`
+        .ProseMirror a.cta-button {
+          display: inline-block;
+          background: #f49898;
+          color: #1c2544 !important;
+          padding: 6px 16px;
+          border-radius: 6px;
+          font-weight: 600;
+          text-decoration: none !important;
+          cursor: pointer;
+        }
+      `}</style>
       {/* Toolbar */}
       <div className="flex flex-wrap gap-1 p-2 border-b border-gray-200 bg-gray-50 rounded-t-md">
         <ToolbarButton
@@ -570,19 +821,26 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
 
         <div className="w-px bg-gray-300 mx-1" />
 
-        <ToolbarButton onClick={setLink} isActive={editor.isActive('link')} title="Link">
-          <LinkIcon className="w-4 h-4" />
-        </ToolbarButton>
-
-        {editor.isActive('link') && (
+        <div ref={linkButtonRef as React.RefObject<HTMLDivElement>} className="relative">
           <ToolbarButton
-            onClick={() => editor.chain().focus().unsetLink().run()}
-            isActive={false}
-            title="Remove Link"
+            onClick={() => setShowLinkPanel(!showLinkPanel)}
+            isActive={showLinkPanel || editor.isActive('link')}
+            title="Add Link"
           >
-            <LinkSlashIcon className="w-4 h-4" />
+            <LinkIcon className="w-4 h-4" />
           </ToolbarButton>
-        )}
+        </div>
+
+        {/* CTA Button */}
+        <div ref={ctaButtonRef as React.RefObject<HTMLDivElement>} className="relative">
+          <ToolbarButton
+            onClick={() => setShowCtaPanel(!showCtaPanel)}
+            isActive={showCtaPanel}
+            title="Insert CTA Button"
+          >
+            <span className="text-xs font-bold">CTA</span>
+          </ToolbarButton>
+        </div>
 
         <div className="w-px bg-gray-300 mx-1" />
 
@@ -619,6 +877,15 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
       {/* Editor Content */}
       <EditorContent editor={editor} />
 
+      {/* Bubble menu for existing links/CTAs */}
+      <BubbleMenu
+        editor={editor}
+        shouldShow={({editor}) => editor.isActive('link')}
+        tippyOptions={{placement: 'bottom-start', maxWidth: 'none'}}
+      >
+        <LinkBubble editor={editor} />
+      </BubbleMenu>
+
       {/* Variable Picker Portal */}
       {mounted && (
         <VariablePickerDropdown
@@ -627,6 +894,40 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
           onSelect={insertVariable}
           anchorRef={variableButtonRef}
         />
+      )}
+
+      {/* Link Popover Portal (for adding new links from toolbar) */}
+      {mounted && showLinkPanel && createPortal(
+        <>
+          <div className="fixed inset-0 z-[9998]" onClick={() => setShowLinkPanel(false)} />
+          <LinkPopover
+            onSubmit={(url) => {
+              if (url) {
+                editor.chain().focus().extendMarkRange('link').setLink({href: url}).run()
+              }
+              setShowLinkPanel(false)
+            }}
+            onClose={() => setShowLinkPanel(false)}
+            anchorRef={linkButtonRef}
+          />
+        </>,
+        document.body,
+      )}
+
+      {/* CTA Picker Portal */}
+      {mounted && showCtaPanel && createPortal(
+        <>
+          <div className="fixed inset-0 z-[9998]" onClick={() => setShowCtaPanel(false)} />
+          <CtaPopover
+            onInsert={(text, url) => {
+              insertCtaButton(editor, text, url)
+              setShowCtaPanel(false)
+            }}
+            onClose={() => setShowCtaPanel(false)}
+            anchorRef={ctaButtonRef}
+          />
+        </>,
+        document.body,
       )}
     </div>
   )
