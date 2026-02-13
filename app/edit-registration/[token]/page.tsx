@@ -49,7 +49,7 @@ export default function EditRegistrationPage() {
   }, [token])
 
   const handleChange = (field: keyof Registration, value: string | string[] | null) => {
-    setFormData((prev) => prev ? {...prev, [field]: value} : null)
+    setFormData((prev) => (prev ? {...prev, [field]: value} : null))
   }
 
   const handleCheckboxChange = (field: keyof Registration, value: string, checked: boolean) => {
@@ -579,7 +579,11 @@ export default function EditRegistrationPage() {
                           type="checkbox"
                           checked={(formData?.dinner_attendance || []).includes(option.value)}
                           onChange={(e) =>
-                            handleCheckboxChange('dinner_attendance', option.value, e.target.checked)
+                            handleCheckboxChange(
+                              'dinner_attendance',
+                              option.value,
+                              e.target.checked,
+                            )
                           }
                           className="h-4 w-4 rounded border-gray-300 text-nexus-navy focus:ring-nexus-navy"
                         />
@@ -605,7 +609,9 @@ export default function EditRegistrationPage() {
                         <span className="ml-2">
                           <span className="text-sm font-medium text-gray-700">{option.label}</span>
                           {option.description && (
-                            <span className="block text-xs text-gray-500">{option.description}</span>
+                            <span className="block text-xs text-gray-500">
+                              {option.description}
+                            </span>
                           )}
                         </span>
                       </label>
@@ -656,7 +662,11 @@ export default function EditRegistrationPage() {
                             type="checkbox"
                             checked={(formData?.guest_accommodations || []).includes(option.value)}
                             onChange={(e) =>
-                              handleCheckboxChange('guest_accommodations', option.value, e.target.checked)
+                              handleCheckboxChange(
+                                'guest_accommodations',
+                                option.value,
+                                e.target.checked,
+                              )
                             }
                             className="h-4 w-4 rounded border-gray-300 text-nexus-navy focus:ring-nexus-navy"
                           />
@@ -675,9 +685,15 @@ export default function EditRegistrationPage() {
                         <label key={option.value} className="flex items-center">
                           <input
                             type="checkbox"
-                            checked={(formData?.guest_dinner_attendance || []).includes(option.value)}
+                            checked={(formData?.guest_dinner_attendance || []).includes(
+                              option.value,
+                            )}
                             onChange={(e) =>
-                              handleCheckboxChange('guest_dinner_attendance', option.value, e.target.checked)
+                              handleCheckboxChange(
+                                'guest_dinner_attendance',
+                                option.value,
+                                e.target.checked,
+                              )
                             }
                             className="h-4 w-4 rounded border-gray-300 text-nexus-navy focus:ring-nexus-navy"
                           />
@@ -698,14 +714,22 @@ export default function EditRegistrationPage() {
                             type="checkbox"
                             checked={(formData?.guest_activities || []).includes(option.value)}
                             onChange={(e) =>
-                              handleCheckboxChange('guest_activities', option.value, e.target.checked)
+                              handleCheckboxChange(
+                                'guest_activities',
+                                option.value,
+                                e.target.checked,
+                              )
                             }
                             className="h-4 w-4 mt-0.5 rounded border-gray-300 text-nexus-navy focus:ring-nexus-navy"
                           />
                           <span className="ml-2">
-                            <span className="text-sm font-medium text-gray-700">{option.label}</span>
+                            <span className="text-sm font-medium text-gray-700">
+                              {option.label}
+                            </span>
                             {option.description && (
-                              <span className="block text-xs text-gray-500">{option.description}</span>
+                              <span className="block text-xs text-gray-500">
+                                {option.description}
+                              </span>
                             )}
                           </span>
                         </label>
@@ -717,13 +741,7 @@ export default function EditRegistrationPage() {
             )}
 
             {/* Actions */}
-            <div className="flex justify-between items-center pt-6 border-t border-gray-200">
-              <Link
-                href={`/edit-registration/${token}/activities`}
-                className="text-sm text-nexus-navy hover:underline"
-              >
-                Edit activities only
-              </Link>
+            <div className="flex justify-end items-center pt-6 border-t border-gray-200">
               <button
                 type="submit"
                 disabled={pageState === 'saving'}
