@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import {PencilSquareIcon, DocumentTextIcon, EnvelopeIcon} from '@heroicons/react/24/outline'
 import {requireAuth} from '@/lib/auth/requireAuth'
 
 export default async function AdminDashboard() {
@@ -16,19 +17,7 @@ export default async function AdminDashboard() {
             className="block p-8 bg-white border-2 border-gray-200 rounded-lg hover:border-nexus-coral hover:shadow-md transition-all"
           >
             <div className="flex items-center mb-4">
-              <svg
-                className="w-8 h-8 mr-3 text-nexus-coral"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
+              <PencilSquareIcon className="w-8 h-8 mr-3 text-nexus-coral" />
               <h2 className="text-2xl font-bold">Content Management</h2>
             </div>
             <p className="text-gray-600">
@@ -42,19 +31,7 @@ export default async function AdminDashboard() {
             className="block p-8 bg-white border-2 border-gray-200 rounded-lg hover:border-nexus-coral hover:shadow-md transition-all"
           >
             <div className="flex items-center mb-4">
-              <svg
-                className="w-8 h-8 mr-3 text-nexus-coral"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
+              <DocumentTextIcon className="w-8 h-8 mr-3 text-nexus-coral" />
               <h2 className="text-2xl font-bold">Registration Data</h2>
             </div>
             <p className="text-gray-600">View, edit, and export registration form submissions</p>
@@ -66,19 +43,7 @@ export default async function AdminDashboard() {
             className="block p-8 bg-white border-2 border-gray-200 rounded-lg hover:border-nexus-coral hover:shadow-md transition-all"
           >
             <div className="flex items-center mb-4">
-              <svg
-                className="w-8 h-8 mr-3 text-nexus-coral"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-                />
-              </svg>
+              <EnvelopeIcon className="w-8 h-8 mr-3 text-nexus-coral" />
               <h2 className="text-2xl font-bold">Email Registrants</h2>
             </div>
             <p className="text-gray-600">
