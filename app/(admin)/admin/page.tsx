@@ -59,6 +59,32 @@ export default async function AdminDashboard() {
             </div>
             <p className="text-gray-600">View, edit, and export registration form submissions</p>
           </Link>
+
+          {/* Email Registrants Card */}
+          <Link
+            href="/admin/registrations/email"
+            className="block p-8 bg-white border-2 border-gray-200 rounded-lg hover:border-nexus-coral hover:shadow-md transition-all"
+          >
+            <div className="flex items-center mb-4">
+              <svg
+                className="w-8 h-8 mr-3 text-nexus-coral"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+                />
+              </svg>
+              <h2 className="text-2xl font-bold">Email Registrants</h2>
+            </div>
+            <p className="text-gray-600">
+              Compose and send emails to registered attendees
+            </p>
+          </Link>
         </div>
       </div>
     </div>
