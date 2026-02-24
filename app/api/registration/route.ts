@@ -95,15 +95,17 @@ export async function POST(request: NextRequest) {
     // Insert into database using Drizzle ORM
     const result = await db.insert(registrations).values(registrationData).returning()
 
-    // Send confirmation email
-    const emailResult = await sendRegistrationConfirmation({
-      ...formData,
-      editToken,
-    })
+    // Send confirmation email (skip if admin-created)
+    if (!formData.skipEmail) {
+      const emailResult = await sendRegistrationConfirmation({
+        ...formData,
+        editToken,
+      })
 
-    if (!emailResult.success) {
-      console.error('Failed to send confirmation email:', emailResult.error)
-      // Don't fail the registration if email fails, just log it
+      if (!emailResult.success) {
+        console.error('Failed to send confirmation email:', emailResult.error)
+        // Don't fail the registration if email fails, just log it
+      }
     }
 
     return NextResponse.json(

@@ -78,7 +78,7 @@ export default async function AdminRegistrations() {
           <div className="flex items-center gap-3">
             <Link
               href="/admin/registrations/email"
-              className="px-4 py-2 bg-nexus-navy hover:bg-nexus-navy-dark text-white rounded-lg flex items-center gap-2"
+              className="px-4 py-2 bg-white hover:bg-gray-50 hover:border-gray-600 text-nexus-navy border border-nexus-navy rounded-lg flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
