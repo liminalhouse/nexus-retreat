@@ -13,7 +13,11 @@ import {
 import CheckboxOptionList from '@/app/components/Form/CheckboxOptionList'
 import {JACKET_SIZE_OPTIONS} from '@/app/(main)/register/formConfig'
 import type {Registration} from '@/lib/types/registration'
-import {EditLoadingState, EditErrorState, EditSuccessState} from '@/app/components/EditRegistrationStates'
+import {
+  EditLoadingState,
+  EditErrorState,
+  EditSuccessState,
+} from '@/app/components/EditRegistrationStates'
 
 type PageState = 'loading' | 'editing' | 'saving' | 'success' | 'error'
 
@@ -51,7 +55,7 @@ export default function EditRegistrationPage() {
   }, [token])
 
   const handleChange = (field: keyof Registration, value: string | string[] | null) => {
-    setFormData((prev) => prev ? {...prev, [field]: value} : null)
+    setFormData((prev) => (prev ? {...prev, [field]: value} : null))
   }
 
   const handleCheckboxChange = (field: keyof Registration, value: string, checked: boolean) => {
@@ -66,7 +70,7 @@ export default function EditRegistrationPage() {
   }
 
   const makeToggle = (field: keyof Registration) => (value: string) => {
-    const currentValues = ((formData?.[field] as string[]) || [])
+    const currentValues = (formData?.[field] as string[]) || []
     const checked = !currentValues.includes(value)
     handleCheckboxChange(field, value, checked)
   }
@@ -633,13 +637,7 @@ export default function EditRegistrationPage() {
             )}
 
             {/* Actions */}
-            <div className="flex justify-between items-center pt-6 border-t border-gray-200">
-              <Link
-                href={`/edit-registration/${token}/activities`}
-                className="text-sm text-nexus-navy hover:underline"
-              >
-                Edit activities only
-              </Link>
+            <div className="flex justify-end items-center pt-6 border-t border-gray-200">
               <button
                 type="submit"
                 disabled={pageState === 'saving'}

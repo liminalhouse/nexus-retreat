@@ -12,6 +12,48 @@ import {
 import {getEditRegistrationUrl, getEditActivitiesUrl} from '@/lib/utils/editUrls'
 import type {Registration} from '@/lib/types/registration'
 
+const EMPTY_REGISTRATION: Registration = {
+  id: '',
+  created_at: '',
+  updated_at: '',
+  edit_token: '',
+  email: '',
+  first_name: '',
+  last_name: '',
+  mobile_phone: '',
+  profile_picture: null,
+  title: null,
+  organization: null,
+  address_line_1: '',
+  address_line_2: null,
+  city: '',
+  state: '',
+  zip: '',
+  country: '',
+  emergency_contact_name: '',
+  emergency_contact_relation: null,
+  emergency_contact_email: '',
+  emergency_contact_phone: '',
+  assistant_name: null,
+  assistant_title: null,
+  assistant_email: null,
+  assistant_phone: null,
+  guest_name: null,
+  guest_relation: null,
+  guest_email: null,
+  dietary_restrictions: null,
+  jacket_size: null,
+  accommodations: null,
+  dinner_attendance: null,
+  activities: null,
+  guest_dietary_restrictions: null,
+  guest_jacket_size: null,
+  guest_accommodations: null,
+  guest_dinner_attendance: null,
+  guest_activities: null,
+  admin_notes: null,
+}
+
 type ColumnConfig = {
   key: string
   label: string
@@ -237,6 +279,7 @@ export default function RegistrationsTable({
 }) {
   const [registrations, setRegistrations] = useState<Registration[]>(initialRegistrations)
   const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null)
+  const [showAddModal, setShowAddModal] = useState(false)
   const [searchFilter, setSearchFilter] = useState('')
   const [filters, setFilters] = useState<FilterCondition[]>([])
 
@@ -244,6 +287,10 @@ export default function RegistrationsTable({
     setRegistrations((prev) =>
       prev.map((reg) => (reg.id === updatedRegistration.id ? updatedRegistration : reg)),
     )
+  }
+
+  const handleAddRegistration = (newRegistration: Registration) => {
+    setRegistrations((prev) => [newRegistration, ...prev])
   }
 
   const filteredRegistrations = registrations.filter((reg) => {
@@ -283,13 +330,15 @@ export default function RegistrationsTable({
   return (
     <div className="mt-2 sm:mx-auto lg:mx-4 mb-20">
       <div className="mb-4 space-y-4">
-        <input
-          type="text"
-          placeholder="Search all fields..."
-          value={searchFilter}
-          onChange={(e) => setSearchFilter(e.target.value)}
-          className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
-        />
+        <div className="flex items-center gap-3">
+          <input
+            type="text"
+            placeholder="Search all fields..."
+            value={searchFilter}
+            onChange={(e) => setSearchFilter(e.target.value)}
+            className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
+          />
+        </div>
         <FilterBuilder filters={filters} onChange={setFilters} />
       </div>
       <div className="bg-white rounded-sm shadow overflow-hidden">
@@ -347,12 +396,31 @@ export default function RegistrationsTable({
         </div>
       </div>
 
+      <div className="mt-6 flex justify-end">
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="px-6 py-4 bg-nexus-navy text-white rounded-lg hover:bg-nexus-navy-dark whitespace-nowrap text-md font-medium"
+        >
+          + Add Registrant
+        </button>
+      </div>
+
       {selectedRegistration && (
         <EditModal
           registration={selectedRegistration}
           onClose={() => setSelectedRegistration(null)}
           onSave={handleUpdateRegistration}
           isAdminView={true}
+        />
+      )}
+
+      {showAddModal && (
+        <EditModal
+          registration={EMPTY_REGISTRATION}
+          onClose={() => setShowAddModal(false)}
+          onSave={handleAddRegistration}
+          isAdminView={true}
+          mode="create"
         />
       )}
     </div>

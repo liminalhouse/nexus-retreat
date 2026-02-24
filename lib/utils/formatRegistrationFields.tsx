@@ -80,14 +80,13 @@ export const ACTIVITY_OPTIONS: ActivityOption[] = [
     description: 'March 20, 6:30am',
     chipDescription: 'March 20',
   },
-  // TODO: Comment back
-  // {
-  //   label: 'Tour a Gulfstream jet displayed at Signature Aviation',
-  //   value: 'gulfstream_tour',
-  //   description:
-  //     'March 18, 9am-4pm:  We can arrange your car, which will be added to your hotel folio.',
-  //   chipDescription: 'March 18',
-  // },
+  {
+    label: 'Tour a Gulfstream jet displayed at Signature Aviation',
+    value: 'gulfstream_tour',
+    description:
+      'March 18, 9am-4pm:  We can arrange your car, which will be added to your hotel folio.',
+    chipDescription: 'March 18',
+  },
   {label: 'Spa', value: 'spa', description: 'Our team can assist with bookings'},
 ]
 
