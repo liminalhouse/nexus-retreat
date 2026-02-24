@@ -42,13 +42,16 @@ export default function EditModal({
   onSave,
   isAdminView = false,
   readOnly = false,
+  mode = 'edit',
 }: {
   registration: Registration
   onClose: () => void
   onSave?: (updatedRegistration: Registration) => void
   isAdminView?: boolean
   readOnly?: boolean
+  mode?: 'edit' | 'create'
 }) {
+  const isCreateMode = mode === 'create'
   const {showToast} = useToast()
   const [formData, setFormData] = useState<Registration>(registration)
   const [isSaving, setIsSaving] = useState(false)
@@ -163,35 +166,55 @@ export default function EditModal({
             admin_notes: undefined, // Don't send admin_notes if not admin
           }
 
-      const response = await fetch(`/api/registration/${formData.id}`, {
-        method: 'PATCH',
+      const url = isCreateMode ? '/api/registration' : `/api/registration/${formData.id}`
+      const method = isCreateMode ? 'POST' : 'PATCH'
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(dataToSend),
+        body: JSON.stringify(isCreateMode ? {...dataToSend, skipEmail: true} : dataToSend),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.error || 'Failed to update registration')
+        setError(data.error || `Failed to ${isCreateMode ? 'create' : 'update'} registration`)
         setIsSaving(false)
         return
       }
 
-      // Update the parent component's state with the new data
+      // Update the parent component's state
       if (onSave) {
-        onSave(formData)
+        if (isCreateMode) {
+          // For create, build the new registration from the API response + form data
+          const newReg: Registration = {
+            ...formData,
+            id: data.data.id,
+            edit_token: data.data.editToken || data.editToken,
+            created_at: data.data.createdAt || new Date().toISOString(),
+            updated_at: data.data.updatedAt || new Date().toISOString(),
+          }
+          onSave(newReg)
+        } else {
+          onSave(formData)
+        }
       }
 
       // Show success toast
-      showToast(`Registration updated: ${formData.first_name} ${formData.last_name}`, 'success')
+      showToast(
+        isCreateMode
+          ? `Registrant added: ${formData.first_name} ${formData.last_name}`
+          : `Registration updated: ${formData.first_name} ${formData.last_name}`,
+        'success',
+      )
 
       // Close the modal
       onClose()
     } catch (err) {
-      console.error('Error updating registration:', err)
-      setError('Failed to update registration. Please try again.')
+      console.error(`Error ${isCreateMode ? 'creating' : 'updating'} registration:`, err)
+      setError(`Failed to ${isCreateMode ? 'create' : 'update'} registration. Please try again.`)
       setIsSaving(false)
     }
   }
@@ -240,6 +263,7 @@ export default function EditModal({
     ? 'w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 cursor-default'
     : 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent'
   const labelClass = 'block text-sm font-medium text-gray-700 mt-1 mb-2'
+  const req = <span className="text-red-500 ml-0.5">*</span>
 
   return (
     <div
@@ -252,7 +276,7 @@ export default function EditModal({
       >
         <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
           <h2 className="text-2xl font-bold">
-            {readOnly ? 'View Registration (not editable)' : 'Edit Registration'}
+            {isCreateMode ? 'Add New Registrant' : readOnly ? 'View Registration (not editable)' : 'Edit Registration'}
           </h2>
           <button
             onClick={onClose}
@@ -302,7 +326,7 @@ export default function EditModal({
               />
               {!readOnly && (
                 <div className="flex-1">
-                  <label className={labelClass}>Profile Picture</label>
+                  <label className={labelClass}>Profile Picture{req}</label>
                   <div className="flex items-center gap-3">
                     <label className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer text-sm font-medium text-gray-700">
                       {isUploading ? 'Uploading...' : 'Choose File'}
@@ -331,7 +355,7 @@ export default function EditModal({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className={labelClass}>First Name</label>
+                <label className={labelClass}>First Name{req}</label>
                 <input
                   type="text"
                   value={formData.first_name || ''}
@@ -341,7 +365,7 @@ export default function EditModal({
                 />
               </div>
               <div>
-                <label className={labelClass}>Last Name</label>
+                <label className={labelClass}>Last Name{req}</label>
                 <input
                   type="text"
                   value={formData.last_name || ''}
@@ -351,7 +375,7 @@ export default function EditModal({
                 />
               </div>
               <div>
-                <label className={labelClass}>Email</label>
+                <label className={labelClass}>Email{req}</label>
                 <input
                   type="email"
                   value={formData.email}
@@ -361,7 +385,7 @@ export default function EditModal({
                 />
               </div>
               <div>
-                <label className={labelClass}>Mobile Phone</label>
+                <label className={labelClass}>Mobile Phone{req}</label>
                 <input
                   type="tel"
                   value={formData.mobile_phone || ''}
@@ -398,7 +422,7 @@ export default function EditModal({
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Work Address</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className={labelClass}>Address Line 1</label>
+                <label className={labelClass}>Address Line 1{req}</label>
                 <input
                   type="text"
                   value={formData.address_line_1 || ''}
@@ -418,7 +442,7 @@ export default function EditModal({
                 />
               </div>
               <div>
-                <label className={labelClass}>City</label>
+                <label className={labelClass}>City{req}</label>
                 <input
                   type="text"
                   value={formData.city || ''}
@@ -428,7 +452,7 @@ export default function EditModal({
                 />
               </div>
               <div>
-                <label className={labelClass}>State</label>
+                <label className={labelClass}>State{req}</label>
                 <input
                   type="text"
                   value={formData.state || ''}
@@ -438,7 +462,7 @@ export default function EditModal({
                 />
               </div>
               <div>
-                <label className={labelClass}>Zip</label>
+                <label className={labelClass}>Zip{req}</label>
                 <input
                   type="text"
                   value={formData.zip || ''}
@@ -448,7 +472,7 @@ export default function EditModal({
                 />
               </div>
               <div>
-                <label className={labelClass}>Country</label>
+                <label className={labelClass}>Country{req}</label>
                 <input
                   type="text"
                   value={formData.country || ''}
@@ -465,7 +489,7 @@ export default function EditModal({
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Emergency Contact</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className={labelClass}>Name</label>
+                <label className={labelClass}>Name{req}</label>
                 <input
                   type="text"
                   value={formData.emergency_contact_name || ''}
@@ -485,7 +509,7 @@ export default function EditModal({
                 />
               </div>
               <div>
-                <label className={labelClass}>Email</label>
+                <label className={labelClass}>Email{req}</label>
                 <input
                   type="email"
                   value={formData.emergency_contact_email || ''}
@@ -495,7 +519,7 @@ export default function EditModal({
                 />
               </div>
               <div>
-                <label className={labelClass}>Phone</label>
+                <label className={labelClass}>Phone{req}</label>
                 <input
                   type="tel"
                   value={formData.emergency_contact_phone || ''}
@@ -816,40 +840,42 @@ export default function EditModal({
           )}
 
           {/* Metadata */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-sm text-gray-600">
-              <strong>Registration ID:</strong> {formData.id}
-            </p>
-            <p className="text-sm text-gray-600">
-              <strong>Submitted:</strong> {new Date(formData.created_at).toLocaleString()}
-            </p>
-            {isAdminView && formData.edit_token && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Edit full registration:</p>
-                  <EditLinkRow
-                    url={getEditRegistrationUrl(formData.edit_token)}
-                    onCopy={() => {
-                      navigator.clipboard.writeText(getEditRegistrationUrl(formData.edit_token))
-                      showToast('Full edit link copied!', 'success')
-                    }}
-                  />
+          {!isCreateMode && (
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-600">
+                <strong>Registration ID:</strong> {formData.id}
+              </p>
+              <p className="text-sm text-gray-600">
+                <strong>Submitted:</strong> {new Date(formData.created_at).toLocaleString()}
+              </p>
+              {isAdminView && formData.edit_token && (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Edit full registration:</p>
+                    <EditLinkRow
+                      url={getEditRegistrationUrl(formData.edit_token)}
+                      onCopy={() => {
+                        navigator.clipboard.writeText(getEditRegistrationUrl(formData.edit_token))
+                        showToast('Full edit link copied!', 'success')
+                      }}
+                    />
 
-                  <p className="text-sm font-medium text-gray-700 mb-2">Activities form:</p>
-                  <EditLinkRow
-                    url={getEditActivitiesUrl(formData.edit_token)}
-                    onCopy={() => {
-                      navigator.clipboard.writeText(getEditActivitiesUrl(formData.edit_token))
-                      showToast('Activities edit link copied!', 'success')
-                    }}
-                  />
+                    <p className="text-sm font-medium text-gray-700 mb-2">Activities form:</p>
+                    <EditLinkRow
+                      url={getEditActivitiesUrl(formData.edit_token)}
+                      onCopy={() => {
+                        navigator.clipboard.writeText(getEditActivitiesUrl(formData.edit_token))
+                        showToast('Activities edit link copied!', 'success')
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {/* Delete */}
-          {!readOnly && (
+          {!readOnly && !isCreateMode && (
             <div>
               {isAdminView && (
                 <button
@@ -887,10 +913,18 @@ export default function EditModal({
                 <button
                   onClick={handleSave}
                   className="px-6 py-2 bg-nexus-navy text-white rounded-lg not-disabled:hover:bg-nexus-navy-dark disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={isSaving || isDeleting || !hasChanges()}
-                  title={!hasChanges() ? 'No changes to save' : ''}
+                  disabled={
+                    isSaving ||
+                    isDeleting ||
+                    (isCreateMode
+                      ? !formData.first_name?.trim() || !formData.last_name?.trim() || !formData.email?.trim()
+                      : !hasChanges())
+                  }
+                  title={!isCreateMode && !hasChanges() ? 'No changes to save' : ''}
                 >
-                  {isSaving ? 'Saving...' : 'Save Changes'}
+                  {isSaving
+                    ? isCreateMode ? 'Adding...' : 'Saving...'
+                    : isCreateMode ? 'Add Registrant' : 'Save Changes'}
                 </button>
               </>
             )}
@@ -909,9 +943,13 @@ export default function EditModal({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Confirm Changes</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                {isCreateMode ? 'Confirm New Registrant' : 'Confirm Changes'}
+              </h3>
               <p className="text-gray-600 mb-6">
-                Are you sure you want to update this registration info?
+                {isCreateMode
+                  ? 'Are you sure you want to add this registrant?'
+                  : 'Are you sure you want to update this registration info?'}
               </p>
               <div className="flex justify-end gap-3">
                 <button
@@ -926,7 +964,9 @@ export default function EditModal({
                   className="px-6 py-2 bg-nexus-navy text-white rounded-lg hover:bg-nexus-navy-dark disabled:opacity-50"
                   disabled={isSaving}
                 >
-                  {isSaving ? 'Saving...' : 'Confirm & Save'}
+                  {isSaving
+                    ? isCreateMode ? 'Adding...' : 'Saving...'
+                    : isCreateMode ? 'Confirm & Add' : 'Confirm & Save'}
                 </button>
               </div>
             </div>
