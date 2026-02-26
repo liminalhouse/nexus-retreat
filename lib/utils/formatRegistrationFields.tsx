@@ -87,7 +87,12 @@ export const ACTIVITY_OPTIONS: ActivityOption[] = [
       'March 18, 9am-4pm:  We can arrange your car, which will be added to your hotel folio.',
     chipDescription: 'March 18',
   },
-  {label: 'Spa', value: 'spa', description: 'Our team can assist with bookings'},
+  {
+    label: 'Spa',
+    value: 'spa',
+    description:
+      'We are happy to assist with bookings. Spa services will be billed back to guest(s).',
+  },
 ]
 
 // Guest activity options are the same as attendee options
