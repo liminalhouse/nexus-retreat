@@ -6,6 +6,8 @@ import Avatar from '@/app/components/Avatar'
 import FormStepRenderer from './FormStepRenderer'
 import type {FormConfig} from './types'
 import ExistingRegistrationNotice from './ExistingRegistrationNotice'
+import {isValidEmail, isValidPhone} from '@/lib/utils/validation'
+import RegistrationDetailSection from './RegistrationDetailSection'
 
 interface FormProps {
   config: FormConfig
@@ -83,15 +85,13 @@ export default function Form({config, showLogo = true, showProgress = true}: For
           } else if (!isEmpty && value) {
             // Validate email format
             if (field?.fieldType === 'email') {
-              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-              if (!emailRegex.test(value)) {
+              if (!isValidEmail(value)) {
                 errors[fieldName] = 'Please enter a valid email address'
               }
             }
             // Validate phone format (allows various formats)
             if (field?.fieldType === 'tel') {
-              const phoneRegex = /^[\d\s\-\(\)\+\.]+$/
-              if (!phoneRegex.test(value) || value.replace(/\D/g, '').length < 10) {
+              if (!isValidPhone(value)) {
                 errors[fieldName] = 'Please enter a valid phone number'
               }
             }
@@ -144,15 +144,13 @@ export default function Form({config, showLogo = true, showProgress = true}: For
     if (!isEmpty && value) {
       // Email validation
       if (fieldConfig.fieldType === 'email') {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!emailRegex.test(value)) {
+        if (!isValidEmail(value)) {
           return 'Please enter a valid email address'
         }
       }
       // Phone validation
       if (fieldConfig.fieldType === 'tel') {
-        const phoneRegex = /^[\d\s\-\(\)\+\.]+$/
-        if (!phoneRegex.test(value) || value.replace(/\D/g, '').length < 10) {
+        if (!isValidPhone(value)) {
           return 'Please enter a valid phone number'
         }
       }
@@ -182,8 +180,7 @@ export default function Form({config, showLogo = true, showProgress = true}: For
       return
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(emailValue)) return
+    if (!isValidEmail(emailValue)) return
 
     emailCheckTimer.current = setTimeout(async () => {
       try {
@@ -393,283 +390,114 @@ export default function Form({config, showLogo = true, showProgress = true}: For
           </div>
           <div className="space-y-6">
             {/* Personal Information */}
-            <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Personal Information</h4>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex gap-6">
-                  {/* Details */}
-                  <div className="flex-1 space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">First Name:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        {formData.first_name || '-'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Last Name:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        {formData.last_name || '-'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Email:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        {formData.email || '-'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Phone:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        {formData.mobile_phone || '-'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Title:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        {formData.title || '-'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Organization:</span>
-                      <span className="text-sm font-medium text-gray-900">
-                        {formData.organization || '-'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <RegistrationDetailSection
+              title="Personal Information"
+              entries={[
+                {label: 'First Name', value: formData.first_name},
+                {label: 'Last Name', value: formData.last_name},
+                {label: 'Email', value: formData.email},
+                {label: 'Phone', value: formData.mobile_phone},
+                {label: 'Title', value: formData.title},
+                {label: 'Organization', value: formData.organization},
+              ]}
+            />
 
             {/* Address */}
-            <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Address</h4>
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Street:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.address_line_1
-                      ? `${formData.address_line_1}${formData.address_line_2 ? `, ${formData.address_line_2}` : ''}`
-                      : '-'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">City:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.city || '-'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">State:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.state || '-'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Zip Code:</span>
-                  <span className="text-sm font-medium text-gray-900">{formData.zip || '-'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Country:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.country || '-'}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <RegistrationDetailSection
+              title="Address"
+              entries={[
+                {
+                  label: 'Street',
+                  value: formData.address_line_1
+                    ? `${formData.address_line_1}${formData.address_line_2 ? `, ${formData.address_line_2}` : ''}`
+                    : null,
+                },
+                {label: 'City', value: formData.city},
+                {label: 'State', value: formData.state},
+                {label: 'Zip Code', value: formData.zip},
+                {label: 'Country', value: formData.country},
+              ]}
+            />
 
             {/* Emergency Contact */}
-            <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Emergency Contact</h4>
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Name:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.emergency_contact_name || '-'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Relation:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.emergency_contact_relation || '-'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Phone:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.emergency_contact_phone || '-'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Email:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.emergency_contact_email || '-'}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <RegistrationDetailSection
+              title="Emergency Contact"
+              entries={[
+                {label: 'Name', value: formData.emergency_contact_name},
+                {label: 'Relation', value: formData.emergency_contact_relation},
+                {label: 'Phone', value: formData.emergency_contact_phone},
+                {label: 'Email', value: formData.emergency_contact_email},
+              ]}
+            />
 
             {/* Executive Assistant */}
-            <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Executive Assistant</h4>
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Name:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.assistant_name || '-'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Title:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.assistant_title || '-'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Email:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.assistant_email || '-'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Phone:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.assistant_phone || '-'}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <RegistrationDetailSection
+              title="Executive Assistant"
+              entries={[
+                {label: 'Name', value: formData.assistant_name},
+                {label: 'Title', value: formData.assistant_title},
+                {label: 'Email', value: formData.assistant_email},
+                {label: 'Phone', value: formData.assistant_phone},
+              ]}
+            />
 
             {/* Guest Information */}
-            <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Guest Information</h4>
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Guest Name:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.guest_name || '-'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Relation:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.guest_relation || '-'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Guest Email:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.guest_email || '-'}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <RegistrationDetailSection
+              title="Guest Information"
+              entries={[
+                {label: 'Guest Name', value: formData.guest_name},
+                {label: 'Relation', value: formData.guest_relation},
+                {label: 'Guest Email', value: formData.guest_email},
+              ]}
+            />
 
             {/* Event Details */}
-            <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Event Details</h4>
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Dietary Restrictions:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.dietary_restrictions || '-'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Jacket Size:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.jacket_size || '-'}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-600 block mb-1">Accommodations:</span>
-                  {formData.accommodations && formData.accommodations.length > 0 ? (
-                    <ul className="text-sm font-medium text-gray-900 list-disc list-inside">
-                      {formData.accommodations.map((acc: string, idx: number) => (
-                        <li key={idx}>{acc.replace('_', ' ')}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <span className="text-sm font-medium text-gray-900">-</span>
-                  )}
-                </div>
-                <div>
-                  <span className="text-sm text-gray-600 block mb-1">Dinner Attendance:</span>
-                  {formData.dinner_attendance && formData.dinner_attendance.length > 0 ? (
-                    <ul className="text-sm font-medium text-gray-900 list-disc list-inside">
-                      {formData.dinner_attendance.map((dinner: string, idx: number) => (
-                        <li key={idx}>{dinner.replace('_', ' ')}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <span className="text-sm font-medium text-gray-900">-</span>
-                  )}
-                </div>
-                <div>
-                  <span className="text-sm text-gray-600 block mb-1">Activities:</span>
-                  {formData.activities && formData.activities.length > 0 ? (
-                    <ul className="text-sm font-medium text-gray-900 list-disc list-inside">
-                      {formData.activities.map((activity: string, idx: number) => (
-                        <li key={idx}>{activity.replace(/_/g, ' ')}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <span className="text-sm font-medium text-gray-900">-</span>
-                  )}
-                </div>
-              </div>
-            </div>
+            <RegistrationDetailSection
+              title="Event Details"
+              entries={[
+                {label: 'Dietary Restrictions', value: formData.dietary_restrictions},
+                {label: 'Jacket Size', value: formData.jacket_size},
+                {
+                  label: 'Accommodations',
+                  items: formData.accommodations || [],
+                  formatItem: (s: string) => s.replace('_', ' '),
+                },
+                {
+                  label: 'Dinner Attendance',
+                  items: formData.dinner_attendance || [],
+                  formatItem: (s: string) => s.replace('_', ' '),
+                },
+                {
+                  label: 'Activities',
+                  items: formData.activities || [],
+                  formatItem: (s: string) => s.replace(/_/g, ' '),
+                },
+              ]}
+            />
 
             {/* Guest Event Details */}
-            <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Guest Event Details</h4>
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Guest Dietary Restrictions:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.guest_dietary_restrictions || '-'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Guest Jacket Size:</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formData.guest_jacket_size || '-'}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-600 block mb-1">Guest Accommodations:</span>
-                  {formData.guest_accommodations && formData.guest_accommodations.length > 0 ? (
-                    <ul className="text-sm font-medium text-gray-900 list-disc list-inside">
-                      {formData.guest_accommodations.map((acc: string, idx: number) => (
-                        <li key={idx}>{acc.replace('_', ' ')}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <span className="text-sm font-medium text-gray-900">-</span>
-                  )}
-                </div>
-                <div>
-                  <span className="text-sm text-gray-600 block mb-1">Guest Dinner Attendance:</span>
-                  {formData.guest_dinner_attendance &&
-                  formData.guest_dinner_attendance.length > 0 ? (
-                    <ul className="text-sm font-medium text-gray-900 list-disc list-inside">
-                      {formData.guest_dinner_attendance.map((dinner: string, idx: number) => (
-                        <li key={idx}>{dinner.replace('_', ' ')}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <span className="text-sm font-medium text-gray-900">-</span>
-                  )}
-                </div>
-                <div>
-                  <span className="text-sm text-gray-600 block mb-1">Guest Activities:</span>
-                  {formData.guest_activities && formData.guest_activities.length > 0 ? (
-                    <ul className="text-sm font-medium text-gray-900 list-disc list-inside">
-                      {formData.guest_activities.map((activity: string, idx: number) => (
-                        <li key={idx}>{activity.replace(/_/g, ' ')}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <span className="text-sm font-medium text-gray-900">-</span>
-                  )}
-                </div>
-              </div>
-            </div>
+            <RegistrationDetailSection
+              title="Guest Event Details"
+              entries={[
+                {label: 'Guest Dietary Restrictions', value: formData.guest_dietary_restrictions},
+                {label: 'Guest Jacket Size', value: formData.guest_jacket_size},
+                {
+                  label: 'Guest Accommodations',
+                  items: formData.guest_accommodations || [],
+                  formatItem: (s: string) => s.replace('_', ' '),
+                },
+                {
+                  label: 'Guest Dinner Attendance',
+                  items: formData.guest_dinner_attendance || [],
+                  formatItem: (s: string) => s.replace('_', ' '),
+                },
+                {
+                  label: 'Guest Activities',
+                  items: formData.guest_activities || [],
+                  formatItem: (s: string) => s.replace(/_/g, ' '),
+                },
+              ]}
+            />
           </div>
         </div>
 

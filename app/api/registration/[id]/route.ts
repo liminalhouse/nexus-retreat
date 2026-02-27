@@ -17,7 +17,7 @@ export async function PATCH(request: NextRequest, {params}: {params: Promise<{id
     // Map form field names to database column names
     const updateData = {
       // Personal Details
-      email: formData.email,
+      email: formData.email?.toLowerCase().trim(),
       firstName: formData.first_name,
       lastName: formData.last_name,
       profilePicture: toNullIfEmpty(formData.profile_picture),

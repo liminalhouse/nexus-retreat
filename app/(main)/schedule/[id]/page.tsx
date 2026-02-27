@@ -9,6 +9,7 @@ import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
 import {SessionTagsGroup} from '@/app/components/SessionTags'
 import SessionPlaceholder from '@/app/components/SessionPlaceholder'
+import SanityImageClient from '@/app/components/SanityImageClient'
 
 type Props = {
   params: Promise<{id: string}>
@@ -190,13 +191,6 @@ export default async function SessionPage({params}: Props) {
                 </h2>
                 <div className="space-y-4">
                   {session.speakers.filter(Boolean).map((speaker) => {
-                    const speakerPhotoUrl = speaker.profilePicture
-                      ? urlForImage(speaker.profilePicture)
-                          ?.width(200)
-                          .height(200)
-                          .fit('crop')
-                          .url()
-                      : null
                     const speakerSlug = cleanSlug(speaker.id?.current) || speaker._id
 
                     return (
@@ -205,13 +199,17 @@ export default async function SessionPage({params}: Props) {
                         href={`/speakers/${speakerSlug}`}
                         className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100 hover:shadow-md hover:border-nexus-coral/30 transition-all"
                       >
-                        {speakerPhotoUrl ? (
-                          <Image
-                            src={speakerPhotoUrl}
+                        {speaker.profilePicture?.asset?._id ? (
+                          <SanityImageClient
+                            id={speaker.profilePicture.asset._id}
                             alt={`${speaker.firstName} ${speaker.lastName}`}
                             width={64}
                             height={64}
-                            className="rounded-full object-cover flex-shrink-0"
+                            mode="cover"
+                            hotspot={speaker.profilePicture.hotspot}
+                            crop={speaker.profilePicture.crop}
+                            preview={speaker.profilePicture.asset.metadata?.lqip}
+                            className="rounded-full object-cover flex-shrink-0 w-16 h-16"
                           />
                         ) : (
                           <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">

@@ -10,8 +10,14 @@ import {
   DINNER_OPTIONS,
   ACTIVITY_OPTIONS,
 } from '@/lib/utils/formatRegistrationFields'
+import CheckboxOptionList from '@/app/components/Form/CheckboxOptionList'
 import {JACKET_SIZE_OPTIONS} from '@/app/(main)/register/formConfig'
 import type {Registration} from '@/lib/types/registration'
+import {
+  EditLoadingState,
+  EditErrorState,
+  EditSuccessState,
+} from '@/app/components/EditRegistrationStates'
 
 type PageState = 'loading' | 'editing' | 'saving' | 'success' | 'error'
 
@@ -61,6 +67,12 @@ export default function EditRegistrationPage() {
         : currentValues.filter((v) => v !== value)
       return {...prev, [field]: newValues}
     })
+  }
+
+  const makeToggle = (field: keyof Registration) => (value: string) => {
+    const currentValues = (formData?.[field] as string[]) || []
+    const checked = !currentValues.includes(value)
+    handleCheckboxChange(field, value, checked)
   }
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,58 +152,20 @@ export default function EditRegistrationPage() {
   const labelClass = 'block text-sm font-medium text-gray-700 mb-1'
 
   if (pageState === 'loading') {
-    return (
-      <div className="min-h-screen bg-linear-to-t from-blue-800 to-indigo-950 flex items-center justify-center p-4">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-white/80">Loading your registration...</p>
-        </div>
-      </div>
-    )
+    return <EditLoadingState message="Loading your registration..." />
   }
 
   if (pageState === 'error') {
-    return (
-      <div className="min-h-screen bg-linear-to-t from-blue-800 to-indigo-950 flex items-center justify-center p-4">
-        <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-xl p-8 text-center">
-          <svg
-            className="h-16 w-16 text-red-400 mx-auto mb-4"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Unable to Load</h1>
-          <p className="text-gray-600 mb-6">{error}</p>
-        </div>
-      </div>
-    )
+    return <EditErrorState error={error} />
   }
 
   if (pageState === 'success') {
     return (
-      <div className="min-h-screen bg-linear-to-t from-blue-800 to-indigo-950 flex items-center justify-center p-4">
-        <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-xl p-8 text-center">
-          <svg
-            className="h-16 w-16 text-green-400 mx-auto mb-4"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Changes Saved!</h1>
-          <p className="text-gray-600 mb-6">Your registration has been updated successfully.</p>
-          <div className="space-y-3">
+      <EditSuccessState
+        title="Changes Saved!"
+        message="Your registration has been updated successfully."
+        actions={
+          <>
             <button
               onClick={() => {
                 setPageState('editing')
@@ -207,9 +181,9 @@ export default function EditRegistrationPage() {
             >
               Edit Activities Only
             </Link>
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
     )
   }
 
@@ -553,69 +527,37 @@ export default function EditRegistrationPage() {
 
                 <div>
                   <label className={labelClass}>Accommodations</label>
-                  <div className="space-y-2 mt-2">
-                    {ACCOMMODATION_OPTIONS.map((option) => (
-                      <label key={option.value} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={(formData?.accommodations || []).includes(option.value)}
-                          onChange={(e) =>
-                            handleCheckboxChange('accommodations', option.value, e.target.checked)
-                          }
-                          className="h-4 w-4 rounded border-gray-300 text-nexus-navy focus:ring-nexus-navy"
-                        />
-                        <span className="ml-2 text-sm text-gray-700">{option.label}</span>
-                      </label>
-                    ))}
+                  <div className="mt-2">
+                    <CheckboxOptionList
+                      options={ACCOMMODATION_OPTIONS}
+                      selectedValues={formData?.accommodations || []}
+                      onToggle={makeToggle('accommodations')}
+                      idPrefix="accommodations"
+                    />
                   </div>
                 </div>
 
                 <div>
                   <label className={labelClass}>Dinner Attendance</label>
-                  <div className="space-y-2 mt-2">
-                    {DINNER_OPTIONS.map((option) => (
-                      <label key={option.value} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={(formData?.dinner_attendance || []).includes(option.value)}
-                          onChange={(e) =>
-                            handleCheckboxChange(
-                              'dinner_attendance',
-                              option.value,
-                              e.target.checked,
-                            )
-                          }
-                          className="h-4 w-4 rounded border-gray-300 text-nexus-navy focus:ring-nexus-navy"
-                        />
-                        <span className="ml-2 text-sm text-gray-700">{option.label}</span>
-                      </label>
-                    ))}
+                  <div className="mt-2">
+                    <CheckboxOptionList
+                      options={DINNER_OPTIONS}
+                      selectedValues={formData?.dinner_attendance || []}
+                      onToggle={makeToggle('dinner_attendance')}
+                      idPrefix="dinner"
+                    />
                   </div>
                 </div>
 
                 <div>
                   <label className={labelClass}>Activities</label>
-                  <div className="space-y-3 mt-2">
-                    {ACTIVITY_OPTIONS.map((option) => (
-                      <label key={option.value} className="flex items-start">
-                        <input
-                          type="checkbox"
-                          checked={(formData?.activities || []).includes(option.value)}
-                          onChange={(e) =>
-                            handleCheckboxChange('activities', option.value, e.target.checked)
-                          }
-                          className="h-4 w-4 mt-0.5 rounded border-gray-300 text-nexus-navy focus:ring-nexus-navy"
-                        />
-                        <span className="ml-2">
-                          <span className="text-sm font-medium text-gray-700">{option.label}</span>
-                          {option.description && (
-                            <span className="block text-xs text-gray-500">
-                              {option.description}
-                            </span>
-                          )}
-                        </span>
-                      </label>
-                    ))}
+                  <div className="mt-2">
+                    <CheckboxOptionList
+                      options={ACTIVITY_OPTIONS}
+                      selectedValues={formData?.activities || []}
+                      onToggle={makeToggle('activities')}
+                      idPrefix="activities"
+                    />
                   </div>
                 </div>
               </div>
@@ -655,85 +597,39 @@ export default function EditRegistrationPage() {
 
                   <div>
                     <label className={labelClass}>Guest Accommodations</label>
-                    <div className="space-y-2 mt-2">
-                      {ACCOMMODATION_OPTIONS.map((option) => (
-                        <label key={option.value} className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={(formData?.guest_accommodations || []).includes(option.value)}
-                            onChange={(e) =>
-                              handleCheckboxChange(
-                                'guest_accommodations',
-                                option.value,
-                                e.target.checked,
-                              )
-                            }
-                            className="h-4 w-4 rounded border-gray-300 text-nexus-navy focus:ring-nexus-navy"
-                          />
-                          <span className="ml-2 text-sm text-gray-700">
-                            {option.label.replace('I will use my', 'Guest will use')}
-                          </span>
-                        </label>
-                      ))}
+                    <div className="mt-2">
+                      <CheckboxOptionList
+                        options={ACCOMMODATION_OPTIONS}
+                        selectedValues={formData?.guest_accommodations || []}
+                        onToggle={makeToggle('guest_accommodations')}
+                        idPrefix="guest_accommodations"
+                        labelTransform={(l) => l.replace('I will use my', 'Guest will use')}
+                      />
                     </div>
                   </div>
 
                   <div>
                     <label className={labelClass}>Guest Dinner Attendance</label>
-                    <div className="space-y-2 mt-2">
-                      {DINNER_OPTIONS.map((option) => (
-                        <label key={option.value} className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={(formData?.guest_dinner_attendance || []).includes(
-                              option.value,
-                            )}
-                            onChange={(e) =>
-                              handleCheckboxChange(
-                                'guest_dinner_attendance',
-                                option.value,
-                                e.target.checked,
-                              )
-                            }
-                            className="h-4 w-4 rounded border-gray-300 text-nexus-navy focus:ring-nexus-navy"
-                          />
-                          <span className="ml-2 text-sm text-gray-700">
-                            {option.label.replace('I will attend', 'Guest will attend')}
-                          </span>
-                        </label>
-                      ))}
+                    <div className="mt-2">
+                      <CheckboxOptionList
+                        options={DINNER_OPTIONS}
+                        selectedValues={formData?.guest_dinner_attendance || []}
+                        onToggle={makeToggle('guest_dinner_attendance')}
+                        idPrefix="guest_dinner"
+                        labelTransform={(l) => l.replace('I will attend', 'Guest will attend')}
+                      />
                     </div>
                   </div>
 
                   <div>
                     <label className={labelClass}>Guest Activities</label>
-                    <div className="space-y-3 mt-2">
-                      {ACTIVITY_OPTIONS.map((option) => (
-                        <label key={option.value} className="flex items-start">
-                          <input
-                            type="checkbox"
-                            checked={(formData?.guest_activities || []).includes(option.value)}
-                            onChange={(e) =>
-                              handleCheckboxChange(
-                                'guest_activities',
-                                option.value,
-                                e.target.checked,
-                              )
-                            }
-                            className="h-4 w-4 mt-0.5 rounded border-gray-300 text-nexus-navy focus:ring-nexus-navy"
-                          />
-                          <span className="ml-2">
-                            <span className="text-sm font-medium text-gray-700">
-                              {option.label}
-                            </span>
-                            {option.description && (
-                              <span className="block text-xs text-gray-500">
-                                {option.description}
-                              </span>
-                            )}
-                          </span>
-                        </label>
-                      ))}
+                    <div className="mt-2">
+                      <CheckboxOptionList
+                        options={ACTIVITY_OPTIONS}
+                        selectedValues={formData?.guest_activities || []}
+                        onToggle={makeToggle('guest_activities')}
+                        idPrefix="guest_activities"
+                      />
                     </div>
                   </div>
                 </div>

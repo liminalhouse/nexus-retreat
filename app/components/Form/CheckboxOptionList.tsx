@@ -1,23 +1,30 @@
-import type {ActivityOption} from '@/lib/utils/formatRegistrationFields'
+export interface CheckboxOption {
+  label: string
+  value: string
+  description?: string
+}
 
-export default function ActivityCheckboxList({
+export default function CheckboxOptionList({
   options,
   selectedValues,
   onToggle,
   disabled = false,
   idPrefix,
+  labelTransform,
 }: {
-  options: ActivityOption[]
+  options: CheckboxOption[]
   selectedValues: string[]
   onToggle: (value: string) => void
   disabled?: boolean
   idPrefix: string
+  labelTransform?: (label: string) => string
 }) {
   return (
     <div className="flex flex-col gap-3">
       {options.map((option) => {
         const isChecked = selectedValues.includes(option.value)
         const checkboxId = `${idPrefix}_${option.value}`
+        const displayLabel = labelTransform ? labelTransform(option.label) : option.label
 
         return (
           <div key={option.value} className="flex items-start">
@@ -32,7 +39,7 @@ export default function ActivityCheckboxList({
               />
             </div>
             <label htmlFor={checkboxId} className="ml-3 cursor-pointer flex flex-col gap-1">
-              <span className="text-sm text-gray-700 font-semibold">{option.label}</span>
+              <span className="text-sm text-gray-700 font-semibold">{displayLabel}</span>
               {option.description && (
                 <span className="block text-xs font-medium text-gray-500 max-w-md">
                   {option.description}

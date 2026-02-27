@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     const registrationData = {
       editToken,
       // Step 1: Personal Details
-      email: formData.email,
+      email: formData.email?.toLowerCase().trim(),
       firstName: formData.first_name,
       lastName: formData.last_name,
       profilePicture: toNullIfEmpty(formData.profile_picture),
