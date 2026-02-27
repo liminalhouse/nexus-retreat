@@ -1,5 +1,6 @@
 import {NextResponse} from 'next/server'
 import {requireChatAuth} from '@/lib/auth/chatAuth'
+import {getConversationsForUser} from '@/lib/auth/chatConversations'
 
 export async function GET() {
   const user = await requireChatAuth()
@@ -7,5 +8,7 @@ export async function GET() {
     return NextResponse.json({error: 'Not authenticated'}, {status: 401})
   }
 
-  return NextResponse.json({user})
+  const conversations = await getConversationsForUser(user.registrationId)
+
+  return NextResponse.json({user, conversations})
 }

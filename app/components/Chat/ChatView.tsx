@@ -9,16 +9,24 @@ type ChatViewProps = {
   user: ChatUser
   conversation: Conversation | null
   messages: ChatMessageData[]
-  isLoading: boolean
+  isLoadingMessages: boolean
   onSend: (receiverId: string, content: string) => Promise<ChatMessageData | null>
   onBack: () => void
+}
+
+function LoadingSpinner() {
+  return (
+    <div className="flex items-center justify-center py-12">
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-blue-500" />
+    </div>
+  )
 }
 
 export default function ChatView({
   user,
   conversation,
   messages,
-  isLoading,
+  isLoadingMessages,
   onSend,
   onBack,
 }: ChatViewProps) {
@@ -78,8 +86,8 @@ export default function ChatView({
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-white">
-        {isLoading ? (
-          <div className="text-center text-sm text-gray-400 py-8">Loading messages...</div>
+        {isLoadingMessages ? (
+          <LoadingSpinner />
         ) : messages.length === 0 ? (
           <div className="text-center text-sm text-gray-400 py-8">No messages yet. Say hello!</div>
         ) : (

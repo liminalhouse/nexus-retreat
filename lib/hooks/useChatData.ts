@@ -5,25 +5,43 @@ import type {ChatUser, ChatMessageData, Conversation, Attendee} from '@/lib/type
 
 const POLL_INTERVAL = 4000
 
-export function useChatData(user: ChatUser | null) {
-  const [conversations, setConversations] = useState<Conversation[]>([])
+export function useChatData(user: ChatUser | null, initialConversations?: Conversation[] | null) {
+  const autoSelectId = initialConversations?.[0]?.partnerId ?? null
+  const [conversations, setConversations] = useState<Conversation[]>(initialConversations || [])
   const [messages, setMessages] = useState<ChatMessageData[]>([])
-  const [activePartnerId, setActivePartnerId] = useState<string | null>(null)
-  const [isLoadingConversations, setIsLoadingConversations] = useState(false)
-  const [isLoadingMessages, setIsLoadingMessages] = useState(false)
+  const [activePartnerId, setActivePartnerId] = useState<string | null>(autoSelectId)
+  const [isLoadingMessages, setIsLoadingMessages] = useState(!!autoSelectId)
+  const initializedRef = useRef(false)
   const lastPollTimestamp = useRef<string | null>(null)
   const pollInterval = useRef<ReturnType<typeof setInterval> | null>(null)
-  const activePartnerIdRef = useRef<string | null>(null)
+  const activePartnerIdRef = useRef<string | null>(autoSelectId)
 
   // Keep ref in sync
   useEffect(() => {
     activePartnerIdRef.current = activePartnerId
   }, [activePartnerId])
 
+  // Seed conversations from initial data and fetch messages for auto-selected conversation
+  useEffect(() => {
+    if (initialConversations && !initializedRef.current) {
+      setConversations(initialConversations)
+      initializedRef.current = true
+      // Fetch messages for auto-selected conversation
+      if (autoSelectId && user) {
+        fetch(`/api/chat/messages/${autoSelectId}`)
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data) => {
+            if (data) setMessages(data.messages)
+          })
+          .catch(() => {})
+          .finally(() => setIsLoadingMessages(false))
+      }
+    }
+  }, [initialConversations, user, autoSelectId])
+
   // Fetch conversations — merges with existing temp conversations so they don't vanish
   const fetchConversations = useCallback(async () => {
     if (!user) return
-    setIsLoadingConversations(true)
     try {
       const res = await fetch('/api/chat/conversations')
       if (res.ok) {
@@ -32,8 +50,6 @@ export function useChatData(user: ChatUser | null) {
         const apiPartnerIds = new Set(apiConversations.map((c: Conversation) => c.partnerId))
 
         setConversations((prev) => {
-          // Keep any temp conversations (no lastMessage) that aren't in the API response
-          // and are currently the active conversation
           const tempToKeep = prev.filter(
             (c) =>
               !apiPartnerIds.has(c.partnerId) &&
@@ -45,8 +61,6 @@ export function useChatData(user: ChatUser | null) {
       }
     } catch {
       // ignore
-    } finally {
-      setIsLoadingConversations(false)
     }
   }, [user])
 
@@ -247,11 +261,9 @@ export function useChatData(user: ChatUser | null) {
     }
   }, [user, fetchConversations])
 
-  // Setup polling
+  // Setup polling (skip initial fetch — conversations come from /api/chat/me)
   useEffect(() => {
     if (!user) return
-
-    fetchConversations()
 
     pollInterval.current = setInterval(poll, POLL_INTERVAL)
     return () => {
@@ -265,7 +277,6 @@ export function useChatData(user: ChatUser | null) {
     conversations,
     messages,
     activePartnerId,
-    isLoadingConversations,
     isLoadingMessages,
     selectConversation,
     sendMessage,
