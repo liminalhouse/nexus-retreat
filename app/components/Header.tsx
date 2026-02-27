@@ -32,6 +32,13 @@ export default async function Header() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              key={navLinks.length}
+              href="/login"
+              className="px-6 py-2 text-gray-700 hover:text-gray-900 transition-colors"
+            >
+              Login
+            </Link>
           </nav>
         </div>
       </div>

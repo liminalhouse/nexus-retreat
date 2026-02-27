@@ -57,6 +57,20 @@
       "when": 1770335305680,
       "tag": "0007_icy_gateway",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1772210145368,
+      "tag": "0008_medical_talkback",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1772214381123,
+      "tag": "0009_unknown_quasimodo",
+      "breakpoints": true
     }
   ]
 }
