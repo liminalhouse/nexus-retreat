@@ -1,28 +1,45 @@
 'use client'
 
 import {useState} from 'react'
-import {EyeIcon, EyeSlashIcon} from '@heroicons/react/24/outline'
+import {ChatBubbleLeftRightIcon, EyeIcon, EyeSlashIcon} from '@heroicons/react/24/outline'
 import NexusLogo from '@/app/components/NexusLogo'
 
-type ChatLoginProps = {
-  onLogin: (email: string, password: string) => Promise<boolean>
-  error: string | null
+type LoginFormProps = {
+  from: string
 }
 
-export default function ChatLogin({onLogin, error}: ChatLoginProps) {
+export default function LoginForm({from}: LoginFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [view, setView] = useState<'login' | 'forgot'>('login')
   const [forgotLoading, setForgotLoading] = useState(false)
   const [forgotSent, setForgotSent] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
     setLoading(true)
-    await onLogin(email, password)
-    setLoading(false)
+
+    try {
+      const res = await fetch('/api/chat/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email, password}),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error || 'Login failed')
+        setLoading(false)
+        return
+      }
+      window.location.href = from
+    } catch {
+      setError('An error occurred. Please try again.')
+      setLoading(false)
+    }
   }
 
   const handleForgotSubmit = async (e: React.FormEvent) => {
@@ -117,13 +134,14 @@ export default function ChatLogin({onLogin, error}: ChatLoginProps) {
 
   return (
     <div className="flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-[400px]">
+      <div className="w-full max-w-[400px] mt-12 border border-gray-200 rounded-lg p-8 shadow-sm bg-white">
         <div className="text-center mb-8">
-          <NexusLogo styleType="lockup" className="w-[168px] my-6 mx-auto" />
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">Messages</h1>
+          <ChatBubbleLeftRightIcon className="w-12 h-12 mx-auto mb-4 text-nexus-coral" />
+          <h1 className="text-4xl font-serif font-semibold text-gray-900 mb-3">Retreat Chat</h1>
           <p className="text-gray-600 text-sm">
-            Connect directly with fellow attendees. Log in with your registered email and the
-            password from your invitation email.
+            Connect directly with fellow attendees.
+            <br />
+            Log in with your registered email and the default site password to get started.
           </p>
         </div>
 

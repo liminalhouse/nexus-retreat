@@ -27,7 +27,7 @@ export default function ResetPasswordPage() {
           <p className="text-gray-600 text-sm mb-6">
             This password reset link is invalid. Please request a new one from the login page.
           </p>
-          <Link href="/chat" className="text-sm font-medium text-nexus-navy-dark hover:underline">
+          <Link href="/chat/login" className="text-sm font-medium text-nexus-navy-dark hover:underline">
             Back to login
           </Link>
         </div>
@@ -37,7 +37,7 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     if (success) {
-      const timer = setTimeout(() => router.push('/chat'), 2000)
+      const timer = setTimeout(() => router.push('/chat/login'), 2000)
       return () => clearTimeout(timer)
     }
   }, [success, router])
@@ -52,7 +52,7 @@ export default function ResetPasswordPage() {
             Your password has been reset successfully. Redirecting to login...
           </div>
           <Link
-            href="/chat"
+            href="/chat/login"
             className="text-sm text-gray-500 hover:text-gray-700"
           >
             Go to login
@@ -154,7 +154,7 @@ export default function ResetPasswordPage() {
         </form>
 
         <div className="text-center mt-4">
-          <Link href="/chat" className="text-sm text-gray-500 hover:text-gray-700">
+          <Link href="/chat/login" className="text-sm text-gray-500 hover:text-gray-700">
             Back to login
           </Link>
         </div>

@@ -4,7 +4,6 @@ import {useState, useEffect} from 'react'
 import {MagnifyingGlassIcon} from '@heroicons/react/24/outline'
 import {useChatAuth} from '@/lib/hooks/useChatAuth'
 import {useChatData} from '@/lib/hooks/useChatData'
-import ChatLogin from './ChatLogin'
 import ConversationList from './ConversationList'
 import ChatView from './ChatView'
 import {ArrowRightStartOnRectangleIcon} from '@heroicons/react/24/outline'
@@ -87,11 +86,8 @@ function ChatSkeleton() {
 export default function ChatContainer() {
   const {
     user,
-    isAuthenticated,
     isLoading,
-    error,
     initialConversations,
-    login,
     logout,
   } = useChatAuth()
   const {
@@ -114,12 +110,8 @@ export default function ChatContainer() {
     }
   }, [conversations.length])
 
-  if (isLoading) {
+  if (isLoading || !user) {
     return <ChatSkeleton />
-  }
-
-  if (!isAuthenticated || !user) {
-    return <ChatLogin onLogin={login} error={error} />
   }
 
   const activeConversation = conversations.find((c) => c.partnerId === activePartnerId) || null
