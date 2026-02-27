@@ -42,21 +42,21 @@ export default function ChatContainer() {
   const activeConversation = conversations.find((c) => c.partnerId === activePartnerId) || null
 
   return (
-    <div className="flex h-full bg-white">
+    <div className="flex h-full rounded-xl border border-gray-200 shadow-sm overflow-hidden bg-white">
       {/* Sidebar */}
       <div
         className={`${
           activePartnerId ? 'hidden md:flex' : 'flex'
-        } flex-col w-full md:w-80 lg:w-96 border-r border-gray-200`}
+        } flex-col w-full md:w-80 lg:w-96 border-r border-gray-100`}
       >
         {/* User header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-gray-900 truncate">
               {user.firstName} {user.lastName}
             </p>
             <p className="text-xs text-gray-500 truncate">
-              {[user.title, user.organization].filter(Boolean).join(' · ')}
+              {[user.title, user.organization].filter(Boolean).join(', ')}
             </p>
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
