@@ -654,4 +654,51 @@ export async function sendCustomEmail(params: CustomEmailParams) {
   }
 }
 
+// ============================================================================
+// Password Reset Email
+// ============================================================================
+
+export async function sendPasswordResetEmail(params: {
+  to: string
+  firstName: string
+  resetUrl: string
+  cc?: string[]
+}) {
+  try {
+    const {to, firstName, resetUrl, cc} = params
+
+    const html = buildEmailHtml({
+      sections: [
+        {type: 'greeting', content: `Hi ${firstName},`},
+        {
+          type: 'text',
+          content:
+            'We received a request to reset your Nexus Retreat messaging password. Click the button below to set a new password.',
+        },
+        {
+          type: 'button',
+          buttonText: 'Reset Password',
+          buttonUrl: resetUrl,
+        },
+        {
+          type: 'text',
+          content:
+            'This link will expire in 1 hour. If you didn\u2019t request a password reset, you can safely ignore this email.',
+        },
+      ],
+    })
+
+    return sendEmail({
+      from: `Nexus Retreat <${resendEmailFrom}>`,
+      to,
+      subject: 'Reset Your Nexus Retreat Password',
+      html,
+      cc: cc && cc.length > 0 ? cc : undefined,
+    })
+  } catch (error) {
+    console.error('Error sending password reset email:', error)
+    return {success: false, error}
+  }
+}
+
 // buildCustomEmailHtml is imported from lib/email/buildCustomEmailHtml.ts

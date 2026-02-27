@@ -45,7 +45,15 @@ export function useChatAuth() {
         setError(data.error || 'Login failed')
         return false
       }
-      setUser(data.user)
+      // Fetch full session data (user + conversations) after login
+      const meRes = await fetch('/api/chat/me')
+      if (meRes.ok) {
+        const meData = await meRes.json()
+        setUser(meData.user)
+        setInitialConversations(meData.conversations || [])
+      } else {
+        setUser(data.user)
+      }
       return true
     } catch {
       setError('An error occurred. Please try again.')
@@ -62,25 +70,5 @@ export function useChatAuth() {
     setUser(null)
   }, [])
 
-  const changePassword = useCallback(
-    async (currentPassword: string, newPassword: string) => {
-      try {
-        const res = await fetch('/api/chat/change-password', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({currentPassword, newPassword}),
-        })
-        const data = await res.json()
-        if (!res.ok) {
-          return {success: false, error: data.error || 'Failed to change password'}
-        }
-        return {success: true, error: null}
-      } catch {
-        return {success: false, error: 'An error occurred'}
-      }
-    },
-    []
-  )
-
-  return {user, isAuthenticated, isLoading, error, initialConversations, login, logout, changePassword}
+  return {user, isAuthenticated, isLoading, error, initialConversations, login, logout}
 }

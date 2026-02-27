@@ -7,8 +7,7 @@ import {useChatData} from '@/lib/hooks/useChatData'
 import ChatLogin from './ChatLogin'
 import ConversationList from './ConversationList'
 import ChatView from './ChatView'
-import ChangePasswordModal from './ChangePasswordModal'
-import {ArrowRightStartOnRectangleIcon, KeyIcon} from '@heroicons/react/24/outline'
+import {ArrowRightStartOnRectangleIcon} from '@heroicons/react/24/outline'
 
 const CONVERSATION_COUNT_KEY = 'chat-conversation-count'
 
@@ -40,9 +39,6 @@ function ChatSkeleton() {
             <Pulse className="h-3 w-20" />
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
-            <div className="p-2 text-gray-300">
-              <KeyIcon className="w-4 h-4" />
-            </div>
             <div className="p-2 text-gray-300">
               <ArrowRightStartOnRectangleIcon className="w-4 h-4" />
             </div>
@@ -97,7 +93,6 @@ export default function ChatContainer() {
     initialConversations,
     login,
     logout,
-    changePassword,
   } = useChatAuth()
   const {
     conversations,
@@ -109,8 +104,6 @@ export default function ChatContainer() {
     searchAttendees,
     startNewConversation,
   } = useChatData(user, initialConversations)
-
-  const [showPasswordModal, setShowPasswordModal] = useState(false)
 
   // Cache conversation count for skeleton accuracy on next load
   useEffect(() => {
@@ -151,13 +144,6 @@ export default function ChatContainer() {
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
             <button
-              onClick={() => setShowPasswordModal(true)}
-              title="Change password"
-              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <KeyIcon className="w-4 h-4" />
-            </button>
-            <button
               onClick={logout}
               title="Sign out"
               className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
@@ -187,14 +173,6 @@ export default function ChatContainer() {
           onBack={() => selectConversation(null)}
         />
       </div>
-
-      {/* Password modal */}
-      {showPasswordModal && (
-        <ChangePasswordModal
-          onClose={() => setShowPasswordModal(false)}
-          onSubmit={changePassword}
-        />
-      )}
     </div>
   )
 }
