@@ -46,7 +46,7 @@ export const ACTIVITY_OPTIONS: ActivityOption[] = [
     label: 'Golf Challenge',
     value: 'golf_challenge',
     description:
-      "March 19, 3-5pm: Three holes. Two Invictus Games champions. One British Prince. Teams compete, cocktails flow, and someone gets bragging rights for taking down Prince Harry on the green. You'll hear what Invictus actually does, why it matters, and have a chance to support the work - but mostly, you're here to see if you've got what it takes to outplay royalty. Bring your A-game.",
+      "March 19, 3-5pm: Join Prince Harry, Duke of Sussex, and members of the Invictus Games Foundation in a 3-hole challenge. Take your shot, grab a cocktail, and see who earns bragging rights for taking down Prince Harry on the green. You'll hear what Invictus actually does, why it matters, and have a chance to support the work - but mostly, you're here to see if you've got what it takes to outplay royalty. Bring your A-game.",
     chipDescription: 'March 19',
   },
   {label: 'Tennis', value: 'tennis', description: 'Court booking available'},
