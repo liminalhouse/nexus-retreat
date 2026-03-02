@@ -17,7 +17,10 @@ const randomizedGradients = [
   'from-indigo-400 to-purple-500',
 ]
 
+const defaultGradient = 'from-gray-400 to-gray-600'
+
 const getGradientFromName = (name: string) => {
+  if (!name) return defaultGradient // Default gradient if name is empty
   const hash = name.length + name.charCodeAt(0) + name.charCodeAt(name.length - 1) + 1
   return randomizedGradients[hash % randomizedGradients.length]
 }

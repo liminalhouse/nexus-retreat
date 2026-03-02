@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import {PencilSquareIcon, DocumentTextIcon, EnvelopeIcon} from '@heroicons/react/24/outline'
 import {requireAuth} from '@/lib/auth/requireAuth'
 
 export default async function AdminDashboard() {
@@ -16,19 +17,7 @@ export default async function AdminDashboard() {
             className="block p-8 bg-white border-2 border-gray-200 rounded-lg hover:border-nexus-coral hover:shadow-md transition-all"
           >
             <div className="flex items-center mb-4">
-              <svg
-                className="w-8 h-8 mr-3 text-nexus-coral"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
+              <PencilSquareIcon className="w-8 h-8 mr-3 text-nexus-coral" />
               <h2 className="text-2xl font-bold">Content Management</h2>
             </div>
             <p className="text-gray-600">
@@ -42,22 +31,24 @@ export default async function AdminDashboard() {
             className="block p-8 bg-white border-2 border-gray-200 rounded-lg hover:border-nexus-coral hover:shadow-md transition-all"
           >
             <div className="flex items-center mb-4">
-              <svg
-                className="w-8 h-8 mr-3 text-nexus-coral"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
+              <DocumentTextIcon className="w-8 h-8 mr-3 text-nexus-coral" />
               <h2 className="text-2xl font-bold">Registration Data</h2>
             </div>
             <p className="text-gray-600">View, edit, and export registration form submissions</p>
+          </Link>
+
+          {/* Email Registrants Card */}
+          <Link
+            href="/admin/registrations/email"
+            className="block p-8 bg-white border-2 border-gray-200 rounded-lg hover:border-nexus-coral hover:shadow-md transition-all"
+          >
+            <div className="flex items-center mb-4">
+              <EnvelopeIcon className="w-8 h-8 mr-3 text-nexus-coral" />
+              <h2 className="text-2xl font-bold">Email Registrants</h2>
+            </div>
+            <p className="text-gray-600">
+              Compose and send emails to registered attendees
+            </p>
           </Link>
         </div>
       </div>
