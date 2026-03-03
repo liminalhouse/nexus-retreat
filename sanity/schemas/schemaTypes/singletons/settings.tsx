@@ -223,7 +223,7 @@ export const settings = defineType({
               media: 'image',
               title: 'image.alt',
             },
-            prepare({media, title}: {media: any; title: string}) {
+            prepare({media, title}) {
               return {
                 title: title || 'Logo',
                 media,
