@@ -61,9 +61,8 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Build reset URL
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://nexus-retreat.com'
-    const resetUrl = `${baseUrl}/chat/reset-password?token=${resetToken}`
+    // Build reset URL from the incoming request origin so it works in any environment
+    const resetUrl = `${new URL(request.url).origin}/chat/reset-password?token=${resetToken}`
 
     // Build CC list (include assistant if exists)
     const cc: string[] = []
