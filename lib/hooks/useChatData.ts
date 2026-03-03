@@ -14,6 +14,7 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
   const sseErrorCountRef = useRef(0)
   const activePartnerIdRef = useRef<string | null>(null)
   const conversationsRef = useRef<Conversation[]>([])
+  const messageCacheRef = useRef<Map<string, ChatMessageData[]>>(new Map())
 
   // Keep refs in sync
   useEffect(() => {
@@ -24,6 +25,19 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
     conversationsRef.current = conversations
   }, [conversations])
 
+  // Merge new messages into the cache for a partner; returns the merged array
+  function mergeIntoCache(partnerId: string, newMsgs: ChatMessageData[]): ChatMessageData[] {
+    const existing = messageCacheRef.current.get(partnerId) ?? []
+    const existingIds = new Set(existing.map((m) => m.id))
+    const fresh = newMsgs.filter((m) => !existingIds.has(m.id))
+    if (fresh.length === 0) return existing
+    const merged = [...existing, ...fresh].sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    )
+    messageCacheRef.current.set(partnerId, merged)
+    return merged
+  }
+
   // Seed conversations from initial data and auto-select the latest conversation
   useEffect(() => {
     if (initialConversations && !initializedRef.current) {
@@ -33,11 +47,9 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
       const firstPartnerId = initialConversations[0]?.partnerId ?? null
       const isDesktop = window.innerWidth >= 768
       if (firstPartnerId && user && isDesktop) {
-        // Select the latest conversation (desktop only — mobile shows the list first)
         setActivePartnerId(firstPartnerId)
         activePartnerIdRef.current = firstPartnerId
 
-        // Dispatch before fetch so the nav icon clears optimistically
         const autoConv = initialConversations.find((c) => c.partnerId === firstPartnerId)
         if (autoConv?.unreadCount) {
           window.dispatchEvent(
@@ -49,7 +61,10 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
         fetch(`/api/chat/messages/${firstPartnerId}`)
           .then((res) => (res.ok ? res.json() : null))
           .then((data) => {
-            if (data) setMessages(data.messages)
+            if (data) {
+              messageCacheRef.current.set(firstPartnerId, data.messages)
+              setMessages(data.messages)
+            }
           })
           .catch(() => {})
           .finally(() => setIsLoadingMessages(false))
@@ -82,21 +97,25 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
     }
   }, [user])
 
-  // Fetch message history with a partner
+  // Fetch message history — always updates cache; showLoading controls the spinner
   const fetchMessages = useCallback(
-    async (partnerId: string) => {
+    async (partnerId: string, showLoading: boolean) => {
       if (!user) return
-      setIsLoadingMessages(true)
+      if (showLoading) setIsLoadingMessages(true)
       try {
         const res = await fetch(`/api/chat/messages/${partnerId}`)
         if (res.ok) {
           const data = await res.json()
-          setMessages(data.messages)
+          messageCacheRef.current.set(partnerId, data.messages)
+          // Only push to state if this partner is still active
+          if (activePartnerIdRef.current === partnerId) {
+            setMessages(data.messages)
+          }
         }
       } catch {
         // ignore
       } finally {
-        setIsLoadingMessages(false)
+        if (showLoading) setIsLoadingMessages(false)
       }
     },
     [user]
@@ -107,7 +126,13 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
     (partnerId: string | null) => {
       setActivePartnerId(partnerId)
       if (partnerId) {
-        fetchMessages(partnerId)
+        const cached = messageCacheRef.current.get(partnerId)
+        if (cached) {
+          setMessages(cached) // instant — no spinner
+          fetchMessages(partnerId, false) // silent background refresh
+        } else {
+          fetchMessages(partnerId, true) // cold load — show spinner
+        }
         // Notify nav icon using ref (safe to read outside updater), then clear local state
         const conv = conversationsRef.current.find((c) => c.partnerId === partnerId)
         if (conv?.unreadCount) {
@@ -133,7 +158,6 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
       const tempId = `temp-${Date.now()}-${Math.random()}`
       const now = new Date().toISOString()
 
-      // Optimistically add message to UI immediately
       const optimisticMsg: ChatMessageData = {
         id: tempId,
         senderId: user.registrationId,
@@ -142,7 +166,13 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
         readAt: null,
         createdAt: now,
       }
-      setMessages((prev) => [...prev, optimisticMsg])
+
+      // Update state and cache with optimistic message
+      setMessages((prev) => {
+        const updated = [...prev, optimisticMsg]
+        messageCacheRef.current.set(receiverId, updated)
+        return updated
+      })
 
       // Optimistically update conversation list
       setConversations((prev) => {
@@ -175,21 +205,29 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
           body: JSON.stringify({receiverId, content}),
         })
         if (!res.ok) {
-          // Remove optimistic message on failure
-          setMessages((prev) => prev.filter((m) => m.id !== tempId))
+          setMessages((prev) => {
+            const updated = prev.filter((m) => m.id !== tempId)
+            messageCacheRef.current.set(receiverId, updated)
+            return updated
+          })
           return null
         }
         const data = await res.json()
         const realMsg: ChatMessageData = data.message
 
-        // Replace temp message with real one
-        setMessages((prev) =>
-          prev.map((m) => (m.id === tempId ? realMsg : m))
-        )
+        setMessages((prev) => {
+          const updated = prev.map((m) => (m.id === tempId ? realMsg : m))
+          messageCacheRef.current.set(receiverId, updated)
+          return updated
+        })
 
         return realMsg
       } catch {
-        setMessages((prev) => prev.filter((m) => m.id !== tempId))
+        setMessages((prev) => {
+          const updated = prev.filter((m) => m.id !== tempId)
+          messageCacheRef.current.set(receiverId, updated)
+          return updated
+        })
         return null
       }
     },
@@ -239,6 +277,28 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
     [selectConversation]
   )
 
+  // Handle incoming messages from SSE or poll: update cache for all partners,
+  // push to state only for the active partner
+  function handleIncomingMessages(incomingMsgs: ChatMessageData[]) {
+    if (incomingMsgs.length === 0) return
+
+    // Group by partner
+    const byPartner = new Map<string, ChatMessageData[]>()
+    for (const msg of incomingMsgs) {
+      const partnerId =
+        msg.senderId === user!.registrationId ? msg.receiverId : msg.senderId
+      if (!byPartner.has(partnerId)) byPartner.set(partnerId, [])
+      byPartner.get(partnerId)!.push(msg)
+    }
+
+    for (const [partnerId, msgs] of byPartner) {
+      const merged = mergeIntoCache(partnerId, msgs)
+      if (partnerId === activePartnerIdRef.current) {
+        setMessages(merged)
+      }
+    }
+  }
+
   // Fallback poll — used only if SSE fails persistently
   const poll = useCallback(async () => {
     if (!user) return
@@ -247,26 +307,8 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
       if (!res.ok) return
       const data = await res.json()
       const hasNewMessages = data.messages?.length > 0
-      if (hasNewMessages && activePartnerIdRef.current) {
-        const relevantMessages = data.messages.filter(
-          (m: ChatMessageData) =>
-            m.senderId === activePartnerIdRef.current ||
-            m.receiverId === activePartnerIdRef.current
-        )
-        if (relevantMessages.length > 0) {
-          setMessages((prev) => {
-            const existingIds = new Set(prev.map((m) => m.id))
-            const newMsgs = relevantMessages.filter(
-              (m: ChatMessageData) => !existingIds.has(m.id)
-            )
-            if (newMsgs.length === 0) return prev
-            return [...prev, ...newMsgs].sort(
-              (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-            )
-          })
-        }
-      }
       if (hasNewMessages) {
+        handleIncomingMessages(data.messages)
         fetchConversations()
         const incomingFromOthers = data.messages.filter(
           (m: ChatMessageData) =>
@@ -280,7 +322,7 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
     } catch {
       // ignore
     }
-  }, [user, fetchConversations])
+  }, [user, fetchConversations]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // SSE stream setup with visibility handling and polling fallback
   useEffect(() => {
@@ -297,29 +339,9 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
         const data = JSON.parse((event as MessageEvent).data)
         const hasNewMessages = data.messages?.length > 0
 
-        if (hasNewMessages && activePartnerIdRef.current) {
-          const relevantMessages = data.messages.filter(
-            (m: ChatMessageData) =>
-              m.senderId === activePartnerIdRef.current ||
-              m.receiverId === activePartnerIdRef.current
-          )
-          if (relevantMessages.length > 0) {
-            setMessages((prev) => {
-              const existingIds = new Set(prev.map((m) => m.id))
-              const newMsgs = relevantMessages.filter(
-                (m: ChatMessageData) => !existingIds.has(m.id)
-              )
-              if (newMsgs.length === 0) return prev
-              return [...prev, ...newMsgs].sort(
-                (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-              )
-            })
-          }
-        }
-
         if (hasNewMessages) {
+          handleIncomingMessages(data.messages)
           fetchConversations()
-          // Notify nav icon if new unread messages arrived from a non-active partner
           const incomingFromOthers = data.messages.filter(
             (m: ChatMessageData) =>
               m.receiverId === user.registrationId &&
@@ -369,7 +391,7 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
       eventSourceRef.current = null
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
     }
-  }, [user, fetchConversations, poll])
+  }, [user, fetchConversations, poll]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     conversations,
