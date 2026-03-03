@@ -40,11 +40,6 @@ function ChatSkeleton() {
             <Pulse className="h-4 w-28 mb-1.5" />
             <Pulse className="h-3 w-20" />
           </div>
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <div className="p-2 text-gray-300">
-              <ArrowRightStartOnRectangleIcon className="w-4 h-4" />
-            </div>
-          </div>
         </div>
         {/* Real search UI — this is static */}
         <div className="p-4 pb-3">

@@ -4,6 +4,7 @@ import {sanityFetch} from '@/sanity/lib/live'
 import NexusLogo from './NexusLogo'
 import ChatNavIcon from './ChatNavIcon'
 import UserNavMenu from './UserNavMenu'
+import MobileNav from './MobileNav'
 
 export default async function Header() {
   const {data: settings} = await sanityFetch({
@@ -21,22 +22,26 @@ export default async function Header() {
           </Link>
 
           <nav className="flex items-center gap-1">
-            {navLinks.map((link: any, index: number) => (
-              <Link
-                key={index}
-                href={link.href}
-                className={
-                  link.highlighted
-                    ? 'px-6 py-2 bg-blue-100 text-gray-900 rounded hover:bg-blue-200 transition-colors'
-                    : 'px-6 py-2 text-gray-700 hover:text-gray-900 transition-colors'
-                }
-              >
-                {link.label}
-              </Link>
-            ))}
+            {/* Desktop links — hidden on mobile */}
+            <div className="hidden md:flex items-center gap-1">
+              {navLinks.map((link: any, index: number) => (
+                <Link
+                  key={index}
+                  href={link.href}
+                  className={
+                    link.highlighted
+                      ? 'px-6 py-2 bg-blue-100 text-gray-900 rounded hover:bg-blue-200 transition-colors'
+                      : 'px-6 py-2 text-gray-700 hover:text-gray-900 transition-colors'
+                  }
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
             <ChatNavIcon />
-            <div className="w-2" />
+            <div className="md:w-2" />
             <UserNavMenu />
+            <MobileNav navLinks={navLinks} />
           </nav>
         </div>
       </div>

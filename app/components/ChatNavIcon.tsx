@@ -50,7 +50,7 @@ export default function ChatNavIcon() {
     >
       <ChatBubbleLeftIcon className="w-5 h-5" />
       {unreadCount > 0 && (
-        <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[16px] h-4 px-1 text-[10px] font-bold bg-red-500 text-white rounded-full leading-none">
+        <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[16px] h-4 px-1 text-[10px] font-bold bg-blue-500 text-white rounded-full leading-none">
           {unreadCount > 99 ? '99+' : unreadCount}
         </span>
       )}
