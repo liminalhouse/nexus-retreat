@@ -25,7 +25,10 @@ function Pulse({className = ''}: {className?: string}) {
 }
 
 function ChatSkeleton() {
-  const count = getStoredConversationCount()
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    setCount(getStoredConversationCount())
+  }, [])
 
   return (
     <div className="flex h-full lg:rounded-xl border border-gray-200 shadow-sm overflow-hidden bg-white">

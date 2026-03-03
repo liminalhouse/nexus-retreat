@@ -31,9 +31,11 @@ export default function ChatNavIcon() {
     }
 
     window.addEventListener('chatMessagesRead', handleMessagesRead)
+    window.addEventListener('chatUnreadCountChanged', fetchCount)
     return () => {
       clearInterval(interval)
       window.removeEventListener('chatMessagesRead', handleMessagesRead)
+      window.removeEventListener('chatUnreadCountChanged', fetchCount)
     }
   }, [])
 

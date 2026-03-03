@@ -266,7 +266,17 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
           })
         }
       }
-      if (hasNewMessages) fetchConversations()
+      if (hasNewMessages) {
+        fetchConversations()
+        const incomingFromOthers = data.messages.filter(
+          (m: ChatMessageData) =>
+            m.receiverId === user.registrationId &&
+            m.senderId !== activePartnerIdRef.current
+        )
+        if (incomingFromOthers.length > 0) {
+          window.dispatchEvent(new CustomEvent('chatUnreadCountChanged'))
+        }
+      }
     } catch {
       // ignore
     }
@@ -307,7 +317,18 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
           }
         }
 
-        if (hasNewMessages) fetchConversations()
+        if (hasNewMessages) {
+          fetchConversations()
+          // Notify nav icon if new unread messages arrived from a non-active partner
+          const incomingFromOthers = data.messages.filter(
+            (m: ChatMessageData) =>
+              m.receiverId === user.registrationId &&
+              m.senderId !== activePartnerIdRef.current
+          )
+          if (incomingFromOthers.length > 0) {
+            window.dispatchEvent(new CustomEvent('chatUnreadCountChanged'))
+          }
+        }
       })
 
       es.onerror = () => {
