@@ -3,9 +3,9 @@
   "private": true,
   "scripts": {
     "prebuild": "npm run typegen",
-    "build": "next build",
+    "build": "drizzle-kit migrate && next build",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "predev": "npm run typegen",
     "dev": "next dev --turbopack",
