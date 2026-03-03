@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server'
 import {db} from '@/lib/db'
 import {registrations, chatSessions} from '@/lib/db/schema'
-import {ne, gt, ilike, or, sql} from 'drizzle-orm'
+import {ne, gt, ilike, or, and, sql} from 'drizzle-orm'
 import {requireChatAuth} from '@/lib/auth/chatAuth'
 
 export async function GET(request: NextRequest) {
@@ -21,8 +21,21 @@ export async function GET(request: NextRequest) {
 
   const onlineSet = new Set(activeSessions.map((s) => s.registrationId))
 
-  // Build query
-  let query = db
+  const notSelf = ne(registrations.id, user.registrationId)
+
+  const searchFilter = q
+    ? (() => {
+        const searchPattern = `%${q}%`
+        return or(
+          ilike(registrations.firstName, searchPattern),
+          ilike(registrations.lastName, searchPattern),
+          ilike(registrations.organization, searchPattern),
+          sql`CONCAT(${registrations.firstName}, ' ', ${registrations.lastName}) ILIKE ${searchPattern}`
+        )
+      })()
+    : undefined
+
+  const query = db
     .select({
       id: registrations.id,
       firstName: registrations.firstName,
@@ -32,20 +45,7 @@ export async function GET(request: NextRequest) {
       profilePicture: registrations.profilePicture,
     })
     .from(registrations)
-    .where(ne(registrations.id, user.registrationId))
-    .$dynamic()
-
-  if (q) {
-    const searchPattern = `%${q}%`
-    query = query.where(
-      or(
-        ilike(registrations.firstName, searchPattern),
-        ilike(registrations.lastName, searchPattern),
-        ilike(registrations.organization, searchPattern),
-        sql`CONCAT(${registrations.firstName}, ' ', ${registrations.lastName}) ILIKE ${searchPattern}`
-      )
-    )
-  }
+    .where(searchFilter ? and(notSelf, searchFilter) : notSelf)
 
   const attendees = await query.limit(50)
 

@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, useEffect, useRef} from 'react'
+import {useState, useEffect, useRef, useCallback} from 'react'
 import {MagnifyingGlassIcon} from '@heroicons/react/24/outline'
 import {formatDistanceToNow} from 'date-fns'
 import Avatar from '@/app/components/Avatar'
@@ -24,16 +24,20 @@ export default function ConversationList({
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<Attendee[]>([])
   const [isSearching, setIsSearching] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const searchWrapperRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults([])
       setIsSearching(false)
+      setDropdownOpen(false)
       return
     }
 
     setIsSearching(true)
+    setDropdownOpen(true)
     if (searchTimeout.current) clearTimeout(searchTimeout.current)
 
     searchTimeout.current = setTimeout(async () => {
@@ -47,67 +51,81 @@ export default function ConversationList({
     }
   }, [searchQuery, onSearch])
 
+  // Close dropdown when clicking outside the search wrapper
+  const handleClickOutside = useCallback((e: MouseEvent) => {
+    if (searchWrapperRef.current && !searchWrapperRef.current.contains(e.target as Node)) {
+      setDropdownOpen(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [handleClickOutside])
+
   const handleSelectAttendee = (attendee: Attendee) => {
     onStartNew(attendee)
     setSearchQuery('')
     setSearchResults([])
+    setDropdownOpen(false)
   }
 
   return (
     <div className="flex flex-col h-full">
       {/* Search */}
       <div className="p-4 pb-3">
-        <p className="text-sm font-semibold text-gray-900 mb-3">Search for an attendee</p>
-        <div className="relative">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <div className="relative" ref={searchWrapperRef}>
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
           <input
             type="text"
-            placeholder="Type name to search..."
+            placeholder="Search for an attendee..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => searchQuery.trim() && setDropdownOpen(true)}
             className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border-gray-200 bg-gray-50 focus:border-blue-500 focus:ring-blue-500 focus:bg-white"
           />
-        </div>
-      </div>
 
-      {/* Search results */}
-      {searchQuery.trim() && (
-        <div className="border-b border-gray-100">
-          {isSearching ? (
-            <div className="p-4 text-sm text-gray-500 text-center">Searching...</div>
-          ) : searchResults.length === 0 ? (
-            <div className="p-4 text-sm text-gray-500 text-center">No results found</div>
-          ) : (
-            <div className="max-h-60 overflow-y-auto">
-              {searchResults.map((attendee) => {
-                const name = `${attendee.firstName} ${attendee.lastName}`
-                return (
-                  <button
-                    key={attendee.id}
-                    onClick={() => handleSelectAttendee(attendee)}
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left"
-                  >
-                    <ChatAvatar
-                      name={name}
-                      photo={attendee.profilePicture}
-                      online={attendee.online}
-                      size="sm"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-900 truncate">{name}</p>
-                      {(attendee.title || attendee.organization) && (
-                        <p className="text-xs text-gray-500 truncate">
-                          {[attendee.title, attendee.organization].filter(Boolean).join(', ')}
-                        </p>
-                      )}
-                    </div>
-                  </button>
-                )
-              })}
+          {/* Dropdown results — absolutely positioned, no layout shift */}
+          {dropdownOpen && searchQuery.trim() && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
+              {isSearching ? (
+                <div className="px-4 py-3 text-sm text-gray-500 text-center">Searching...</div>
+              ) : searchResults.length === 0 ? (
+                <div className="px-4 py-3 text-sm text-gray-500 text-center">No results found</div>
+              ) : (
+                <div className="max-h-60 overflow-y-auto">
+                  {searchResults.map((attendee) => {
+                    const name = `${attendee.firstName} ${attendee.lastName}`
+                    return (
+                      <button
+                        key={attendee.id}
+                        onMouseDown={(e) => e.preventDefault()} // keep focus on input
+                        onClick={() => handleSelectAttendee(attendee)}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left"
+                      >
+                        <ChatAvatar
+                          name={name}
+                          photo={attendee.profilePicture}
+                          online={attendee.online}
+                          size="sm"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-900 truncate">{name}</p>
+                          {(attendee.title || attendee.organization) && (
+                            <p className="text-xs text-gray-500 truncate">
+                              {[attendee.title, attendee.organization].filter(Boolean).join(', ')}
+                            </p>
+                          )}
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           )}
         </div>
-      )}
+      </div>
 
       {/* Conversation list */}
       <div className="flex-1 overflow-y-auto">

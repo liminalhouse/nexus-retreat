@@ -43,12 +43,11 @@ function ChatSkeleton() {
         </div>
         {/* Real search UI — this is static */}
         <div className="p-4 pb-3">
-          <p className="text-sm font-semibold text-gray-900 mb-3">Search for an attendee</p>
           <div className="relative">
             <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Type name to search..."
+              placeholder="Search for an attendee..."
               disabled
               className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border-gray-200 bg-gray-50"
             />
