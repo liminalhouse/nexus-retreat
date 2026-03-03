@@ -63,7 +63,11 @@ export default function UserNavMenu() {
         <div className="absolute right-0 mt-2 w-52 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
           {/* Triangle caret pointing up, aligned to avatar */}
           <div className="absolute -top-[7px] right-3 w-3 h-3 bg-white border-l border-t border-gray-100 rotate-45" />
-          <div className="px-4 py-2.5 border-b border-gray-100">
+          <Link
+            href="/profile"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2.5 border-b border-gray-100 hover:bg-gray-50 transition-colors"
+          >
             <p className="text-sm font-semibold text-gray-900 truncate">
               {user.firstName} {user.lastName}
             </p>
@@ -72,7 +76,7 @@ export default function UserNavMenu() {
                 {[user.title, user.organization].filter(Boolean).join(', ')}
               </p>
             )}
-          </div>
+          </Link>
           <button
             onClick={handleLogout}
             className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"

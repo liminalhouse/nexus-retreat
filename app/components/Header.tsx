@@ -35,6 +35,7 @@ export default async function Header() {
               </Link>
             ))}
             <ChatNavIcon />
+            <div className="w-2" />
             <UserNavMenu />
           </nav>
         </div>

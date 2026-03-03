@@ -87,7 +87,7 @@ function ChatSkeleton() {
 }
 
 export default function ChatContainer() {
-  const {user, isLoading, initialConversations, logout} = useChatAuth()
+  const {user, isLoading, initialConversations} = useChatAuth()
   const {
     conversations,
     messages,
@@ -132,15 +132,6 @@ export default function ChatContainer() {
               {[user.title, user.organization].filter(Boolean).join(', ')}
             </p>
           </div>
-          {/* <div className="flex items-center gap-1 flex-shrink-0">
-            <button
-              onClick={logout}
-              title="Sign out"
-              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <ArrowRightStartOnRectangleIcon className="w-4 h-4" />
-            </button>
-          </div> */}
         </div>
 
         <ConversationList
