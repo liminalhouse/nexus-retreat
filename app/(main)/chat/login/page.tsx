@@ -1,19 +1,10 @@
-'use client'
-
-import {Suspense} from 'react'
-import {useSearchParams} from 'next/navigation'
+import {redirect} from 'next/navigation'
+import {getSessionUser} from '@/lib/auth/chatAuth'
 import LoginForm from '@/app/components/LoginForm'
 
-function LoginWithParams() {
-  const searchParams = useSearchParams()
-  const from = searchParams.get('from') || '/chat'
-  return <LoginForm from={from} />
-}
+export default async function ChatLoginPage() {
+  const user = await getSessionUser()
+  if (user) redirect('/chat')
 
-export default function ChatLoginPage() {
-  return (
-    <Suspense>
-      <LoginWithParams />
-    </Suspense>
-  )
+  return <LoginForm from="/chat" />
 }

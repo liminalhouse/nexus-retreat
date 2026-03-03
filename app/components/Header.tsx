@@ -2,7 +2,6 @@ import Link from 'next/link'
 import {settingsQuery} from '@/sanity/lib/queries'
 import {sanityFetch} from '@/sanity/lib/live'
 import NexusLogo from './NexusLogo'
-import ChatNavIcon from './ChatNavIcon'
 import UserNavMenu from './UserNavMenu'
 import MobileNav from './MobileNav'
 
@@ -38,8 +37,6 @@ export default async function Header() {
                 </Link>
               ))}
             </div>
-            <ChatNavIcon />
-            <div className="md:w-2" />
             <UserNavMenu />
             <MobileNav navLinks={navLinks} />
           </nav>

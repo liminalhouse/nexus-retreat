@@ -5,11 +5,11 @@ import {ChatBubbleLeftRightIcon, EyeIcon, EyeSlashIcon, KeyIcon} from '@heroicon
 import NexusLogo from '@/app/components/NexusLogo'
 
 type LoginFormProps = {
-  from: string
+  from?: string
 }
 
 export default function LoginForm({from}: LoginFormProps) {
-  const isChat = window.location.href.includes('/chat/login')
+  const isChat = window.location.href.includes('/chat/login') || from === '/chat'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)

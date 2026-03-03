@@ -1,5 +1,5 @@
 import {redirect} from 'next/navigation'
-import {getChatUser} from '@/lib/auth/chatAuth'
+import {getSessionUser} from '@/lib/auth/chatAuth'
 import {ChatContainer} from '@/app/components/Chat'
 
 export const metadata = {
@@ -7,7 +7,7 @@ export const metadata = {
 }
 
 export default async function ChatPage() {
-  const user = await getChatUser()
+  const user = await getSessionUser()
   if (!user) {
     redirect('/chat/login')
   }

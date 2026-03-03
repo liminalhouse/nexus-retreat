@@ -9,7 +9,7 @@ import type {ChatUser} from '@/lib/types/chat'
 const COOKIE_NAME = 'chat-token'
 const SESSION_DURATION_DAYS = 7
 
-export async function getChatUser(): Promise<ChatUser | null> {
+export async function getSessionUser(): Promise<ChatUser | null> {
   const cookieStore = await cookies()
   const token = cookieStore.get(COOKIE_NAME)?.value
   if (!token) return null
@@ -47,7 +47,7 @@ export async function getChatUser(): Promise<ChatUser | null> {
 }
 
 export async function requireChatAuth(): Promise<ChatUser | null> {
-  const user = await getChatUser()
+  const user = await getSessionUser()
   if (!user) return null
 
   // Fire-and-forget: update lastActiveAt for online tracking (don't block response)

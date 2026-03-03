@@ -1,6 +1,6 @@
 import {redirect} from 'next/navigation'
 import type {ReactNode} from 'react'
-import {getChatUser} from '@/lib/auth/chatAuth'
+import {getSessionUser} from '@/lib/auth/chatAuth'
 import {db} from '@/lib/db'
 import {registrations} from '@/lib/db/schema'
 import {eq} from 'drizzle-orm'
@@ -41,7 +41,7 @@ function FullWidth({children}: {children: ReactNode}) {
 }
 
 export default async function ProfilePage() {
-  const user = await getChatUser()
+  const user = await getSessionUser()
   if (!user) redirect('/chat/login')
 
   const [reg] = await db
