@@ -25,6 +25,28 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
     conversationsRef.current = conversations
   }, [conversations])
 
+  // Sequentially prefetch messages for all conversations not yet in cache.
+  // convs defaults to conversationsRef so it works from both effects and callbacks.
+  async function prefetchOthers(skipPartnerId: string, convs?: Conversation[]) {
+    const list = convs ?? conversationsRef.current
+    for (const conv of list) {
+      if (conv.partnerId === skipPartnerId) continue
+      if (messageCacheRef.current.has(conv.partnerId)) continue
+      try {
+        const res = await fetch(`/api/chat/messages/${conv.partnerId}`)
+        if (res.ok) {
+          const data = await res.json()
+          // Only write to cache if still absent (another path may have fetched it)
+          if (!messageCacheRef.current.has(conv.partnerId)) {
+            messageCacheRef.current.set(conv.partnerId, data.messages)
+          }
+        }
+      } catch {
+        // ignore — this is best-effort background work
+      }
+    }
+  }
+
   // Merge new messages into the cache for a partner; returns the merged array
   function mergeIntoCache(partnerId: string, newMsgs: ChatMessageData[]): ChatMessageData[] {
     const existing = messageCacheRef.current.get(partnerId) ?? []
@@ -67,7 +89,11 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
             }
           })
           .catch(() => {})
-          .finally(() => setIsLoadingMessages(false))
+          .finally(() => {
+            setIsLoadingMessages(false)
+            // Prefetch all other conversations in the background
+            prefetchOthers(firstPartnerId, initialConversations)
+          })
       }
     }
   }, [initialConversations, user])
@@ -115,10 +141,14 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
       } catch {
         // ignore
       } finally {
-        if (showLoading) setIsLoadingMessages(false)
+        if (showLoading) {
+          setIsLoadingMessages(false)
+          // Cold load finished — prefetch remaining uncached conversations
+          prefetchOthers(partnerId)
+        }
       }
     },
-    [user]
+    [user] // eslint-disable-line react-hooks/exhaustive-deps
   )
 
   // Select a conversation
