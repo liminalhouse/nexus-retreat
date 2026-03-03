@@ -63,10 +63,10 @@ export default async function Footer() {
         {/* Partner Logos */}
         {footerLogos.length > 0 && (
           <div className="mt-10 pt-8 border-t border-gray-600">
-            <div
-              className="flex flex-wrap justify-center gap-6 md:flex-nowrap md:justify-start items-center"
-              style={{filter: 'brightness(100%)'}}
-            >
+            <div className="mb-6">
+              <strong>Sponsors</strong>
+            </div>
+            <div className="flex flex-wrap justify-center gap-6 md:flex-nowrap md:justify-start items-center">
               {footerLogos.map((logo: any, index: number) => {
                 const img = (
                   <SanityImageClient
@@ -75,7 +75,7 @@ export default async function Footer() {
                     width={logo.image.asset.metadata?.dimensions?.width || 200}
                     height={logo.image.asset.metadata?.dimensions?.height || 80}
                     preview={logo.image.asset.metadata?.lqip}
-                    className="h-10 w-auto object-contain"
+                    className="h-8 w-auto object-contain"
                     mode="contain"
                   />
                 )
