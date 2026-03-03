@@ -2,6 +2,8 @@ import Link from 'next/link'
 import {settingsQuery} from '@/sanity/lib/queries'
 import {sanityFetch} from '@/sanity/lib/live'
 import NexusLogo from './NexusLogo'
+import ChatNavIcon from './ChatNavIcon'
+import UserNavMenu from './UserNavMenu'
 
 export default async function Header() {
   const {data: settings} = await sanityFetch({
@@ -18,7 +20,7 @@ export default async function Header() {
             <NexusLogo styleType="lockup" className="w-[100px] h-[40px]" />
           </Link>
 
-          <nav className="flex items-center gap-3">
+          <nav className="flex items-center gap-1">
             {navLinks.map((link: any, index: number) => (
               <Link
                 key={index}
@@ -32,13 +34,8 @@ export default async function Header() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              key={navLinks.length}
-              href="/login"
-              className="px-6 py-2 text-gray-700 hover:text-gray-900 transition-colors"
-            >
-              Login
-            </Link>
+            <ChatNavIcon />
+            <UserNavMenu />
           </nav>
         </div>
       </div>

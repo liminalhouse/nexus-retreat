@@ -32,7 +32,7 @@ function renderContent(content: string, isSelf: boolean) {
       </a>
     ) : (
       part
-    )
+    ),
   )
 }
 
@@ -113,7 +113,10 @@ export default function ChatView({
       </div>
 
       {/* Messages */}
-      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-white">
+      <div
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-white"
+      >
         {isLoadingMessages ? (
           <LoadingSpinner />
         ) : messages.length === 0 ? (
@@ -128,7 +131,9 @@ export default function ChatView({
                     isSelf ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap break-words">{renderContent(msg.content, isSelf)}</p>
+                  <p className="text-sm whitespace-pre-wrap break-words">
+                    {renderContent(msg.content, isSelf)}
+                  </p>
                 </div>
                 <p className="text-[11px] text-gray-400 mt-1 px-1">
                   {new Date(msg.createdAt).toLocaleTimeString([], {

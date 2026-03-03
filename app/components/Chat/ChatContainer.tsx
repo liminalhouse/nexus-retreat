@@ -28,7 +28,7 @@ function ChatSkeleton() {
   const count = getStoredConversationCount()
 
   return (
-    <div className="flex h-full rounded-xl border border-gray-200 shadow-sm overflow-hidden bg-white">
+    <div className="flex h-full lg:rounded-xl border border-gray-200 shadow-sm overflow-hidden bg-white">
       {/* Sidebar */}
       <div className="flex flex-col w-full md:w-80 lg:w-96 border-r border-gray-100">
         {/* User header */}
@@ -84,12 +84,7 @@ function ChatSkeleton() {
 }
 
 export default function ChatContainer() {
-  const {
-    user,
-    isLoading,
-    initialConversations,
-    logout,
-  } = useChatAuth()
+  const {user, isLoading, initialConversations, logout} = useChatAuth()
   const {
     conversations,
     messages,
@@ -117,7 +112,7 @@ export default function ChatContainer() {
   const activeConversation = conversations.find((c) => c.partnerId === activePartnerId) || null
 
   return (
-    <div className="flex h-full rounded-xl border border-gray-200 shadow-sm overflow-hidden bg-white">
+    <div className="flex h-full lg:rounded-xl border border-gray-200 shadow-sm overflow-hidden bg-white">
       {/* Sidebar */}
       <div
         className={`${

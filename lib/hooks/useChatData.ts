@@ -14,11 +14,16 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const sseErrorCountRef = useRef(0)
   const activePartnerIdRef = useRef<string | null>(autoSelectId)
+  const conversationsRef = useRef<Conversation[]>(initialConversations || [])
 
-  // Keep ref in sync
+  // Keep refs in sync
   useEffect(() => {
     activePartnerIdRef.current = activePartnerId
   }, [activePartnerId])
+
+  useEffect(() => {
+    conversationsRef.current = conversations
+  }, [conversations])
 
   // Seed conversations from initial data and fetch messages for auto-selected conversation
   useEffect(() => {
@@ -27,6 +32,13 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
       initializedRef.current = true
       // Fetch messages for auto-selected conversation
       if (autoSelectId && user) {
+        // Dispatch before fetch so the nav icon clears optimistically
+        const autoConv = initialConversations.find((c) => c.partnerId === autoSelectId)
+        if (autoConv?.unreadCount) {
+          window.dispatchEvent(
+            new CustomEvent('chatMessagesRead', {detail: {count: autoConv.unreadCount}})
+          )
+        }
         fetch(`/api/chat/messages/${autoSelectId}`)
           .then((res) => (res.ok ? res.json() : null))
           .then((data) => {
@@ -89,7 +101,13 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
       setActivePartnerId(partnerId)
       if (partnerId) {
         fetchMessages(partnerId)
-        // Clear unread count for this partner
+        // Notify nav icon using ref (safe to read outside updater), then clear local state
+        const conv = conversationsRef.current.find((c) => c.partnerId === partnerId)
+        if (conv?.unreadCount) {
+          window.dispatchEvent(
+            new CustomEvent('chatMessagesRead', {detail: {count: conv.unreadCount}})
+          )
+        }
         setConversations((prev) =>
           prev.map((c) => (c.partnerId === partnerId ? {...c, unreadCount: 0} : c))
         )
