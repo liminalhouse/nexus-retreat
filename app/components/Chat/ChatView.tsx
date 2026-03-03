@@ -1,6 +1,6 @@
 'use client'
 
-import {useState} from 'react'
+import {useState, useEffect, useRef} from 'react'
 import {ArrowLeftIcon, PaperAirplaneIcon} from '@heroicons/react/24/solid'
 import {ChatAvatar} from './ConversationList'
 import type {ChatUser, ChatMessageData, Conversation} from '@/lib/types/chat'
@@ -12,6 +12,28 @@ type ChatViewProps = {
   isLoadingMessages: boolean
   onSend: (receiverId: string, content: string) => Promise<ChatMessageData | null>
   onBack: () => void
+}
+
+const URL_REGEX = /(https?:\/\/\S+)/g
+
+function renderContent(content: string, isSelf: boolean) {
+  // Split on URLs — capturing group keeps the URLs in the result array at odd indices
+  const parts = content.split(URL_REGEX)
+  return parts.map((part, i) =>
+    i % 2 === 1 ? (
+      <a
+        key={i}
+        href={part}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`underline break-all ${isSelf ? 'text-blue-100 hover:text-white' : 'text-blue-600 hover:text-blue-800'}`}
+      >
+        {part}
+      </a>
+    ) : (
+      part
+    )
+  )
 }
 
 function LoadingSpinner() {
@@ -32,6 +54,12 @@ export default function ChatView({
 }: ChatViewProps) {
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = messagesContainerRef.current
+    if (el) el.scrollTop = el.scrollHeight
+  }, [messages])
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -85,7 +113,7 @@ export default function ChatView({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-white">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-white">
         {isLoadingMessages ? (
           <LoadingSpinner />
         ) : messages.length === 0 ? (
@@ -100,7 +128,7 @@ export default function ChatView({
                     isSelf ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+                  <p className="text-sm whitespace-pre-wrap break-words">{renderContent(msg.content, isSelf)}</p>
                 </div>
                 <p className="text-[11px] text-gray-400 mt-1 px-1">
                   {new Date(msg.createdAt).toLocaleTimeString([], {

@@ -3,8 +3,6 @@
 import {useState, useEffect, useCallback, useRef} from 'react'
 import type {ChatUser, ChatMessageData, Conversation, Attendee} from '@/lib/types/chat'
 
-const POLL_INTERVAL = 4000
-
 export function useChatData(user: ChatUser | null, initialConversations?: Conversation[] | null) {
   const autoSelectId = initialConversations?.[0]?.partnerId ?? null
   const [conversations, setConversations] = useState<Conversation[]>(initialConversations || [])
@@ -12,8 +10,9 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
   const [activePartnerId, setActivePartnerId] = useState<string | null>(autoSelectId)
   const [isLoadingMessages, setIsLoadingMessages] = useState(!!autoSelectId)
   const initializedRef = useRef(false)
-  const lastPollTimestamp = useRef<string | null>(null)
-  const pollInterval = useRef<ReturnType<typeof setInterval> | null>(null)
+  const eventSourceRef = useRef<EventSource | null>(null)
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const sseErrorCountRef = useRef(0)
   const activePartnerIdRef = useRef<string | null>(autoSelectId)
 
   // Keep ref in sync
@@ -215,23 +214,14 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
     [selectConversation]
   )
 
-  // Poll for updates
+  // Fallback poll — used only if SSE fails persistently
   const poll = useCallback(async () => {
     if (!user) return
     try {
-      const url = lastPollTimestamp.current
-        ? `/api/chat/poll?since=${encodeURIComponent(lastPollTimestamp.current)}`
-        : '/api/chat/poll'
-
-      const res = await fetch(url)
+      const res = await fetch('/api/chat/poll')
       if (!res.ok) return
       const data = await res.json()
-
-      lastPollTimestamp.current = data.timestamp
-
       const hasNewMessages = data.messages?.length > 0
-
-      // Update messages if viewing a conversation
       if (hasNewMessages && activePartnerIdRef.current) {
         const relevantMessages = data.messages.filter(
           (m: ChatMessageData) =>
@@ -251,27 +241,89 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
           })
         }
       }
-
-      // Only refetch conversations when there are actually new messages
-      if (hasNewMessages) {
-        fetchConversations()
-      }
+      if (hasNewMessages) fetchConversations()
     } catch {
-      // ignore poll errors
+      // ignore
     }
   }, [user, fetchConversations])
 
-  // Setup polling (skip initial fetch — conversations come from /api/chat/me)
+  // SSE stream setup with visibility handling and polling fallback
   useEffect(() => {
     if (!user) return
 
-    pollInterval.current = setInterval(poll, POLL_INTERVAL)
-    return () => {
-      if (pollInterval.current) {
-        clearInterval(pollInterval.current)
+    function setupStream() {
+      eventSourceRef.current?.close()
+      sseErrorCountRef.current = 0
+
+      const es = new EventSource('/api/chat/stream')
+
+      es.addEventListener('messages', (event) => {
+        sseErrorCountRef.current = 0
+        const data = JSON.parse((event as MessageEvent).data)
+        const hasNewMessages = data.messages?.length > 0
+
+        if (hasNewMessages && activePartnerIdRef.current) {
+          const relevantMessages = data.messages.filter(
+            (m: ChatMessageData) =>
+              m.senderId === activePartnerIdRef.current ||
+              m.receiverId === activePartnerIdRef.current
+          )
+          if (relevantMessages.length > 0) {
+            setMessages((prev) => {
+              const existingIds = new Set(prev.map((m) => m.id))
+              const newMsgs = relevantMessages.filter(
+                (m: ChatMessageData) => !existingIds.has(m.id)
+              )
+              if (newMsgs.length === 0) return prev
+              return [...prev, ...newMsgs].sort(
+                (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+              )
+            })
+          }
+        }
+
+        if (hasNewMessages) fetchConversations()
+      })
+
+      es.onerror = () => {
+        sseErrorCountRef.current++
+        if (sseErrorCountRef.current >= 5) {
+          // SSE persistently failing — fall back to 4s polling
+          es.close()
+          eventSourceRef.current = null
+          pollIntervalRef.current = setInterval(poll, 4000)
+        }
+      }
+
+      eventSourceRef.current = es
+    }
+
+    setupStream()
+
+    function handleVisibility() {
+      if (document.visibilityState === 'hidden') {
+        eventSourceRef.current?.close()
+        eventSourceRef.current = null
+      } else {
+        // Tab visible again — clear fallback poll if active and reopen stream
+        if (pollIntervalRef.current) {
+          clearInterval(pollIntervalRef.current)
+          pollIntervalRef.current = null
+        }
+        setupStream()
+        fetchConversations() // catch up while stream re-establishes
       }
     }
-  }, [user, poll, fetchConversations])
+
+    document.addEventListener('visibilitychange', handleVisibility)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility)
+      eventSourceRef.current?.close()
+      eventSourceRef.current = null
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
+    }
+  }, [user, fetchConversations, poll])
 
   return {
     conversations,
