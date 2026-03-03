@@ -36,7 +36,7 @@ export default function LoginForm({from}: LoginFormProps) {
         setLoading(false)
         return
       }
-      window.location.href = from
+      window.location.href = from ?? '/profile'
     } catch {
       setError('An error occurred. Please try again.')
       setLoading(false)
