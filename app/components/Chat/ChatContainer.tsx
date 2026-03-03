@@ -129,7 +129,7 @@ export default function ChatContainer() {
               {[user.title, user.organization].filter(Boolean).join(', ')}
             </p>
           </div>
-          <div className="flex items-center gap-1 flex-shrink-0">
+          {/* <div className="flex items-center gap-1 flex-shrink-0">
             <button
               onClick={logout}
               title="Sign out"
@@ -137,7 +137,7 @@ export default function ChatContainer() {
             >
               <ArrowRightStartOnRectangleIcon className="w-4 h-4" />
             </button>
-          </div>
+          </div> */}
         </div>
 
         <ConversationList

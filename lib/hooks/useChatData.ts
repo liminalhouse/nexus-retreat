@@ -4,17 +4,16 @@ import {useState, useEffect, useCallback, useRef} from 'react'
 import type {ChatUser, ChatMessageData, Conversation, Attendee} from '@/lib/types/chat'
 
 export function useChatData(user: ChatUser | null, initialConversations?: Conversation[] | null) {
-  const autoSelectId = initialConversations?.[0]?.partnerId ?? null
-  const [conversations, setConversations] = useState<Conversation[]>(initialConversations || [])
+  const [conversations, setConversations] = useState<Conversation[]>([])
   const [messages, setMessages] = useState<ChatMessageData[]>([])
-  const [activePartnerId, setActivePartnerId] = useState<string | null>(autoSelectId)
-  const [isLoadingMessages, setIsLoadingMessages] = useState(!!autoSelectId)
+  const [activePartnerId, setActivePartnerId] = useState<string | null>(null)
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false)
   const initializedRef = useRef(false)
   const eventSourceRef = useRef<EventSource | null>(null)
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const sseErrorCountRef = useRef(0)
-  const activePartnerIdRef = useRef<string | null>(autoSelectId)
-  const conversationsRef = useRef<Conversation[]>(initialConversations || [])
+  const activePartnerIdRef = useRef<string | null>(null)
+  const conversationsRef = useRef<Conversation[]>([])
 
   // Keep refs in sync
   useEffect(() => {
@@ -25,21 +24,29 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
     conversationsRef.current = conversations
   }, [conversations])
 
-  // Seed conversations from initial data and fetch messages for auto-selected conversation
+  // Seed conversations from initial data and auto-select the latest conversation
   useEffect(() => {
     if (initialConversations && !initializedRef.current) {
       setConversations(initialConversations)
       initializedRef.current = true
-      // Fetch messages for auto-selected conversation
-      if (autoSelectId && user) {
+
+      const firstPartnerId = initialConversations[0]?.partnerId ?? null
+      const isDesktop = window.innerWidth >= 768
+      if (firstPartnerId && user && isDesktop) {
+        // Select the latest conversation (desktop only — mobile shows the list first)
+        setActivePartnerId(firstPartnerId)
+        activePartnerIdRef.current = firstPartnerId
+
         // Dispatch before fetch so the nav icon clears optimistically
-        const autoConv = initialConversations.find((c) => c.partnerId === autoSelectId)
+        const autoConv = initialConversations.find((c) => c.partnerId === firstPartnerId)
         if (autoConv?.unreadCount) {
           window.dispatchEvent(
             new CustomEvent('chatMessagesRead', {detail: {count: autoConv.unreadCount}})
           )
         }
-        fetch(`/api/chat/messages/${autoSelectId}`)
+
+        setIsLoadingMessages(true)
+        fetch(`/api/chat/messages/${firstPartnerId}`)
           .then((res) => (res.ok ? res.json() : null))
           .then((data) => {
             if (data) setMessages(data.messages)
@@ -48,7 +55,7 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
           .finally(() => setIsLoadingMessages(false))
       }
     }
-  }, [initialConversations, user, autoSelectId])
+  }, [initialConversations, user])
 
   // Fetch conversations — merges with existing temp conversations so they don't vanish
   const fetchConversations = useCallback(async () => {
