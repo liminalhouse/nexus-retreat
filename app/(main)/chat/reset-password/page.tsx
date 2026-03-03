@@ -1,12 +1,20 @@
 'use client'
 
-import {useState, useEffect} from 'react'
+import {useState, useEffect, Suspense} from 'react'
 import {useSearchParams, useRouter} from 'next/navigation'
 import {EyeIcon, EyeSlashIcon} from '@heroicons/react/24/outline'
 import NexusLogo from '@/app/components/NexusLogo'
 import Link from 'next/link'
 
 export default function ResetPasswordPage() {
+  return (
+    <Suspense>
+      <ResetPasswordForm />
+    </Suspense>
+  )
+}
+
+function ResetPasswordForm() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const token = searchParams.get('token')

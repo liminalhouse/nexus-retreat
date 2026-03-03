@@ -1,7 +1,7 @@
 import {NextRequest} from 'next/server'
 import {db} from '@/lib/db'
-import {chatMessages, chatSessions} from '@/lib/db/schema'
-import {eq, or, and, gt, desc, sql, isNull} from 'drizzle-orm'
+import {chatMessages} from '@/lib/db/schema'
+import {eq, or, and, gt, desc} from 'drizzle-orm'
 import {requireChatAuth} from '@/lib/auth/chatAuth'
 
 const STREAM_DURATION_MS = 25_000
@@ -63,44 +63,6 @@ export async function GET(request: NextRequest) {
           if (newMessages.length > 0) {
             const now = new Date()
             const nowIso = now.toISOString()
-            const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
-
-            const partnerIdSet = new Set<string>()
-            for (const msg of newMessages) {
-              partnerIdSet.add(msg.senderId === userId ? msg.receiverId : msg.senderId)
-            }
-            const partnerIdArray = Array.from(partnerIdSet)
-
-            // Secondary queries run in parallel — only when there are new messages
-            const [activeSessions, unreadMessages] = await Promise.all([
-              db
-                .select({registrationId: chatSessions.registrationId})
-                .from(chatSessions)
-                .where(
-                  and(
-                    sql`${chatSessions.registrationId} IN ${partnerIdArray}`,
-                    gt(chatSessions.lastActiveAt, fiveMinutesAgo)
-                  )
-                ),
-              db
-                .select({senderId: chatMessages.senderId})
-                .from(chatMessages)
-                .where(
-                  and(eq(chatMessages.receiverId, userId), isNull(chatMessages.readAt))
-                ),
-            ])
-
-            const onlineSet = new Set(activeSessions.map((s) => s.registrationId))
-
-            const unreadCounts: Record<string, number> = {}
-            for (const msg of unreadMessages) {
-              unreadCounts[msg.senderId] = (unreadCounts[msg.senderId] || 0) + 1
-            }
-
-            const onlineStatus: Record<string, boolean> = {}
-            for (const pid of partnerIdArray) {
-              onlineStatus[pid] = onlineSet.has(pid)
-            }
 
             const messages = newMessages.reverse().map((m) => ({
               id: m.id,
@@ -111,7 +73,7 @@ export async function GET(request: NextRequest) {
               createdAt: m.createdAt.toISOString(),
             }))
 
-            const payload = JSON.stringify({messages, unreadCounts, onlineStatus, timestamp: nowIso})
+            const payload = JSON.stringify({messages, timestamp: nowIso})
             controller.enqueue(encoder.encode(`id: ${nowIso}\nevent: messages\ndata: ${payload}\n\n`))
 
             sinceDate = now // advance window only when messages are found

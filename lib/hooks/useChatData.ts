@@ -308,7 +308,7 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
   )
 
   // Handle incoming messages from SSE or poll: update cache for all partners,
-  // push to state only for the active partner
+  // push to state only for the active partner, and notify nav icon of new unread messages
   function handleIncomingMessages(incomingMsgs: ChatMessageData[]) {
     if (incomingMsgs.length === 0) return
 
@@ -327,6 +327,16 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
         setMessages(merged)
       }
     }
+
+    // Notify nav icon if any incoming messages are from non-active partners
+    const hasUnseenFromOthers = incomingMsgs.some(
+      (m) =>
+        m.receiverId === user!.registrationId &&
+        m.senderId !== activePartnerIdRef.current
+    )
+    if (hasUnseenFromOthers) {
+      window.dispatchEvent(new CustomEvent('chatUnreadCountChanged'))
+    }
   }
 
   // Fallback poll — used only if SSE fails persistently
@@ -336,18 +346,9 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
       const res = await fetch('/api/chat/poll')
       if (!res.ok) return
       const data = await res.json()
-      const hasNewMessages = data.messages?.length > 0
-      if (hasNewMessages) {
+      if (data.messages?.length > 0) {
         handleIncomingMessages(data.messages)
         fetchConversations()
-        const incomingFromOthers = data.messages.filter(
-          (m: ChatMessageData) =>
-            m.receiverId === user.registrationId &&
-            m.senderId !== activePartnerIdRef.current
-        )
-        if (incomingFromOthers.length > 0) {
-          window.dispatchEvent(new CustomEvent('chatUnreadCountChanged'))
-        }
       }
     } catch {
       // ignore
@@ -367,19 +368,9 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
       es.addEventListener('messages', (event) => {
         sseErrorCountRef.current = 0
         const data = JSON.parse((event as MessageEvent).data)
-        const hasNewMessages = data.messages?.length > 0
-
-        if (hasNewMessages) {
+        if (data.messages?.length > 0) {
           handleIncomingMessages(data.messages)
           fetchConversations()
-          const incomingFromOthers = data.messages.filter(
-            (m: ChatMessageData) =>
-              m.receiverId === user.registrationId &&
-              m.senderId !== activePartnerIdRef.current
-          )
-          if (incomingFromOthers.length > 0) {
-            window.dispatchEvent(new CustomEvent('chatUnreadCountChanged'))
-          }
         }
       })
 
