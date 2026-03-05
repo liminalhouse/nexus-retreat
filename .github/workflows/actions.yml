@@ -54,7 +54,7 @@ jobs:
       - name: Run Migrations on Preview Branch
         run: npm install && npm run db:generate && npm run db:migrate
         env:
-          NEXUS_DATABASE_URL: '${{ steps.create_neon_branch.outputs.db_url }}'
+          DATABASE_URL: '${{ steps.create_neon_branch.outputs.db_url }}'
       - name: Post Schema Diff Comment to PR
         uses: neondatabase/schema-diff-action@v1
         with:
@@ -86,4 +86,4 @@ jobs:
           npm run db:generate
           npm run db:migrate
         env:
-          NEXUS_DATABASE_URL: '${{ secrets.NEXUS_DATABASE_URL }}'
+          DATABASE_URL: '${{ secrets.DATABASE_URL }}'
