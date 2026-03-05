@@ -197,6 +197,7 @@ export default function EmailPageClient({registrations, unsubscribedEmails}: {re
               selectedIds={selectedIds}
               onSelectAll={handleSelectAll}
               onSelectOne={handleSelectOne}
+              onSetSelection={setSelectedIds}
               unsubscribedEmails={unsubscribedEmails}
             />
           </div>

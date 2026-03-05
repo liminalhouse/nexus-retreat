@@ -64,12 +64,14 @@ export default function RecipientList({
   selectedIds,
   onSelectAll,
   onSelectOne,
+  onSetSelection,
   unsubscribedEmails = [],
 }: {
   registrations: Registration[]
   selectedIds: Set<string>
   onSelectAll: (checked: boolean) => void
   onSelectOne: (id: string, checked: boolean) => void
+  onSetSelection: (ids: Set<string>) => void
   unsubscribedEmails?: string[]
 }) {
   const unsubscribedSet = useMemo(() => new Set(unsubscribedEmails), [unsubscribedEmails])
@@ -111,17 +113,11 @@ export default function RecipientList({
 
   const handleSelectAllFiltered = (checked: boolean) => {
     if (checked) {
-      selectableRegistrations.forEach((r) => {
-        if (!selectedIds.has(r.id)) {
-          onSelectOne(r.id, true)
-        }
-      })
+      // Replace selection with exactly the current filtered set
+      onSetSelection(new Set(selectableRegistrations.map((r) => r.id)))
     } else {
-      selectableRegistrations.forEach((r) => {
-        if (selectedIds.has(r.id)) {
-          onSelectOne(r.id, false)
-        }
-      })
+      // Clear all selections, not just the visible ones
+      onSetSelection(new Set())
     }
   }
 
