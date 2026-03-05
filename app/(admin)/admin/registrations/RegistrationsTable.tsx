@@ -52,6 +52,12 @@ const EMPTY_REGISTRATION: Registration = {
   guest_dinner_attendance: null,
   guest_activities: null,
   admin_notes: null,
+  arrival: null,
+  departure: null,
+  hotel_full_name: '',
+  confirmation_number: '',
+  rooms: '',
+  room_guest: '',
 }
 
 type ColumnConfig = {
