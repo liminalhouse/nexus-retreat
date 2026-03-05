@@ -95,6 +95,17 @@ const VARIABLE_CATEGORIES = [
     ],
   },
   {
+    category: 'Hotel & Logistics',
+    variables: [
+      {key: 'arrival', label: 'Arrival Date'},
+      {key: 'departure', label: 'Departure Date'},
+      {key: 'rooms', label: 'Room(s)'},
+      {key: 'confirmationNumber', label: 'Confirmation Number'},
+      {key: 'roomGuest', label: 'Room Guest'},
+      {key: 'hotelFullName', label: 'Name on Hotel Reservation'},
+    ],
+  },
+  {
     category: 'Links',
     variables: [
       {key: 'editLink', label: 'Edit Registration Link', linkText: 'Edit your registration'},
