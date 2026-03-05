@@ -249,7 +249,7 @@ const columns: ColumnConfig[] = [
   },
   {
     key: 'hotel_full_name',
-    label: 'Hotel',
+    label: 'Name on reservation',
     render: (reg) => reg.hotel_full_name || '-',
   },
   {
