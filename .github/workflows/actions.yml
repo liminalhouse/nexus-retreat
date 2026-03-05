@@ -34,6 +34,9 @@ jobs:
       || github.event.action == 'opened'
       || github.event.action == 'reopened')
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Get branch expiration date as an env variable (2 weeks from now)
         id: get_expiration_date
@@ -46,6 +49,19 @@ jobs:
           branch_name: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
           expires_at: ${{ env.EXPIRES_AT }}
+      - name: Run Migrations
+        run: npm run db:migrate
+        env:
+          # to use pooled connection
+          DATABASE_URL: '${{ steps.create_neon_branch.outputs.db_url_with_pooler }}'
+          # OR to use unpooled connection
+          # DATABASE_URL: "${{ steps.create_neon_branch.outputs.db_url }}"
+      - name: Post Schema Diff Comment to PR
+        uses: neondatabase/schema-diff-action@v1
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          compare_branch: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
+          api_key: ${{ secrets.NEON_API_KEY }}
 
   # The step above creates a new Neon branch.
   # You may want to do something with the new branch, such as run migrations, run tests
@@ -55,13 +71,13 @@ jobs:
   # It's important you don't log the DATABASE_URL as output as it contains a username and
   # password for your database.
   # For example, you can uncomment the lines below to run a database migration command:
-  #      - name: Run Migrations
-  #        run: npm run db:migrate
-  #        env:
-  #          # to use pooled connection
-  #          DATABASE_URL: "${{ steps.create_neon_branch.outputs.db_url_with_pooler }}"
-  #          # OR to use unpooled connection
-  #          # DATABASE_URL: "${{ steps.create_neon_branch.outputs.db_url }}"
+  #  - name: Run Migrations
+  #    run: npm run db:migrate
+  #    env:
+  #      # to use pooled connection
+  #      DATABASE_URL: "${{ steps.create_neon_branch.outputs.db_url_with_pooler }}"
+  #      # OR to use unpooled connection
+  #      # DATABASE_URL: "${{ steps.create_neon_branch.outputs.db_url }}"
 
   # Following the step above, which runs database migrations, you may want to check
   # for schema changes in your database. We recommend using the following action to
