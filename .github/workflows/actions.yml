@@ -50,6 +50,7 @@ jobs:
           api_key: ${{ secrets.NEON_API_KEY }}
           expires_at: ${{ env.EXPIRES_AT }}
       - name: Run Migrations
+        working-directory: '../'
         run: npm run db:migrate
         env:
           # to use pooled connection
