@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, useMemo} from 'react'
+import {useState, useMemo, useEffect, useRef} from 'react'
 import Avatar from '@/app/components/Avatar'
 import type {Registration} from '@/lib/db/schema'
 import type {Registration as SnakeCaseRegistration} from '@/lib/types/registration'
@@ -111,12 +111,22 @@ export default function RecipientList({
   const allFilteredSelected =
     selectableRegistrations.length > 0 && selectableRegistrations.every((r) => selectedIds.has(r.id))
 
+  // Track whether all filtered were selected before the filter/search changes.
+  // Assigned during render so the effect reads the value from the current render cycle.
+  const allFilteredSelectedRef = useRef(allFilteredSelected)
+  allFilteredSelectedRef.current = allFilteredSelected
+
+  useEffect(() => {
+    if (allFilteredSelectedRef.current) {
+      // All filtered were selected — keep selection in sync with the new filtered set
+      onSetSelection(new Set(selectableRegistrations.map((r) => r.id)))
+    }
+  }, [filters, searchQuery])
+
   const handleSelectAllFiltered = (checked: boolean) => {
     if (checked) {
-      // Replace selection with exactly the current filtered set
       onSetSelection(new Set(selectableRegistrations.map((r) => r.id)))
     } else {
-      // Clear all selections, not just the visible ones
       onSetSelection(new Set())
     }
   }
