@@ -276,7 +276,11 @@ export default function EditModal({
       >
         <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
           <h2 className="text-2xl font-bold">
-            {isCreateMode ? 'Add New Registrant' : readOnly ? 'View Registration (not editable)' : 'Edit Registration'}
+            {isCreateMode
+              ? 'Add New Registrant'
+              : readOnly
+                ? 'View Registration (not editable)'
+                : 'Edit Registration'}
           </h2>
           <button
             onClick={onClose}
@@ -823,7 +827,9 @@ export default function EditModal({
               <hr className="my-6 border-t border-gray-200 w-[800px] mx-auto" />
               {/* Hotel Details */}
               <div>
-                <h3 className="text-lg font-semibold text-blue-700 mb-3">Hotel Details</h3>
+                <h3 className="text-lg font-semibold text-blue-700 mb-3">
+                  Hotel Details (Admin only)
+                </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className={labelClass}>Arrival Date</label>
@@ -846,7 +852,7 @@ export default function EditModal({
                     />
                   </div>
                   <div>
-                    <label className={labelClass}>Hotel Name</label>
+                    <label className={labelClass}>Name on Hotel Reservation</label>
                     <input
                       type="text"
                       value={formData.hotel_full_name || ''}
@@ -891,9 +897,11 @@ export default function EditModal({
               <hr className="my-6 border-t border-gray-200 w-[800px] mx-auto" />
               {/* Admin Notes */}
               <div>
-                <h3 className="text-lg font-semibold text-blue-700 mb-3">Admin Notes</h3>
+                <h3 className="text-lg font-semibold text-blue-700 mb-3">
+                  Admin Notes (Visible to Admin Only)
+                </h3>
                 <div>
-                  <label className={labelClass}>Internal Notes (Visible to Admins Only)</label>
+                  <label className={labelClass}>Internal Notes</label>
                   <textarea
                     value={formData.admin_notes || ''}
                     onChange={(e) => handleChange('admin_notes', e.target.value)}
@@ -919,7 +927,9 @@ export default function EditModal({
               {isAdminView && formData.edit_token && (
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <div className="space-y-2">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Edit full registration:</p>
+                    <p className="text-sm font-medium text-gray-700 mb-2">
+                      Edit full registration:
+                    </p>
                     <EditLinkRow
                       url={getEditRegistrationUrl(formData.edit_token)}
                       onCopy={() => {
@@ -985,14 +995,20 @@ export default function EditModal({
                     isSaving ||
                     isDeleting ||
                     (isCreateMode
-                      ? !formData.first_name?.trim() || !formData.last_name?.trim() || !formData.email?.trim()
+                      ? !formData.first_name?.trim() ||
+                        !formData.last_name?.trim() ||
+                        !formData.email?.trim()
                       : !hasChanges())
                   }
                   title={!isCreateMode && !hasChanges() ? 'No changes to save' : ''}
                 >
                   {isSaving
-                    ? isCreateMode ? 'Adding...' : 'Saving...'
-                    : isCreateMode ? 'Add Registrant' : 'Save Changes'}
+                    ? isCreateMode
+                      ? 'Adding...'
+                      : 'Saving...'
+                    : isCreateMode
+                      ? 'Add Registrant'
+                      : 'Save Changes'}
                 </button>
               </>
             )}
@@ -1033,8 +1049,12 @@ export default function EditModal({
                   disabled={isSaving}
                 >
                   {isSaving
-                    ? isCreateMode ? 'Adding...' : 'Saving...'
-                    : isCreateMode ? 'Confirm & Add' : 'Confirm & Save'}
+                    ? isCreateMode
+                      ? 'Adding...'
+                      : 'Saving...'
+                    : isCreateMode
+                      ? 'Confirm & Add'
+                      : 'Confirm & Save'}
                 </button>
               </div>
             </div>
