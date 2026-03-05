@@ -50,6 +50,12 @@ function toSnakeCase(reg: Registration): SnakeCaseRegistration {
     guest_dinner_attendance: reg.guestDinnerAttendance,
     guest_activities: reg.guestActivities,
     admin_notes: reg.adminNotes,
+    arrival: reg.arrival,
+    departure: reg.departure,
+    rooms: reg.rooms,
+    hotel_full_name: reg.hotelFullName,
+    confirmation_number: reg.confirmationNumber,
+    room_guest: reg.roomGuest,
   }
 }
 

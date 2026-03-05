@@ -821,6 +821,74 @@ export default function EditModal({
           {isAdminView && (
             <>
               <hr className="my-6 border-t border-gray-200 w-[800px] mx-auto" />
+              {/* Hotel Details */}
+              <div>
+                <h3 className="text-lg font-semibold text-blue-700 mb-3">Hotel Details</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}>Arrival Date</label>
+                    <input
+                      type="date"
+                      value={formData.arrival || ''}
+                      onChange={(e) => handleChange('arrival', e.target.value)}
+                      className={inputClass}
+                      readOnly={readOnly}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Departure Date</label>
+                    <input
+                      type="date"
+                      value={formData.departure || ''}
+                      onChange={(e) => handleChange('departure', e.target.value)}
+                      className={inputClass}
+                      readOnly={readOnly}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Hotel Name</label>
+                    <input
+                      type="text"
+                      value={formData.hotel_full_name || ''}
+                      onChange={(e) => handleChange('hotel_full_name', e.target.value)}
+                      className={inputClass}
+                      readOnly={readOnly}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Confirmation Number</label>
+                    <input
+                      type="text"
+                      value={formData.confirmation_number || ''}
+                      onChange={(e) => handleChange('confirmation_number', e.target.value)}
+                      className={inputClass}
+                      readOnly={readOnly}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Room(s)</label>
+                    <input
+                      type="text"
+                      value={formData.rooms || ''}
+                      onChange={(e) => handleChange('rooms', e.target.value)}
+                      className={inputClass}
+                      readOnly={readOnly}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Room Guest</label>
+                    <input
+                      type="text"
+                      value={formData.room_guest || ''}
+                      onChange={(e) => handleChange('room_guest', e.target.value)}
+                      className={inputClass}
+                      readOnly={readOnly}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <hr className="my-6 border-t border-gray-200 w-[800px] mx-auto" />
               {/* Admin Notes */}
               <div>
                 <h3 className="text-lg font-semibold text-blue-700 mb-3">Admin Notes</h3>
