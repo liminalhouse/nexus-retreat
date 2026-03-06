@@ -102,3 +102,49 @@ export const emailUnsubscribes = pgTable('email_unsubscribes', {
 
 export type EmailUnsubscribe = typeof emailUnsubscribes.$inferSelect
 export type NewEmailUnsubscribe = typeof emailUnsubscribes.$inferInsert
+
+// Chat Passwords table
+export const chatPasswords = pgTable('chat_passwords', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  registrationId: uuid('registration_id')
+    .references(() => registrations.id)
+    .notNull()
+    .unique(),
+  passwordHash: text('password_hash').notNull(),
+  resetToken: text('reset_token'),
+  resetTokenExpiresAt: timestamp('reset_token_expires_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export type ChatPassword = typeof chatPasswords.$inferSelect
+
+// Chat Sessions table
+export const chatSessions = pgTable('chat_sessions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  registrationId: uuid('registration_id')
+    .references(() => registrations.id)
+    .notNull(),
+  token: text('token').notNull().unique(),
+  lastActiveAt: timestamp('last_active_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+})
+
+export type ChatSession = typeof chatSessions.$inferSelect
+
+// Chat Messages table
+export const chatMessages = pgTable('chat_messages', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  senderId: uuid('sender_id')
+    .references(() => registrations.id)
+    .notNull(),
+  receiverId: uuid('receiver_id')
+    .references(() => registrations.id)
+    .notNull(),
+  content: text('content').notNull(),
+  readAt: timestamp('read_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export type ChatMessage = typeof chatMessages.$inferSelect
