@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         guestActivities: registrations.guestActivities,
       })
       .from(registrations)
-      .where(eq(sql`lower(${registrations.email})`, normalizedEmail))
+      .where(eq(sql`lower(trim(${registrations.email}))`, normalizedEmail))
       .limit(1)
 
     if (!result || result.length === 0) {
