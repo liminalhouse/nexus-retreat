@@ -72,6 +72,14 @@ export const registrations = pgTable('registrations', {
 
   // Admin Only
   adminNotes: text('admin_notes'),
+
+  // Hotel / Logistics (admin-managed)
+  arrival: text('arrival'),
+  departure: text('departure'),
+  rooms: text('rooms'),
+  hotelFullName: text('hotel_full_name'),
+  confirmationNumber: text('confirmation_number'),
+  roomGuest: text('room_guest'),
 })
 
 export type Registration = typeof registrations.$inferSelect

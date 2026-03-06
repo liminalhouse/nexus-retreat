@@ -142,18 +142,16 @@ export default function EmailPageClient({registrations, unsubscribedEmails}: {re
   }
 
   const handleSelectOne = (id: string, checked: boolean) => {
-    // Prevent selecting unsubscribed registrants
     if (checked) {
       const reg = registrations.find((r) => r.id === id)
       if (reg && unsubscribedSet.has(reg.email.toLowerCase())) return
     }
-    const newSet = new Set(selectedIds)
-    if (checked) {
-      newSet.add(id)
-    } else {
-      newSet.delete(id)
-    }
-    setSelectedIds(newSet)
+    setSelectedIds((prev) => {
+      const newSet = new Set(prev)
+      if (checked) newSet.add(id)
+      else newSet.delete(id)
+      return newSet
+    })
   }
 
   return (
@@ -199,6 +197,7 @@ export default function EmailPageClient({registrations, unsubscribedEmails}: {re
               selectedIds={selectedIds}
               onSelectAll={handleSelectAll}
               onSelectOne={handleSelectOne}
+              onSetSelection={setSelectedIds}
               unsubscribedEmails={unsubscribedEmails}
             />
           </div>

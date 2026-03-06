@@ -86,6 +86,14 @@ export async function PATCH(request: NextRequest, {params}: {params: Promise<{id
       // Admin only
       adminNotes: toNullIfEmpty(formData.admin_notes),
 
+      // Hotel / Logistics
+      arrival: toNullIfEmpty(formData.arrival),
+      departure: toNullIfEmpty(formData.departure),
+      rooms: toNullIfEmpty(formData.rooms),
+      hotelFullName: toNullIfEmpty(formData.hotel_full_name),
+      confirmationNumber: toNullIfEmpty(formData.confirmation_number),
+      roomGuest: toNullIfEmpty(formData.room_guest),
+
       updatedAt: new Date(),
     }
 

@@ -87,6 +87,14 @@ function buildVariablesMap(registration: Registration | null, assistantFallbackT
     guestDinnerAttendance: formatArray(registration.guestDinnerAttendance),
     guestActivities: formatArray(registration.guestActivities),
 
+    // Hotel & Logistics
+    arrival: registration.arrival || '',
+    departure: registration.departure || '',
+    rooms: registration.rooms || '',
+    confirmationNumber: registration.confirmationNumber || '',
+    roomGuest: registration.roomGuest || '',
+    hotelFullName: registration.hotelFullName || '',
+
     // Links
     editLink: `${baseUrl}/edit-registration/${registration.editToken}`,
     activitiesLink: `${baseUrl}/edit-registration/${registration.editToken}/activities`,
