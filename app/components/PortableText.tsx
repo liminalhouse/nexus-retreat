@@ -94,7 +94,11 @@ export default function CustomPortableText({
         if (disableLinks) {
           return <span>{children}</span>
         }
-        return <ResolvedLink link={link}>{children}</ResolvedLink>
+        return (
+          <ResolvedLink link={link} className="text-nexus-navy-light hover:underline">
+            {children}
+          </ResolvedLink>
+        )
       },
     },
     types: {

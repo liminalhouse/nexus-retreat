@@ -188,6 +188,53 @@ export const settings = defineType({
       ],
     }),
     defineField({
+      name: 'footerLogos',
+      title: 'Partner Logos',
+      description: 'Logos displayed in a row in the footer',
+      type: 'array',
+      group: 'footer',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'footerLogo',
+          fields: [
+            defineField({
+              name: 'image',
+              title: 'Logo',
+              type: 'image',
+              validation: (rule) => rule.required(),
+              options: {hotspot: true},
+              fields: [
+                defineField({
+                  name: 'alt',
+                  title: 'Alt Text',
+                  type: 'string',
+                }),
+              ],
+            }),
+            defineField({
+              name: 'link',
+              title: 'Link URL',
+              type: 'url',
+              description: 'Optional link when clicking the logo',
+            }),
+          ],
+          preview: {
+            select: {
+              media: 'image',
+              title: 'image.alt',
+            },
+            prepare({media, title}) {
+              return {
+                title: title || 'Logo',
+                media,
+              }
+            },
+          },
+        }),
+      ],
+    }),
+    defineField({
       name: 'footerCopyright',
       title: 'Copyright Text',
       type: 'string',
