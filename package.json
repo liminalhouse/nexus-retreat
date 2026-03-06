@@ -2,7 +2,7 @@
   "name": "frontend",
   "private": true,
   "scripts": {
-    "prebuild": "npm run db:migrate && npm run typegen",
+    "prebuild": "npm run typegen",
     "build": "next build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit push",

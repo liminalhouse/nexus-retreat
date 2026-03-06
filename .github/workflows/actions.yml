@@ -52,7 +52,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run Migrations on Preview Branch
-        run: npm install && npm run db:generate && npm run db:migrate
+        run: npm install && npm run db:migrate
         env:
           DATABASE_URL: '${{ steps.create_neon_branch.outputs.db_url }}'
       - name: Post Schema Diff Comment to PR
@@ -83,7 +83,6 @@ jobs:
         if: github.event.pull_request.merged == true
         run: |
           npm install
-          npm run db:generate
           npm run db:migrate
         env:
           DATABASE_URL: '${{ secrets.DATABASE_URL }}'
