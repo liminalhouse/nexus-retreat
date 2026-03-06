@@ -196,6 +196,7 @@ export const settings = defineType({
       of: [
         defineArrayMember({
           type: 'object',
+          name: 'footerLogo',
           fields: [
             defineField({
               name: 'image',
