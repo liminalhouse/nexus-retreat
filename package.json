@@ -5,7 +5,8 @@
     "prebuild": "npm run typegen",
     "build": "next build",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "predev": "npm run typegen",
     "dev": "next dev --turbopack",
@@ -13,6 +14,11 @@
     "start": "next start",
     "type-check": "tsc --noEmit",
     "typegen": "sanity typegen generate"
+  },
+  "overrides": {
+    "esbuild": "^0.25.0",
+    "glob": "^10.5.0",
+    "undici": "^6.23.0"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -52,11 +58,6 @@
     "styled-components": "^6.1.19",
     "tailwindcss": "^4.1.12",
     "tippy.js": "^6.3.7"
-  },
-  "overrides": {
-    "glob": "^10.5.0",
-    "undici": "^6.23.0",
-    "esbuild": "^0.25.0"
   },
   "devDependencies": {
     "@sanity/prettier-config": "^3.0.0",
