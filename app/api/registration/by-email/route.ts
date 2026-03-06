@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server'
 import {db} from '@/lib/db'
 import {registrations} from '@/lib/db/schema'
-import {eq} from 'drizzle-orm'
+import {eq, sql} from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         guestActivities: registrations.guestActivities,
       })
       .from(registrations)
-      .where(eq(registrations.email, normalizedEmail))
+      .where(eq(sql`lower(${registrations.email})`, normalizedEmail))
       .limit(1)
 
     if (!result || result.length === 0) {
