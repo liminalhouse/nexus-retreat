@@ -64,7 +64,7 @@ export default async function Footer() {
         {footerLogos.length > 0 && (
           <div className="mt-10 pt-8 mb-10">
             <div className="mb-6">
-              <strong>Sponsors</strong>
+              <strong>Select Underwriting Partners</strong>
             </div>
             <div className="grid grid-cols-2 md:flex md:justify-center gap-6 md:flex-nowrap md:justify-start items-center">
               {footerLogos.map((logo: any, index: number) => {
