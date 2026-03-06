@@ -9,6 +9,7 @@ import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
 import {SessionTagsGroup} from '@/app/components/SessionTags'
 import SessionPlaceholder from '@/app/components/SessionPlaceholder'
+import Avatar from '@/app/components/Avatar'
 
 type Props = {
   params: Promise<{id: string}>
@@ -205,22 +206,12 @@ export default async function SessionPage({params}: Props) {
                         href={`/speakers/${speakerSlug}`}
                         className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100 hover:shadow-md hover:border-nexus-coral/30 transition-all"
                       >
-                        {speakerPhotoUrl ? (
-                          <Image
-                            src={speakerPhotoUrl}
-                            alt={`${speaker.firstName} ${speaker.lastName}`}
-                            width={64}
-                            height={64}
-                            className="rounded-full object-cover flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                            <span className="text-lg font-medium text-nexus-navy">
-                              {speaker.firstName?.[0]}
-                              {speaker.lastName?.[0]}
-                            </span>
-                          </div>
-                        )}
+                        <Avatar
+                          src={speakerPhotoUrl}
+                          firstName={speaker.firstName || ''}
+                          lastName={speaker.lastName || ''}
+                          size="lg"
+                        />
                         <div className="flex-1 min-w-0">
                           <h3 className="text-base font-semibold text-nexus-navy">
                             {speaker.firstName} {speaker.lastName}
