@@ -37,12 +37,15 @@
   /* Nexus brand colors */
   --color-nexus-navy: #3d4663;
   --color-nexus-navy-dark: #1c2544;
+  --color-nexus-navy-light: #4d5d94;
   --color-nexus-coral-medium-dark: #f25c5c;
   --color-nexus-coral: #f49898;
+  --color-nexus-coral-dark: #c96f6f;
   --color-nexus-coral-light: #f5a8a8;
   --color-nexus-beige: #faf5f1;
   --color-nexus-blue-gradient: linear-gradient(90deg, #0052ff 0%, #00c6ff 100%);
   --color-nexus-seafoam: #bed1bf;
+  --color-nexus-seafoam-dark: #1fb57a;
   --color-nexus-seafoam-light: #d4e5d8;
 
   /* Session tag color overrides - Boca resort inspired palette */

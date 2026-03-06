@@ -22,7 +22,23 @@ export const settingsQuery = defineQuery(`*[_type == "settings"][0]{
     label,
     href
   },
-  footerCopyright
+  footerCopyright,
+  footerLogos[]{
+    link,
+    image {
+      alt,
+      asset->{
+        _id,
+        metadata {
+          lqip,
+          dimensions {
+            width,
+            height
+          }
+        }
+      }
+    }
+  }
 }`)
 
 const linkFields = /* groq */ `
