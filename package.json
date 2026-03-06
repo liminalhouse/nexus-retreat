@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@neondatabase/serverless": "^1.0.2",
     "@portabletext/react": "^6.0.2",
     "@preline/accordion": "^3.2.3",
     "@sanity/assist": "^5.0.4",
