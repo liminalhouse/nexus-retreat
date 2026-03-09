@@ -46,7 +46,7 @@ jobs:
         id: create_neon_branch
         uses: neondatabase/create-branch-action@v6
         with:
-          project_id: ${{ vars.NEON_PROJECT_ID }}
+          project_id: ${{ secrets.NEON_PROJECT_ID }}
           branch_name: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
           expires_at: ${{ env.EXPIRES_AT }}
@@ -64,7 +64,7 @@ jobs:
           DB_URL: ${{ steps.create_neon_branch.outputs.db_url }}
           BRANCH: ${{ needs.setup.outputs.branch }}
         run: |
-          curl -X POST "https://api.vercel.com/v10/projects/${{ vars.VERCEL_PROJECT_ID }}/env" \
+          curl -X POST "https://api.vercel.com/v10/projects/${{ secrets.VERCEL_PROJECT_ID }}/env" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "$(jq -n \
@@ -75,7 +75,7 @@ jobs:
       - name: Post Schema Diff Comment to PR
         uses: neondatabase/schema-diff-action@v1
         with:
-          project_id: ${{ vars.NEON_PROJECT_ID }}
+          project_id: ${{ secrets.NEON_PROJECT_ID }}
           compare_branch: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
 
@@ -90,16 +90,16 @@ jobs:
       - name: Delete Neon Branch
         uses: neondatabase/delete-branch-action@v3
         with:
-          project_id: ${{ vars.NEON_PROJECT_ID }}
+          project_id: ${{ secrets.NEON_PROJECT_ID }}
           branch: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
       - name: Remove Vercel Preview Environment Variable
         run: |
-          ENV_ID=$(curl -s "https://api.vercel.com/v10/projects/${{ vars.VERCEL_PROJECT_ID }}/env?gitBranch=${{ needs.setup.outputs.branch }}" \
+          ENV_ID=$(curl -s "https://api.vercel.com/v10/projects/${{ secrets.VERCEL_PROJECT_ID }}/env?gitBranch=${{ needs.setup.outputs.branch }}" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | \
             jq -r '.envs[] | select(.key=="NEXUS_DATABASE_URL") | .id')
           if [ -n "$ENV_ID" ] && [ "$ENV_ID" != "null" ]; then
-            curl -s -X DELETE "https://api.vercel.com/v10/projects/${{ vars.VERCEL_PROJECT_ID }}/env/$ENV_ID" \
+            curl -s -X DELETE "https://api.vercel.com/v10/projects/${{ secrets.VERCEL_PROJECT_ID }}/env/$ENV_ID" \
               -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}"
           fi
       - name: Checkout
