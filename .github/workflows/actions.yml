@@ -60,17 +60,17 @@ jobs:
           NEXUS_DATABASE_URL: '${{ steps.create_neon_branch.outputs.db_url }}'
 
       - name: Set Vercel Preview Environment Variables
+        env:
+          DB_URL: ${{ steps.create_neon_branch.outputs.db_url }}
+          BRANCH: ${{ needs.setup.outputs.branch }}
         run: |
-          curl -s -X POST "https://api.vercel.com/v10/projects/${{ vars.VERCEL_PROJECT_ID }}/env" \
+          curl -X POST "https://api.vercel.com/v10/projects/${{ vars.VERCEL_PROJECT_ID }}/env" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d '{
-              "key": "NEXUS_DATABASE_URL",
-              "value": "${{ steps.create_neon_branch.outputs.db_url }}",
-              "type": "encrypted",
-              "target": ["preview"],
-              "gitBranch": "${{ needs.setup.outputs.branch }}"
-            }'
+            -d "$(jq -n \
+              --arg value "$DB_URL" \
+              --arg branch "$BRANCH" \
+              '{key: "NEXUS_DATABASE_URL", value: $value, type: "encrypted", target: ["preview"], gitBranch: $branch}')"
 
       - name: Post Schema Diff Comment to PR
         uses: neondatabase/schema-diff-action@v1
