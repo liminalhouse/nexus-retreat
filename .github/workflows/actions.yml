@@ -60,17 +60,14 @@ jobs:
           NEXUS_DATABASE_URL: '${{ steps.create_neon_branch.outputs.db_url }}'
 
       - name: Set Vercel Preview Environment Variables
+        env:
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
         run: |
-          # Install Vercel CLI
           npm i -g vercel
-
-          # Set DATABASE_URL for this preview
-          vercel env add NEXUS_DATABASE_URL \
-            --token=${{ secrets.VERCEL_TOKEN }} \
-            --scope=${{ vars.VERCEL_ORG_ID }} \
-            --environment=preview \
-            --git-branch=refs/heads/$(git rev-parse --abbrev-ref HEAD) \
-            -- "${{ steps.create_neon_branch.outputs.db_url }}"
+          echo "${{ steps.create_neon_branch.outputs.db_url }}" | \
+            vercel env add NEXUS_DATABASE_URL preview "${{ needs.setup.outputs.branch }}" \
+            --token="${{ secrets.VERCEL_TOKEN }}" --yes || true
 
       - name: Post Schema Diff Comment to PR
         uses: neondatabase/schema-diff-action@v1
@@ -93,6 +90,14 @@ jobs:
           project_id: ${{ vars.NEON_PROJECT_ID }}
           branch: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
+      - name: Remove Vercel Preview Environment Variable
+        env:
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: |
+          npm i -g vercel
+          vercel env rm NEXUS_DATABASE_URL preview "${{ needs.setup.outputs.branch }}" \
+            --token="${{ secrets.VERCEL_TOKEN }}" --yes || true
       - name: Checkout
         if: github.event.pull_request.merged == true
         uses: actions/checkout@v4
