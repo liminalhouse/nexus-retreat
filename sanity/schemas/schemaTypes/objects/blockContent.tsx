@@ -78,6 +78,31 @@ export const blockContent = defineType({
       },
     }),
     defineArrayMember({
+      name: 'youtube',
+      type: 'object',
+      title: 'YouTube Embed',
+      fields: [
+        defineField({
+          name: 'url',
+          title: 'YouTube URL',
+          type: 'url',
+          validation: (Rule) =>
+            Rule.required().custom((value) => {
+              if (!value) return true
+              const isYoutube =
+                /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)/.test(value)
+              return isYoutube || 'Must be a valid YouTube URL'
+            }),
+        }),
+      ],
+      preview: {
+        select: {url: 'url'},
+        prepare({url}) {
+          return {title: 'YouTube Embed', subtitle: url}
+        },
+      },
+    }),
+    defineArrayMember({
       name: 'image',
       type: 'image',
       title: 'Image',
