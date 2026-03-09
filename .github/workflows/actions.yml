@@ -41,6 +41,7 @@ jobs:
       - name: Get branch expiration date as an env variable (2 weeks from now)
         id: get_expiration_date
         run: echo "EXPIRES_AT=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+
       - name: Create Neon Branch
         id: create_neon_branch
         uses: neondatabase/create-branch-action@v6
@@ -49,12 +50,28 @@ jobs:
           branch_name: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
           expires_at: ${{ env.EXPIRES_AT }}
+
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Run Migrations on Preview Branch
         run: npm install && npm run db:migrate
         env:
           NEXUS_DATABASE_URL: '${{ steps.create_neon_branch.outputs.db_url }}'
+
+      - name: Set Vercel Preview Environment Variables
+        run: |
+          # Install Vercel CLI
+          npm i -g vercel
+
+          # Set DATABASE_URL for this preview
+          vercel env add NEXUS_DATABASE_URL \
+            --token=${{ secrets.VERCEL_TOKEN }} \
+            --scope=${{ vars.VERCEL_ORG_ID }} \
+            --environment=preview \
+            --git-branch=refs/heads/$(git rev-parse --abbrev-ref HEAD) \
+            -- "${{ steps.create_neon_branch.outputs.db_url }}"
+
       - name: Post Schema Diff Comment to PR
         uses: neondatabase/schema-diff-action@v1
         with:
