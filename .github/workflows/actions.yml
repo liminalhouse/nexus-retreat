@@ -46,7 +46,7 @@ jobs:
         id: create_neon_branch
         uses: neondatabase/create-branch-action@v6
         with:
-          project_id: ${{ vars.NEON_PROJECT_ID }}
+          project_id: ${{ secrets.NEON_PROJECT_ID }}
           branch_name: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
           expires_at: ${{ env.EXPIRES_AT }}
@@ -61,18 +61,21 @@ jobs:
 
       - name: Set Vercel Preview Environment Variables
         env:
-          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+          DB_URL: ${{ steps.create_neon_branch.outputs.db_url }}
+          BRANCH: ${{ needs.setup.outputs.branch }}
         run: |
-          npm i -g vercel
-          echo "${{ steps.create_neon_branch.outputs.db_url }}" | \
-            vercel env add NEXUS_DATABASE_URL preview "${{ needs.setup.outputs.branch }}" \
-            --token="${{ secrets.VERCEL_TOKEN }}" --yes || true
+          curl -X POST "https://api.vercel.com/v10/projects/${{ secrets.VERCEL_PROJECT_ID }}/env" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+              --arg value "$DB_URL" \
+              --arg branch "$BRANCH" \
+              '{key: "NEXUS_DATABASE_URL", value: $value, type: "encrypted", target: ["preview"], gitBranch: $branch}')"
 
       - name: Post Schema Diff Comment to PR
         uses: neondatabase/schema-diff-action@v1
         with:
-          project_id: ${{ vars.NEON_PROJECT_ID }}
+          project_id: ${{ secrets.NEON_PROJECT_ID }}
           compare_branch: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
 
@@ -87,17 +90,18 @@ jobs:
       - name: Delete Neon Branch
         uses: neondatabase/delete-branch-action@v3
         with:
-          project_id: ${{ vars.NEON_PROJECT_ID }}
+          project_id: ${{ secrets.NEON_PROJECT_ID }}
           branch: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
       - name: Remove Vercel Preview Environment Variable
-        env:
-          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
         run: |
-          npm i -g vercel
-          vercel env rm NEXUS_DATABASE_URL preview "${{ needs.setup.outputs.branch }}" \
-            --token="${{ secrets.VERCEL_TOKEN }}" --yes || true
+          ENV_ID=$(curl -s "https://api.vercel.com/v10/projects/${{ secrets.VERCEL_PROJECT_ID }}/env?gitBranch=${{ needs.setup.outputs.branch }}" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | \
+            jq -r '.envs[] | select(.key=="NEXUS_DATABASE_URL") | .id')
+          if [ -n "$ENV_ID" ] && [ "$ENV_ID" != "null" ]; then
+            curl -s -X DELETE "https://api.vercel.com/v10/projects/${{ secrets.VERCEL_PROJECT_ID }}/env/$ENV_ID" \
+              -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}"
+          fi
       - name: Checkout
         if: github.event.pull_request.merged == true
         uses: actions/checkout@v4
