@@ -41,7 +41,7 @@
       "idx": 5,
       "version": "7",
       "when": 1764619290850,
-      "tag": "0005_unique_ezekiel",
+      "tag": "0005_update_jacket_sizes",
       "breakpoints": true
     },
     {
@@ -56,6 +56,13 @@
       "version": "7",
       "when": 1770335305680,
       "tag": "0007_icy_gateway",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1772730579202,
+      "tag": "0008_tan_namorita",
       "breakpoints": true
     }
   ]

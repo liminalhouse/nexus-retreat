@@ -14,8 +14,14 @@
     "type-check": "tsc --noEmit",
     "typegen": "sanity typegen generate"
   },
+  "overrides": {
+    "esbuild": "^0.25.0",
+    "glob": "^10.5.0",
+    "undici": "^6.23.0"
+  },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@neondatabase/serverless": "^1.0.2",
     "@portabletext/react": "^6.0.2",
     "@preline/accordion": "^3.2.3",
     "@sanity/assist": "^5.0.4",
@@ -52,11 +58,6 @@
     "styled-components": "^6.1.19",
     "tailwindcss": "^4.1.12",
     "tippy.js": "^6.3.7"
-  },
-  "overrides": {
-    "glob": "^10.5.0",
-    "undici": "^6.23.0",
-    "esbuild": "^0.25.0"
   },
   "devDependencies": {
     "@sanity/prettier-config": "^3.0.0",
