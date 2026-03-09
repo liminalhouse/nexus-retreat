@@ -206,6 +206,12 @@ export async function POST(request: NextRequest) {
                 ? `${registration.firstName} ${registration.lastName}`
                 : null),
             editToken: registration.editToken,
+            arrival: registration.arrival,
+            departure: registration.departure,
+            rooms: registration.rooms,
+            confirmationNumber: registration.confirmationNumber,
+            roomGuest: registration.roomGuest,
+            hotelFullName: registration.hotelFullName,
           },
         })
 

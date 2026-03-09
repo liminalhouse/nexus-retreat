@@ -76,7 +76,7 @@ export const registrationFormConfig: Omit<
             label: 'Profile Picture',
             helperText: 'Upload a profile picture',
             accept: 'image/*',
-            required: true,
+            required: false,
           },
           {
             fieldType: 'text',
