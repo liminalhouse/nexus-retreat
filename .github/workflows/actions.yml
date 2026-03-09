@@ -60,14 +60,17 @@ jobs:
           NEXUS_DATABASE_URL: '${{ steps.create_neon_branch.outputs.db_url }}'
 
       - name: Set Vercel Preview Environment Variables
-        env:
-          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
         run: |
-          npm i -g vercel
-          echo "${{ steps.create_neon_branch.outputs.db_url }}" | \
-            vercel env add NEXUS_DATABASE_URL preview "${{ needs.setup.outputs.branch }}" \
-            --token="${{ secrets.VERCEL_TOKEN }}" --yes || true
+          curl -s -X POST "https://api.vercel.com/v10/projects/${{ vars.VERCEL_PROJECT_ID }}/env" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "key": "NEXUS_DATABASE_URL",
+              "value": "${{ steps.create_neon_branch.outputs.db_url }}",
+              "type": "encrypted",
+              "target": ["preview"],
+              "gitBranch": "${{ needs.setup.outputs.branch }}"
+            }'
 
       - name: Post Schema Diff Comment to PR
         uses: neondatabase/schema-diff-action@v1
@@ -91,13 +94,14 @@ jobs:
           branch: preview/pr-${{ github.event.number }}-${{ needs.setup.outputs.branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
       - name: Remove Vercel Preview Environment Variable
-        env:
-          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
         run: |
-          npm i -g vercel
-          vercel env rm NEXUS_DATABASE_URL preview "${{ needs.setup.outputs.branch }}" \
-            --token="${{ secrets.VERCEL_TOKEN }}" --yes || true
+          ENV_ID=$(curl -s "https://api.vercel.com/v10/projects/${{ vars.VERCEL_PROJECT_ID }}/env?gitBranch=${{ needs.setup.outputs.branch }}" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | \
+            jq -r '.envs[] | select(.key=="NEXUS_DATABASE_URL") | .id')
+          if [ -n "$ENV_ID" ] && [ "$ENV_ID" != "null" ]; then
+            curl -s -X DELETE "https://api.vercel.com/v10/projects/${{ vars.VERCEL_PROJECT_ID }}/env/$ENV_ID" \
+              -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}"
+          fi
       - name: Checkout
         if: github.event.pull_request.merged == true
         uses: actions/checkout@v4
