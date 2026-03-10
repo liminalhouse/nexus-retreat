@@ -110,3 +110,15 @@ export const emailUnsubscribes = pgTable('email_unsubscribes', {
 
 export type EmailUnsubscribe = typeof emailUnsubscribes.$inferSelect
 export type NewEmailUnsubscribe = typeof emailUnsubscribes.$inferInsert
+
+// Push Subscriptions table
+export const pushSubscriptions = pgTable('push_subscriptions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  endpoint: text('endpoint').notNull().unique(),
+  p256dh: text('p256dh').notNull(),
+  auth: text('auth').notNull(),
+})
+
+export type PushSubscription = typeof pushSubscriptions.$inferSelect
+export type NewPushSubscription = typeof pushSubscriptions.$inferInsert
