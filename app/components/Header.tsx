@@ -2,7 +2,7 @@ import Link from 'next/link'
 import {settingsQuery} from '@/sanity/lib/queries'
 import {sanityFetch} from '@/sanity/lib/live'
 import NexusLogo from './NexusLogo'
-import PushNotificationToggle from './PushNotificationToggle'
+import NotificationCenter from './NotificationCenter'
 
 export default async function Header() {
   const {data: settings} = await sanityFetch({
@@ -33,7 +33,7 @@ export default async function Header() {
                 {link.label}
               </Link>
             ))}
-            <PushNotificationToggle />
+            <NotificationCenter />
           </nav>
         </div>
       </div>
