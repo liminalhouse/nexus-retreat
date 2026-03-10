@@ -1,23 +1,32 @@
 import {NextRequest, NextResponse} from 'next/server'
-import webpush from 'web-push'
 import {db} from '@/lib/db'
 import {adminNotifications, pushSubscriptions} from '@/lib/db/schema'
-import {eq} from 'drizzle-orm'
-import {requireAuth} from '@/lib/auth/requireAuth'
-
-webpush.setVapidDetails(
-  process.env.VAPID_MAILTO!,
-  process.env.VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!,
-)
+import {gt} from 'drizzle-orm'
+import {unauthorizedResponse} from '@/lib/auth/checkAuth'
+import {broadcast} from '@/lib/webpush'
 
 export async function POST(request: NextRequest) {
-  await requireAuth('/admin')
+  const unauth = await unauthorizedResponse()
+  if (unauth) return unauth
 
   const {title, message} = await request.json()
 
   if (!title?.trim() || !message?.trim()) {
     return NextResponse.json({error: 'Title and message are required'}, {status: 400})
+  }
+
+  // Rate limit: block if a notification was sent in the last 30 seconds
+  const [recent] = await db
+    .select()
+    .from(adminNotifications)
+    .where(gt(adminNotifications.createdAt, new Date(Date.now() - 30_000)))
+    .limit(1)
+
+  if (recent) {
+    return NextResponse.json(
+      {error: 'Please wait a moment before sending another notification'},
+      {status: 429},
+    )
   }
 
   // Save to DB for in-app polling
@@ -26,32 +35,15 @@ export async function POST(request: NextRequest) {
     .values({title: title.trim(), message: message.trim()})
     .returning()
 
-  // Also send Web Push to all subscribers (background delivery for PWA homescreen)
+  // Broadcast via Web Push for background/homescreen delivery
   const subs = await db.select().from(pushSubscriptions)
-
   if (subs.length > 0) {
-    const payload = JSON.stringify({
+    await broadcast(subs, {
       title: title.trim(),
       body: message.trim(),
       tag: `admin-${notification.id}`,
       url: '/schedule',
     })
-
-    await Promise.allSettled(
-      subs.map(async (sub) => {
-        try {
-          await webpush.sendNotification(
-            {endpoint: sub.endpoint, keys: {p256dh: sub.p256dh, auth: sub.auth}},
-            payload,
-          )
-        } catch (err: unknown) {
-          const error = err as {statusCode?: number}
-          if (error?.statusCode === 410) {
-            await db.delete(pushSubscriptions).where(eq(pushSubscriptions.endpoint, sub.endpoint))
-          }
-        }
-      }),
-    )
   }
 
   return NextResponse.json(notification)

@@ -1,3 +1,6 @@
+self.addEventListener('install', () => self.skipWaiting())
+self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()))
+
 self.addEventListener('push', (event) => {
   if (!event.data) return
   const {title, body, tag, url} = event.data.json()
@@ -12,13 +15,14 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
-  const url = event.notification.data?.url || '/schedule'
+  const path = event.notification.data?.url || '/schedule'
+  const targetUrl = new URL(path, self.location.origin).href
   event.waitUntil(
     clients.matchAll({type: 'window', includeUncontrolled: true}).then((list) => {
       for (const client of list) {
-        if (client.url.includes(url) && 'focus' in client) return client.focus()
+        if (client.url === targetUrl && 'focus' in client) return client.focus()
       }
-      return clients.openWindow(url)
+      return clients.openWindow(targetUrl)
     })
   )
 })

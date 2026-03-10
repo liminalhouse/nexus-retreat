@@ -1,16 +1,20 @@
 import {NextRequest, NextResponse} from 'next/server'
-import webpush from 'web-push'
 import {db} from '@/lib/db'
 import {pushSubscriptions} from '@/lib/db/schema'
-import {eq} from 'drizzle-orm'
+import {broadcast} from '@/lib/webpush'
 import {client} from '@/sanity/lib/client'
-import {sessionsQuery} from '@/sanity/lib/queries'
+import {defineQuery} from 'next-sanity'
 
-webpush.setVapidDetails(
-  process.env.VAPID_MAILTO!,
-  process.env.VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!,
-)
+// Lean query — only fields needed for notification delivery
+const cronSessionsQuery = defineQuery(`
+  *[_type == "session"] | order(startTime asc) {
+    _id,
+    id,
+    title,
+    startTime,
+    location,
+  }
+`)
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
@@ -19,7 +23,12 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const sessions = await client.fetch(sessionsQuery)
+    const [sessions, subs] = await Promise.all([
+      client.fetch(cronSessionsQuery),
+      db.select().from(pushSubscriptions),
+    ])
+
+    if (subs.length === 0) return NextResponse.json({sent: 0, expired: 0, errors: 0})
 
     const now = Date.now()
     const windowStart = new Date(now + 13 * 60 * 1000)
@@ -30,52 +39,22 @@ export async function POST(request: NextRequest) {
       return start >= windowStart && start <= windowEnd
     })
 
-    if (upcomingSessions.length === 0) {
-      return NextResponse.json({sent: 0})
+    if (upcomingSessions.length === 0) return NextResponse.json({sent: 0, expired: 0, errors: 0})
+
+    const totals = {sent: 0, expired: 0, errors: 0}
+    for (const session of upcomingSessions as {_id: string; title: string; location?: string | null; id?: {current: string}; startTime: string}[]) {
+      const counts = await broadcast(subs, {
+        title: `Starting soon: ${session.title}`,
+        body: `${session.location ?? 'Main Stage'} · in 15 min`,
+        tag: session._id,
+        url: `/schedule/${session.id?.current ?? ''}`,
+      })
+      totals.sent += counts.sent
+      totals.expired += counts.expired
+      totals.errors += counts.errors
     }
 
-    const subs = await db.select().from(pushSubscriptions)
-
-    if (subs.length === 0) {
-      return NextResponse.json({sent: 0})
-    }
-
-    let sent = 0
-    const results = await Promise.allSettled(
-      upcomingSessions.flatMap((session: {_id: string; title: string; location?: string | null; id?: {current: string}}) =>
-        subs.map(async (sub) => {
-          const payload = JSON.stringify({
-            title: `Starting soon: ${session.title}`,
-            body: `${session.location ?? 'Main Stage'} · in 15 min`,
-            tag: session._id,
-            url: `/schedule/${session.id?.current ?? ''}`,
-          })
-
-          try {
-            await webpush.sendNotification(
-              {
-                endpoint: sub.endpoint,
-                keys: {p256dh: sub.p256dh, auth: sub.auth},
-              },
-              payload,
-            )
-            sent++
-          } catch (err: unknown) {
-            const error = err as {statusCode?: number}
-            if (error?.statusCode === 410) {
-              // Subscription expired — remove from DB
-              await db.delete(pushSubscriptions).where(eq(pushSubscriptions.endpoint, sub.endpoint))
-            } else {
-              throw err
-            }
-          }
-        })
-      )
-    )
-
-    const errors = results.filter((r) => r.status === 'rejected').length
-
-    return NextResponse.json({sent, errors})
+    return NextResponse.json(totals)
   } catch (error) {
     console.error('Failed to send push notifications:', error)
     return NextResponse.json({error: 'Internal server error'}, {status: 500})
