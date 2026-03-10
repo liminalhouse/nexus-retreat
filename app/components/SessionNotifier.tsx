@@ -1,14 +1,14 @@
 'use client'
 
 import {useEffect, useRef, useState} from 'react'
-import {pushNotification, type StoredNotification} from '@/lib/notifications'
+import {pushNotification, markUnread, type StoredNotification} from '@/lib/notifications'
 
 const REMINDERS_KEY = 'sessionReminders'
 const NOTIFIED_SESSIONS_KEY = 'notifiedSessions'
 const LAST_NOTIF_CHECK_KEY = 'lastNotifCheck'
 const SESSION_POLL_MS = 60_000
 const SESSION_REFRESH_MS = 30 * 60_000
-const ADMIN_POLL_MS = 30_000
+const ADMIN_POLL_MS = 5_000
 const NOTIFIED_TTL_MS = 24 * 60 * 60_000
 const TOAST_DURATION_MS = 30_000
 
@@ -59,19 +59,22 @@ export default function SessionNotifier() {
   }, [])
 
   function addToast(key: string, notif: StoredNotification) {
+    // Add to history and increment badge immediately — always, regardless of whether
+    // the user sees the toast or not.
+    pushNotification(notif)
+    markUnread()
     setToasts((prev) => (prev.find((t) => t.key === key) ? prev : [{key, ...notif}, ...prev]))
 
-    // After 30s: auto-dismiss and move to notification history/badge
+    // Auto-dismiss after 30s
     const timer = setTimeout(() => {
       timersRef.current.delete(key)
       setToasts((prev) => prev.filter((t) => t.key !== key))
-      pushNotification(notif) // User didn't see it — add to bell
     }, TOAST_DURATION_MS)
     timersRef.current.set(key, timer)
   }
 
   function dismissToast(key: string) {
-    // User actively dismissed — cancel the timer so it doesn't go to the bell
+    // User saw and dismissed it — cancel the timer so the badge doesn't increment
     const timer = timersRef.current.get(key)
     if (timer) {
       clearTimeout(timer)

@@ -38,15 +38,23 @@ export default function NotificationCenter() {
     setMounted(true)
   }, [])
 
-  // Listen for new notifications dispatched by SessionNotifier
+  // New notification arrived — update history (no badge change yet)
   useEffect(() => {
     function onNotification(e: Event) {
       const notif = (e as CustomEvent<StoredNotification>).detail
       setHistory((prev) => [notif, ...prev].slice(0, 30))
-      setUnread((prev) => prev + 1)
     }
     window.addEventListener('nexus:notification', onNotification)
     return () => window.removeEventListener('nexus:notification', onNotification)
+  }, [])
+
+  // Toast auto-dismissed (user didn't see it) — increment badge
+  useEffect(() => {
+    function onUnread() {
+      setUnread((prev) => prev + 1)
+    }
+    window.addEventListener('nexus:unread', onUnread)
+    return () => window.removeEventListener('nexus:unread', onUnread)
   }, [])
 
   // Close panel on outside click
@@ -62,10 +70,12 @@ export default function NotificationCenter() {
   function handleBellClick() {
     const opening = !isOpen
     setIsOpen(opening)
-    if (opening && unread > 0) {
-      setUnread(0)
-      clearUnreadCount()
+    if (opening) {
       setHistory(getNotificationHistory())
+      if (unread > 0) {
+        setUnread(0)
+        clearUnreadCount()
+      }
     }
   }
 
