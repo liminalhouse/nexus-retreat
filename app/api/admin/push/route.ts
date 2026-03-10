@@ -15,11 +15,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({error: 'Title and message are required'}, {status: 400})
   }
 
-  // Rate limit: block if a notification was sent in the last 30 seconds
+  // Rate limit: block if a notification was sent in the last 5 seconds
   const [recent] = await db
     .select()
     .from(adminNotifications)
-    .where(gt(adminNotifications.createdAt, new Date(Date.now() - 30_000)))
+    .where(gt(adminNotifications.createdAt, new Date(Date.now() - 5_000)))
     .limit(1)
 
   if (recent) {
