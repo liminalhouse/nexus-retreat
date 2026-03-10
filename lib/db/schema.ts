@@ -111,6 +111,17 @@ export const emailUnsubscribes = pgTable('email_unsubscribes', {
 export type EmailUnsubscribe = typeof emailUnsubscribes.$inferSelect
 export type NewEmailUnsubscribe = typeof emailUnsubscribes.$inferInsert
 
+// Admin Notifications table
+export const adminNotifications = pgTable('admin_notifications', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  title: text('title').notNull(),
+  message: text('message').notNull(),
+})
+
+export type AdminNotification = typeof adminNotifications.$inferSelect
+export type NewAdminNotification = typeof adminNotifications.$inferInsert
+
 // Push Subscriptions table
 export const pushSubscriptions = pgTable('push_subscriptions', {
   id: uuid('id').defaultRandom().primaryKey(),

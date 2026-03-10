@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import {PencilSquareIcon, DocumentTextIcon, EnvelopeIcon} from '@heroicons/react/24/outline'
+import {PencilSquareIcon, DocumentTextIcon, EnvelopeIcon, BellIcon} from '@heroicons/react/24/outline'
 import {requireAuth} from '@/lib/auth/requireAuth'
 
 export default async function AdminDashboard() {
@@ -48,6 +48,20 @@ export default async function AdminDashboard() {
             </div>
             <p className="text-gray-600">
               Compose and send emails to registered attendees
+            </p>
+          </Link>
+
+          {/* Push Notifications Card */}
+          <Link
+            href="/admin/push"
+            className="block p-8 bg-white border-2 border-gray-200 rounded-lg hover:border-nexus-coral hover:shadow-md transition-all"
+          >
+            <div className="flex items-center mb-4">
+              <BellIcon className="w-8 h-8 mr-3 text-nexus-coral" />
+              <h2 className="text-2xl font-bold">Push Notifications</h2>
+            </div>
+            <p className="text-gray-600">
+              Test push notifications and view active subscriber count
             </p>
           </Link>
         </div>

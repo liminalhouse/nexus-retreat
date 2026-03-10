@@ -4,7 +4,6 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(title, {
       body,
-      icon: '/images/icon-192.png',
       tag, // deduplicates: same tag replaces prior notification for same session
       data: {url},
     })
