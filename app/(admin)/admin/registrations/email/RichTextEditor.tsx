@@ -88,6 +88,8 @@ const VARIABLE_CATEGORIES = [
     category: 'Guest',
     variables: [
       {key: 'guestName', label: 'Guest Name'},
+      {key: 'guestFirstName', label: 'Guest First Name'},
+      {key: 'guestLastName', label: 'Guest Last Name'},
       {key: 'guestRelation', label: 'Guest Relation'},
       {key: 'guestEmail', label: 'Guest Email'},
     ],
