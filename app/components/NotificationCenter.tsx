@@ -87,9 +87,7 @@ export default function NotificationCenter() {
         const reg = await navigator.serviceWorker.register('/sw.js')
         const sub = await reg.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(
-            process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '',
-          ),
+          applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '',
         })
         await fetch('/api/push/subscribe', {
           method: 'POST',
