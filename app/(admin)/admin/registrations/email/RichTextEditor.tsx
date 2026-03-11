@@ -3,6 +3,7 @@
 import {useEditor, EditorContent, ReactRenderer} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
+import Image from '@tiptap/extension-image'
 import BulletList from '@tiptap/extension-bullet-list'
 import OrderedList from '@tiptap/extension-ordered-list'
 import ListItem from '@tiptap/extension-list-item'
@@ -19,7 +20,24 @@ import {
   LinkSlashIcon,
   ListBulletIcon,
   NumberedListIcon,
+  PhotoIcon,
 } from '@heroicons/react/24/outline'
+
+// Custom Image extension with width attribute baked into the style
+const ResizableImage = Image.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      width: {
+        default: '100%',
+        parseHTML: (element) => element.style.width || element.getAttribute('width') || '100%',
+        renderHTML: (attributes) => ({
+          style: `width: ${attributes.width}; max-width: 100%; height: auto; display: block; margin: 8px auto;`,
+        }),
+      },
+    }
+  },
+})
 
 // All available registration variables organized by category
 const VARIABLE_CATEGORIES = [
@@ -438,8 +456,191 @@ function VariablePickerDropdown({
   )
 }
 
+const SIZE_PRESETS = [
+  {label: '25%', value: '25%'},
+  {label: '50%', value: '50%'},
+  {label: '75%', value: '75%'},
+  {label: '100%', value: '100%'},
+]
+
+function ImagePanel({
+  onInsert,
+  onClose,
+  currentWidth,
+  isEditing,
+}: {
+  onInsert: (src: string, width: string) => void
+  onClose: () => void
+  currentWidth?: string
+  isEditing: boolean
+}) {
+  const [url, setUrl] = useState('')
+  const [width, setWidth] = useState(currentWidth || '100%')
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [previewSrc, setPreviewSrc] = useState('')
+
+  const handleFileUpload = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      setUploadError('File must be an image')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('File size must be less than 5MB')
+      return
+    }
+    setIsUploading(true)
+    setUploadError(null)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const response = await fetch('/api/upload', {method: 'POST', body: formData})
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Failed to upload image')
+      setUrl(data.url)
+      setPreviewSrc(data.url)
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : 'Failed to upload image')
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const handleInsert = () => {
+    const src = url.trim() || previewSrc
+    if (!src) return
+    onInsert(src, width)
+  }
+
+  return (
+    <div className="border border-gray-200 rounded-md bg-white shadow-lg p-3 space-y-3 mt-1">
+      {!isEditing && (
+        <>
+          {/* Drop zone */}
+          <div
+            onDrop={(e) => {
+              e.preventDefault()
+              setIsDragging(false)
+              const file = e.dataTransfer.files[0]
+              if (file) handleFileUpload(file)
+            }}
+            onDragOver={(e) => {
+              e.preventDefault()
+              setIsDragging(true)
+            }}
+            onDragLeave={(e) => {
+              e.preventDefault()
+              setIsDragging(false)
+            }}
+            className={`relative border-2 border-dashed rounded-lg p-3 text-center transition-colors ${
+              isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+            } ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
+          >
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) handleFileUpload(file)
+              }}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              disabled={isUploading}
+            />
+            {isUploading ? (
+              <span className="text-xs text-gray-500">Uploading...</span>
+            ) : (
+              <span className="text-xs text-gray-500">
+                Drop image or <span className="text-blue-600">browse</span> (max 5MB)
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="flex-1 border-t border-gray-200" />
+            <span className="text-xs text-gray-400">or URL</span>
+            <div className="flex-1 border-t border-gray-200" />
+          </div>
+
+          <input
+            type="url"
+            value={url}
+            onChange={(e) => {
+              setUrl(e.target.value)
+              setPreviewSrc(e.target.value)
+            }}
+            placeholder="https://example.com/image.jpg"
+            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+          />
+
+          {uploadError && <p className="text-xs text-red-500">{uploadError}</p>}
+
+          {previewSrc && (
+            <img
+              src={previewSrc}
+              alt="Preview"
+              className="w-full h-20 object-contain rounded border border-gray-200 bg-gray-50"
+              onError={() => setPreviewSrc('')}
+            />
+          )}
+        </>
+      )}
+
+      {/* Size presets */}
+      <div>
+        <p className="text-xs font-medium text-gray-600 mb-1.5">Size</p>
+        <div className="flex gap-1.5">
+          {SIZE_PRESETS.map((preset) => (
+            <button
+              key={preset.value}
+              type="button"
+              onClick={() => setWidth(preset.value)}
+              className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                width === preset.value
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-white text-gray-600 border-gray-300 hover:border-blue-400'
+              }`}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={onClose}
+          className="px-3 py-1 text-xs text-gray-600 hover:text-gray-800"
+        >
+          Cancel
+        </button>
+        {isEditing ? (
+          <button
+            type="button"
+            onClick={() => onInsert('', width)}
+            className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Apply Size
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={handleInsert}
+            disabled={!url.trim() && !previewSrc}
+            className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Insert Image
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function RichTextEditor({content, onChange}: RichTextEditorProps) {
   const [showVariablePanel, setShowVariablePanel] = useState(false)
+  const [showImagePanel, setShowImagePanel] = useState(false)
   const [mounted, setMounted] = useState(false)
   const variableButtonRef = useState<React.RefObject<HTMLDivElement | null>>(() => ({
     current: null,
@@ -482,6 +683,7 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
           class: 'text-blue-600 underline',
         },
       }),
+      ResizableImage,
       VariableSuggestion,
     ],
     content,
@@ -533,6 +735,19 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
     } else {
       editor.chain().focus().insertContent(`{{${variable.key}}}`).run()
     }
+  }
+
+  const isImageSelected = editor?.isActive('image') ?? false
+
+  const handleImagePanelInsert = (src: string, width: string) => {
+    if (!editor) return
+    if (isImageSelected) {
+      // Update the currently selected image's width
+      editor.chain().focus().updateAttributes('image', {width}).run()
+    } else {
+      editor.chain().focus().setImage({src} as any).updateAttributes('image', {width}).run()
+    }
+    setShowImagePanel(false)
   }
 
   if (!editor) {
@@ -625,7 +840,33 @@ export default function RichTextEditor({content, onChange}: RichTextEditorProps)
             <span className="text-xs font-mono font-bold">{'{{}}'}</span>
           </ToolbarButton>
         </div>
+
+        <div className="w-px bg-gray-300 mx-1" />
+
+        {/* Insert / Resize Image Button */}
+        <ToolbarButton
+          onClick={() => {
+            setShowVariablePanel(false)
+            setShowImagePanel((v) => !v)
+          }}
+          isActive={showImagePanel || isImageSelected}
+          title={isImageSelected ? 'Resize selected image' : 'Insert image'}
+        >
+          <PhotoIcon className="w-4 h-4" />
+        </ToolbarButton>
       </div>
+
+      {/* Image Panel (inline, below toolbar) */}
+      {showImagePanel && (
+        <div className="px-2 pb-2">
+          <ImagePanel
+            onInsert={handleImagePanelInsert}
+            onClose={() => setShowImagePanel(false)}
+            currentWidth={isImageSelected ? (editor.getAttributes('image').width ?? '100%') : '100%'}
+            isEditing={isImageSelected}
+          />
+        </div>
+      )}
 
       {/* Editor Content */}
       <EditorContent editor={editor} />

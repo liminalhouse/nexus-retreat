@@ -3016,10 +3016,10 @@
   resolved "https://registry.npmjs.org/@tanstack/virtual-core/-/virtual-core-3.13.18.tgz"
   integrity sha512-Mx86Hqu1k39icq2Zusq+Ey2J6dDWTjDvEv43PJtRCoEYTLyfaPnxIQ6iy7YAOK0NV/qOEmZQ/uCufrppZxTgcg==
 
-"@tiptap/core@^3.18.0":
-  version "3.18.0"
-  resolved "https://registry.npmjs.org/@tiptap/core/-/core-3.18.0.tgz"
-  integrity sha512-Gczd4GbK1DNgy/QUPElMVozoa0GW9mW8E31VIi7Q4a9PHHz8PcrxPmuWwtJ2q0PF8MWpOSLuBXoQTWaXZRPRnQ==
+"@tiptap/core@^3.18.0", "@tiptap/core@^3.20.1":
+  version "3.20.1"
+  resolved "https://registry.npmjs.org/@tiptap/core/-/core-3.20.1.tgz"
+  integrity sha512-SwkPEWIfaDEZjC8SEIi4kZjqIYUbRgLUHUuQezo5GbphUNC8kM1pi3C3EtoOPtxXrEbY6e4pWEzW54Pcrd+rVA==
 
 "@tiptap/extension-blockquote@^3.18.0":
   version "3.18.0"
@@ -3088,6 +3088,11 @@
   resolved "https://registry.npmjs.org/@tiptap/extension-horizontal-rule/-/extension-horizontal-rule-3.18.0.tgz"
   integrity sha512-fEq7DwwQZ496RHNbMQypBVNqoWnhDEERbzWMBqlmfCfc/0FvJrHtsQkk3k4lgqMYqmBwym3Wp0SrRYiyKCPGTw==
 
+"@tiptap/extension-image@^3.20.1":
+  version "3.20.1"
+  resolved "https://registry.npmjs.org/@tiptap/extension-image/-/extension-image-3.20.1.tgz"
+  integrity sha512-/GPFSLNdYSZQ0E6VBXSAk0UFtDdn98HT1Aa2tO+STELqc5jAdFB42dfFnTC6KQzTvcUOUYkE2S1Q22YC5H2XNQ==
+
 "@tiptap/extension-italic@^3.18.0":
   version "3.18.0"
   resolved "https://registry.npmjs.org/@tiptap/extension-italic/-/extension-italic-3.18.0.tgz"
@@ -3145,10 +3150,10 @@
   resolved "https://registry.npmjs.org/@tiptap/extensions/-/extensions-3.18.0.tgz"
   integrity sha512-uSRIE9HGshBN6NRFR3LX2lZqBLvX92SgU5A9AvUbJD4MqU63E+HdruJnRjsVlX3kPrmbIDowxrzXlUcg3K0USQ==
 
-"@tiptap/pm@^3.18.0":
-  version "3.18.0"
-  resolved "https://registry.npmjs.org/@tiptap/pm/-/pm-3.18.0.tgz"
-  integrity sha512-8RoI5gW0xBVCsuxahpK8vx7onAw6k2/uR3hbGBBnH+HocDMaAZKot3nTyY546ij8ospIC1mnQ7k4BhVUZesZDQ==
+"@tiptap/pm@^3.18.0", "@tiptap/pm@^3.20.1":
+  version "3.20.1"
+  resolved "https://registry.npmjs.org/@tiptap/pm/-/pm-3.20.1.tgz"
+  integrity sha512-6kCiGLvpES4AxcEuOhb7HR7/xIeJWMjZlb6J7e8zpiIh5BoQc7NoRdctsnmFEjZvC19bIasccshHQ7H2zchWqw==
   dependencies:
     prosemirror-changeset "^2.3.0"
     prosemirror-collab "^1.3.1"

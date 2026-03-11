@@ -1194,7 +1194,7 @@ export type SessionsQueryResult = Array<{
 
 // Source: sanity/lib/queries.ts
 // Variable: sessionByIdQuery
-// Query: *[_type == "session" && id.current == $id][0]{    _id,    id,    title,    description,    startTime,    endTime,    location,    sessionType,    sessionTags,    photo,    "speakers": speakers[]->{      _id,      id,      firstName,      lastName,      title,      bio,      profilePicture {        asset->{          _id,          url,          metadata {            lqip,            dimensions {              width,              height            }          }        }      }    }  }
+// Query: *[_type == "session" && id.current == $id][0]{    _id,    id,    title,    description,    startTime,    endTime,    location,    sessionType,    sessionTags,    photo,    "speakers": speakers[]->{      _id,      id,      firstName,      lastName,      title,      bio,      profilePicture {        asset->{          "_ref": _id,          _id,          url,          metadata {            lqip,            dimensions {              width,              height            }          }        }      }    }  }
 export type SessionByIdQueryResult = {
   _id: string
   id: Slug
@@ -1256,6 +1256,7 @@ export type SessionByIdQueryResult = {
     }> | null
     profilePicture: {
       asset: {
+        _ref: string
         _id: string
         url: string | null
         metadata: {
@@ -1588,7 +1589,7 @@ declare module '@sanity/client' {
     '\n  *[_type == "page" && defined(slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
     '\n  *[_type == "session"] | order(startTime asc) {\n    _id,\n    id,\n    title,\n    description,\n    startTime,\n    endTime,\n    location,\n    sessionType,\n    sessionTags,\n    photo,\n    "speakers": speakers[]->{\n      _id,\n      id,\n      firstName,\n      lastName,\n      title,\n      profilePicture\n    }\n  }\n': SessionsQueryResult
-    '\n  *[_type == "session" && id.current == $id][0]{\n    _id,\n    id,\n    title,\n    description,\n    startTime,\n    endTime,\n    location,\n    sessionType,\n    sessionTags,\n    photo,\n    "speakers": speakers[]->{\n      _id,\n      id,\n      firstName,\n      lastName,\n      title,\n      bio,\n      profilePicture {\n        asset->{\n          _id,\n          url,\n          metadata {\n            lqip,\n            dimensions {\n              width,\n              height\n            }\n          }\n        }\n      }\n    }\n  }\n': SessionByIdQueryResult
+    '\n  *[_type == "session" && id.current == $id][0]{\n    _id,\n    id,\n    title,\n    description,\n    startTime,\n    endTime,\n    location,\n    sessionType,\n    sessionTags,\n    photo,\n    "speakers": speakers[]->{\n      _id,\n      id,\n      firstName,\n      lastName,\n      title,\n      bio,\n      profilePicture {\n        asset->{\n          "_ref": _id,\n          _id,\n          url,\n          metadata {\n            lqip,\n            dimensions {\n              width,\n              height\n            }\n          }\n        }\n      }\n    }\n  }\n': SessionByIdQueryResult
     '\n  *[_type == "speaker"] | order(lastName asc) {\n    _id,\n    id,\n    firstName,\n    lastName,\n    title,\n    bio,\n    profilePicture\n  }\n': SpeakersQueryResult
     '\n  *[_type == "speaker" && id.current == $id][0]{\n    _id,\n    id,\n    firstName,\n    lastName,\n    title,\n    bio,\n    profilePicture {\n      asset->{\n        _id,\n        url,\n        metadata {\n          lqip,\n          dimensions {\n            width,\n            height\n          }\n        }\n      },\n      hotspot,\n      crop\n    },\n    "sessions": *[_type == "session" && references(^._id)] | order(startTime asc) {\n      _id,\n      id,\n      title,\n      startTime,\n      endTime,\n      location,\n      sessionType,\n      sessionTags,\n      photo {\n        asset->{\n          _id,\n          url,\n          metadata {\n            lqip,\n            dimensions {\n              width,\n              height\n            }\n          }\n        },\n        hotspot,\n        crop\n      }\n    }\n  }\n': SpeakerByIdQueryResult
     '\n  *[_type == "registrationForm" && _id == "registrationFormContent"][0]{\n    title,\n    subtitle,\n    description,\n    submitButtonText,\n    nextButtonText,\n    backButtonText,\n    successMessage,\n    step1Title,\n    step2Title,\n    step3Title,\n    email,\n    firstName,\n    lastName,\n    jobTitle,\n    organization,\n    mobilePhone,\n    address,\n    emergencyContact,\n    assistant,\n    guest,\n    attendeeDetails,\n    guestEventDetails\n  }\n': RegistrationFormContentQueryResult

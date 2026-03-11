@@ -182,6 +182,20 @@ const filterFields: FilterFieldConfig[] = [
     ],
     valueType: 'text',
   },
+  {
+    key: 'rsvp_guest_luncheon',
+    label: 'RSVP Guest Luncheon',
+    operators: [
+      {value: 'equals', label: 'Is'},
+      {value: 'not_exists', label: 'Not set'},
+    ],
+    valueType: 'select',
+    options: [
+      {value: 'Yes', label: 'Yes'},
+      {value: 'No', label: 'No'},
+      {value: 'Maybe', label: 'Maybe'},
+    ],
+  },
 ]
 
 export function evaluateFilter(registration: Registration, filter: FilterCondition): boolean {

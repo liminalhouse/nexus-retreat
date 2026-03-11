@@ -1,0 +1,1 @@
+ALTER TABLE "registrations" ADD COLUMN "rsvp_guest_luncheon" text;
