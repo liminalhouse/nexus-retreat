@@ -169,16 +169,21 @@ export default function NotificationCenter() {
           </div>
 
           {/* Notification history */}
-          <div className="max-h-80 overflow-y-auto">
+          <div className="max-h-100 overflow-y-auto">
             {history.length === 0 ? (
               <p className="text-sm text-gray-400 text-center py-8 px-4">No notifications yet</p>
             ) : (
-              <ul className="divide-y divide-gray-50">
-                {history.map((n) => {
+              <ul className="divide-y divide-gray-100">
+                <p className="text-xs text-gray-400 uppercase tracking-wide font-medium px-4 py-2 bg-gray-50">
+                  Recent Notifications
+                </p>
+                {history.slice(0, 5).map((n) => {
                   const inner = (
                     <>
                       <div className="flex items-start justify-between gap-2">
-                        <p className="text-sm font-medium text-gray-900 leading-snug">{n.title}</p>
+                        <p className="text-sm font-medium text-nexus-navy-light leading-snug">
+                          {n.title}
+                        </p>
                         <span className="text-[11px] text-gray-400 whitespace-nowrap shrink-0 mt-px">
                           {relativeTime(n.timestamp)}
                         </span>

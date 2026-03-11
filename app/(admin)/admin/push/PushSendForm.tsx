@@ -76,6 +76,10 @@ export default function PushSendForm() {
 
       <p className="text-xs text-gray-400">
         Notifications appear as a toast for attendees who have the app open.
+        <br />
+        <br />
+        If an attendee has the app open but hasn&apos;t granted notification permissions to their
+        browser, they will see an in-app toast instead.
       </p>
     </div>
   )
