@@ -1,4 +1,4 @@
-import {pgTable, text, timestamp, uuid, jsonb, pgEnum} from 'drizzle-orm/pg-core'
+import {pgTable, text, timestamp, uuid, jsonb, pgEnum, integer} from 'drizzle-orm/pg-core'
 
 // Enum for jacket sizes
 export const jacketSizeEnum = pgEnum('jacket_size_enum', [
@@ -111,3 +111,38 @@ export const emailUnsubscribes = pgTable('email_unsubscribes', {
 
 export type EmailUnsubscribe = typeof emailUnsubscribes.$inferSelect
 export type NewEmailUnsubscribe = typeof emailUnsubscribes.$inferInsert
+
+// Admin Notifications table
+export const adminNotifications = pgTable('admin_notifications', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  title: text('title').notNull(),
+  message: text('message').notNull(),
+})
+
+export type AdminNotification = typeof adminNotifications.$inferSelect
+export type NewAdminNotification = typeof adminNotifications.$inferInsert
+
+// Session Notification Log — records when the cron sends session reminders
+export const sessionNotificationLog = pgTable('session_notification_log', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  sessionId: text('session_id').notNull(),
+  sessionTitle: text('session_title').notNull(),
+  sessionStartTime: timestamp('session_start_time').notNull(),
+  recipientCount: integer('recipient_count').notNull().default(0),
+})
+
+export type SessionNotificationLog = typeof sessionNotificationLog.$inferSelect
+
+// Push Subscriptions table
+export const pushSubscriptions = pgTable('push_subscriptions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  endpoint: text('endpoint').notNull().unique(),
+  p256dh: text('p256dh').notNull(),
+  auth: text('auth').notNull(),
+})
+
+export type PushSubscription = typeof pushSubscriptions.$inferSelect
+export type NewPushSubscription = typeof pushSubscriptions.$inferInsert
