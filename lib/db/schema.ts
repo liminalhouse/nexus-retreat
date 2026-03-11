@@ -72,6 +72,7 @@ export const registrations = pgTable('registrations', {
 
   // Admin Only
   adminNotes: text('admin_notes'),
+  rsvpGuestLuncheon: text('rsvp_guest_luncheon'),
 
   // Hotel / Logistics (admin-managed)
   arrival: text('arrival'),

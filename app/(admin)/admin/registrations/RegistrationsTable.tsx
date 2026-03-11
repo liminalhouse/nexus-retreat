@@ -52,6 +52,7 @@ const EMPTY_REGISTRATION: Registration = {
   guest_dinner_attendance: null,
   guest_activities: null,
   admin_notes: null,
+  rsvp_guest_luncheon: null,
   arrival: null,
   departure: null,
   hotel_full_name: '',
@@ -97,6 +98,7 @@ const COLUMN_WIDTHS = {
   edit_registration_link: 'minmax(280px, 2fr)',
   edit_activities_link: 'minmax(280px, 2fr)',
   admin_notes: 'minmax(200px, 2fr)',
+  rsvp_guest_luncheon: 'minmax(140px, 1fr)',
   actions: 'minmax(120px, 2fr)',
 }
 
@@ -312,6 +314,11 @@ const columns: ColumnConfig[] = [
     label: 'Admin Notes (not visible to registrant)',
     render: (reg) => <span className="text-xs">{reg.admin_notes || '-'}</span>,
   },
+  {
+    key: 'rsvp_guest_luncheon',
+    label: 'RSVP Guest Luncheon',
+    render: (reg) => reg.rsvp_guest_luncheon || '-',
+  },
 ]
 
 export default function RegistrationsTable({
@@ -415,7 +422,7 @@ export default function RegistrationsTable({
                   {columns.map((column) => (
                     <div
                       key={column.key}
-                      className={`${column.key === 'admin_notes' ? 'bg-yellow-50' : 'bg-white'} group-hover:bg-zinc-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto`}
+                      className={`${column.key === 'admin_notes' || column.key === 'rsvp_guest_luncheon' ? 'bg-yellow-50' : 'bg-white'} group-hover:bg-zinc-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto`}
                     >
                       {column.render(registration)}
                     </div>
