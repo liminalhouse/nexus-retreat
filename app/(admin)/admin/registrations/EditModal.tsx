@@ -900,16 +900,34 @@ export default function EditModal({
                 <h3 className="text-lg font-semibold text-blue-700 mb-3">
                   Admin Notes (Visible to Admin Only)
                 </h3>
-                <div>
-                  <label className={labelClass}>Internal Notes</label>
-                  <textarea
-                    value={formData.admin_notes || ''}
-                    onChange={(e) => handleChange('admin_notes', e.target.value)}
-                    className={`${inputClass} ${readOnly ? '' : 'bg-yellow-50'}`}
-                    rows={4}
-                    placeholder="Add any internal notes or comments about this registration..."
-                    readOnly={readOnly}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="col-span-2">
+                    <label className={labelClass}>Internal Notes</label>
+                    <textarea
+                      value={formData.admin_notes || ''}
+                      onChange={(e) => handleChange('admin_notes', e.target.value)}
+                      className={`${inputClass} ${readOnly ? '' : 'bg-yellow-50'}`}
+                      rows={4}
+                      placeholder="Add any internal notes or comments about this registration..."
+                      readOnly={readOnly}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>RSVP Guest Luncheon</label>
+                    <select
+                      value={formData.rsvp_guest_luncheon || ''}
+                      onChange={(e) =>
+                        handleChange('rsvp_guest_luncheon', e.target.value || null)
+                      }
+                      className={`${inputClass} ${readOnly ? '' : 'bg-yellow-50'}`}
+                      disabled={readOnly}
+                    >
+                      <option value="">— Not set —</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                      <option value="Maybe">Maybe</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </>
