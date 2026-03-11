@@ -70,6 +70,8 @@ function buildVariablesMap(registration: Registration | null, assistantFallbackT
 
     // Guest
     guestName: registration.guestName || '',
+    guestFirstName: registration.guestName?.split(' ').slice(0, -1).join(' ') || '',
+    guestLastName: registration.guestName?.split(' ').at(-1) || '',
     guestRelation: registration.guestRelation || '',
     guestEmail: registration.guestEmail || '',
 
