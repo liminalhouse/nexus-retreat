@@ -36,7 +36,7 @@ export function proxy(request: NextRequest) {
   }
 
   // Protect /schedule and routes - require Sanity authentication (admin only)
-  if (process.env.VERCEL_ENV === 'production' && request.nextUrl.pathname.startsWith('/schedule')) {
+  if (process.env.VERCEL_ENV === 'production') {
     if (!sanityToken?.value) {
       const loginUrl = new URL('/admin/login', request.url)
       loginUrl.searchParams.set('from', request.nextUrl.pathname)
