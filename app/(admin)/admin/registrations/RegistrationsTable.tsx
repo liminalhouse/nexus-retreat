@@ -53,6 +53,7 @@ const EMPTY_REGISTRATION: Registration = {
   guest_activities: null,
   admin_notes: null,
   rsvp_guest_luncheon: null,
+  hide_in_chat: false,
   arrival: null,
   departure: null,
   hotel_full_name: '',
@@ -99,6 +100,7 @@ const COLUMN_WIDTHS = {
   edit_activities_link: 'minmax(280px, 2fr)',
   admin_notes: 'minmax(200px, 2fr)',
   rsvp_guest_luncheon: 'minmax(140px, 1fr)',
+  hide_in_chat: 'minmax(110px, 1fr)',
   actions: 'minmax(120px, 2fr)',
 }
 
@@ -319,6 +321,11 @@ const columns: ColumnConfig[] = [
     label: 'RSVP Guest Luncheon',
     render: (reg) => reg.rsvp_guest_luncheon || '-',
   },
+  {
+    key: 'hide_in_chat',
+    label: 'Hide in Chat',
+    render: (reg) => (reg.hide_in_chat ? '\u00A0 \u00A0 \u00A0 \u00A0 ✅' : ''),
+  },
 ]
 
 export default function RegistrationsTable({
@@ -422,7 +429,7 @@ export default function RegistrationsTable({
                   {columns.map((column) => (
                     <div
                       key={column.key}
-                      className={`${column.key === 'admin_notes' || column.key === 'rsvp_guest_luncheon' ? 'bg-yellow-50' : 'bg-white'} group-hover:bg-zinc-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto`}
+                      className={`${column.key === 'admin_notes' || column.key === 'rsvp_guest_luncheon' || column.key === 'hide_in_chat' ? 'bg-yellow-50' : 'bg-white'} group-hover:bg-zinc-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto`}
                     >
                       {column.render(registration)}
                     </div>
