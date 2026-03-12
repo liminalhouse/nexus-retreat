@@ -51,6 +51,7 @@ function toSnakeCase(reg: Registration): SnakeCaseRegistration {
     guest_activities: reg.guestActivities,
     admin_notes: reg.adminNotes,
     rsvp_guest_luncheon: reg.rsvpGuestLuncheon,
+    hide_in_chat: reg.hideInChat,
     arrival: reg.arrival,
     departure: reg.departure,
     rooms: reg.rooms,
