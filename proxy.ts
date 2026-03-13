@@ -20,6 +20,11 @@ export function proxy(request: NextRequest) {
     return response
   }
 
+  // Redirect /edit-registration (exact) to /register/edit
+  if (request.nextUrl.pathname === '/edit-registration') {
+    return NextResponse.redirect(new URL('/register/edit', request.url))
+  }
+
   // Allow access to admin login page without authentication
   if (request.nextUrl.pathname === '/admin/login') {
     return NextResponse.next()
