@@ -22,11 +22,12 @@ export default function EditActivitiesLookupPage() {
             Activities are no longer editable
           </h1>
           <p className="text-gray-600 text-sm">
-            The deadline to select activities has passed. Please contact{' '}
+            Please contact{' '}
             <a href="mailto:info@nexus-retreat.com" className="text-nexus-navy underline">
               info@nexus-retreat.com
             </a>{' '}
-            if you need to make changes.
+            <br />
+            for further assistance.
           </p>
         </div>
       </div>
