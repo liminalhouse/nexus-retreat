@@ -595,6 +595,12 @@ type CustomEmailRegistration = {
   guestName?: string | null
   assistantName?: string | null
   editToken?: string | null
+  arrival?: string | null
+  departure?: string | null
+  rooms?: string | null
+  confirmationNumber?: string | null
+  roomGuest?: string | null
+  hotelFullName?: string | null
 }
 
 type CustomEmailParams = {
@@ -625,6 +631,8 @@ export async function sendCustomEmail(params: CustomEmailParams) {
           city: registration.city || '',
           state: registration.state || '',
           guestName: registration.guestName || '',
+          guestFirstName: registration.guestName?.split(' ').slice(0, -1).join(' ') || '',
+          guestLastName: registration.guestName?.split(' ').at(-1) || '',
           assistantName: registration.assistantName || '',
           assistantFirstName: registration.assistantName?.split(' ')[0] || '',
           assistantLastName: registration.assistantName?.split(' ').slice(1).join(' ') || '',
@@ -632,6 +640,12 @@ export async function sendCustomEmail(params: CustomEmailParams) {
           activitiesLink: registration.editToken
             ? getEditActivitiesUrl(registration.editToken)
             : '',
+          arrival: registration.arrival || '',
+          departure: registration.departure || '',
+          rooms: registration.rooms || '',
+          confirmationNumber: registration.confirmationNumber || '',
+          roomGuest: registration.roomGuest || '',
+          hotelFullName: registration.hotelFullName || '',
         }
       : {}
 

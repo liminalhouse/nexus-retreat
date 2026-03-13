@@ -1,11 +1,12 @@
 'use client'
 
-import {useState, useMemo} from 'react'
+import {useState, useMemo, useEffect, useRef} from 'react'
 import Avatar from '@/app/components/Avatar'
 import type {Registration} from '@/lib/db/schema'
 import type {Registration as SnakeCaseRegistration} from '@/lib/types/registration'
 import {ArrowUpRightIcon} from '@heroicons/react/24/outline'
 import EditModal from '../EditModal'
+import FilterBuilder, {evaluateFilter, FilterCondition} from '../FilterBuilder'
 
 // Helper to convert camelCase registration to snake_case for EditModal
 function toSnakeCase(reg: Registration): SnakeCaseRegistration {
@@ -49,6 +50,14 @@ function toSnakeCase(reg: Registration): SnakeCaseRegistration {
     guest_dinner_attendance: reg.guestDinnerAttendance,
     guest_activities: reg.guestActivities,
     admin_notes: reg.adminNotes,
+    rsvp_guest_luncheon: reg.rsvpGuestLuncheon,
+    hide_in_chat: reg.hideInChat,
+    arrival: reg.arrival,
+    departure: reg.departure,
+    rooms: reg.rooms,
+    hotel_full_name: reg.hotelFullName,
+    confirmation_number: reg.confirmationNumber,
+    room_guest: reg.roomGuest,
   }
 }
 
@@ -57,30 +66,44 @@ export default function RecipientList({
   selectedIds,
   onSelectAll,
   onSelectOne,
+  onSetSelection,
   unsubscribedEmails = [],
 }: {
   registrations: Registration[]
   selectedIds: Set<string>
   onSelectAll: (checked: boolean) => void
   onSelectOne: (id: string, checked: boolean) => void
+  onSetSelection: (ids: Set<string>) => void
   unsubscribedEmails?: string[]
 }) {
   const unsubscribedSet = useMemo(() => new Set(unsubscribedEmails), [unsubscribedEmails])
   const [searchQuery, setSearchQuery] = useState('')
+  const [filters, setFilters] = useState<FilterCondition[]>([])
   const [viewingRegistration, setViewingRegistration] = useState<Registration | null>(null)
 
   const filteredRegistrations = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return registrations
+    let result = registrations
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      result = result.filter(
+        (r) =>
+          r.firstName.toLowerCase().includes(query) ||
+          r.lastName.toLowerCase().includes(query) ||
+          r.email.toLowerCase().includes(query),
+      )
     }
-    const query = searchQuery.toLowerCase()
-    return registrations.filter(
-      (r) =>
-        r.firstName.toLowerCase().includes(query) ||
-        r.lastName.toLowerCase().includes(query) ||
-        r.email.toLowerCase().includes(query),
-    )
-  }, [registrations, searchQuery])
+
+    const validFilters = filters.filter((f) => f.field && f.operator)
+    if (validFilters.length > 0) {
+      result = result.filter((r) => {
+        const snaked = toSnakeCase(r)
+        return validFilters.every((f) => evaluateFilter(snaked, f))
+      })
+    }
+
+    return result
+  }, [registrations, searchQuery, filters])
 
   const selectableRegistrations = useMemo(
     () => filteredRegistrations.filter((r) => !unsubscribedSet.has(r.email.toLowerCase())),
@@ -90,19 +113,23 @@ export default function RecipientList({
   const allFilteredSelected =
     selectableRegistrations.length > 0 && selectableRegistrations.every((r) => selectedIds.has(r.id))
 
+  // Track whether all filtered were selected before the filter/search changes.
+  // Assigned during render so the effect reads the value from the current render cycle.
+  const allFilteredSelectedRef = useRef(allFilteredSelected)
+  allFilteredSelectedRef.current = allFilteredSelected
+
+  useEffect(() => {
+    if (allFilteredSelectedRef.current) {
+      // All filtered were selected — keep selection in sync with the new filtered set
+      onSetSelection(new Set(selectableRegistrations.map((r) => r.id)))
+    }
+  }, [filters, searchQuery])
+
   const handleSelectAllFiltered = (checked: boolean) => {
     if (checked) {
-      selectableRegistrations.forEach((r) => {
-        if (!selectedIds.has(r.id)) {
-          onSelectOne(r.id, true)
-        }
-      })
+      onSetSelection(new Set(selectableRegistrations.map((r) => r.id)))
     } else {
-      selectableRegistrations.forEach((r) => {
-        if (selectedIds.has(r.id)) {
-          onSelectOne(r.id, false)
-        }
-      })
+      onSetSelection(new Set())
     }
   }
 
@@ -118,14 +145,14 @@ export default function RecipientList({
             id="selectAll"
             checked={allFilteredSelected}
             onChange={(e) =>
-              searchQuery
+              searchQuery.trim() || filters.length > 0
                 ? handleSelectAllFiltered(e.target.checked)
                 : onSelectAll(e.target.checked)
             }
             className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
           <label htmlFor="selectAll" className="text-sm text-gray-700">
-            Select All
+            {searchQuery.trim() || filters.length > 0 ? 'Select All Filtered' : 'Select All'}
           </label>
           <span className="text-sm text-gray-500">
             ({selectedIds.size} of {registrations.length} selected)
@@ -138,15 +165,18 @@ export default function RecipientList({
           placeholder="Search by name or email..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 mb-3"
         />
+
+        {/* Filters */}
+        <FilterBuilder filters={filters} onChange={setFilters} />
       </div>
 
       {/* Scrollable List */}
       <div className="max-h-[500px] overflow-y-auto">
         {filteredRegistrations.length === 0 ? (
           <div className="p-4 text-center text-gray-500 text-sm">
-            {searchQuery ? 'No matching registrants found' : 'No registrants'}
+            {searchQuery || filters.length > 0 ? 'No matching registrants found' : 'No registrants'}
           </div>
         ) : (
           <ul className="divide-y divide-gray-100">

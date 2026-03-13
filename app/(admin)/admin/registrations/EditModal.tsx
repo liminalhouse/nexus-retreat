@@ -276,7 +276,11 @@ export default function EditModal({
       >
         <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
           <h2 className="text-2xl font-bold">
-            {isCreateMode ? 'Add New Registrant' : readOnly ? 'View Registration (not editable)' : 'Edit Registration'}
+            {isCreateMode
+              ? 'Add New Registrant'
+              : readOnly
+                ? 'View Registration (not editable)'
+                : 'Edit Registration'}
           </h2>
           <button
             onClick={onClose}
@@ -821,19 +825,126 @@ export default function EditModal({
           {isAdminView && (
             <>
               <hr className="my-6 border-t border-gray-200 w-[800px] mx-auto" />
+              {/* Hotel Details */}
+              <div>
+                <h3 className="text-lg font-semibold text-blue-700 mb-3">
+                  Hotel Details (Admin only)
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}>Arrival Date</label>
+                    <input
+                      type="date"
+                      value={formData.arrival || ''}
+                      onChange={(e) => handleChange('arrival', e.target.value)}
+                      className={inputClass}
+                      readOnly={readOnly}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Departure Date</label>
+                    <input
+                      type="date"
+                      value={formData.departure || ''}
+                      onChange={(e) => handleChange('departure', e.target.value)}
+                      className={inputClass}
+                      readOnly={readOnly}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Name on Hotel Reservation</label>
+                    <input
+                      type="text"
+                      value={formData.hotel_full_name || ''}
+                      onChange={(e) => handleChange('hotel_full_name', e.target.value)}
+                      className={inputClass}
+                      readOnly={readOnly}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Confirmation Number</label>
+                    <input
+                      type="text"
+                      value={formData.confirmation_number || ''}
+                      onChange={(e) => handleChange('confirmation_number', e.target.value)}
+                      className={inputClass}
+                      readOnly={readOnly}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Room(s)</label>
+                    <input
+                      type="text"
+                      value={formData.rooms || ''}
+                      onChange={(e) => handleChange('rooms', e.target.value)}
+                      className={inputClass}
+                      readOnly={readOnly}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Room Guest</label>
+                    <input
+                      type="text"
+                      value={formData.room_guest || ''}
+                      onChange={(e) => handleChange('room_guest', e.target.value)}
+                      className={inputClass}
+                      readOnly={readOnly}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <hr className="my-6 border-t border-gray-200 w-[800px] mx-auto" />
               {/* Admin Notes */}
               <div>
-                <h3 className="text-lg font-semibold text-blue-700 mb-3">Admin Notes</h3>
-                <div>
-                  <label className={labelClass}>Internal Notes (Visible to Admins Only)</label>
-                  <textarea
-                    value={formData.admin_notes || ''}
-                    onChange={(e) => handleChange('admin_notes', e.target.value)}
-                    className={`${inputClass} ${readOnly ? '' : 'bg-yellow-50'}`}
-                    rows={4}
-                    placeholder="Add any internal notes or comments about this registration..."
-                    readOnly={readOnly}
-                  />
+                <h3 className="text-lg font-semibold text-blue-700 mb-3">
+                  Admin Notes (Visible to Admin Only)
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="col-span-2">
+                    <label className={labelClass}>Internal Notes</label>
+                    <textarea
+                      value={formData.admin_notes || ''}
+                      onChange={(e) => handleChange('admin_notes', e.target.value)}
+                      className={`${inputClass} ${readOnly ? '' : 'bg-yellow-50'}`}
+                      rows={4}
+                      placeholder="Add any internal notes or comments about this registration..."
+                      readOnly={readOnly}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>RSVP Guest Luncheon</label>
+                    <select
+                      value={formData.rsvp_guest_luncheon || ''}
+                      onChange={(e) => handleChange('rsvp_guest_luncheon', e.target.value || null)}
+                      className={`${inputClass} ${readOnly ? '' : 'bg-yellow-50'}`}
+                      disabled={readOnly}
+                    >
+                      <option value="">— Not set —</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                      <option value="Maybe">Maybe</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="px-2 py-4 bg-yellow-50 border border-yellow-200 rounded-lg mt-4">
+                  <label className={labelClass}>Hide guest from showing up in Chat</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="hide_in_chat"
+                      checked={formData.hide_in_chat ?? false}
+                      onChange={(e) => handleChange('hide_in_chat', e.target.checked)}
+                      disabled={readOnly}
+                      className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                    />
+                    <label
+                      htmlFor="hide_in_chat"
+                      className="text-sm font-medium text-gray-700 cursor-pointer"
+                    >
+                      Check to hide in Chat
+                    </label>
+                  </div>
                 </div>
               </div>
             </>
@@ -851,7 +962,9 @@ export default function EditModal({
               {isAdminView && formData.edit_token && (
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <div className="space-y-2">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Edit full registration:</p>
+                    <p className="text-sm font-medium text-gray-700 mb-2">
+                      Edit full registration:
+                    </p>
                     <EditLinkRow
                       url={getEditRegistrationUrl(formData.edit_token)}
                       onCopy={() => {
@@ -917,14 +1030,20 @@ export default function EditModal({
                     isSaving ||
                     isDeleting ||
                     (isCreateMode
-                      ? !formData.first_name?.trim() || !formData.last_name?.trim() || !formData.email?.trim()
+                      ? !formData.first_name?.trim() ||
+                        !formData.last_name?.trim() ||
+                        !formData.email?.trim()
                       : !hasChanges())
                   }
                   title={!isCreateMode && !hasChanges() ? 'No changes to save' : ''}
                 >
                   {isSaving
-                    ? isCreateMode ? 'Adding...' : 'Saving...'
-                    : isCreateMode ? 'Add Registrant' : 'Save Changes'}
+                    ? isCreateMode
+                      ? 'Adding...'
+                      : 'Saving...'
+                    : isCreateMode
+                      ? 'Add Registrant'
+                      : 'Save Changes'}
                 </button>
               </>
             )}
@@ -965,8 +1084,12 @@ export default function EditModal({
                   disabled={isSaving}
                 >
                   {isSaving
-                    ? isCreateMode ? 'Adding...' : 'Saving...'
-                    : isCreateMode ? 'Confirm & Add' : 'Confirm & Save'}
+                    ? isCreateMode
+                      ? 'Adding...'
+                      : 'Saving...'
+                    : isCreateMode
+                      ? 'Confirm & Add'
+                      : 'Confirm & Save'}
                 </button>
               </div>
             </div>

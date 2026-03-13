@@ -70,6 +70,8 @@ function buildVariablesMap(registration: Registration | null, assistantFallbackT
 
     // Guest
     guestName: registration.guestName || '',
+    guestFirstName: registration.guestName?.split(' ').slice(0, -1).join(' ') || '',
+    guestLastName: registration.guestName?.split(' ').at(-1) || '',
     guestRelation: registration.guestRelation || '',
     guestEmail: registration.guestEmail || '',
 
@@ -86,6 +88,14 @@ function buildVariablesMap(registration: Registration | null, assistantFallbackT
     guestAccommodations: formatArray(registration.guestAccommodations),
     guestDinnerAttendance: formatArray(registration.guestDinnerAttendance),
     guestActivities: formatArray(registration.guestActivities),
+
+    // Hotel & Logistics
+    arrival: registration.arrival || '',
+    departure: registration.departure || '',
+    rooms: registration.rooms || '',
+    confirmationNumber: registration.confirmationNumber || '',
+    roomGuest: registration.roomGuest || '',
+    hotelFullName: registration.hotelFullName || '',
 
     // Links
     editLink: `${baseUrl}/edit-registration/${registration.editToken}`,

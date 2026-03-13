@@ -51,7 +51,9 @@ export default function InfoSectionBlock({block}: InfoProps) {
   const styles = styleConfig[styleType as keyof typeof styleConfig] || styleConfig.beige
 
   return (
-    <section className={`py-16 md:py-24 ${styles.bg}`}>
+    <section
+      className={`${!!block.heading || !!block.subheading ? `py-16 md:py-24` : `py-4 md:py-8`} ${styles.bg}`}
+    >
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto">
           {block?.heading && (

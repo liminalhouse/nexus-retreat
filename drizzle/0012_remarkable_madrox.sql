@@ -1,0 +1,1 @@
+ALTER TABLE "registrations" ADD COLUMN "hide_in_chat" boolean DEFAULT false;

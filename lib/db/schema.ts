@@ -1,4 +1,4 @@
-import {pgTable, text, timestamp, uuid, jsonb, pgEnum} from 'drizzle-orm/pg-core'
+import {pgTable, text, timestamp, uuid, jsonb, pgEnum, boolean} from 'drizzle-orm/pg-core'
 
 // Enum for jacket sizes
 export const jacketSizeEnum = pgEnum('jacket_size_enum', [
@@ -72,6 +72,16 @@ export const registrations = pgTable('registrations', {
 
   // Admin Only
   adminNotes: text('admin_notes'),
+  rsvpGuestLuncheon: text('rsvp_guest_luncheon'),
+  hideInChat: boolean('hide_in_chat').default(false),
+
+  // Hotel / Logistics (admin-managed)
+  arrival: text('arrival'),
+  departure: text('departure'),
+  rooms: text('rooms'),
+  hotelFullName: text('hotel_full_name'),
+  confirmationNumber: text('confirmation_number'),
+  roomGuest: text('room_guest'),
 })
 
 export type Registration = typeof registrations.$inferSelect

@@ -143,6 +143,59 @@ const filterFields: FilterFieldConfig[] = [
     ],
     valueType: 'date',
   },
+  {
+    key: 'confirmation_number',
+    label: 'Confirmation Number',
+    operators: [
+      {value: 'exists', label: 'Has Confirmation Number'},
+      {value: 'not_exists', label: 'No Confirmation Number'},
+    ],
+    valueType: 'text',
+  },
+  {
+    key: 'arrival',
+    label: 'Arrival',
+    operators: [
+      {value: 'on', label: 'On'},
+      {value: 'after', label: 'After'},
+      {value: 'before', label: 'Before'},
+    ],
+    valueType: 'date',
+  },
+  {
+    key: 'departure',
+    label: 'Departure',
+    operators: [
+      {value: 'on', label: 'On'},
+      {value: 'after', label: 'After'},
+      {value: 'before', label: 'Before'},
+    ],
+    valueType: 'date',
+  },
+  {
+    key: 'rooms',
+    label: 'Rooms',
+    operators: [
+      {value: 'exists', label: 'Has Room'},
+      {value: 'not_exists', label: 'No Room'},
+      {value: 'contains', label: 'Contains'},
+    ],
+    valueType: 'text',
+  },
+  {
+    key: 'rsvp_guest_luncheon',
+    label: 'RSVP Guest Luncheon',
+    operators: [
+      {value: 'equals', label: 'Is'},
+      {value: 'not_exists', label: 'Not set'},
+    ],
+    valueType: 'select',
+    options: [
+      {value: 'Yes', label: 'Yes'},
+      {value: 'No', label: 'No'},
+      {value: 'Maybe', label: 'Maybe'},
+    ],
+  },
 ]
 
 export function evaluateFilter(registration: Registration, filter: FilterCondition): boolean {
