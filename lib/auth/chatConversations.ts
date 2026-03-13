@@ -23,11 +23,13 @@ export async function getConversationsForUser(userId: string) {
     ORDER BY partner_id, created_at DESC
   `)
 
-  if (lastMessages.length === 0) {
+  const rows = lastMessages.rows
+
+  if (rows.length === 0) {
     return []
   }
 
-  const partnerIds = lastMessages.map((m) => m.partner_id)
+  const partnerIds = rows.map((m) => m.partner_id)
 
   const [partners, activeSessions, unreadRows] = await Promise.all([
     db
@@ -72,7 +74,7 @@ export async function getConversationsForUser(userId: string) {
   const partnerMap = new Map(partners.map((p) => [p.id, p]))
   const unreadMap = new Map(unreadRows.map((r) => [r.senderId, r.count]))
 
-  return lastMessages
+  return rows
     .map((msg) => {
       const partner = partnerMap.get(msg.partner_id)
       if (!partner) return null
