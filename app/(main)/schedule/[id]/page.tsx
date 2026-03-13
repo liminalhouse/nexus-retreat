@@ -1,10 +1,26 @@
 import type {Metadata} from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+
+const shimmerSvg = (w: number, h: number) =>
+  `<svg width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#e2e8f0"/>
+        <stop offset="50%" stop-color="#f1f5f9"/>
+        <stop offset="100%" stop-color="#e2e8f0"/>
+      </linearGradient>
+    </defs>
+    <rect width="${w}" height="${h}" fill="url(#g)"/>
+  </svg>`
+
+const blurDataURL = (w: number, h: number) =>
+  `data:image/svg+xml;base64,${Buffer.from(shimmerSvg(w, h)).toString('base64')}`
 import {notFound} from 'next/navigation'
 import {sanityFetch} from '@/sanity/lib/live'
 import {sessionByIdQuery} from '@/sanity/lib/queries'
 import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
+import {getSessionTagColors, getSessionTypeColors} from '@/lib/sessionLabels'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
 import {SessionTagsGroup} from '@/app/components/SessionTags'
@@ -87,26 +103,73 @@ export default async function SessionPage({params}: Props) {
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
           {/* Main Content */}
           <div className="flex-1 min-w-0">
-            {/* Photo or Placeholder */}
-            <div className="relative h-64 md:h-96 w-full rounded-2xl overflow-hidden mb-8">
-              {photoUrl ? (
-                <Image
-                  src={photoUrl}
-                  alt={session.title || 'Session photo'}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1200px) 100vw, 1200px"
-                  priority
-                />
-              ) : (
-                <SessionPlaceholder
-                  tag={session.sessionTags?.[0]}
-                  sessionType={session.sessionType?.[0]}
-                  className="w-full h-full"
-                  iconSize="lg"
-                />
-              )}
-            </div>
+            {/* Speaker images row or banner */}
+            {session.speakers && session.speakers.length > 0 ? (
+              <div className="flex flex-wrap gap-4 justify-center mb-8">
+                {session.speakers.filter(Boolean).map((speaker) => {
+                  const speakerPhotoUrl = speaker.profilePicture
+                    ? urlForImage(speaker.profilePicture)
+                        ?.width(320)
+                        .height(416)
+                        .fit('crop')
+                        .auto('format')
+                        .url()
+                    : null
+                  const speakerSlug = cleanSlug(speaker.id?.current) || speaker._id
+                  const placeholderColors = session.sessionTags?.[0]
+                    ? getSessionTagColors(session.sessionTags[0])
+                    : session.sessionType?.[0]
+                      ? getSessionTypeColors(session.sessionType[0])
+                      : {imageBg: 'bg-gray-200'}
+
+                  return (
+                    <Link key={speaker._id} href={`/speakers/${speakerSlug}`} className="group">
+                      <div
+                        className={`relative w-40 h-52 rounded-xl overflow-hidden flex-shrink-0 ${placeholderColors.imageBg}`}
+                      >
+                        {speakerPhotoUrl ? (
+                          <Image
+                            src={speakerPhotoUrl}
+                            alt={`${speaker.firstName} ${speaker.lastName}`}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            sizes="160px"
+                            priority
+                            placeholder="blur"
+                            blurDataURL={blurDataURL(160, 208)}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white text-3xl font-semibold">
+                            {(speaker.firstName?.charAt(0) || '') +
+                              (speaker.lastName?.charAt(0) || '')}
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="relative h-64 md:h-96 w-full rounded-2xl overflow-hidden mb-8">
+                {photoUrl ? (
+                  <Image
+                    src={photoUrl}
+                    alt={session.title || 'Session photo'}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1200px) 100vw, 1200px"
+                    priority
+                  />
+                ) : (
+                  <SessionPlaceholder
+                    tag={session.sessionTags?.[0]}
+                    sessionType={session.sessionType?.[0]}
+                    className="w-full h-full"
+                    iconSize="lg"
+                  />
+                )}
+              </div>
+            )}
 
             {/* Session Type & Tags */}
             <div className="mb-4">
