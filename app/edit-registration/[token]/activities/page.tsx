@@ -1,7 +1,7 @@
 'use client'
 
 import {useState, useEffect} from 'react'
-import {useParams} from 'next/navigation'
+import {useParams, useSearchParams} from 'next/navigation'
 import Link from 'next/link'
 import NexusLogo from '@/app/components/NexusLogo'
 import {
@@ -37,6 +37,8 @@ function LoadingSpinner() {
 export default function EditActivitiesPage() {
   const params = useParams()
   const token = params.token as string
+  const searchParams = useSearchParams()
+  const bypass = searchParams.get('bypass') === 'true'
 
   const [pageState, setPageState] = useState<PageState>('loading')
   const [error, setError] = useState<string | null>(null)
@@ -156,6 +158,20 @@ export default function EditActivitiesPage() {
               Hi {registrationData?.first_name} {registrationData?.last_name}, which activities
               would you like to join for the retreat?
             </h1>
+            {!bypass && (
+              <div className="mb-6 p-4 bg-amber-50 border border-amber-300 rounded-lg text-center">
+                <p className="text-sm font-medium text-amber-800">
+                  Activities are no longer editable.
+                </p>
+                <p className="text-sm text-amber-700 mt-1">
+                  Please contact{' '}
+                  <a href="mailto:info@nexus-retreat.com" className="underline">
+                    info@nexus-retreat.com
+                  </a>{' '}
+                  if you need to make changes.
+                </p>
+              </div>
+            )}
             <p className="text-nexus-navy text-center mb-8 text-xs">
               Please contact us at{' '}
               <a href="mailto:info@nexus-retreat.com" className="underline">
@@ -176,7 +192,7 @@ export default function EditActivitiesPage() {
                   options={ACTIVITY_OPTIONS}
                   selectedValues={activities}
                   onToggle={handleActivityToggle}
-                  disabled={pageState === 'saving'}
+                  disabled={!bypass || pageState === 'saving'}
                   idPrefix="activity"
                 />
               </div>
@@ -200,7 +216,7 @@ export default function EditActivitiesPage() {
                     options={GUEST_ACTIVITY_OPTIONS}
                     selectedValues={guestActivities}
                     onToggle={handleGuestActivityToggle}
-                    disabled={pageState === 'saving'}
+                    disabled={!bypass || pageState === 'saving'}
                     idPrefix="guest_activity"
                   />
                 </div>
@@ -223,7 +239,7 @@ export default function EditActivitiesPage() {
                 </div>
                 <button
                   type="submit"
-                  disabled={pageState === 'saving'}
+                  disabled={!bypass || pageState === 'saving'}
                   className="px-8 py-3 bg-nexus-navy-dark text-white rounded-md hover:bg-nexus-navy transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {pageState === 'saving' ? 'Saving...' : 'Save Activities'}

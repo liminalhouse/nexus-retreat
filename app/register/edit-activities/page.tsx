@@ -1,14 +1,37 @@
 'use client'
 
 import {useState} from 'react'
-import {useRouter} from 'next/navigation'
+import {useRouter, useSearchParams} from 'next/navigation'
 import NexusLogo from '@/app/components/NexusLogo'
 
 export default function EditActivitiesLookupPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const bypass = searchParams.get('bypass') === 'true'
+
   const [email, setEmail] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+
+  if (!bypass) {
+    return (
+      <div className="min-h-screen bg-linear-to-t from-blue-800 to-indigo-950 flex items-center justify-center py-24 px-4">
+        <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-xl p-6 md:p-8 text-center">
+          <NexusLogo color="#000" className="w-[168px] my-6 mx-auto" />
+          <h1 className="text-xl font-bold text-gray-900 mb-4">
+            Activities are no longer editable
+          </h1>
+          <p className="text-gray-600 text-sm">
+            The deadline to select activities has passed. Please contact{' '}
+            <a href="mailto:info@nexus-retreat.com" className="text-nexus-navy underline">
+              info@nexus-retreat.com
+            </a>{' '}
+            if you need to make changes.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,8 +53,7 @@ export default function EditActivitiesLookupPage() {
         return
       }
 
-      // Redirect to the token-based activities page
-      router.push(`/edit-registration/${data.data.editToken}/activities`)
+      router.push(`/edit-registration/${data.data.editToken}/activities?bypass=true`)
     } catch {
       setError('Unable to connect. Please try again.')
       setIsLoading(false)
@@ -45,9 +67,7 @@ export default function EditActivitiesLookupPage() {
           <NexusLogo color="#000" className="w-[168px] my-6 mx-auto" />
         </div>
 
-        <h1 className="text-xl font-bold text-gray-900 mb-2 text-center">
-          Edit Your Activities
-        </h1>
+        <h1 className="text-xl font-bold text-gray-900 mb-2 text-center">Edit Your Activities</h1>
         <p className="text-gray-600 text-center mb-8 text-sm">
           Enter the email address you used to register.
         </p>
