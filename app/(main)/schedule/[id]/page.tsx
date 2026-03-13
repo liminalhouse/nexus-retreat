@@ -20,6 +20,7 @@ import {notFound} from 'next/navigation'
 import {sanityFetch} from '@/sanity/lib/live'
 import {sessionByIdQuery} from '@/sanity/lib/queries'
 import {urlForImage, cleanSlug} from '@/sanity/lib/utils'
+import {getSessionTagColors, getSessionTypeColors} from '@/lib/sessionLabels'
 import CustomPortableText from '@/app/components/PortableText'
 import {type PortableTextBlock} from 'next-sanity'
 import {SessionTagsGroup} from '@/app/components/SessionTags'
@@ -115,14 +116,17 @@ export default async function SessionPage({params}: Props) {
                         .url()
                     : null
                   const speakerSlug = cleanSlug(speaker.id?.current) || speaker._id
+                  const placeholderColors = session.sessionTags?.[0]
+                    ? getSessionTagColors(session.sessionTags[0])
+                    : session.sessionType?.[0]
+                      ? getSessionTypeColors(session.sessionType[0])
+                      : {imageBg: 'bg-gray-200'}
 
                   return (
-                    <Link
-                      key={speaker._id}
-                      href={`/speakers/${speakerSlug}`}
-                      className="group"
-                    >
-                      <div className="relative w-40 h-52 rounded-xl overflow-hidden flex-shrink-0">
+                    <Link key={speaker._id} href={`/speakers/${speakerSlug}`} className="group">
+                      <div
+                        className={`relative w-40 h-52 rounded-xl overflow-hidden flex-shrink-0 ${placeholderColors.imageBg}`}
+                      >
                         {speakerPhotoUrl ? (
                           <Image
                             src={speakerPhotoUrl}
