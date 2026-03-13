@@ -1,10 +1,10 @@
 'use client'
 
-import {useState} from 'react'
+import {Suspense, useState} from 'react'
 import {useRouter, useSearchParams} from 'next/navigation'
 import NexusLogo from '@/app/components/NexusLogo'
 
-export default function EditActivitiesLookupPage() {
+function EditActivitiesLookupContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const bypass = searchParams.get('bypass') === 'true'
@@ -113,5 +113,13 @@ export default function EditActivitiesLookupPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function EditActivitiesLookupPage() {
+  return (
+    <Suspense>
+      <EditActivitiesLookupContent />
+    </Suspense>
   )
 }
