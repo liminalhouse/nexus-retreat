@@ -4,6 +4,7 @@ import {useState} from 'react'
 import EditModal from './EditModal'
 import Avatar from '@/app/components/Avatar'
 import FilterBuilder, {type FilterCondition, evaluateFilter} from './FilterBuilder'
+import SortDropdown, {applySort, SortKey} from './SortDropdown'
 import {
   formatAccommodations,
   formatDinnerAttendance,
@@ -345,6 +346,7 @@ export default function RegistrationsTable({
   const [showAddModal, setShowAddModal] = useState(false)
   const [searchFilter, setSearchFilter] = useState('')
   const [filters, setFilters] = useState<FilterCondition[]>([])
+  const [sortKey, setSortKey] = useState<SortKey>('first_name_asc')
 
   const handleUpdateRegistration = (updatedRegistration: Registration) => {
     setRegistrations((prev) =>
@@ -388,9 +390,13 @@ export default function RegistrationsTable({
     const matchesAllFilters = filters.every((filter) => evaluateFilter(reg, filter))
 
     return matchesSearch && matchesAllFilters
-  }).sort((a, b) =>
-    a.first_name.localeCompare(b.first_name) || a.last_name.localeCompare(b.last_name),
-  )
+  })
+
+  const sortedRegistrations = applySort(filteredRegistrations, sortKey, {
+    firstName: (r) => r.first_name,
+    lastName: (r) => r.last_name,
+    createdAt: (r) => r.created_at,
+  })
 
   return (
     <div className="mt-2 sm:mx-auto lg:mx-4 mb-20">
@@ -403,6 +409,7 @@ export default function RegistrationsTable({
             onChange={(e) => setSearchFilter(e.target.value)}
             className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
           />
+          <SortDropdown value={sortKey} onChange={setSortKey} />
         </div>
         <FilterBuilder filters={filters} onChange={setFilters} />
       </div>
@@ -429,7 +436,7 @@ export default function RegistrationsTable({
 
             {/* Body Rows */}
             <div>
-              {filteredRegistrations.map((registration) => (
+              {sortedRegistrations.map((registration) => (
                 <div
                   key={registration.id}
                   className="grid group"

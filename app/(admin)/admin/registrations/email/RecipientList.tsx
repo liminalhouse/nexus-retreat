@@ -7,6 +7,7 @@ import type {Registration as SnakeCaseRegistration} from '@/lib/types/registrati
 import {ArrowUpRightIcon} from '@heroicons/react/24/outline'
 import EditModal from '../EditModal'
 import FilterBuilder, {evaluateFilter, FilterCondition} from '../FilterBuilder'
+import SortDropdown, {applySort, SortKey} from '../SortDropdown'
 
 // Helper to convert camelCase registration to snake_case for EditModal
 function toSnakeCase(reg: Registration): SnakeCaseRegistration {
@@ -80,6 +81,7 @@ export default function RecipientList({
   const unsubscribedSet = useMemo(() => new Set(unsubscribedEmails), [unsubscribedEmails])
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState<FilterCondition[]>([])
+  const [sortKey, setSortKey] = useState<SortKey>('first_name_asc')
   const [viewingRegistration, setViewingRegistration] = useState<Registration | null>(null)
 
   const filteredRegistrations = useMemo(() => {
@@ -103,10 +105,12 @@ export default function RecipientList({
       })
     }
 
-    return [...result].sort((a, b) =>
-      a.firstName.localeCompare(b.firstName) || a.lastName.localeCompare(b.lastName),
-    )
-  }, [registrations, searchQuery, filters])
+    return applySort(result, sortKey, {
+      firstName: (r) => r.firstName,
+      lastName: (r) => r.lastName,
+      createdAt: (r) => r.createdAt.toString(),
+    })
+  }, [registrations, searchQuery, filters, sortKey])
 
   const selectableRegistrations = useMemo(
     () => filteredRegistrations.filter((r) => !unsubscribedSet.has(r.email.toLowerCase())),
@@ -140,7 +144,10 @@ export default function RecipientList({
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
       <div className="p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900 mb-3">Recipients</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold text-gray-900">Recipients</h2>
+          <SortDropdown value={sortKey} onChange={setSortKey} />
+        </div>
 
         {/* Select All */}
         <div className="flex items-center gap-3 mb-1">
