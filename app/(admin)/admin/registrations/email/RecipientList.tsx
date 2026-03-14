@@ -112,7 +112,8 @@ export default function RecipientList({
   )
 
   const allFilteredSelected =
-    selectableRegistrations.length > 0 && selectableRegistrations.every((r) => selectedIds.has(r.id))
+    selectableRegistrations.length > 0 &&
+    selectableRegistrations.every((r) => selectedIds.has(r.id))
 
   // Track whether all filtered were selected before the filter/search changes.
   // Assigned during render so the effect reads the value from the current render cycle.
@@ -140,7 +141,7 @@ export default function RecipientList({
         <h2 className="text-lg font-semibold text-gray-900 mb-3">Recipients</h2>
 
         {/* Select All */}
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-3 mb-1">
           <input
             type="checkbox"
             id="selectAll"
@@ -158,6 +159,15 @@ export default function RecipientList({
           <span className="text-sm text-gray-500">
             ({selectedIds.size} of {registrations.length} selected)
           </span>
+        </div>
+
+        <div className="mb-3 ml-7">
+          <button
+            onClick={() => onSetSelection(new Set())}
+            className="text-xs text-gray-500 hover:text-gray-700 underline"
+          >
+            Deselect All
+          </button>
         </div>
 
         {/* Search */}
@@ -187,9 +197,7 @@ export default function RecipientList({
                 <li
                   key={registration.id}
                   className={`flex items-center gap-3 p-3 ${
-                    isUnsubscribed
-                      ? 'opacity-50 cursor-default'
-                      : 'hover:bg-gray-50 cursor-pointer'
+                    isUnsubscribed ? 'opacity-50 cursor-default' : 'hover:bg-gray-50 cursor-pointer'
                   }`}
                   onClick={() => {
                     if (!isUnsubscribed) {
