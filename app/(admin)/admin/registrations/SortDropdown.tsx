@@ -50,20 +50,10 @@ export function applySort<T>(
           fields.firstName(a).localeCompare(fields.firstName(b)) ||
           fields.lastName(a).localeCompare(fields.lastName(b))
         )
-      case 'first_name_desc':
-        return (
-          fields.firstName(b).localeCompare(fields.firstName(a)) ||
-          fields.lastName(b).localeCompare(fields.lastName(a))
-        )
       case 'last_name_asc':
         return (
           fields.lastName(a).localeCompare(fields.lastName(b)) ||
           fields.firstName(a).localeCompare(fields.firstName(b))
-        )
-      case 'last_name_desc':
-        return (
-          fields.lastName(b).localeCompare(fields.lastName(a)) ||
-          fields.firstName(b).localeCompare(fields.firstName(a))
         )
       case 'created_at_asc':
         return (
