@@ -54,6 +54,7 @@ const EMPTY_REGISTRATION: Registration = {
   admin_notes: null,
   rsvp_guest_luncheon: null,
   hide_in_chat: false,
+  no_confirmation_email: false,
   arrival: null,
   departure: null,
   hotel_full_name: '',
@@ -101,6 +102,7 @@ const COLUMN_WIDTHS = {
   admin_notes: 'minmax(200px, 2fr)',
   rsvp_guest_luncheon: 'minmax(140px, 1fr)',
   hide_in_chat: 'minmax(110px, 1fr)',
+  no_confirmation_email: 'minmax(150px, 1fr)',
   actions: 'minmax(120px, 2fr)',
 }
 
@@ -326,6 +328,11 @@ const columns: ColumnConfig[] = [
     label: 'Hide in Chat',
     render: (reg) => (reg.hide_in_chat ? '\u00A0 \u00A0 \u00A0 \u00A0 ✅' : ''),
   },
+  {
+    key: 'no_confirmation_email',
+    label: 'Do not send hotel confirmation email to',
+    render: (reg) => (reg.no_confirmation_email ? '\u00A0 \u00A0 \u00A0 \u00A0 ✅' : ''),
+  },
 ]
 
 export default function RegistrationsTable({
@@ -429,7 +436,7 @@ export default function RegistrationsTable({
                   {columns.map((column) => (
                     <div
                       key={column.key}
-                      className={`${column.key === 'admin_notes' || column.key === 'rsvp_guest_luncheon' || column.key === 'hide_in_chat' ? 'bg-yellow-50' : 'bg-white'} group-hover:bg-zinc-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto`}
+                      className={`${column.key === 'admin_notes' || column.key === 'rsvp_guest_luncheon' || column.key === 'hide_in_chat' || column.key === 'no_confirmation_email' ? 'bg-yellow-50' : 'bg-white'} group-hover:bg-zinc-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto`}
                     >
                       {column.render(registration)}
                     </div>

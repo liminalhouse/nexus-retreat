@@ -183,6 +183,16 @@ const filterFields: FilterFieldConfig[] = [
     valueType: 'text',
   },
   {
+    key: 'no_confirmation_email',
+    label: 'Do not send hotel confirmation email to',
+    operators: [
+      {value: 'is_true', label: 'Is checked'},
+      {value: 'is_false', label: 'Is not checked'},
+    ],
+    valueType: 'select',
+    options: [],
+  },
+  {
     key: 'rsvp_guest_luncheon',
     label: 'RSVP Guest Luncheon',
     operators: [
@@ -206,6 +216,10 @@ export function evaluateFilter(registration: Registration, filter: FilterConditi
       return !!value
     case 'not_exists':
       return !value
+    case 'is_true':
+      return value === true
+    case 'is_false':
+      return value !== true
     case 'equals':
       return value === filter.value
     case 'not_equals':
@@ -285,7 +299,7 @@ export default function FilterBuilder({filters, onChange}: FilterBuilderProps) {
   }
 
   const needsValueInput = (operator: string) => {
-    return !['exists', 'not_exists'].includes(operator)
+    return !['exists', 'not_exists', 'is_true', 'is_false'].includes(operator)
   }
 
   const needsDropdown = (operator: string) => {

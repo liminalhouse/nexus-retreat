@@ -946,6 +946,25 @@ export default function EditModal({
                     </label>
                   </div>
                 </div>
+                <div className="px-2 py-4 bg-yellow-50 border border-yellow-200 rounded-lg mt-4">
+                  <label className={labelClass}>Confirmation Email</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="no_confirmation_email"
+                      checked={formData.no_confirmation_email ?? false}
+                      onChange={(e) => handleChange('no_confirmation_email', e.target.checked)}
+                      disabled={readOnly}
+                      className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                    />
+                    <label
+                      htmlFor="no_confirmation_email"
+                      className="text-sm font-medium text-gray-700 cursor-pointer"
+                    >
+                      Do not send confirmation email
+                    </label>
+                  </div>
+                </div>
               </div>
             </>
           )}
