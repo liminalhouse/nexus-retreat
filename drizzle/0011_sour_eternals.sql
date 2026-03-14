@@ -1,0 +1,1 @@
+ALTER TABLE "registrations" ADD COLUMN "no_confirmation_email" boolean DEFAULT false;

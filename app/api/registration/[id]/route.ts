@@ -87,6 +87,7 @@ export async function PATCH(request: NextRequest, {params}: {params: Promise<{id
       adminNotes: toNullIfEmpty(formData.admin_notes),
       rsvpGuestLuncheon: toNullIfEmpty(formData.rsvp_guest_luncheon),
       hideInChat: formData.hide_in_chat ?? false,
+      noConfirmationEmail: formData.no_confirmation_email ?? false,
 
       // Hotel / Logistics
       arrival: toNullIfEmpty(formData.arrival),

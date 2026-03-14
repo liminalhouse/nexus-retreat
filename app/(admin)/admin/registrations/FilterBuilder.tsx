@@ -183,6 +183,16 @@ const filterFields: FilterFieldConfig[] = [
     valueType: 'text',
   },
   {
+    key: 'no_confirmation_email',
+    label: 'Do not send hotel confirmation email to',
+    operators: [
+      {value: 'is_true', label: 'Is checked'},
+      {value: 'is_false', label: 'Is not checked'},
+    ],
+    valueType: 'select',
+    options: [],
+  },
+  {
     key: 'rsvp_guest_luncheon',
     label: 'RSVP Guest Luncheon',
     operators: [
@@ -206,6 +216,10 @@ export function evaluateFilter(registration: Registration, filter: FilterConditi
       return !!value
     case 'not_exists':
       return !value
+    case 'is_true':
+      return value === true
+    case 'is_false':
+      return value !== true
     case 'equals':
       return value === filter.value
     case 'not_equals':
@@ -285,7 +299,7 @@ export default function FilterBuilder({filters, onChange}: FilterBuilderProps) {
   }
 
   const needsValueInput = (operator: string) => {
-    return !['exists', 'not_exists'].includes(operator)
+    return !['exists', 'not_exists', 'is_true', 'is_false'].includes(operator)
   }
 
   const needsDropdown = (operator: string) => {
@@ -297,7 +311,7 @@ export default function FilterBuilder({filters, onChange}: FilterBuilderProps) {
       <div className="flex items-center gap-2 mb-3">
         <button
           onClick={addFilter}
-          className="px-4 py-2 bg-nexus-coral text-white rounded-lg hover:bg-nexus-coral-light transition-colors font-medium"
+          className="px-3 py-1.5 text-sm bg-nexus-coral text-white rounded-lg hover:bg-nexus-coral-light transition-colors font-medium"
         >
           + Add Filter
         </button>
@@ -305,13 +319,13 @@ export default function FilterBuilder({filters, onChange}: FilterBuilderProps) {
           <>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
             >
               {isOpen ? 'Hide' : 'Show'} Filters ({filters.length})
             </button>
             <button
               onClick={clearAllFilters}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 transition-colors"
             >
               Clear All
             </button>
@@ -324,13 +338,13 @@ export default function FilterBuilder({filters, onChange}: FilterBuilderProps) {
           {filters.map((filter) => {
             const fieldConfig = getFieldConfig(filter.field)
             return (
-              <div key={filter.id} className="flex items-center gap-2 bg-white p-3 rounded-lg">
+              <div key={filter.id} className="flex items-center gap-2 bg-white p-2 rounded-lg">
                 {/* Field Select */}
                 <select
                   name={`filter-field-${filter.id}`}
                   value={filter.field}
                   onChange={(e) => updateFilter(filter.id, {field: e.target.value})}
-                  className="pl-3 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent bg-blue-100"
+                  className="text-xs pl-2 pr-6 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent bg-blue-100"
                 >
                   <option value="">Select field...</option>
                   {filterFields.map((field) => (
@@ -346,7 +360,7 @@ export default function FilterBuilder({filters, onChange}: FilterBuilderProps) {
                     name={`filter-operator-${filter.id}`}
                     value={filter.operator}
                     onChange={(e) => updateFilter(filter.id, {operator: e.target.value})}
-                    className="pl-3 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
+                    className="text-xs pl-2 pr-6 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
                   >
                     {fieldConfig.operators.map((op) => (
                       <option key={op.value} value={op.value}>
@@ -365,7 +379,7 @@ export default function FilterBuilder({filters, onChange}: FilterBuilderProps) {
                         name={`filter-value-${filter.id}`}
                         value={filter.value}
                         onChange={(e) => updateFilter(filter.id, {value: e.target.value})}
-                        className="pl-3 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
+                        className="text-xs pl-2 pr-6 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
                       >
                         <option value="">Select...</option>
                         {fieldConfig.options?.map((opt) => (
@@ -380,7 +394,7 @@ export default function FilterBuilder({filters, onChange}: FilterBuilderProps) {
                         name={`filter-value-${filter.id}`}
                         value={filter.value}
                         onChange={(e) => updateFilter(filter.id, {value: e.target.value})}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
+                        className="text-xs px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
                       />
                     ) : (
                       <input
@@ -389,7 +403,7 @@ export default function FilterBuilder({filters, onChange}: FilterBuilderProps) {
                         value={filter.value}
                         onChange={(e) => updateFilter(filter.id, {value: e.target.value})}
                         placeholder="Enter value..."
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
+                        className="text-xs px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
                       />
                     )}
                   </>
@@ -398,7 +412,7 @@ export default function FilterBuilder({filters, onChange}: FilterBuilderProps) {
                 {/* Remove Button */}
                 <button
                   onClick={() => removeFilter(filter.id)}
-                  className="ml-auto px-3 py-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
+                  className="ml-auto px-2 py-1 text-xs text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
                 >
                   ✕
                 </button>
