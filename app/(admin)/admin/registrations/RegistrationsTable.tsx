@@ -97,8 +97,8 @@ const COLUMN_WIDTHS = {
   confirmation_number: 'minmax(160px, 1.2fr)',
   rooms: 'minmax(120px, 1fr)',
   room_guest: 'minmax(140px, 1fr)',
-  edit_registration_link: 'minmax(280px, 2fr)',
-  edit_activities_link: 'minmax(280px, 2fr)',
+  // edit_registration_link: 'minmax(280px, 2fr)',
+  // edit_activities_link: 'minmax(280px, 2fr)',
   admin_notes: 'minmax(200px, 2fr)',
   rsvp_guest_luncheon: 'minmax(140px, 1fr)',
   hide_in_chat: 'minmax(110px, 1fr)',
@@ -280,39 +280,44 @@ const columns: ColumnConfig[] = [
     render: (reg) => reg.room_guest || '-',
   },
   {
-    key: 'edit_registration_link',
-    label: 'Edit Registration Link',
-    render: (reg) => {
-      const url = getEditRegistrationUrl(reg.edit_token)
-      return (
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-nexus-coral hover:text-nexus-coral-light underline text-xs break-all"
-        >
-          {url}
-        </a>
-      )
-    },
+    key: 'no_confirmation_email',
+    label: 'Do not send hotel confirmation email to',
+    render: (reg) => (reg.no_confirmation_email ? '\u00A0 \u00A0 \u00A0 \u00A0 ✅' : ''),
   },
-  {
-    key: 'edit_activities_link',
-    label: 'Activities Form Link',
-    render: (reg) => {
-      const url = getEditActivitiesUrl(reg.edit_token)
-      return (
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-nexus-coral hover:text-nexus-coral-light underline text-xs break-all"
-        >
-          {url}
-        </a>
-      )
-    },
-  },
+  // {
+  //   key: 'edit_registration_link',
+  //   label: 'Edit Registration Link',
+  //   render: (reg) => {
+  //     const url = getEditRegistrationUrl(reg.edit_token)
+  //     return (
+  //       <a
+  //         href={url}
+  //         target="_blank"
+  //         rel="noopener noreferrer"
+  //         className="text-nexus-coral hover:text-nexus-coral-light underline text-xs break-all"
+  //       >
+  //         {url}
+  //       </a>
+  //     )
+  //   },
+  // },
+  // {
+  //   key: 'edit_activities_link',
+  //   label: 'Activities Form Link',
+  //   render: (reg) => {
+  //     const url = getEditActivitiesUrl(reg.edit_token)
+  //     return (
+  //       <a
+  //         href={url}
+  //         target="_blank"
+  //         rel="noopener noreferrer"
+  //         className="text-nexus-coral hover:text-nexus-coral-light underline text-xs break-all"
+  //       >
+  //         {url}
+  //       </a>
+  //     )
+  //   },
+  // },
   {
     key: 'admin_notes',
     label: 'Admin Notes (not visible to registrant)',
@@ -327,11 +332,6 @@ const columns: ColumnConfig[] = [
     key: 'hide_in_chat',
     label: 'Hide in Chat',
     render: (reg) => (reg.hide_in_chat ? '\u00A0 \u00A0 \u00A0 \u00A0 ✅' : ''),
-  },
-  {
-    key: 'no_confirmation_email',
-    label: 'Do not send hotel confirmation email to',
-    render: (reg) => (reg.no_confirmation_email ? '\u00A0 \u00A0 \u00A0 \u00A0 ✅' : ''),
   },
 ]
 
