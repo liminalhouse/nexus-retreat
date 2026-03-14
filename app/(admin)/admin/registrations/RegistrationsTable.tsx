@@ -99,10 +99,10 @@ const COLUMN_WIDTHS = {
   room_guest: 'minmax(140px, 1fr)',
   // edit_registration_link: 'minmax(280px, 2fr)',
   // edit_activities_link: 'minmax(280px, 2fr)',
+  no_confirmation_email: 'minmax(100px, 1fr)',
   admin_notes: 'minmax(200px, 2fr)',
-  rsvp_guest_luncheon: 'minmax(140px, 1fr)',
+  rsvp_guest_luncheon: 'minmax(100px, 1fr)',
   hide_in_chat: 'minmax(110px, 1fr)',
-  no_confirmation_email: 'minmax(150px, 1fr)',
   actions: 'minmax(120px, 2fr)',
 }
 
