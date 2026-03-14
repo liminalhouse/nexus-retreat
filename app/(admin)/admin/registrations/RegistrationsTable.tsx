@@ -388,7 +388,9 @@ export default function RegistrationsTable({
     const matchesAllFilters = filters.every((filter) => evaluateFilter(reg, filter))
 
     return matchesSearch && matchesAllFilters
-  })
+  }).sort((a, b) =>
+    a.first_name.localeCompare(b.first_name) || a.last_name.localeCompare(b.last_name),
+  )
 
   return (
     <div className="mt-2 sm:mx-auto lg:mx-4 mb-20">

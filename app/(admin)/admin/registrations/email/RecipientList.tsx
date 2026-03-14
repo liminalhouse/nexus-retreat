@@ -103,7 +103,9 @@ export default function RecipientList({
       })
     }
 
-    return result
+    return [...result].sort((a, b) =>
+      a.firstName.localeCompare(b.firstName) || a.lastName.localeCompare(b.lastName),
+    )
   }, [registrations, searchQuery, filters])
 
   const selectableRegistrations = useMemo(
