@@ -88,7 +88,7 @@ export default async function SessionPage({params}: Props) {
           {/* Main Content */}
           <div className="flex-1 min-w-0">
             {/* Photo or Placeholder */}
-            <div className="relative h-64 md:h-96 w-full rounded-2xl overflow-hidden mb-8">
+            <div className="relative h-32 md:h-32 w-full rounded-2xl overflow-hidden mb-8">
               {photoUrl ? (
                 <Image
                   src={photoUrl}
@@ -103,7 +103,7 @@ export default async function SessionPage({params}: Props) {
                   tag={session.sessionTags?.[0]}
                   sessionType={session.sessionType?.[0]}
                   className="w-full h-full"
-                  iconSize="lg"
+                  iconSize="md"
                 />
               )}
             </div>
