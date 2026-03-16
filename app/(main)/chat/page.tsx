@@ -1,5 +1,6 @@
 import {redirect} from 'next/navigation'
 import {getSessionUser} from '@/lib/auth/chatAuth'
+import {getConversationsForUser} from '@/lib/auth/chatConversations'
 import {ChatContainer} from '@/app/components/Chat'
 
 export const metadata = {
@@ -12,10 +13,12 @@ export default async function ChatPage() {
     redirect('/chat/login')
   }
 
+  const conversations = await getConversationsForUser(user.registrationId)
+
   return (
     <div className="mx-auto md:px-4 md:py-6 bg-slate-100">
       <div className="mx-auto h-[calc(100vh-70px)] max-h-[800px] max-w-[1200px] mt-1">
-        <ChatContainer />
+        <ChatContainer initialUser={user} initialConversations={conversations} />
       </div>
     </div>
   )

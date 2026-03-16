@@ -80,8 +80,16 @@ function ChatSkeleton() {
   )
 }
 
-export default function ChatContainer() {
-  const {user, isLoading, initialConversations} = useChatAuth()
+import type {ChatUser, Conversation} from '@/lib/types/chat'
+
+export default function ChatContainer({
+  initialUser,
+  initialConversations: initialConversationsProp,
+}: {
+  initialUser?: ChatUser | null
+  initialConversations?: Conversation[] | null
+} = {}) {
+  const {user, isLoading, initialConversations} = useChatAuth(initialUser, initialConversationsProp)
   const {
     conversations,
     messages,

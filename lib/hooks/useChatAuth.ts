@@ -3,10 +3,10 @@
 import {useState, useEffect, useCallback} from 'react'
 import type {ChatUser, Conversation} from '@/lib/types/chat'
 
-export function useChatAuth() {
-  const [user, setUser] = useState<ChatUser | null>(null)
-  const [initialConversations, setInitialConversations] = useState<Conversation[] | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+export function useChatAuth(serverUser?: ChatUser | null, serverConversations?: Conversation[] | null) {
+  const [user, setUser] = useState<ChatUser | null>(serverUser ?? null)
+  const [initialConversations, setInitialConversations] = useState<Conversation[] | null>(serverConversations ?? null)
+  const [isLoading, setIsLoading] = useState(!serverUser)
 
   const checkAuth = useCallback(async () => {
     try {
@@ -26,8 +26,10 @@ export function useChatAuth() {
   }, [])
 
   useEffect(() => {
+    // Skip client-side fetch if server already provided the user
+    if (serverUser) return
     checkAuth()
-  }, [checkAuth])
+  }, [checkAuth, serverUser])
 
   const logout = useCallback(async () => {
     try {
