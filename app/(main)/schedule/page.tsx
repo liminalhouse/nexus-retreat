@@ -88,7 +88,7 @@ function SessionListItem({
       <Link href={`/schedule/${sessionSlug}`} className="absolute inset-0 z-0" />
 
       {/* Photo or Placeholder */}
-      <div className="relative w-full sm:w-36 h-32 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden">
+      {/* <div className="relative w-full sm:w-36 h-32 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden">
         {photoUrl ? (
           <Image
             src={photoUrl}
@@ -100,7 +100,7 @@ function SessionListItem({
         ) : (
           <SessionPlaceholder tag={session.sessionTags?.[0]} sessionType={session.sessionType?.[0]} className="w-full h-full" />
         )}
-      </div>
+      </div> */}
 
       {/* Content */}
       <div className="flex-1 min-w-0">
