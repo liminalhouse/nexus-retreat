@@ -109,13 +109,14 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
         const apiPartnerIds = new Set(apiConversations.map((c: Conversation) => c.partnerId))
 
         setConversations((prev) => {
-          const tempToKeep = prev.filter(
+          // Keep any local conversation for the active partner not yet confirmed by the API
+          // (covers both empty temp entries and optimistically-promoted pending attendees)
+          const localToKeep = prev.filter(
             (c) =>
               !apiPartnerIds.has(c.partnerId) &&
-              !c.lastMessage &&
               c.partnerId === activePartnerIdRef.current
           )
-          return [...tempToKeep, ...apiConversations]
+          return [...localToKeep, ...apiConversations]
         })
       }
     } catch {
@@ -246,11 +247,6 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
         }
         return prev
       })
-      // Clear pending outside the updater
-      if (pendingAttendeeRef.current?.id === receiverId) {
-        updatePendingAttendee(null)
-      }
-
       // Send to API in background
       try {
         const res = await fetch('/api/chat/messages', {
@@ -312,6 +308,13 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
     pendingAttendeeRef.current = attendee
     setPendingAttendee(attendee)
   }
+
+  // Clear pendingAttendee only once conversations has confirmed the partner entry
+  useEffect(() => {
+    if (pendingAttendee && conversations.some((c) => c.partnerId === pendingAttendee.id)) {
+      updatePendingAttendee(null)
+    }
+  }, [conversations, pendingAttendee])
 
   // Start a new conversation (select partner from search dropdown — adds temp entry)
   const startNewConversation = useCallback(
