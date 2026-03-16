@@ -7,6 +7,7 @@ import type {Registration as SnakeCaseRegistration} from '@/lib/types/registrati
 import {ArrowUpRightIcon} from '@heroicons/react/24/outline'
 import EditModal from '../EditModal'
 import FilterBuilder, {evaluateFilter, FilterCondition} from '../FilterBuilder'
+import SortDropdown, {applySort, SortKey} from '../SortDropdown'
 
 // Helper to convert camelCase registration to snake_case for EditModal
 function toSnakeCase(reg: Registration): SnakeCaseRegistration {
@@ -52,6 +53,7 @@ function toSnakeCase(reg: Registration): SnakeCaseRegistration {
     admin_notes: reg.adminNotes,
     rsvp_guest_luncheon: reg.rsvpGuestLuncheon,
     hide_in_chat: reg.hideInChat,
+    no_confirmation_email: reg.noConfirmationEmail,
     arrival: reg.arrival,
     departure: reg.departure,
     rooms: reg.rooms,
@@ -79,6 +81,7 @@ export default function RecipientList({
   const unsubscribedSet = useMemo(() => new Set(unsubscribedEmails), [unsubscribedEmails])
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState<FilterCondition[]>([])
+  const [sortKey, setSortKey] = useState<SortKey>('first_name_asc')
   const [viewingRegistration, setViewingRegistration] = useState<Registration | null>(null)
 
   const filteredRegistrations = useMemo(() => {
@@ -102,8 +105,12 @@ export default function RecipientList({
       })
     }
 
-    return result
-  }, [registrations, searchQuery, filters])
+    return applySort(result, sortKey, {
+      firstName: (r) => r.firstName,
+      lastName: (r) => r.lastName,
+      createdAt: (r) => r.createdAt.toString(),
+    })
+  }, [registrations, searchQuery, filters, sortKey])
 
   const selectableRegistrations = useMemo(
     () => filteredRegistrations.filter((r) => !unsubscribedSet.has(r.email.toLowerCase())),
@@ -111,7 +118,8 @@ export default function RecipientList({
   )
 
   const allFilteredSelected =
-    selectableRegistrations.length > 0 && selectableRegistrations.every((r) => selectedIds.has(r.id))
+    selectableRegistrations.length > 0 &&
+    selectableRegistrations.every((r) => selectedIds.has(r.id))
 
   // Track whether all filtered were selected before the filter/search changes.
   // Assigned during render so the effect reads the value from the current render cycle.
@@ -136,10 +144,13 @@ export default function RecipientList({
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
       <div className="p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900 mb-3">Recipients</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold text-gray-900">Recipients</h2>
+          <SortDropdown value={sortKey} onChange={setSortKey} />
+        </div>
 
         {/* Select All */}
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-3 mb-1">
           <input
             type="checkbox"
             id="selectAll"
@@ -157,6 +168,15 @@ export default function RecipientList({
           <span className="text-sm text-gray-500">
             ({selectedIds.size} of {registrations.length} selected)
           </span>
+        </div>
+
+        <div className="mb-3 ml-7">
+          <button
+            onClick={() => onSetSelection(new Set())}
+            className="text-xs text-gray-500 hover:text-gray-700 underline"
+          >
+            Deselect All
+          </button>
         </div>
 
         {/* Search */}
@@ -186,9 +206,7 @@ export default function RecipientList({
                 <li
                   key={registration.id}
                   className={`flex items-center gap-3 p-3 ${
-                    isUnsubscribed
-                      ? 'opacity-50 cursor-default'
-                      : 'hover:bg-gray-50 cursor-pointer'
+                    isUnsubscribed ? 'opacity-50 cursor-default' : 'hover:bg-gray-50 cursor-pointer'
                   }`}
                   onClick={() => {
                     if (!isUnsubscribed) {

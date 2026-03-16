@@ -92,6 +92,20 @@
       "when": 1773344943459,
       "tag": "0012_remarkable_madrox",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1773449046111,
+      "tag": "0011_sour_eternals",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1773677662333,
+      "tag": "0012_volatile_king_bedlam",
+      "breakpoints": true
     }
   ]
 }

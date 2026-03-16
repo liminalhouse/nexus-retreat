@@ -74,6 +74,7 @@ export const registrations = pgTable('registrations', {
   adminNotes: text('admin_notes'),
   rsvpGuestLuncheon: text('rsvp_guest_luncheon'),
   hideInChat: boolean('hide_in_chat').default(false),
+  noConfirmationEmail: boolean('no_confirmation_email').default(false),
 
   // Hotel / Logistics (admin-managed)
   arrival: text('arrival'),
