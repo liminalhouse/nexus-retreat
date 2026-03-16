@@ -12,6 +12,8 @@ type ConversationListProps = {
   onSelect: (partnerId: string | null) => void
   onSearch: (query: string) => Promise<Attendee[]>
   onStartNew: (attendee: Attendee) => void
+  onSelectAttendee: (attendee: Attendee) => void
+  allAttendees?: Attendee[]
 }
 
 export default function ConversationList({
@@ -20,6 +22,8 @@ export default function ConversationList({
   onSelect,
   onSearch,
   onStartNew,
+  onSelectAttendee,
+  allAttendees = [],
 }: ConversationListProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<Attendee[]>([])
@@ -71,7 +75,7 @@ export default function ConversationList({
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-0 flex-1">
       {/* Search */}
       <div className="p-4 pb-3">
         <div className="relative" ref={searchWrapperRef}>
@@ -127,15 +131,15 @@ export default function ConversationList({
         </div>
       </div>
 
-      {/* Conversation list */}
-      <div className="flex-1 overflow-y-auto">
+      {/* Conversation list + All Attendees */}
+      <div className="flex-1 overflow-y-auto pb-4">
         <p className="text-xs font-medium text-gray-400 uppercase tracking-wide px-4 pt-3 pb-2">
           All Conversations
         </p>
         {conversations.length === 0 && !searchQuery ? (
-          <div className="px-4 py-6 text-center text-sm text-gray-500">
+          <div className="px-4 py-4 text-center text-sm text-gray-500">
             <p>No conversations yet.</p>
-            <p className="mt-1">Search for an attendee to start chatting.</p>
+            <p className="mt-1">Search or pick an attendee below to start chatting.</p>
           </div>
         ) : (
           conversations.map((conv) => (
@@ -177,6 +181,39 @@ export default function ConversationList({
               )}
             </button>
           ))
+        )}
+
+        {/* All Attendees */}
+        {allAttendees.length > 0 && (
+          <>
+            <div className="border-t border-gray-100 mt-1" />
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide px-4 pt-3 pb-2">
+              All Attendees
+            </p>
+            {allAttendees.map((attendee) => {
+              const name = `${attendee.firstName} ${attendee.lastName}`
+              const alreadyMessaged = conversations.some((c) => c.partnerId === attendee.id)
+              return (
+                <button
+                  key={attendee.id}
+                  onClick={() => onSelectAttendee(attendee)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 transition-colors text-left ${
+                    activePartnerId === attendee.id ? 'bg-blue-50' : 'hover:bg-gray-50'
+                  } ${alreadyMessaged ? 'opacity-50' : ''}`}
+                >
+                  <ChatAvatar name={name} photo={attendee.profilePicture} online={attendee.online} size="md" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-gray-900 truncate">{name}</p>
+                    {(attendee.title || attendee.organization) && (
+                      <p className="text-xs text-gray-500 truncate">
+                        {[attendee.title, attendee.organization].filter(Boolean).join(', ')}
+                      </p>
+                    )}
+                  </div>
+                </button>
+              )
+            })}
+          </>
         )}
       </div>
     </div>

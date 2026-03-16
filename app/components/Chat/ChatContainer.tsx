@@ -80,14 +80,16 @@ function ChatSkeleton() {
   )
 }
 
-import type {ChatUser, Conversation} from '@/lib/types/chat'
+import type {ChatUser, Conversation, Attendee} from '@/lib/types/chat'
 
 export default function ChatContainer({
   initialUser,
   initialConversations: initialConversationsProp,
+  initialAttendees = [],
 }: {
   initialUser?: ChatUser | null
   initialConversations?: Conversation[] | null
+  initialAttendees?: Attendee[]
 } = {}) {
   const {user, isLoading, initialConversations} = useChatAuth(initialUser, initialConversationsProp)
   const {
@@ -99,6 +101,8 @@ export default function ChatContainer({
     sendMessage,
     searchAttendees,
     startNewConversation,
+    selectAttendee,
+    pendingAttendee,
   } = useChatData(user, initialConversations)
 
   // Cache conversation count for skeleton accuracy on next load
@@ -114,7 +118,22 @@ export default function ChatContainer({
     return <ChatSkeleton />
   }
 
-  const activeConversation = conversations.find((c) => c.partnerId === activePartnerId) || null
+  const activeConversation =
+    conversations.find((c) => c.partnerId === activePartnerId) ||
+    (pendingAttendee && pendingAttendee.id === activePartnerId
+      ? {
+          partnerId: pendingAttendee.id,
+          partnerName: `${pendingAttendee.firstName} ${pendingAttendee.lastName}`,
+          partnerTitle: pendingAttendee.title,
+          partnerOrganization: pendingAttendee.organization,
+          partnerPhoto: pendingAttendee.profilePicture,
+          partnerOnline: pendingAttendee.online,
+          lastMessage: '',
+          lastMessageAt: '',
+          lastMessageSenderId: '',
+          unreadCount: 0,
+        }
+      : null)
 
   return (
     <div className="flex h-full lg:rounded-xl border border-gray-200 shadow-sm overflow-hidden bg-white">
@@ -122,7 +141,7 @@ export default function ChatContainer({
       <div
         className={`${
           activePartnerId ? 'hidden md:flex' : 'flex'
-        } flex-col w-full md:w-80 lg:w-96 border-r border-gray-100`}
+        } flex-col min-h-0 w-full md:w-80 lg:w-96 border-r border-gray-100`}
       >
         {/* User header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
@@ -142,6 +161,8 @@ export default function ChatContainer({
           onSelect={selectConversation}
           onSearch={searchAttendees}
           onStartNew={startNewConversation}
+          onSelectAttendee={selectAttendee}
+          allAttendees={initialAttendees}
         />
       </div>
 

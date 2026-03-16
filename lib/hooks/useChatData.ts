@@ -154,6 +154,7 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
   // Select a conversation
   const selectConversation = useCallback(
     (partnerId: string | null) => {
+      updatePendingAttendee(null)
       setActivePartnerId(partnerId)
       if (partnerId) {
         const cached = messageCacheRef.current.get(partnerId)
@@ -204,7 +205,7 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
         return updated
       })
 
-      // Optimistically update conversation list
+      // Optimistically update conversation list — promote pending attendee if needed
       setConversations((prev) => {
         const existing = prev.find((c) => c.partnerId === receiverId)
         if (existing) {
@@ -224,8 +225,31 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
                 new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
             )
         }
+        // Not in conversations yet — promote pending attendee (read from ref, always fresh)
+        const pending = pendingAttendeeRef.current
+        if (pending && pending.id === receiverId) {
+          return [
+            {
+              partnerId: pending.id,
+              partnerName: `${pending.firstName} ${pending.lastName}`,
+              partnerTitle: pending.title,
+              partnerOrganization: pending.organization,
+              partnerPhoto: pending.profilePicture,
+              partnerOnline: pending.online,
+              lastMessage: content,
+              lastMessageAt: now,
+              lastMessageSenderId: user.registrationId,
+              unreadCount: 0,
+            },
+            ...prev,
+          ]
+        }
         return prev
       })
+      // Clear pending outside the updater
+      if (pendingAttendeeRef.current?.id === receiverId) {
+        updatePendingAttendee(null)
+      }
 
       // Send to API in background
       try {
@@ -280,9 +304,19 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
     [user]
   )
 
-  // Start a new conversation (select partner from search)
+  // Pending attendee — selected from "All Attendees" but no message sent yet
+  const [pendingAttendee, setPendingAttendee] = useState<Attendee | null>(null)
+  const pendingAttendeeRef = useRef<Attendee | null>(null)
+
+  function updatePendingAttendee(attendee: Attendee | null) {
+    pendingAttendeeRef.current = attendee
+    setPendingAttendee(attendee)
+  }
+
+  // Start a new conversation (select partner from search dropdown — adds temp entry)
   const startNewConversation = useCallback(
     (attendee: Attendee) => {
+      updatePendingAttendee(null)
       setConversations((prev) => {
         const existing = prev.find((c) => c.partnerId === attendee.id)
         if (existing) return prev
@@ -303,6 +337,38 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
         ]
       })
       selectConversation(attendee.id)
+    },
+    [selectConversation]
+  )
+
+  // Select an attendee from the "All Attendees" list — opens chat WITHOUT adding to conversations
+  const selectAttendee = useCallback(
+    (attendee: Attendee) => {
+      const alreadyInConversations = conversationsRef.current.some((c) => c.partnerId === attendee.id)
+      if (alreadyInConversations) {
+        updatePendingAttendee(null)
+        selectConversation(attendee.id)
+      } else {
+        updatePendingAttendee(attendee)
+        setActivePartnerId(attendee.id)
+        activePartnerIdRef.current = attendee.id
+        const cached = messageCacheRef.current.get(attendee.id)
+        if (cached) {
+          setMessages(cached)
+        } else {
+          setIsLoadingMessages(true)
+          fetch(`/api/chat/messages/${attendee.id}`)
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => {
+              if (data) {
+                messageCacheRef.current.set(attendee.id, data.messages)
+                if (activePartnerIdRef.current === attendee.id) setMessages(data.messages)
+              }
+            })
+            .catch(() => {})
+            .finally(() => setIsLoadingMessages(false))
+        }
+      }
     },
     [selectConversation]
   )
@@ -423,5 +489,7 @@ export function useChatData(user: ChatUser | null, initialConversations?: Conver
     sendMessage,
     searchAttendees,
     startNewConversation,
+    selectAttendee,
+    pendingAttendee,
   }
 }
