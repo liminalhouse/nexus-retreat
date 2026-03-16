@@ -13,7 +13,7 @@ export default async function ChatPage() {
     redirect('/chat/login')
   }
 
-  const conversations = await getConversationsForUser(user.registrationId)
+  const conversations = (await getConversationsForUser(user.registrationId)).filter((c): c is NonNullable<typeof c> => c !== null)
 
   return (
     <div className="mx-auto md:px-4 md:py-6 bg-slate-100">
