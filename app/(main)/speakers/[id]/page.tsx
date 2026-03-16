@@ -141,7 +141,7 @@ export default async function SpeakerPage({params}: Props) {
                         href={`/schedule/${sessionSlug}`}
                         className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-xl border border-gray-100 hover:shadow-md hover:border-nexus-coral/30 transition-all"
                       >
-                        <div className="relative w-full sm:w-40 h-32 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                        {/* <div className="relative w-full sm:w-40 h-32 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden">
                           {session.photo?.asset?._id ? (
                             <SanityImageClient
                               id={session.photo.asset._id}
@@ -161,7 +161,7 @@ export default async function SpeakerPage({params}: Props) {
                               className="w-full h-full"
                             />
                           )}
-                        </div>
+                        </div> */}
                         <div className="flex-1 min-w-0">
                           {/* Session Type & Tags */}
                           <div className="mb-2">
