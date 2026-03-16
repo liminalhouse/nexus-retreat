@@ -2,6 +2,8 @@ import Link from 'next/link'
 import {settingsQuery} from '@/sanity/lib/queries'
 import {sanityFetch} from '@/sanity/lib/live'
 import NexusLogo from './NexusLogo'
+import UserNavMenu from './UserNavMenu'
+import MobileNav from './MobileNav'
 
 export default async function Header() {
   const {data: settings} = await sanityFetch({
@@ -18,20 +20,25 @@ export default async function Header() {
             <NexusLogo styleType="lockup" className="w-[100px] h-[40px]" />
           </Link>
 
-          <nav className="flex items-center gap-3">
-            {navLinks.map((link: any, index: number) => (
-              <Link
-                key={index}
-                href={link.href}
-                className={
-                  link.highlighted
-                    ? 'px-6 py-2 bg-blue-100 text-gray-900 rounded hover:bg-blue-200 transition-colors'
-                    : 'px-6 py-2 text-gray-700 hover:text-gray-900 transition-colors'
-                }
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav className="flex items-center gap-1">
+            {/* Desktop links — hidden on mobile */}
+            <div className="hidden md:flex items-center gap-1">
+              {navLinks.map((link: any, index: number) => (
+                <Link
+                  key={index}
+                  href={link.href}
+                  className={
+                    link.highlighted
+                      ? 'px-6 py-2 bg-blue-100 text-gray-900 rounded hover:bg-blue-200 transition-colors'
+                      : 'px-6 py-2 text-gray-700 hover:text-gray-900 transition-colors'
+                  }
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+            <UserNavMenu />
+            <MobileNav navLinks={navLinks} />
           </nav>
         </div>
       </div>
