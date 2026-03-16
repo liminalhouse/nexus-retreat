@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server'
 import {db} from '@/lib/db'
 import {registrations, chatSessions} from '@/lib/db/schema'
-import {ne, gt, ilike, or, and, sql} from 'drizzle-orm'
+import {ne, gt, ilike, or, and, eq, sql} from 'drizzle-orm'
 import {requireChatAuth} from '@/lib/auth/chatAuth'
 
 export async function GET(request: NextRequest) {
@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
   const onlineSet = new Set(activeSessions.map((s) => s.registrationId))
 
   const notSelf = ne(registrations.id, user.registrationId)
+  const notHidden = eq(registrations.hideInChat, false)
 
   const searchFilter = q
     ? (() => {
@@ -45,7 +46,7 @@ export async function GET(request: NextRequest) {
       profilePicture: registrations.profilePicture,
     })
     .from(registrations)
-    .where(searchFilter ? and(notSelf, searchFilter) : notSelf)
+    .where(searchFilter ? and(notSelf, notHidden, searchFilter) : and(notSelf, notHidden))
 
   const attendees = await query.limit(50)
 
