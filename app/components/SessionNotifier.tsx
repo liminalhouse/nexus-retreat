@@ -26,9 +26,7 @@ type NotifiedEntry = {id: string; notifiedAt: number}
 
 function getNotifiedSessions(): NotifiedEntry[] {
   try {
-    const entries: NotifiedEntry[] = JSON.parse(
-      localStorage.getItem(NOTIFIED_SESSIONS_KEY) || '[]',
-    )
+    const entries: NotifiedEntry[] = JSON.parse(localStorage.getItem(NOTIFIED_SESSIONS_KEY) || '[]')
     return entries.filter((e) => Date.now() - e.notifiedAt < NOTIFIED_TTL_MS)
   } catch {
     return []
@@ -132,8 +130,7 @@ export default function SessionNotifier() {
   useEffect(() => {
     async function checkAdminNotifs() {
       const since =
-        sessionStorage.getItem(LAST_NOTIF_CHECK_KEY) ||
-        new Date(Date.now() - 60_000).toISOString()
+        sessionStorage.getItem(LAST_NOTIF_CHECK_KEY) || new Date(Date.now() - 60_000).toISOString()
       sessionStorage.setItem(LAST_NOTIF_CHECK_KEY, new Date().toISOString())
 
       const res = await fetch(`/api/notifications?since=${encodeURIComponent(since)}`).catch(
@@ -186,7 +183,7 @@ export default function SessionNotifier() {
         <div
           key={toast.key}
           role="alert"
-          className="bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3 flex items-start gap-3"
+          className="bg-blue-100 border border-blue-200 rounded-xl shadow-lg px-4 py-3 flex items-start gap-3"
         >
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-gray-900">{toast.title}</p>

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Avatar from './Avatar'
 import type {ChatUser} from '@/lib/types/chat'
 import ChatNavIcon from './ChatNavIcon'
+import NotificationCenter from './NotificationCenter'
 
 export default function UserNavMenu() {
   const [user, setUser] = useState<ChatUser | null | undefined>(undefined)
@@ -51,6 +52,7 @@ export default function UserNavMenu() {
         >
           Login
         </Link>
+        <NotificationCenter />
       </>
     )
   }
@@ -59,6 +61,8 @@ export default function UserNavMenu() {
     <div>
       <div className="flex items-center gap-1">
         <ChatNavIcon />
+        <div className="md:w-2" />
+        <NotificationCenter />
         <div className="md:w-2" />
         <div className="relative" ref={menuRef}>
           <button

@@ -9,7 +9,6 @@ import {
   clearUnreadCount,
   type StoredNotification,
 } from '@/lib/notifications'
-import {urlBase64ToUint8Array} from '@/lib/urlBase64'
 
 const REMINDERS_KEY = 'sessionReminders'
 
@@ -133,7 +132,7 @@ export default function NotificationCenter() {
         {unread > 0 ? (
           <BellAlertIcon className="w-5 h-5 text-nexus-coral" />
         ) : (
-          <BellIcon className="w-5 h-5" />
+          <BellIcon className="w-5 h-5 text-nexus-navy" />
         )}
         {unread > 0 && (
           <span className="absolute -top-1 -right-1 bg-nexus-coral text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-0.5 leading-none">
@@ -143,7 +142,8 @@ export default function NotificationCenter() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-xl z-[200] overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-xl z-[200]">
+          <div className="absolute -top-[7px] right-3 w-3 h-3 bg-white border-l border-t border-gray-100 rotate-45" />
           {/* Reminders toggle */}
           <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
             <div>
