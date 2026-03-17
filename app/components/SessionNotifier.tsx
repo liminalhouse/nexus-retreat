@@ -44,21 +44,7 @@ function markSessionNotified(sessionId: string) {
 async function fetchSessions(): Promise<UpcomingSession[]> {
   const res = await fetch('/api/sessions').catch(() => null)
   if (!res?.ok) return []
-  const sessions: UpcomingSession[] = await res.json()
-
-  // TEST MODE: shift all sessions so the first starts now, rest maintain original spacing
-  if (sessions.length > 0) {
-    const sorted = [...sessions].sort(
-      (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
-    )
-    const offset = Date.now() - new Date(sorted[0].startTime).getTime()
-    return sorted.map((s) => ({
-      ...s,
-      startTime: new Date(new Date(s.startTime).getTime() + offset).toISOString(),
-    }))
-  }
-
-  return sessions
+  return res.json()
 }
 
 export default function SessionNotifier() {
@@ -116,8 +102,8 @@ export default function SessionNotifier() {
       if (localStorage.getItem(REMINDERS_KEY) !== 'true') return
       const notifiedIds = new Set(getNotifiedSessions().map((e) => e.id))
       const now = Date.now()
-      const windowStart = now + 0 * 60 * 1000
-      const windowEnd = now + 999 * 60 * 1000
+      const windowStart = now + 14 * 60 * 1000
+      const windowEnd = now + 16 * 60 * 1000
 
       for (const session of sessionsRef.current) {
         const start = new Date(session.startTime).getTime()
