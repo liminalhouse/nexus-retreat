@@ -4,6 +4,7 @@ import {useState} from 'react'
 import EditModal from './EditModal'
 import Avatar from '@/app/components/Avatar'
 import FilterBuilder, {type FilterCondition, evaluateFilter} from './FilterBuilder'
+import SortDropdown, {applySort, SortKey} from './SortDropdown'
 import {
   formatAccommodations,
   formatDinnerAttendance,
@@ -53,6 +54,8 @@ const EMPTY_REGISTRATION: Registration = {
   guest_activities: null,
   admin_notes: null,
   rsvp_guest_luncheon: null,
+  hide_in_chat: false,
+  no_confirmation_email: false,
   arrival: null,
   departure: null,
   hotel_full_name: '',
@@ -95,10 +98,12 @@ const COLUMN_WIDTHS = {
   confirmation_number: 'minmax(160px, 1.2fr)',
   rooms: 'minmax(120px, 1fr)',
   room_guest: 'minmax(140px, 1fr)',
-  edit_registration_link: 'minmax(280px, 2fr)',
-  edit_activities_link: 'minmax(280px, 2fr)',
+  // edit_registration_link: 'minmax(280px, 2fr)',
+  // edit_activities_link: 'minmax(280px, 2fr)',
+  no_confirmation_email: 'minmax(100px, 1fr)',
   admin_notes: 'minmax(200px, 2fr)',
-  rsvp_guest_luncheon: 'minmax(140px, 1fr)',
+  rsvp_guest_luncheon: 'minmax(100px, 1fr)',
+  hide_in_chat: 'minmax(110px, 1fr)',
   actions: 'minmax(120px, 2fr)',
 }
 
@@ -276,39 +281,44 @@ const columns: ColumnConfig[] = [
     render: (reg) => reg.room_guest || '-',
   },
   {
-    key: 'edit_registration_link',
-    label: 'Edit Registration Link',
-    render: (reg) => {
-      const url = getEditRegistrationUrl(reg.edit_token)
-      return (
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-nexus-coral hover:text-nexus-coral-light underline text-xs break-all"
-        >
-          {url}
-        </a>
-      )
-    },
+    key: 'no_confirmation_email',
+    label: 'Do not send hotel confirmation email to',
+    render: (reg) => (reg.no_confirmation_email ? '\u00A0 \u00A0 \u00A0 \u00A0 ✅' : ''),
   },
-  {
-    key: 'edit_activities_link',
-    label: 'Activities Form Link',
-    render: (reg) => {
-      const url = getEditActivitiesUrl(reg.edit_token)
-      return (
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-nexus-coral hover:text-nexus-coral-light underline text-xs break-all"
-        >
-          {url}
-        </a>
-      )
-    },
-  },
+  // {
+  //   key: 'edit_registration_link',
+  //   label: 'Edit Registration Link',
+  //   render: (reg) => {
+  //     const url = getEditRegistrationUrl(reg.edit_token)
+  //     return (
+  //       <a
+  //         href={url}
+  //         target="_blank"
+  //         rel="noopener noreferrer"
+  //         className="text-nexus-coral hover:text-nexus-coral-light underline text-xs break-all"
+  //       >
+  //         {url}
+  //       </a>
+  //     )
+  //   },
+  // },
+  // {
+  //   key: 'edit_activities_link',
+  //   label: 'Activities Form Link',
+  //   render: (reg) => {
+  //     const url = getEditActivitiesUrl(reg.edit_token)
+  //     return (
+  //       <a
+  //         href={url}
+  //         target="_blank"
+  //         rel="noopener noreferrer"
+  //         className="text-nexus-coral hover:text-nexus-coral-light underline text-xs break-all"
+  //       >
+  //         {url}
+  //       </a>
+  //     )
+  //   },
+  // },
   {
     key: 'admin_notes',
     label: 'Admin Notes (not visible to registrant)',
@@ -318,6 +328,11 @@ const columns: ColumnConfig[] = [
     key: 'rsvp_guest_luncheon',
     label: 'RSVP Guest Luncheon',
     render: (reg) => reg.rsvp_guest_luncheon || '-',
+  },
+  {
+    key: 'hide_in_chat',
+    label: 'Hide in Chat',
+    render: (reg) => (reg.hide_in_chat ? '\u00A0 \u00A0 \u00A0 \u00A0 ✅' : ''),
   },
 ]
 
@@ -331,6 +346,7 @@ export default function RegistrationsTable({
   const [showAddModal, setShowAddModal] = useState(false)
   const [searchFilter, setSearchFilter] = useState('')
   const [filters, setFilters] = useState<FilterCondition[]>([])
+  const [sortKey, setSortKey] = useState<SortKey>('first_name_asc')
 
   const handleUpdateRegistration = (updatedRegistration: Registration) => {
     setRegistrations((prev) =>
@@ -376,6 +392,12 @@ export default function RegistrationsTable({
     return matchesSearch && matchesAllFilters
   })
 
+  const sortedRegistrations = applySort(filteredRegistrations, sortKey, {
+    firstName: (r) => r.first_name,
+    lastName: (r) => r.last_name,
+    createdAt: (r) => r.created_at,
+  })
+
   return (
     <div className="mt-2 sm:mx-auto lg:mx-4 mb-20">
       <div className="mb-4 space-y-4">
@@ -387,6 +409,7 @@ export default function RegistrationsTable({
             onChange={(e) => setSearchFilter(e.target.value)}
             className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nexus-coral focus:border-transparent"
           />
+          <SortDropdown value={sortKey} onChange={setSortKey} />
         </div>
         <FilterBuilder filters={filters} onChange={setFilters} />
       </div>
@@ -413,7 +436,7 @@ export default function RegistrationsTable({
 
             {/* Body Rows */}
             <div>
-              {filteredRegistrations.map((registration) => (
+              {sortedRegistrations.map((registration) => (
                 <div
                   key={registration.id}
                   className="grid group"
@@ -422,7 +445,7 @@ export default function RegistrationsTable({
                   {columns.map((column) => (
                     <div
                       key={column.key}
-                      className={`${column.key === 'admin_notes' || column.key === 'rsvp_guest_luncheon' ? 'bg-yellow-50' : 'bg-white'} group-hover:bg-zinc-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto`}
+                      className={`${column.key === 'admin_notes' || column.key === 'rsvp_guest_luncheon' || column.key === 'hide_in_chat' || column.key === 'no_confirmation_email' ? 'bg-yellow-50' : 'bg-white'} group-hover:bg-zinc-50 px-3 py-4 text-sm text-gray-500 flex items-center border-b border-r border-gray-200 overflow-x-auto`}
                     >
                       {column.render(registration)}
                     </div>

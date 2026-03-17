@@ -892,6 +892,25 @@ export default function EditModal({
                     />
                   </div>
                 </div>
+                <div className="px-2 py-4 bg-yellow-50 border border-yellow-200 rounded-lg mt-4">
+                  <label className={labelClass}>Do not send hotel confirmation email</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="no_confirmation_email"
+                      checked={formData.no_confirmation_email ?? false}
+                      onChange={(e) => handleChange('no_confirmation_email', e.target.checked)}
+                      disabled={readOnly}
+                      className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                    />
+                    <label
+                      htmlFor="no_confirmation_email"
+                      className="text-sm font-medium text-gray-700 cursor-pointer"
+                    >
+                      Check if you do not want to send the hotel confirmation to the guest
+                    </label>
+                  </div>
+                </div>
               </div>
 
               <hr className="my-6 border-t border-gray-200 w-[800px] mx-auto" />
@@ -916,9 +935,7 @@ export default function EditModal({
                     <label className={labelClass}>RSVP Guest Luncheon</label>
                     <select
                       value={formData.rsvp_guest_luncheon || ''}
-                      onChange={(e) =>
-                        handleChange('rsvp_guest_luncheon', e.target.value || null)
-                      }
+                      onChange={(e) => handleChange('rsvp_guest_luncheon', e.target.value || null)}
                       className={`${inputClass} ${readOnly ? '' : 'bg-yellow-50'}`}
                       disabled={readOnly}
                     >
@@ -927,6 +944,25 @@ export default function EditModal({
                       <option value="No">No</option>
                       <option value="Maybe">Maybe</option>
                     </select>
+                  </div>
+                </div>
+                <div className="px-2 py-4 bg-yellow-50 border border-yellow-200 rounded-lg mt-4">
+                  <label className={labelClass}>Hide guest from showing up in Chat</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="hide_in_chat"
+                      checked={formData.hide_in_chat ?? false}
+                      onChange={(e) => handleChange('hide_in_chat', e.target.checked)}
+                      disabled={readOnly}
+                      className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                    />
+                    <label
+                      htmlFor="hide_in_chat"
+                      className="text-sm font-medium text-gray-700 cursor-pointer"
+                    >
+                      Check to hide in Chat
+                    </label>
                   </div>
                 </div>
               </div>

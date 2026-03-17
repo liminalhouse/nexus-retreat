@@ -42,3 +42,6 @@ next-env.d.ts
 
 # local files
 local
+
+# are not using yarn
+yarn.lock

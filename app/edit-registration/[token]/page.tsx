@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect, useState} from 'react'
-import {useParams} from 'next/navigation'
+import {useParams, useSearchParams} from 'next/navigation'
 import Link from 'next/link'
 import NexusLogo from '@/app/components/NexusLogo'
 import Avatar from '@/app/components/Avatar'
@@ -15,9 +15,25 @@ import type {Registration} from '@/lib/types/registration'
 
 type PageState = 'loading' | 'editing' | 'saving' | 'success' | 'error'
 
+const ActivitiesNoLongerEditableBanner = () => {
+  return (
+    <div className="mb-3 p-3 bg-amber-50 border border-amber-300 rounded-lg">
+      <p className="text-xs font-medium text-amber-800">
+        Activities are no longer editable. Contact{' '}
+        <a href="mailto:info@nexus-retreat.com" className="underline">
+          info@nexus-retreat.com
+        </a>{' '}
+        if you need to make changes.
+      </p>
+    </div>
+  )
+}
+
 export default function EditRegistrationPage() {
   const params = useParams()
   const token = params.token as string
+  const searchParams = useSearchParams()
+  const bypass = searchParams.get('bypass') === 'true'
 
   const [pageState, setPageState] = useState<PageState>('loading')
   const [error, setError] = useState<string | null>(null)
@@ -595,6 +611,7 @@ export default function EditRegistrationPage() {
 
                 <div>
                   <label className={labelClass}>Activities</label>
+                  {!bypass && <ActivitiesNoLongerEditableBanner />}
                   <div className="space-y-3 mt-2">
                     {ACTIVITY_OPTIONS.map((option) => (
                       <label key={option.value} className="flex items-start">
@@ -604,9 +621,10 @@ export default function EditRegistrationPage() {
                           onChange={(e) =>
                             handleCheckboxChange('activities', option.value, e.target.checked)
                           }
-                          className="h-4 w-4 mt-0.5 rounded border-gray-300 text-nexus-navy focus:ring-nexus-navy"
+                          disabled={!bypass}
+                          className="h-4 w-4 mt-0.5 rounded border-gray-300 text-nexus-navy focus:ring-nexus-navy disabled:opacity-50"
                         />
-                        <span className="ml-2">
+                        <span className="ml-2 mt-[-4px]">
                           <span className="text-sm font-medium text-gray-700">{option.label}</span>
                           {option.description && (
                             <span className="block text-xs text-gray-500">
@@ -707,6 +725,7 @@ export default function EditRegistrationPage() {
 
                   <div>
                     <label className={labelClass}>Guest Activities</label>
+                    <ActivitiesNoLongerEditableBanner />
                     <div className="space-y-3 mt-2">
                       {ACTIVITY_OPTIONS.map((option) => (
                         <label key={option.value} className="flex items-start">
@@ -720,9 +739,10 @@ export default function EditRegistrationPage() {
                                 e.target.checked,
                               )
                             }
-                            className="h-4 w-4 mt-0.5 rounded border-gray-300 text-nexus-navy focus:ring-nexus-navy"
+                            disabled={!bypass}
+                            className="h-4 w-4 mt-0.5 rounded border-gray-300 text-nexus-navy focus:ring-nexus-navy disabled:opacity-50"
                           />
-                          <span className="ml-2">
+                          <span className="ml-2 mt-[-4px]">
                             <span className="text-sm font-medium text-gray-700">
                               {option.label}
                             </span>

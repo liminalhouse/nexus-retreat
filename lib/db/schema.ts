@@ -1,4 +1,4 @@
-import {pgTable, text, timestamp, uuid, jsonb, pgEnum, integer} from 'drizzle-orm/pg-core'
+import {pgTable, text, timestamp, uuid, jsonb, pgEnum, integer, boolean} from 'drizzle-orm/pg-core'
 
 // Enum for jacket sizes
 export const jacketSizeEnum = pgEnum('jacket_size_enum', [
@@ -73,6 +73,8 @@ export const registrations = pgTable('registrations', {
   // Admin Only
   adminNotes: text('admin_notes'),
   rsvpGuestLuncheon: text('rsvp_guest_luncheon'),
+  hideInChat: boolean('hide_in_chat').default(false),
+  noConfirmationEmail: boolean('no_confirmation_email').default(false),
 
   // Hotel / Logistics (admin-managed)
   arrival: text('arrival'),
@@ -146,3 +148,48 @@ export const pushSubscriptions = pgTable('push_subscriptions', {
 
 export type PushSubscription = typeof pushSubscriptions.$inferSelect
 export type NewPushSubscription = typeof pushSubscriptions.$inferInsert
+// Chat Passwords table
+export const chatPasswords = pgTable('chat_passwords', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  registrationId: uuid('registration_id')
+    .references(() => registrations.id)
+    .notNull()
+    .unique(),
+  passwordHash: text('password_hash').notNull(),
+  resetToken: text('reset_token'),
+  resetTokenExpiresAt: timestamp('reset_token_expires_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export type ChatPassword = typeof chatPasswords.$inferSelect
+
+// Chat Sessions table
+export const chatSessions = pgTable('chat_sessions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  registrationId: uuid('registration_id')
+    .references(() => registrations.id)
+    .notNull(),
+  token: text('token').notNull().unique(),
+  lastActiveAt: timestamp('last_active_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+})
+
+export type ChatSession = typeof chatSessions.$inferSelect
+
+// Chat Messages table
+export const chatMessages = pgTable('chat_messages', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  senderId: uuid('sender_id')
+    .references(() => registrations.id)
+    .notNull(),
+  receiverId: uuid('receiver_id')
+    .references(() => registrations.id)
+    .notNull(),
+  content: text('content').notNull(),
+  readAt: timestamp('read_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export type ChatMessage = typeof chatMessages.$inferSelect
