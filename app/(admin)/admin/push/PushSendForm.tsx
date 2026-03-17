@@ -1,8 +1,10 @@
 'use client'
 
 import {useState} from 'react'
+import {useRouter} from 'next/navigation'
 
 export default function PushSendForm() {
+  const router = useRouter()
   const [title, setTitle] = useState('')
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error' | 'rate-limit'>('idle')
@@ -21,6 +23,7 @@ export default function PushSendForm() {
       setStatus('sent')
       setTitle('')
       setMessage('')
+      router.refresh()
       setTimeout(() => setStatus('idle'), 3000)
     } catch (e: unknown) {
       setStatus(e instanceof Error && e.message === 'rate-limit' ? 'rate-limit' : 'error')

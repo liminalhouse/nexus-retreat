@@ -2,6 +2,8 @@
 
 import {useEffect, useRef, useState} from 'react'
 import {pushNotification, markUnread, type StoredNotification} from '@/lib/notifications'
+import {XMarkIcon} from '@heroicons/react/24/outline'
+import {relativeTime} from './NotificationCenter'
 
 const REMINDERS_KEY = 'sessionReminders'
 const NOTIFIED_SESSIONS_KEY = 'notifiedSessions'
@@ -129,11 +131,11 @@ export default function SessionNotifier() {
   // Admin notification polling
   useEffect(() => {
     async function checkAdminNotifs() {
-      if (localStorage.getItem(REMINDERS_KEY) !== 'true') return
-
-      const since =
-        sessionStorage.getItem(LAST_NOTIF_CHECK_KEY) || new Date(Date.now() - 60_000).toISOString()
+      // Always advance the cursor so re-enabling never replays past notifications
+      const since = sessionStorage.getItem(LAST_NOTIF_CHECK_KEY) ?? new Date().toISOString()
       sessionStorage.setItem(LAST_NOTIF_CHECK_KEY, new Date().toISOString())
+
+      if (localStorage.getItem(REMINDERS_KEY) !== 'true') return
 
       const res = await fetch(`/api/notifications?since=${encodeURIComponent(since)}`).catch(
         () => null,
@@ -185,11 +187,19 @@ export default function SessionNotifier() {
         <div
           key={toast.key}
           role="alert"
-          className="bg-blue-100 border border-blue-200 rounded-xl shadow-lg px-4 py-3 flex items-start gap-3"
+          className="bg-white border border-3 border-nexus-coral rounded-xl shadow-lg px-4 py-3 flex items-start gap-3"
         >
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-gray-900">{toast.title}</p>
+            <p className="text-sm font-semibold text-gray-900">
+              {toast.title}{' '}
+              {toast.timestamp && (
+                <span className="text-[11px] text-gray-400 whitespace-nowrap shrink-0 mt-px ml-2">
+                  {relativeTime(toast.timestamp, false)}
+                </span>
+              )}
+            </p>
             {toast.body && <p className="text-xs text-gray-500 mt-0.5">{toast.body}</p>}
+
             {toast.url && (
               <a
                 href={toast.url}
@@ -202,22 +212,9 @@ export default function SessionNotifier() {
           <button
             onClick={() => dismissToast(toast.key)}
             aria-label="Dismiss"
-            className="text-gray-400 hover:text-gray-600 mt-0.5 shrink-0"
+            className="text-gray-400 hover:text-gray-600 mt-0.5 shrink-0 cursor-pointer"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+            <XMarkIcon className="w-5 h-5" />
           </button>
         </div>
       ))}
