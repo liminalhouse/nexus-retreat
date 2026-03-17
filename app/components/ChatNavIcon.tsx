@@ -3,6 +3,7 @@
 import {useState, useEffect} from 'react'
 import Link from 'next/link'
 import {ChatBubbleLeftIcon} from '@heroicons/react/24/outline'
+import {ChatBubbleLeftIcon as SolidChatBubbleLeftIcon} from '@heroicons/react/20/solid'
 
 export default function ChatNavIcon() {
   const [unreadCount, setUnreadCount] = useState<number | null>(null)
@@ -48,7 +49,11 @@ export default function ChatNavIcon() {
       className="relative p-2 text-gray-700 hover:text-gray-900 transition-colors"
       aria-label={unreadCount > 0 ? `${unreadCount} unread messages` : 'Chat'}
     >
-      <ChatBubbleLeftIcon className="w-5 h-5" />
+      {unreadCount > 0 ? (
+        <SolidChatBubbleLeftIcon className="w-5 h-5 text-nexus-navy" />
+      ) : (
+        <ChatBubbleLeftIcon className="w-5 h-5 text-gray-700" />
+      )}
       {unreadCount > 0 && (
         <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[16px] h-4 px-1 text-[10px] font-bold bg-blue-500 text-white rounded-full leading-none">
           {unreadCount > 99 ? '99+' : unreadCount}

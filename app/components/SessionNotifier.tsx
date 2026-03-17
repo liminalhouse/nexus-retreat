@@ -126,9 +126,11 @@ export default function SessionNotifier() {
     }
   }, [])
 
-  // Admin notification polling (always active)
+  // Admin notification polling
   useEffect(() => {
     async function checkAdminNotifs() {
+      if (localStorage.getItem(REMINDERS_KEY) !== 'true') return
+
       const since =
         sessionStorage.getItem(LAST_NOTIF_CHECK_KEY) || new Date(Date.now() - 60_000).toISOString()
       sessionStorage.setItem(LAST_NOTIF_CHECK_KEY, new Date().toISOString())
