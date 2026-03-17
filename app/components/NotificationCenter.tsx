@@ -147,8 +147,10 @@ export default function NotificationCenter() {
           {/* Reminders toggle */}
           <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-800">Session reminders</p>
-              <p className="text-xs text-gray-400 mt-0.5">15 min before each session</p>
+              <p className="text-sm font-medium text-gray-800">Notifications</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Session reminders & other retreat updates
+              </p>
             </div>
             <button
               onClick={remindersEnabled ? disableReminders : enableReminders}

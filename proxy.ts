@@ -8,24 +8,29 @@ export function proxy(request: NextRequest) {
   const authToken = request.cookies.get('auth-token')
   const sanityToken = request.cookies.get('sanity-token')
 
-  function withPathHeader(response: NextResponse) {
-    response.headers.set('x-current-path', pathname)
-    return response
+  function withPathHeader() {
+    return NextResponse.next({
+      request: {
+        headers: new Headers({
+          ...Object.fromEntries(request.headers),
+          'x-current-path': pathname,
+        }),
+      },
+    })
   }
 
   // Check for prodMode query param to view published content in non-production
   const prodMode = request.nextUrl.searchParams.get('prodMode') === 'true'
   if (prodMode) {
-    return withPathHeader(
-      NextResponse.next({
-        request: {
-          headers: new Headers({
-            ...Object.fromEntries(request.headers),
-            'x-sanity-perspective': 'published',
-          }),
-        },
-      }),
-    )
+    return NextResponse.next({
+      request: {
+        headers: new Headers({
+          ...Object.fromEntries(request.headers),
+          'x-sanity-perspective': 'published',
+          'x-current-path': pathname,
+        }),
+      },
+    })
   }
 
   // Redirect /edit-registration (exact) to /register/edit
@@ -35,7 +40,7 @@ export function proxy(request: NextRequest) {
 
   // Allow access to admin login page without authentication
   if (pathname === '/admin/login') {
-    return withPathHeader(NextResponse.next())
+    return withPathHeader()
   }
 
   // Protect all other admin routes - require Sanity authentication (not just regular user auth)
@@ -45,7 +50,7 @@ export function proxy(request: NextRequest) {
       loginUrl.searchParams.set('from', pathname)
       return NextResponse.redirect(loginUrl)
     }
-    return withPathHeader(NextResponse.next())
+    return withPathHeader()
   }
 
   // Check if the user is trying to access the sign-in page
@@ -55,7 +60,7 @@ export function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/', request.url))
     }
     // Allow access to sign-in page if not authenticated
-    return withPathHeader(NextResponse.next())
+    return withPathHeader()
   }
 
   // Check if the request is for API routes, static files, or Next.js internals
@@ -76,7 +81,7 @@ export function proxy(request: NextRequest) {
   }
 
   // User is authenticated, allow access
-  return withPathHeader(NextResponse.next())
+  return withPathHeader()
 }
 
 export const config = {
@@ -88,6 +93,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|icon.svg).*)',
   ],
 }
