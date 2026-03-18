@@ -1,16 +1,19 @@
 import Link from 'next/link'
+import {headers} from 'next/headers'
 import {settingsQuery} from '@/sanity/lib/queries'
 import {sanityFetch} from '@/sanity/lib/live'
 import NexusLogo from './NexusLogo'
+import NotificationCenter from './NotificationCenter'
 import UserNavMenu from './UserNavMenu'
 import MobileNav from './MobileNav'
+import NavLinks, {NavLink} from './NavLinks'
 
 export default async function Header() {
   const {data: settings} = await sanityFetch({
     query: settingsQuery,
   })
-
-  const navLinks = settings?.navLinks || []
+  const navLinks: NavLink[] = (settings?.navLinks as NavLink[]) || []
+  const initialPathname = (await headers()).get('x-current-path') ?? '/'
 
   return (
     <header className="fixed top-0 left-0 right-0 z-[101] bg-white border-b border-gray-200 shadow-sm">
@@ -23,19 +26,7 @@ export default async function Header() {
           <nav className="flex items-center gap-1">
             {/* Desktop links — hidden on mobile */}
             <div className="hidden md:flex items-center gap-1">
-              {navLinks.map((link: any, index: number) => (
-                <Link
-                  key={index}
-                  href={link.href}
-                  className={
-                    link.highlighted
-                      ? 'px-6 py-2 bg-blue-100 text-gray-900 rounded hover:bg-blue-200 transition-colors'
-                      : 'px-6 py-2 text-gray-700 hover:text-gray-900 transition-colors'
-                  }
-                >
-                  {link.label}
-                </Link>
-              ))}
+              <NavLinks navLinks={navLinks} initialPathname={initialPathname} />
             </div>
             <UserNavMenu />
             <MobileNav navLinks={navLinks} />
