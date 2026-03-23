@@ -120,7 +120,7 @@ export default function Hero({block}: HeroProps) {
         {/* TODO: Disable link for now */}
         {!!settings && (
           <div className="animate-fadeInUp-delay-3">
-            {ctaText && isRegistrationLive ? (
+            {!!ctaText && !!ctaLink && (
               <Link
                 className="inline-block px-8 py-3 bg-nexus-coral hover:bg-nexus-coral-light text-gray-900 rounded transition-colors font-medium"
                 href={ctaLink}
@@ -139,10 +139,6 @@ export default function Hero({block}: HeroProps) {
                   </svg>
                 </span>
               </Link>
-            ) : (
-              <div className="inline-block px-8 py-3 bg-nexus-coral-light text-gray-900 rounded transition-colors font-medium">
-                Registration opens soon
-              </div>
             )}
           </div>
         )}

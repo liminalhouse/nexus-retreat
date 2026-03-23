@@ -28,7 +28,8 @@ export default async function Header() {
             <div className="hidden md:flex items-center gap-1">
               <NavLinks navLinks={navLinks} initialPathname={initialPathname} />
             </div>
-            <UserNavMenu />
+            {/* Post-conference, do not need */}
+            {/* <UserNavMenu /> */}
             <MobileNav navLinks={navLinks} />
           </nav>
         </div>
